@@ -36,4 +36,6 @@ ExportStaticMesh/Binaries
 ExportStaticMesh/DerivedDataCache
 ExportStaticMesh/Intermediate
 ExportStaticMesh/Saved
+ExportStaticMesh/Plugins/CustomExport/Binaries
+ExportStaticMesh/Plugins/CustomExport/Intermediate
 
