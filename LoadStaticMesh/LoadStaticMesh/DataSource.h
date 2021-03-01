@@ -2,6 +2,8 @@
 
 class DataSource
 {
-
+public:
+	DataSource();
+	~DataSource();
 
 };

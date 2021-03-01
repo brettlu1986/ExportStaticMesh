@@ -3,6 +3,7 @@
 #include "InputClass.h"
 
 InputClass::InputClass()
+	:m_application(nullptr)
 {
 
 }
@@ -27,4 +28,5 @@ bool InputClass::Update()
 
 void InputClass::Destroy()
 {
+	m_application = nullptr;
 }
