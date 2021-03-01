@@ -39,3 +39,7 @@ ExportStaticMesh/Saved
 ExportStaticMesh/Plugins/CustomExport/Binaries
 ExportStaticMesh/Plugins/CustomExport/Intermediate
 
+LoadStaticMesh/x64
+LoadStaticMesh/LoadStaticMesh/x64
+
+

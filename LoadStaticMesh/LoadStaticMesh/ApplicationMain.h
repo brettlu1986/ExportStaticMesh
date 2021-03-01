@@ -1,0 +1,30 @@
+#pragma once
+
+#include "stdafx.h"
+
+class DataSource;
+class InputClass;
+class MainWindow;
+class GraphicRender;
+
+class ApplicationMain
+{
+public:
+	ApplicationMain();
+	~ApplicationMain();
+
+	bool Initialize(HINSTANCE hInstance, UINT width, UINT height, std::wstring name);
+	void Run();
+	void Destroy();
+
+	HINSTANCE GetHInstace() { return m_hInstance; }
+	GraphicRender* GetGraphicRender() { return m_graphics; }
+	InputClass* GetInput() { return m_input; }
+private:
+	 
+	HINSTANCE m_hInstance;
+	MainWindow* m_window;
+	GraphicRender* m_graphics;
+	InputClass* m_input;
+
+};
