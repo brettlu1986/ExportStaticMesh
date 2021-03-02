@@ -7,10 +7,10 @@
 
 GraphicRender_ClearWindow::GraphicRender_ClearWindow()
 	:m_frameIndex(0)
-	, m_rtvDescriptorSize(0)
-	, bInit(false)
+	,m_rtvDescriptorSize(0)
+	, m_fenceEvent(nullptr)
+	, m_fenceValue(0)
 {
-
 }
 
 GraphicRender_ClearWindow::~GraphicRender_ClearWindow()
@@ -22,7 +22,6 @@ void GraphicRender_ClearWindow::OnInit()
 {
 	LoadPipeline();
 	LoadAssets();
-	bInit = true;
 }
 
 // Load the rendering pipeline dependencies.
@@ -161,8 +160,6 @@ void GraphicRender_ClearWindow::LoadAssets()
 
 bool GraphicRender_ClearWindow::Render()
 {
-	if (!bInit)
-		return true;
 	// Record all the commands we need to render the scene into the command list.
 	PopulateCommandList();
 

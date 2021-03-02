@@ -31,7 +31,6 @@ private:
 	HANDLE m_fenceEvent;
 	ComPtr<ID3D12Fence> m_fence;//
 	UINT64 m_fenceValue;
-	bool bInit;
 
 	void LoadPipeline();
 	void LoadAssets();

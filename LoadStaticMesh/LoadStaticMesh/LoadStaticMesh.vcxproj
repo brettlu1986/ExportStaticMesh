@@ -145,6 +145,7 @@
     <ClCompile Include="DataSource.cpp" />
     <ClCompile Include="GraphicRender.cpp" />
     <ClCompile Include="GraphicRender_ClearWindow.cpp" />
+    <ClCompile Include="GraphicRender_LoadModel.cpp" />
     <ClCompile Include="InputClass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="GraphicHelper.h" />
     <ClInclude Include="GraphicRender.h" />
     <ClInclude Include="GraphicRender_ClearWindow.h" />
+    <ClInclude Include="GraphicRender_LoadModel.h" />
     <ClInclude Include="InputClass.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="stdafx.h" />
