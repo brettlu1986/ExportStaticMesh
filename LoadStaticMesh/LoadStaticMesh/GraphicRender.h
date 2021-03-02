@@ -1,8 +1,9 @@
 #pragma once
 
 #include "stdafx.h"
-#include "ApplicationMain.h"
 #include "GraphicHelper.h"
+#include "ApplicationMain.h"
+
 
 class GraphicRender
 {
@@ -29,13 +30,11 @@ protected:
 	UINT m_width;
 	UINT m_height;
 	float m_aspectRatio;
-
 	bool m_useWarpDevice;
 
 private: 
 	std::wstring m_assetsPath;
 	
 public:
-
 	ApplicationMain* m_application;
 };

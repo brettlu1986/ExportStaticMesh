@@ -4,8 +4,8 @@
 
 class DataSource;
 class InputClass;
-class MainWindow;
 class GraphicRender;
+class MainWindow;
 
 class ApplicationMain
 {
@@ -20,6 +20,9 @@ public:
 	HINSTANCE GetHInstace() { return m_hInstance; }
 	GraphicRender* GetGraphicRender() { return m_graphics; }
 	InputClass* GetInput() { return m_input; }
+	MainWindow* GetWindow() { return m_window; }
+
+	HWND GetHwnd();
 private:
 	 
 	HINSTANCE m_hInstance;

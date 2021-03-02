@@ -15,6 +15,8 @@ public:
 	bool Run();
 	void Destroy();
 
+	HWND GetHwnd() { return m_hwnd; }
+
 protected:
 	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 

@@ -6,6 +6,7 @@
 ApplicationMain* MainWindow::m_application = nullptr;
 
 MainWindow::MainWindow()
+	:m_hwnd(nullptr)
 {
 
 }

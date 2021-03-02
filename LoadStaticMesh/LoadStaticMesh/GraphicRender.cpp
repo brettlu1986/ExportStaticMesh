@@ -4,7 +4,11 @@
 using namespace Microsoft::WRL;
 
 GraphicRender::GraphicRender()
-	:m_useWarpDevice(false)
+	:m_width(0)
+	,m_height(0)
+	,m_aspectRatio(0.f)
+	,m_useWarpDevice(false)
+	,m_application(nullptr)
 {
 
 }
@@ -24,6 +28,8 @@ void GraphicRender::Initialize(ApplicationMain* application, UINT width, UINT he
 	GetAssetsPath(assetsPath, _countof(assetsPath));
 	m_assetsPath = assetsPath;
 	m_aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+
+	OnInit();
 }
 
 std::wstring GraphicRender::GetAssetFullPath(LPCWSTR assetName)
@@ -66,10 +72,10 @@ void GraphicRender::GetHardwareAdapter(
 
 			// Check to see whether the adapter supports Direct3D 12, but don't create the
 			// actual device yet.
-			/*if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, _uuidof(ID3D12Device), nullptr)))
+			if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, _uuidof(ID3D12Device), nullptr)))
 			{
 				break;
-			}*/
+			}
 		}
 	}
 	else
@@ -88,10 +94,10 @@ void GraphicRender::GetHardwareAdapter(
 
 			// Check to see whether the adapter supports Direct3D 12, but don't create the
 			// actual device yet.
-			/*if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, _uuidof(ID3D12Device), nullptr)))
+			if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, _uuidof(ID3D12Device), nullptr)))
 			{
 				break;
-			}*/
+			}
 		}
 	}
 

@@ -1,11 +1,14 @@
 
 #include "ApplicationMain.h"
-#include "MainWindow.h"
 #include "GraphicRender_ClearWindow.h"
+#include "MainWindow.h"
 #include "InputClass.h"
 
 ApplicationMain::ApplicationMain()
-	:m_window(nullptr)
+	:m_hInstance(nullptr)
+	,m_window(nullptr)
+	,m_graphics(nullptr)
+	,m_input(nullptr)
 {
 }
 
@@ -64,4 +67,9 @@ void ApplicationMain::Destroy()
 		delete m_input;
 		m_input = nullptr;
 	}
+}
+
+HWND ApplicationMain::GetHwnd()
+{
+	return m_window->GetHwnd();
 }
