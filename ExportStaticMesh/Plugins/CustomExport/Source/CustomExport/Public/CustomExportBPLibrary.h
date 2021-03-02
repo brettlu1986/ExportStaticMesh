@@ -23,6 +23,28 @@
 *	For more info on custom blueprint nodes visit documentation:
 *	https://wiki.unrealengine.com/Custom_Blueprint_Node_Creation
 */
+
+struct Location
+{
+	float x;
+	float y;
+	float z;
+};
+
+struct Rotator
+{
+	float Pitch;
+	float Yaw;
+	float Roll;
+};
+
+struct CameraData {
+	Location location;
+	Rotator rotator;
+	float fov;
+	float aspect;
+};
+
 UCLASS()
 class UCustomExportBPLibrary : public UBlueprintFunctionLibrary
 {

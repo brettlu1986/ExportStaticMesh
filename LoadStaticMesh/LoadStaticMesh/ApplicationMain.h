@@ -21,6 +21,7 @@ public:
 	GraphicRender* GetGraphicRender() { return m_graphics; }
 	InputClass* GetInput() { return m_input; }
 	MainWindow* GetWindow() { return m_window; }
+	DataSource* GetDataSource() { return m_data_source; }
 
 	HWND GetHwnd();
 private:
@@ -29,5 +30,5 @@ private:
 	MainWindow* m_window;
 	GraphicRender* m_graphics;
 	InputClass* m_input;
-
+	DataSource* m_data_source;
 };

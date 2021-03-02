@@ -7,6 +7,7 @@
 #include "Serialization/JsonSerializer.h"
 #include "Policies/PrettyJsonPrintPolicy.h"
 
+
 typedef TJsonWriter< TCHAR, TPrettyJsonPrintPolicy<TCHAR> > FPrettyJsonStringWriter;
 typedef TJsonWriterFactory< TCHAR, TPrettyJsonPrintPolicy<TCHAR> > FPrettyJsonStringWriterFactory;
 
@@ -57,7 +58,17 @@ void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component)
 	const FRotator& CameraRot = Component->GetComponentRotation();
 	float FOV = Component->FieldOfView;
 	float AspectRatio = Component->AspectRatio;
+	//export binary
+	CameraData cameraData = {};
+	cameraData.location = { CameraLocation.X, CameraLocation.Y, CameraLocation.Z };
+	cameraData.rotator = { CameraRot.Pitch, CameraRot.Yaw, CameraRot.Roll };
+	cameraData.fov = FOV;
+	cameraData.aspect = AspectRatio;
 
+	
+	
+
+	//export json
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject);
 
 	TArray<TSharedPtr<FJsonValue>> JsonLocationArray;
@@ -94,8 +105,8 @@ void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component)
 		FFileHelper::SaveStringToFile(Json, *CameraSaveFile);
 
 		//sava binary file
-		CameraSaveFile = SavePath + CameraBinaryFileName;
-		FFileHelper::SaveArrayToFile(JsonBytes, *CameraSaveFile);
+		/*CameraSaveFile = SavePath + CameraBinaryFileName;
+		FFileHelper::SaveArrayToFile(JsonBytes, *CameraSaveFile);*/
 	}
 
 	//test load json file
