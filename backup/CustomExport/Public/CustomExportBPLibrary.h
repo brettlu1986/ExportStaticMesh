@@ -4,7 +4,6 @@
 
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
-#include <vector>
 #include "CustomExportBPLibrary.generated.h"
 
 /* 
@@ -24,8 +23,6 @@
 *	For more info on custom blueprint nodes visit documentation:
 *	https://wiki.unrealengine.com/Custom_Blueprint_Node_Creation
 */
-
-
 
 #pragma pack(push)
 #pragma pack(4)
@@ -48,13 +45,6 @@ struct CameraData {
 	Rotator rotator;
 	float fov;
 	float aspect;
-};
-
-struct MeshData
-{
-	std::vector<float> vertices;
-	std::vector<float> colors;
-	std::vector<UINT> indices;
 };
 #pragma pack(pop)
 

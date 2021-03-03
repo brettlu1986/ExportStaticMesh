@@ -7,6 +7,10 @@
 #include "Serialization/JsonSerializer.h"
 #include "Policies/PrettyJsonPrintPolicy.h"
 
+#include <iostream>
+#include <fstream>
+
+using namespace std;
 
 typedef TJsonWriter< TCHAR, TPrettyJsonPrintPolicy<TCHAR> > FPrettyJsonStringWriter;
 typedef TJsonWriterFactory< TCHAR, TPrettyJsonPrintPolicy<TCHAR> > FPrettyJsonStringWriterFactory;
@@ -16,6 +20,7 @@ static FString CameraFileName = TEXT("camera.json");
 static FString CameraBinaryFileName = TEXT("camera.bin");
 
 static FString MeshFileName = TEXT("mesh.json");
+static FString MeshBinaryFileName = TEXT("mesh.bin");
 
 UCustomExportBPLibrary::UCustomExportBPLibrary(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -40,16 +45,125 @@ void CheckFileExistAndDelete(const FString& FileName)
 
 void UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh)
 {
-	auto& LODResources = Mesh->RenderData->LODResources;
-	const TArray<FStaticMeshSourceModel>& SourceModels = Mesh->GetSourceModels();
+	/*const TArray<FStaticMeshSourceModel>& SourceModels = Mesh->GetSourceModels();
 	FRawMesh RawMesh;
-	SourceModels[0].LoadRawMesh(RawMesh);
+	SourceModels[0].LoadRawMesh(RawMesh);*/
 
-	/*TArray<TSharedPtr<FJsonValue>> JsonConnectedArray;
-	for (auto& j : Waypoints[i].Connected)
+	auto& LODResources = Mesh->RenderData->LODResources;
+	const FStaticMeshLODResources& StaticMeshResource = LODResources[0];
+
+	const FStaticMeshVertexBuffer& VertexBuffer = StaticMeshResource.VertexBuffers.StaticMeshVertexBuffer;
+	UINT NumVerts = VertexBuffer.GetNumVertices();//顶点个数 not use
+
+	MeshData meshData;
+	TArray<FVector> PositionVerts;//顶点位置数据
+	const FPositionVertexBuffer& PositionBuffers = StaticMeshResource.VertexBuffers.PositionVertexBuffer;
+	UINT NumPositionVertex = PositionBuffers.GetNumVertices();//可能跟 StaticMeshVertexBuffer获取的顶点数不一样?
+	PositionVerts.Reserve(NumPositionVertex);
+	meshData.vertices.reserve(NumPositionVertex * 3);
+	for (UINT i = 0; i < NumPositionVertex; i++)
 	{
-		JsonConnectedArray.Emplace(MakeShareable(new FJsonValueNumber(j)));
-	}*/
+		PositionVerts.Add(PositionBuffers.VertexPosition(i));
+		meshData.vertices.push_back(PositionBuffers.VertexPosition(i).X);
+		meshData.vertices.push_back(PositionBuffers.VertexPosition(i).Y);
+		meshData.vertices.push_back(PositionBuffers.VertexPosition(i).Z);
+	}
+
+	TArray<FColor> ColorVerts;//顶点颜色数据
+	const FColorVertexBuffer& ColorBuffers = StaticMeshResource.VertexBuffers.ColorVertexBuffer;
+	UINT NumColorVertex = ColorBuffers.GetNumVertices();
+	ColorVerts.Reserve(NumColorVertex);
+	ColorBuffers.GetVertexColors(ColorVerts);
+	meshData.colors.reserve(NumColorVertex * 4);
+	for (FColor color : ColorVerts)
+	{
+		meshData.colors.push_back(color.R);
+		meshData.colors.push_back(color.G);
+		meshData.colors.push_back(color.B);
+		meshData.colors.push_back(color.A);
+	}
+
+	const FRawStaticIndexBuffer& IndexBuffer = StaticMeshResource.IndexBuffer;
+	UINT NumIndices = IndexBuffer.GetNumIndices();//索引个数
+	TArray<uint32> Indices;//索引数据
+	Indices.Reserve(NumIndices);
+	IndexBuffer.GetCopy(Indices);
+	meshData.indices.reserve(NumIndices);
+	for (float index : Indices)
+	{
+		meshData.indices.push_back(index);
+	}
+	
+	//UINT NumberOfTriangles = IndexBuffer.GetNumIndices() / 3;//顶点索引个数 是 三角形个数的3倍?
+	//UINT NumVertices = VertexBuffer.GetNumVertices();//顶点个数
+	
+	//export json
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject);
+	TArray<TSharedPtr<FJsonValue>> JsonVertexPositions;
+	for (auto& ver : PositionVerts)
+	{
+		JsonVertexPositions.Emplace(MakeShareable(new FJsonValueNumber(ver.X)));
+		JsonVertexPositions.Emplace(MakeShareable(new FJsonValueNumber(ver.Y)));
+		JsonVertexPositions.Emplace(MakeShareable(new FJsonValueNumber(ver.Z)));
+	}
+	JsonObject->SetArrayField("vertices", JsonVertexPositions);
+
+	TArray<TSharedPtr<FJsonValue>> JsonVertexColors;
+	for (auto& color : ColorVerts)
+	{
+		JsonVertexColors.Emplace(MakeShareable(new FJsonValueNumber(color.R)));
+		JsonVertexColors.Emplace(MakeShareable(new FJsonValueNumber(color.G)));
+		JsonVertexColors.Emplace(MakeShareable(new FJsonValueNumber(color.B)));
+		JsonVertexColors.Emplace(MakeShareable(new FJsonValueNumber(color.A)));
+	}
+	JsonObject->SetArrayField("colors", JsonVertexColors);
+
+	TArray<TSharedPtr<FJsonValue>> JsonIndices;
+	for (auto& index : Indices)
+	{
+		JsonIndices.Emplace(MakeShareable(new FJsonValueNumber(index)));
+	}
+	JsonObject->SetArrayField("indices", JsonIndices);
+
+	FString Json;
+	TSharedRef< FPrettyJsonStringWriter > JsonWriter = FPrettyJsonStringWriterFactory::Create(&Json);
+	if (FJsonSerializer::Serialize(JsonObject.ToSharedRef(), JsonWriter))
+	{
+		//delete old files
+		CheckFileExistAndDelete(MeshFileName);
+		CheckFileExistAndDelete(MeshBinaryFileName);
+
+		//save json file
+		FString MeshSaveFile = SavePath + MeshFileName;
+		FFileHelper::SaveStringToFile(Json, *MeshSaveFile);
+
+		//save binary file
+		MeshSaveFile = SavePath + MeshBinaryFileName;
+		char* resultName = TCHAR_TO_ANSI(*MeshSaveFile);
+		ofstream wf(resultName, ios::out | ios::binary);
+		if (!wf)
+		{
+			return;
+		}
+
+		size_t vSize = meshData.vertices.size();
+		wf.write((char*)&vSize, sizeof(vSize));
+		wf.write((char*)&meshData.vertices[0], vSize * sizeof(float));
+
+		size_t cSize = meshData.colors.size();
+		wf.write((char*)&cSize, sizeof(cSize));
+		wf.write((char*)&meshData.colors[0], cSize * sizeof(float));
+
+		size_t iSize = meshData.indices.size();
+		wf.write((char*)&iSize, sizeof(iSize));
+		wf.write((char*)&meshData.indices[0], iSize * sizeof(UINT));
+
+		wf.close();
+		if (!wf.good())
+		{
+			return;
+		}
+	}
 }
 
 void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component)
@@ -58,15 +172,13 @@ void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component)
 	const FRotator& CameraRot = Component->GetComponentRotation();
 	float FOV = Component->FieldOfView;
 	float AspectRatio = Component->AspectRatio;
-	//export binary
+
+	//for export binary
 	CameraData cameraData = {};
 	cameraData.location = { CameraLocation.X, CameraLocation.Y, CameraLocation.Z };
 	cameraData.rotator = { CameraRot.Pitch, CameraRot.Yaw, CameraRot.Roll };
 	cameraData.fov = FOV;
 	cameraData.aspect = AspectRatio;
-
-	
-	
 
 	//export json
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject);
@@ -95,52 +207,30 @@ void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component)
 		CheckFileExistAndDelete(CameraFileName);
 		CheckFileExistAndDelete(CameraBinaryFileName);
 
-		//change json to byte array
-		TArray<uint8> JsonBytes;
-		JsonBytes.AddUninitialized(Json.Len());
-		StringToBytes(Json, JsonBytes.GetData(), Json.Len());
-
 		//save json file
 		FString CameraSaveFile = SavePath + CameraFileName;
 		FFileHelper::SaveStringToFile(Json, *CameraSaveFile);
 
-		//sava binary file
-		/*CameraSaveFile = SavePath + CameraBinaryFileName;
-		FFileHelper::SaveArrayToFile(JsonBytes, *CameraSaveFile);*/
+		////save binary file
+		CameraSaveFile = SavePath + CameraBinaryFileName;
+		char* resultName = TCHAR_TO_ANSI(*CameraSaveFile);
+		ofstream wf(resultName, ios::out | ios::binary);
+		if (!wf)
+		{
+			return;
+		}
+		UINT sizeCamera = sizeof(CameraData);
+		char* cameraBytes = new char[sizeCamera];
+		memset(cameraBytes, 0, sizeCamera);
+		memcpy(cameraBytes, (char*)&cameraData, sizeCamera);
+		wf.write(cameraBytes, sizeCamera);
+		wf.close();
+		delete[] cameraBytes;
+		if (!wf.good())
+		{
+			return;
+		}
 	}
-
-	//test load json file
-	/*FString JsonStr;
-	FString CameraSaveFile = SavePath + CameraFileName;
-	FFileHelper::LoadFileToString(JsonStr, *CameraSaveFile);
-	TSharedRef< TJsonReader<> > Reader = TJsonReaderFactory<>::Create(JsonStr);
-	TSharedPtr<FJsonObject> JsonObject;*/
-
-	//test load binary
-	/*TArray<uint8> TempBytes;
-	FString CameraSaveFile = SavePath + CameraBinaryFileName;
-	FFileHelper::LoadFileToArray(TempBytes, *CameraSaveFile);
-	FString JsonStr = BytesToString(TempBytes.GetData(), TempBytes.Num());
-	TSharedRef< TJsonReader<> > Reader = TJsonReaderFactory<>::Create(JsonStr);
-	TSharedPtr<FJsonObject> JsonObject;*/
-
-	/*if (FJsonSerializer::Deserialize(Reader, JsonObject))
-	{
-		TArray<FString> ArrayJson;
-		JsonObject->TryGetStringArrayField("location", ArrayJson);
-		FVector Location = FVector{ FCString::Atof(*ArrayJson[0]),
-							  FCString::Atof(*ArrayJson[1]),
-					  FCString::Atof(*ArrayJson[2]) };
-
-		TArray<FString> ArrayRotJson;
-		JsonObject->TryGetStringArrayField("rotator", ArrayRotJson);
-		FRotator Rotation = FRotator{ FCString::Atof(*ArrayRotJson[0]),
-							  FCString::Atof(*ArrayRotJson[1]),
-					  FCString::Atof(*ArrayRotJson[2]) };
-
-		float FOV = JsonObject->GetNumberField(TEXT("fov"));
-		float aspect = JsonObject->GetNumberField(TEXT("aspect"));
-	}*/
 }
 
 

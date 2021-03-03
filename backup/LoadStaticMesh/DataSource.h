@@ -39,6 +39,8 @@ struct CameraData {
 
 struct MeshData
 {
+	//int test1;
+	//char test2[20];
 	vector<float> vertices;
 	vector<float> colors;
 	vector<UINT> indices;

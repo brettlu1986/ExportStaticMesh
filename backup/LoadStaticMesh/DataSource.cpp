@@ -23,9 +23,27 @@ void DataSource::Initialize(ApplicationMain* application)
 	m_application = application;
 	m_save_path = GetSaveDirectory();
 
-	//WriteCameraDataToFile(L"camera.bin", cameraTest);
-	//WriteMeshDataToFile(L"mesh.bin", mesh);
-	ReadCameraDataFromFile(L"camera.bin");
+	/*CameraData cameraTest = {};
+	cameraTest.location = { 1.5534f, 1.3453f, 2.3345f };
+	cameraTest.rotator = { 20.f, 30.f, -9.f };
+	cameraTest.fov = 110.f;
+	cameraTest.aspect = 1.7f;
+	WriteCameraDataToFile(L"camera.bin", cameraTest);*/
+	//ReadCameraDataFromFile(L"camera.bin");
+	
+	/*MeshData mesh = {};
+	mesh.test1 = 1000;
+	memset(mesh.test2, 0, sizeof(mesh.test2));
+	const char tmpstr[] = "test info";
+	memcpy(mesh.test2, tmpstr, sizeof(tmpstr));
+	vector<float> tmpVertices{ 1.5f, 1.5f, 588.f, 554.f, 22.f, 22.f, -5.f, -6.f, -9.f };
+	for( float f : tmpVertices)
+		mesh.vertices.push_back(f) ;
+	vector<UINT> tmpIndices{ 2, 4, 5 };
+	for (UINT f : tmpIndices)
+		mesh.indices.push_back(f);
+
+	WriteMeshDataToFile(L"mesh.bin", mesh);*/
 	ReadMeshDataFromFile(L"mesh.bin");
 }
 
@@ -94,6 +112,9 @@ void DataSource::WriteMeshDataToFile(LPCWSTR fileName, MeshData& meshData)
 		cout << "Cannot open file!" << endl;
 		return;
 	}
+	
+	/*wf.write((char*)&meshData.test1, sizeof(meshData.test1));
+	wf.write((char*)&meshData.test2, sizeof(meshData.test2));*/
 
 	size_t vSize = meshData.vertices.size();
 	wf.write((char*)&vSize, sizeof(vSize));
@@ -124,7 +145,14 @@ void DataSource::ReadMeshDataFromFile(LPCWSTR fileName)
 		return;
 	}
 
-	//vertex positions
+	/*char* test1 = new char[sizeof(int)];
+	rf.read(test1, sizeof(int));
+	m_mesh_data.test1 = *(int*)test1;
+
+	char* test2 = new char[sizeof(m_mesh_data.test2)];
+	rf.read(test2, sizeof(m_mesh_data.test2));
+	strcpy_s(m_mesh_data.test2, test2);*/
+
 	char* vetLenChar = new char[sizeof(size_t)];
 	rf.read(vetLenChar, sizeof(size_t));
 	UINT vecSize = *(UINT*)vetLenChar;
@@ -132,15 +160,6 @@ void DataSource::ReadMeshDataFromFile(LPCWSTR fileName)
 	m_mesh_data.vertices.resize(vecSize);
 	rf.read((char*)m_mesh_data.vertices.data(), vecSize * sizeof(float));
 
-	//read color
-	char* cLenChar = new char[sizeof(size_t)];
-	rf.read(cLenChar, sizeof(size_t));
-	UINT coSize = *(UINT*)cLenChar;
-
-	m_mesh_data.colors.resize(coSize);
-	rf.read((char*)m_mesh_data.colors.data(), coSize * sizeof(UINT));
-
-	//indices
 	char* inLenChar = new char[sizeof(size_t)];
 	rf.read(inLenChar, sizeof(size_t));
 	UINT inSize = *(UINT*)inLenChar;
@@ -148,9 +167,10 @@ void DataSource::ReadMeshDataFromFile(LPCWSTR fileName)
 	m_mesh_data.indices.resize(inSize);
 	rf.read((char*)m_mesh_data.indices.data(), inSize * sizeof(UINT));
 	
+	/*delete[] test1;
+	delete[] test2;*/
 	delete[] vetLenChar;
-	delete[] cLenChar;
-	delete[] inLenChar;
+
 	rf.close();
 	if (!rf.good()) {
 		cout << "Error occurred at reading time!" << endl;
