@@ -1,1 +1,1 @@
-copy .\Render\Dx12\ExportStaticMesh\LoadStaticMesh\LoadStaticMesh\Save\*.bin .\Render\Dx12\ExportStaticMesh\LoadStaticMesh\LoadStaticMesh\Save\
+copy .\ExportStaticMesh\Content\Save\*.bin .\LoadStaticMesh\LoadStaticMesh\Save\
