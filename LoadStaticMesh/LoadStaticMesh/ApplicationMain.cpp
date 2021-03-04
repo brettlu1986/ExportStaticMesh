@@ -24,17 +24,18 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance, UINT width, UINT height, s
 {
 	m_hInstance = hInstance; 
 
+	m_data_source = new DataSource();
+	m_data_source->Initialize(this);
+
 	m_window = new MainWindow();
 	m_window->Initialize(this, width, height, name);
 
-	m_graphics = new GraphicRender_ClearWindow();//GraphicRender_ClearWindow();
+	m_graphics = new GraphicRender_LoadModel();//GraphicRender_ClearWindow();
 	m_graphics->Initialize(this, width, height);
 
 	m_input = new InputClass();
 	m_input->Initialize(this);
-
-	m_data_source = new DataSource();
-	m_data_source->Initialize(this);
+	
 	return true;
 }
 

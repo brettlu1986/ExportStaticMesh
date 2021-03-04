@@ -175,8 +175,8 @@ void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component)
 
 	//for export binary
 	CameraData cameraData = {};
-	cameraData.location = { CameraLocation.X, CameraLocation.Y, CameraLocation.Z };
-	cameraData.rotator = { CameraRot.Pitch, CameraRot.Yaw, CameraRot.Roll };
+	cameraData.location = FVector(CameraLocation.X, CameraLocation.Y, CameraLocation.Z);
+	cameraData.rotator = FRotator(CameraRot.Pitch, CameraRot.Yaw, CameraRot.Roll);
 	cameraData.fov = FOV;
 	cameraData.aspect = AspectRatio;
 
@@ -219,13 +219,8 @@ void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component)
 		{
 			return;
 		}
-		UINT sizeCamera = sizeof(CameraData);
-		char* cameraBytes = new char[sizeCamera];
-		memset(cameraBytes, 0, sizeCamera);
-		memcpy(cameraBytes, (char*)&cameraData, sizeCamera);
-		wf.write(cameraBytes, sizeCamera);
+		wf.write((char*)&cameraData, sizeof(CameraData));
 		wf.close();
-		delete[] cameraBytes;
 		if (!wf.good())
 		{
 			return;

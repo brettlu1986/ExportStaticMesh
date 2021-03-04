@@ -75,4 +75,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="shaders.hlsl">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
 </Project>

@@ -29,23 +29,9 @@
 
 #pragma pack(push)
 #pragma pack(4)
-struct Location
-{
-	float x;
-	float y;
-	float z;
-};
-
-struct Rotator
-{
-	float Pitch;
-	float Yaw;
-	float Roll;
-};
-
 struct CameraData {
-	Location location;
-	Rotator rotator;
+	FVector location;
+	FRotator rotator;
 	float fov;
 	float aspect;
 };
