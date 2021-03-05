@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Render">
+      <UniqueIdentifier>{109f2f71-b4ca-4190-9f43-a18ed5da0864}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render">
+      <UniqueIdentifier>{925181c3-6527-480d-8e81-70bbf8cc4c7c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -27,20 +33,23 @@
     <ClCompile Include="InputClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicRender.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DataSource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MainWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GraphicRender.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
     <ClCompile Include="GraphicRender_ClearWindow.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Render</Filter>
     </ClCompile>
     <ClCompile Include="GraphicRender_LoadModel.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicCamera.cpp">
+      <Filter>Source Files\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -56,23 +65,26 @@
     <ClInclude Include="InputClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicRender.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DataSource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MainWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicRender_ClearWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GraphicHelper.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicRender.h">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicRender_ClearWindow.h">
+      <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="GraphicRender_LoadModel.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicCamera.h">
+      <Filter>Header Files\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

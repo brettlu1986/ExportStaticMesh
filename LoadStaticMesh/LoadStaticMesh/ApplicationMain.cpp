@@ -47,6 +47,7 @@ void ApplicationMain::Run()
 		while (m_window->Run())
 		{
 			m_input->Update();
+			m_graphics->Update();
 			m_graphics->Render();
 		}
 	}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GraphicRender.h"
+#include "GraphicCamera.h"
 
 using namespace DirectX;
 
@@ -12,9 +13,11 @@ public:
 
 	virtual void OnInit();
 	virtual bool Render();
+	virtual void Update();
 	virtual void Destroy();
 
 private:
+	
 	static const UINT FrameCount = 2;
 
 	// Pipeline objects.
@@ -40,6 +43,8 @@ private:
 	HANDLE m_fenceEvent;
 	ComPtr<ID3D12Fence> m_fence;
 	UINT64 m_fenceValue;
+
+	GraphicCamera m_camera;
 
 	void LoadPipeline();
 	void LoadAssets();

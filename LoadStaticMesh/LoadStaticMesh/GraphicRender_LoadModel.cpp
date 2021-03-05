@@ -30,6 +30,7 @@ void GraphicRender_LoadModel::OnInit()
 	m_viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(m_width), static_cast<float>(m_height));
 	m_scissorRect = CD3DX12_RECT(0, 0, static_cast<LONG>(m_width), static_cast<LONG>(m_height));
 
+	m_camera.Init({ 8, 8, 30 });
 	LoadPipeline();
 	LoadAssets();
 }
@@ -342,6 +343,12 @@ bool GraphicRender_LoadModel::Render()
 
 	WaitForPreviousFrame();
 	return true;
+}
+
+void GraphicRender_LoadModel::Update()
+{
+	//TODO
+	//m_pCurrentFrameResource->UpdateConstantBuffers(m_camera.GetViewMatrix(), m_camera.GetProjectionMatrix(0.8f, m_aspectRatio));
 }
 
 void GraphicRender_LoadModel::Destroy()

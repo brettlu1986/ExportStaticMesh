@@ -175,6 +175,11 @@ bool GraphicRender_ClearWindow::Render()
 	return true;
 }
 
+void GraphicRender_ClearWindow::Update()
+{
+
+}
+
 void GraphicRender_ClearWindow::Destroy()
 {
 	// Ensure that the GPU is no longer referencing resources that are about to be
