@@ -2,6 +2,7 @@
 
 #include "GraphicRender.h"
 #include "GraphicCamera.h"
+#include "MathHelper.h"
 
 using namespace DirectX;
 
@@ -17,6 +18,11 @@ public:
 	virtual void Destroy();
 
 private:
+
+	struct ObjectConstants
+	{
+		XMFLOAT4X4 worldViewProj = MathHelper::Identity4x4();
+	};
 	
 	static const UINT FrameCount = 2;
 
@@ -29,7 +35,11 @@ private:
 	ComPtr<ID3D12CommandAllocator> m_commandAllocator;
 	ComPtr<ID3D12CommandQueue> m_commandQueue;
 	ComPtr<ID3D12RootSignature> m_rootSignature;
+
 	ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
+	ComPtr<ID3D12DescriptorHeap> m_cbvHeap;
+	UINT8* m_pCbvDataBegin;
+
 	ComPtr<ID3D12PipelineState> m_pipelineState;
 	ComPtr<ID3D12GraphicsCommandList> m_commandList;
 	UINT m_rtvDescriptorSize;
@@ -37,6 +47,12 @@ private:
 	// App resources.
 	ComPtr<ID3D12Resource> m_vertexBuffer;
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
+
+	ComPtr<ID3D12Resource> m_indexBuffer;
+	D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
+	UINT m_indiceSize;
+
+	ComPtr<ID3D12Resource> m_constantBuffer;
 
 	// Synchronization objects.
 	UINT m_frameIndex;

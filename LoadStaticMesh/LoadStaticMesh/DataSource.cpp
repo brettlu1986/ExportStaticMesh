@@ -180,6 +180,22 @@ void DataSource::ReadMeshDataFromFile(LPCWSTR fileName)
 	}
 }
 
+void DataSource::GetIndexDataInput(std::vector<UINT>& outPut)
+{
+	if (m_mesh_data.indices.size() == 0)
+	{
+		cout << "Index data is zero!" << endl;
+		return;
+	}
+
+	UINT indexSize = static_cast<UINT>(m_mesh_data.indices.size());
+	outPut.reserve(indexSize);
+	for (size_t i = 0; i < indexSize; i++)
+	{
+		outPut.push_back(m_mesh_data.indices[i]);
+	}
+}
+
 void DataSource::GetPositionColorInput(std::vector<Vertex_PositionColor>& outPut)
 {
 	if (m_mesh_data.vertices.size() == 0)

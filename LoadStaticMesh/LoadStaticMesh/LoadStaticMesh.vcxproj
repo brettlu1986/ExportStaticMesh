@@ -150,6 +150,7 @@
     <ClCompile Include="InputClass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +164,7 @@
     <ClInclude Include="GraphicRender_LoadModel.h" />
     <ClInclude Include="InputClass.h" />
     <ClInclude Include="MainWindow.h" />
+    <ClInclude Include="MathHelper.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>

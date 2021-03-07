@@ -50,6 +50,7 @@ public:
 	const MeshData& GetMeshData() { return m_mesh_data; }
 
 	void GetPositionColorInput(std::vector<Vertex_PositionColor>& outPut);
+	void GetIndexDataInput(std::vector<UINT>& outPut);
 private: 
 	std::wstring GetSaveDirectory();
 	//void WriteCameraDataToFile(LPCWSTR fileName, CameraData& cameraData);

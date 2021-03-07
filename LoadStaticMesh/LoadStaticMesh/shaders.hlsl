@@ -9,23 +9,34 @@
 //
 //*********************************************************
 
-struct PSInput
+struct VertexIn
 {
-    float4 position : SV_POSITION;
-    float4 color : COLOR;
+    float3 PosL  : POSITION;
+    float4 Color : COLOR;
 };
 
-PSInput VSMain(float4 position : POSITION, float4 color : COLOR)
+struct VertexOut
 {
-    PSInput result;
+    float4 PosH  : SV_POSITION;
+    float4 Color : COLOR;
+};
 
-    result.position = position;
-    result.color = color;
+cbuffer cb0 : register(b0)
+{
+    float4x4 gWorldViewProj;
+};
 
-    return result;
+VertexOut VSMain(VertexIn vin)
+{
+    VertexOut vout;
+
+    vout.PosH = mul(float4(vin.PosL.x, vin.PosL.y, vin.PosL.z, 1.0f), gWorldViewProj);
+    vout.Color = vin.Color;
+
+    return vout;
 }
 
-float4 PSMain(PSInput input) : SV_TARGET
+float4 PSMain(VertexOut input) : SV_TARGET
 {
-    return input.color;
+    return input.Color;
 }

@@ -61,3 +61,6 @@ first dx12 framework
 An index buffer contains a sequential set of 16-bit or 32-bit indices; each index is used to identify a vertex in a vertex buffer. An index buffer can be visualized like the following illustration.
 2. const buffer :A constant buffer allows you to efficiently supply shader constants data to the pipeline
 3. vertex buffer:A vertex buffer contains the vertex data used to define your geometry. Vertex data includes position coordinates, color data, texture coordinate data, normal data, and so on.
+
+#shader 传参数
+1. [shader参数传递](https://docs.microsoft.com/en-us/windows/win32/direct3dgetstarted/work-with-shaders-and-shader-resources)

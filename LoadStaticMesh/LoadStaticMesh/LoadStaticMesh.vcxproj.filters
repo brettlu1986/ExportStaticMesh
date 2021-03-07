@@ -51,6 +51,9 @@
     <ClCompile Include="GraphicCamera.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
+    <ClCompile Include="MathHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -84,6 +87,9 @@
       <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="GraphicCamera.h">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="MathHelper.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
   </ItemGroup>
