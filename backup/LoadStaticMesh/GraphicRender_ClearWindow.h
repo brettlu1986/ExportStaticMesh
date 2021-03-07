@@ -10,6 +10,7 @@ public:
 
 	virtual void OnInit() ;
 	virtual bool Render() ;
+	virtual void Update();
 	virtual void Destroy();
 
 private:

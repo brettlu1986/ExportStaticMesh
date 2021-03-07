@@ -16,6 +16,7 @@ public:
 
 	virtual void OnInit() = 0;
 	virtual bool Render() = 0;
+	virtual void Update() = 0;
 	virtual void Destroy() = 0;
 
 protected:
