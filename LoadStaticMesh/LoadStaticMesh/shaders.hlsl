@@ -1,42 +1,42 @@
-//*********************************************************
+//***************************************************************************************
+// color.hlsl by Frank Luna (C) 2015 All Rights Reserved.
 //
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
-// IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
-// PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
-//
-//*********************************************************
+// Transforms and colors geometry.
+//***************************************************************************************
+
+cbuffer cbPerObject : register(b0)
+{
+	float4x4 gWorldViewProj;
+};
 
 struct VertexIn
 {
-    float3 PosL  : POSITION;
-    float4 Color : COLOR;
+	float3 PosL  : POSITION;
+	float4 Color : COLOR;
 };
 
 struct VertexOut
 {
-    float4 PosH  : SV_POSITION;
-    float4 Color : COLOR;
-};
-
-cbuffer cb0 : register(b0)
-{
-    float4x4 gWorldViewProj;
+	float4 PosH  : SV_POSITION;
+	float4 Color : COLOR;
 };
 
 VertexOut VSMain(VertexIn vin)
 {
-    VertexOut vout;
+	VertexOut vout;
 
-    vout.PosH = mul(float4(vin.PosL.x, vin.PosL.y, vin.PosL.z, 1.0f), gWorldViewProj);
-    vout.Color = vin.Color;
+	// Transform to homogeneous clip space.
+	vout.PosH = mul(float4(vin.PosL, 1.0f), gWorldViewProj);
 
-    return vout;
+	// Just pass vertex color into the pixel shader.
+	vout.Color = vin.Color;
+
+	return vout;
 }
 
-float4 PSMain(VertexOut input) : SV_TARGET
+float4 PSMain(VertexOut pin) : SV_Target
 {
-    return input.Color;
+	return pin.Color;
 }
+
+
