@@ -2,12 +2,12 @@
 
 #include "DataSource.h"
 
+#include <DirectXColors.h>
+
 #include <iostream>
 #include <fstream>
 
 using namespace std;
-
-static XMFLOAT4 DefaultColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 DataSource::DataSource()
 	:m_application(nullptr)
@@ -209,7 +209,7 @@ void DataSource::GetPositionColorInput(std::vector<Vertex_PositionColor>& outPut
 	outPut.reserve(verticesSize);
 	for (size_t i = 0; i < verticesSize; i++)
 	{
-		XMFLOAT4 color = i >= colorSize ? DefaultColor : m_mesh_data.colors[i];
+		XMFLOAT4 color = i >= colorSize ? XMFLOAT4(Colors::Red) : m_mesh_data.colors[i];
 		outPut.push_back({ m_mesh_data.vertices[i], color });
 	}
 

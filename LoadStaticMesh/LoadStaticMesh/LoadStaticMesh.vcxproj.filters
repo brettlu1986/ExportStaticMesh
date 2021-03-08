@@ -19,6 +19,12 @@
     <Filter Include="Source Files\Render">
       <UniqueIdentifier>{925181c3-6527-480d-8e81-70bbf8cc4c7c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Util">
+      <UniqueIdentifier>{408019bb-1bb7-415c-8569-1650205c2aa9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Util">
+      <UniqueIdentifier>{b225502f-0cca-4742-8997-615aa584f702}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -52,7 +58,7 @@
       <Filter>Source Files\Render</Filter>
     </ClCompile>
     <ClCompile Include="MathHelper.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -90,7 +96,7 @@
       <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="MathHelper.h">
-      <Filter>Header Files\Render</Filter>
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

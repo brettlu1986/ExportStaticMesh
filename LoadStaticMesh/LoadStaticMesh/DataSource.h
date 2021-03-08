@@ -9,13 +9,6 @@ using namespace std;
 #pragma pack(push)
 #pragma pack(4)
 
-struct Color
-{
-	float R;
-	float G;
-	float B;
-	float A;
-};
 
 struct CameraData {
 	XMFLOAT3 location;

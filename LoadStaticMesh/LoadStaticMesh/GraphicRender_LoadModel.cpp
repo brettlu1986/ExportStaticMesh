@@ -151,6 +151,11 @@ void GraphicRender_LoadModel::FlushCommandQueue()
 
 void GraphicRender_LoadModel::OnResize()
 {
+	// The window resized, so update the aspect ratio and recompute the projection matrix.
+	float AspectRatio = static_cast<float>(m_width) / m_height;
+	XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f * MathHelper::Pi, AspectRatio, 1.0f, 1000.0f);
+	XMStoreFloat4x4(&mProj, P);
+
 	FlushCommandQueue();
 
 	ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
@@ -369,18 +374,18 @@ void GraphicRender_LoadModel::LoadAssets()
 	// Create the vertex buffer.
 	{
 		// Define the geometry for a triangle.  read the vertices data
-		//test 
-		triangleVertices = {
-			{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::White) },
-			{ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Black) },
-			{ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Red) },
-			{ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Green) },
-			{ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Blue) },
-			{ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Yellow) },
-			{ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Cyan) },
-			{ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta) },
-		};
-		//ds->GetPositionColorInput(triangleVertices);
+		////test 
+		//triangleVertices = {
+		//	{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::White) },
+		//	{ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Black) },
+		//	{ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Red) },
+		//	{ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Green) },
+		//	{ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Blue) },
+		//	{ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Yellow) },
+		//	{ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Cyan) },
+		//	{ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta) },
+		//};
+		ds->GetPositionColorInput(triangleVertices);
 		const UINT vertexBufferSize = static_cast<UINT>(triangleVertices.size() * sizeof(Vertex_PositionColor));//sizeof(triangleVertices);
 		
 		const CD3DX12_HEAP_PROPERTIES VertexDefaultProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
@@ -429,34 +434,34 @@ void GraphicRender_LoadModel::LoadAssets()
 
 	//create index buffer 
 	{
-		std::vector<UINT> indices =
-		{
-			// front face
-			0, 1, 2,
-			0, 2, 3,
+		//std::vector<UINT> indices =
+		//{
+		//	// front face
+		//	0, 1, 2,
+		//	0, 2, 3,
 
-			// back face
-			4, 6, 5,
-			4, 7, 6,
+		//	// back face
+		//	4, 6, 5,
+		//	4, 7, 6,
 
-			// left face
-			4, 5, 1,
-			4, 1, 0,
+		//	// left face
+		//	4, 5, 1,
+		//	4, 1, 0,
 
-			// right face
-			3, 2, 6,
-			3, 6, 7,
+		//	// right face
+		//	3, 2, 6,
+		//	3, 6, 7,
 
-			// top face
-			1, 5, 6,
-			1, 6, 2,
+		//	// top face
+		//	1, 5, 6,
+		//	1, 6, 2,
 
-			// bottom face
-			4, 0, 3,
-			4, 3, 7
-		};
-
-		//ds->GetIndexDataInput(indices);
+		//	// bottom face
+		//	4, 0, 3,
+		//	4, 3, 7
+		//};
+		std::vector<UINT> indices;
+		ds->GetIndexDataInput(indices);
 		m_indiceSize = static_cast<UINT>(indices.size() * sizeof(UINT));
 		m_indicesCount = static_cast<UINT>(indices.size());
 
