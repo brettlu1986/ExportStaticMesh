@@ -52,9 +52,12 @@ private:
 
 	// App resources.
 	ComPtr<ID3D12Resource> m_vertexBuffer;
+	ComPtr<ID3D12Resource> m_vertexUploadBuffer;
+	
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
 
 	ComPtr<ID3D12Resource> m_indexBuffer;
+	ComPtr<ID3D12Resource> m_indexBufferUpload;
 	D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
 	UINT m_indiceSize;
 	UINT m_indicesCount;
@@ -68,6 +71,7 @@ private:
 	UINT64 m_fenceValue;
 
 	GraphicCamera m_camera;
+	ObjectConstants m_objectConstant;
 
 	XMFLOAT4X4 mWorld = MathHelper::Identity4x4();
 	XMFLOAT4X4 mView = MathHelper::Identity4x4();

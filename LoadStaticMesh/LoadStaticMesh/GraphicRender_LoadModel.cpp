@@ -4,6 +4,7 @@
 #include "GraphicRender_LoadModel.h"
 #include <dxgidebug.h>
 #include <d3dcompiler.h>
+#include <DirectXColors.h>
 
 #include "ApplicationMain.h"
 #include "DataSource.h"
@@ -17,6 +18,7 @@ GraphicRender_LoadModel::GraphicRender_LoadModel()
 	, m_fenceEvent(nullptr)
 	, m_fenceValue(0)
 	, m_pCbvDataBegin(nullptr)
+	, m_objectConstant({})
 {
 
 }
@@ -238,8 +240,6 @@ void GraphicRender_LoadModel::OnResize()
 
 void GraphicRender_LoadModel::LoadPipeline()
 {
-	// create command objects
-	UINT dxgiFactoryFlags = 0;
 
 #if defined(_DEBUG)
 	// Enable the debug layer (requires the Graphics Tools "optional feature").
@@ -249,38 +249,25 @@ void GraphicRender_LoadModel::LoadPipeline()
 		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
 		{
 			debugController->EnableDebugLayer();
-
-			// Enable additional debug layers.
-			dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+			ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&m_dxgiFactory)));
 		}
 	}
 #endif
+	// Try to create hardware device.
+	HRESULT hardwareResult = D3D12CreateDevice(
+		nullptr,             // default adapter
+		D3D_FEATURE_LEVEL_11_0,
+		IID_PPV_ARGS(&m_device));
 
-	ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&m_dxgiFactory)));
-
-	if (m_useWarpDevice)
+	if (FAILED(hardwareResult))
 	{
-		ComPtr<IDXGIAdapter> warpAdapter;
-		ThrowIfFailed(m_dxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter)));
-
+		ComPtr<IDXGIAdapter> pWarpAdapter;
+		ThrowIfFailed(m_dxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&pWarpAdapter)));
 		ThrowIfFailed(D3D12CreateDevice(
-			warpAdapter.Get(),
+			pWarpAdapter.Get(),
 			D3D_FEATURE_LEVEL_11_0,
-			IID_PPV_ARGS(&m_device)
-		));
+			IID_PPV_ARGS(&m_device)));
 	}
-	else
-	{
-		ComPtr<IDXGIAdapter1> hardwareAdapter;
-		GetHardwareAdapter(m_dxgiFactory.Get(), &hardwareAdapter);
-
-		ThrowIfFailed(D3D12CreateDevice(
-			hardwareAdapter.Get(),
-			D3D_FEATURE_LEVEL_11_0,
-			IID_PPV_ARGS(&m_device)
-		));
-	}
-
 	NAME_D3D12_OBJECT(m_device);
 
 	ThrowIfFailed(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
@@ -316,7 +303,9 @@ void GraphicRender_LoadModel::LoadAssets()
 			nullptr,
 			IID_PPV_ARGS(&m_constantBuffer)));
 
+		CD3DX12_RANGE readRange(0, 0);
 		ThrowIfFailed(m_constantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&m_pCbvDataBegin)));
+		memcpy(m_pCbvDataBegin, &m_objectConstant, sizeof(m_objectConstant));
 		NAME_D3D12_OBJECT(m_constantBuffer);
 
 		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
@@ -327,32 +316,19 @@ void GraphicRender_LoadModel::LoadAssets()
 
 	// Create a root signature consisting of a descriptor table with a single CBV.
 	{
-		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
-
-		// This is the highest version the sample supports. If CheckFeatureSupport succeeds, the HighestVersion returned will not be greater than this.
-		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-
-		if (FAILED(m_device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
-		{
-			featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-		}
-
-		CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
-		CD3DX12_ROOT_PARAMETER1 rootParameters[1];
-
+		CD3DX12_ROOT_PARAMETER rootParameters[1];
+		CD3DX12_DESCRIPTOR_RANGE ranges[1];
 		ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
 		rootParameters[0].InitAsDescriptorTable(1, &ranges[0]);
 
 		// Allow input layout and deny uneccessary access to certain pipeline stages.
-		D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
-			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-		rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
+		CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(1, rootParameters, 0, nullptr,
+			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 		ComPtr<ID3DBlob> signature;
 		ComPtr<ID3DBlob> error;
-		ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &signature, &error));
+		ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
 		ThrowIfFailed(m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)));
 		NAME_D3D12_OBJECT(m_rootSignature);
 	}
@@ -379,7 +355,6 @@ void GraphicRender_LoadModel::LoadAssets()
 	{
 		OutputDebugStringA((char*)errors2->GetBufferPointer());
 	}
-
 	// Define the vertex input layout.
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
 	{
@@ -394,10 +369,20 @@ void GraphicRender_LoadModel::LoadAssets()
 	// Create the vertex buffer.
 	{
 		// Define the geometry for a triangle.  read the vertices data
-		ds->GetPositionColorInput(triangleVertices);
+		//test 
+		triangleVertices = {
+			{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::White) },
+			{ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Black) },
+			{ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Red) },
+			{ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Green) },
+			{ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Blue) },
+			{ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Yellow) },
+			{ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Cyan) },
+			{ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta) },
+		};
+		//ds->GetPositionColorInput(triangleVertices);
 		const UINT vertexBufferSize = static_cast<UINT>(triangleVertices.size() * sizeof(Vertex_PositionColor));//sizeof(triangleVertices);
 		
-		ComPtr<ID3D12Resource> vertexDefaultBuffer;//create vertex default
 		const CD3DX12_HEAP_PROPERTIES VertexDefaultProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 		const CD3DX12_RESOURCE_DESC VertexDefaultDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
 		ThrowIfFailed(m_device->CreateCommittedResource(
@@ -406,8 +391,9 @@ void GraphicRender_LoadModel::LoadAssets()
 			&VertexDefaultDesc,
 			D3D12_RESOURCE_STATE_COMMON,
 			nullptr,
-			IID_PPV_ARGS(&vertexDefaultBuffer)));
-		
+			IID_PPV_ARGS(&m_vertexBuffer)));
+		NAME_D3D12_OBJECT(m_vertexBuffer);
+
 		//create vertex upload heap
 		const CD3DX12_HEAP_PROPERTIES VertextUploadProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 		const CD3DX12_RESOURCE_DESC VertextUploadDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
@@ -417,36 +403,63 @@ void GraphicRender_LoadModel::LoadAssets()
 			&VertextUploadDesc,
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			nullptr,
-			IID_PPV_ARGS(&m_vertexBuffer)));
+			IID_PPV_ARGS(&m_vertexUploadBuffer)));
+		NAME_D3D12_OBJECT(m_vertexUploadBuffer);
 
 		D3D12_SUBRESOURCE_DATA subResourceData;
 		subResourceData.pData = triangleVertices.data();
 		subResourceData.RowPitch = vertexBufferSize;
 		subResourceData.SlicePitch = subResourceData.RowPitch;
 
-		const D3D12_RESOURCE_BARRIER rbVertex1 = CD3DX12_RESOURCE_BARRIER::Transition(vertexDefaultBuffer.Get(),
+		const D3D12_RESOURCE_BARRIER rbVertex1 = CD3DX12_RESOURCE_BARRIER::Transition(m_vertexBuffer.Get(),
 			D3D12_RESOURCE_STATE_COMMON,
 			D3D12_RESOURCE_STATE_COPY_DEST);
 		m_commandList->ResourceBarrier(1, &rbVertex1);
-		UpdateSubresources<1>(m_commandList.Get(), vertexDefaultBuffer.Get(), m_vertexBuffer.Get(), 0, 0, 1, &subResourceData);
-		const D3D12_RESOURCE_BARRIER rbVertex2 = CD3DX12_RESOURCE_BARRIER::Transition(vertexDefaultBuffer.Get(),
+		UpdateSubresources<1>(m_commandList.Get(), m_vertexBuffer.Get(), m_vertexUploadBuffer.Get(), 0, 0, 1, &subResourceData);
+		const D3D12_RESOURCE_BARRIER rbVertex2 = CD3DX12_RESOURCE_BARRIER::Transition(m_vertexBuffer.Get(),
 			D3D12_RESOURCE_STATE_COPY_DEST,
 			D3D12_RESOURCE_STATE_GENERIC_READ);
-		m_commandList->ResourceBarrier(1,&rbVertex2);
+		m_commandList->ResourceBarrier(1, &rbVertex2);
 
 		m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
 		m_vertexBufferView.StrideInBytes = sizeof(Vertex_PositionColor);
 		m_vertexBufferView.SizeInBytes = vertexBufferSize;
+
 	}
 
 	//create index buffer 
 	{
-		std::vector<UINT> indices;
-		ds->GetIndexDataInput(indices);
+		std::vector<UINT> indices =
+		{
+			// front face
+			0, 1, 2,
+			0, 2, 3,
+
+			// back face
+			4, 6, 5,
+			4, 7, 6,
+
+			// left face
+			4, 5, 1,
+			4, 1, 0,
+
+			// right face
+			3, 2, 6,
+			3, 6, 7,
+
+			// top face
+			1, 5, 6,
+			1, 6, 2,
+
+			// bottom face
+			4, 0, 3,
+			4, 3, 7
+		};
+
+		//ds->GetIndexDataInput(indices);
 		m_indiceSize = static_cast<UINT>(indices.size() * sizeof(UINT));
 		m_indicesCount = static_cast<UINT>(indices.size());
 
-		ComPtr<ID3D12Resource> indexDefaultBuffer;//create vertex default
 		const CD3DX12_HEAP_PROPERTIES indexDefaultPro = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 		const CD3DX12_RESOURCE_DESC indexDefaultDesc = CD3DX12_RESOURCE_DESC::Buffer(m_indiceSize);
 		ThrowIfFailed(m_device->CreateCommittedResource(
@@ -455,7 +468,8 @@ void GraphicRender_LoadModel::LoadAssets()
 			&indexDefaultDesc,
 			D3D12_RESOURCE_STATE_COMMON,
 			nullptr,
-			IID_PPV_ARGS(&indexDefaultBuffer)));
+			IID_PPV_ARGS(&m_indexBuffer)));
+		NAME_D3D12_OBJECT(m_indexBuffer);
 
 		const CD3DX12_HEAP_PROPERTIES indexUploadPro = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 		const CD3DX12_RESOURCE_DESC indexUploadDesc = CD3DX12_RESOURCE_DESC::Buffer(m_indiceSize);
@@ -465,19 +479,20 @@ void GraphicRender_LoadModel::LoadAssets()
 			&indexUploadDesc,
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			nullptr,
-			IID_PPV_ARGS(&m_indexBuffer)));
+			IID_PPV_ARGS(&m_indexBufferUpload)));
+		NAME_D3D12_OBJECT(m_indexBufferUpload);
 
 		D3D12_SUBRESOURCE_DATA subResourceData;
 		subResourceData.pData = indices.data();
 		subResourceData.RowPitch = m_indiceSize;
 		subResourceData.SlicePitch = subResourceData.RowPitch;
 
-		const D3D12_RESOURCE_BARRIER rbIndex1 = CD3DX12_RESOURCE_BARRIER::Transition(indexDefaultBuffer.Get(),
+		const D3D12_RESOURCE_BARRIER rbIndex1 = CD3DX12_RESOURCE_BARRIER::Transition(m_indexBuffer.Get(),
 			D3D12_RESOURCE_STATE_COMMON,
 			D3D12_RESOURCE_STATE_COPY_DEST);
 		m_commandList->ResourceBarrier(1, &rbIndex1);
-		UpdateSubresources<1>(m_commandList.Get(), indexDefaultBuffer.Get(), m_indexBuffer.Get(), 0, 0, 1, &subResourceData);
-		const D3D12_RESOURCE_BARRIER rbIndex2 = CD3DX12_RESOURCE_BARRIER::Transition(indexDefaultBuffer.Get(),
+		UpdateSubresources<1>(m_commandList.Get(), m_indexBuffer.Get(), m_indexBufferUpload.Get(), 0, 0, 1, &subResourceData);
+		const D3D12_RESOURCE_BARRIER rbIndex2 = CD3DX12_RESOURCE_BARRIER::Transition(m_indexBuffer.Get(),
 			D3D12_RESOURCE_STATE_COPY_DEST,
 			D3D12_RESOURCE_STATE_GENERIC_READ);
 		m_commandList->ResourceBarrier(1, &rbIndex2);
@@ -541,10 +556,8 @@ void GraphicRender_LoadModel::Update()
 	XMMATRIX worldViewProj = world * view * proj;
 
 	// Update the constant buffer with the latest worldViewProj matrix.
-	ObjectConstants objConstants;
-	XMStoreFloat4x4(&objConstants.worldViewProj, XMMatrixTranspose(worldViewProj));
-
-	memcpy(&m_pCbvDataBegin, &objConstants, sizeof(objConstants));
+	XMStoreFloat4x4(&m_objectConstant.worldViewProj, XMMatrixTranspose(worldViewProj));
+	memcpy(m_pCbvDataBegin, &m_objectConstant, sizeof(m_objectConstant));
 }
 
 bool GraphicRender_LoadModel::Render()
@@ -568,8 +581,7 @@ bool GraphicRender_LoadModel::Render()
 
 	//clear back buffer and depth buffer
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
-	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-	m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+	m_commandList->ClearRenderTargetView(rtvHandle, Colors::LightSteelBlue, 0, nullptr);
 	m_commandList->ClearDepthStencilView(m_dsvHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = m_dsvHeap->GetCPUDescriptorHandleForHeapStart();
 	m_commandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
@@ -618,8 +630,15 @@ void GraphicRender_LoadModel::Destroy()
 	m_commandList.Reset();
 	m_commandAllocator.Reset();
 	m_rtvHeap.Reset();
+	m_cbvHeap.Reset();
+	m_dsvHeap.Reset();
 	ResetComPtrArray(&m_renderTargets);
+	m_depthStencilBuffer.Reset();
 	m_vertexBuffer.Reset();
+	m_vertexUploadBuffer.Reset();
+	m_indexBuffer.Reset();
+	m_indexBufferUpload.Reset();
+	m_constantBuffer.Reset();
 	m_commandQueue.Reset();
 	m_swapChain.Reset();
 	m_device.Reset();
