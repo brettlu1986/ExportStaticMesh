@@ -366,25 +366,12 @@ void GraphicRender_LoadModel::LoadAssets()
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 	};
-	//--------------------------
 
-	//--------------------------------
 	DataSource* ds = m_application->GetDataSource();
 	std::vector<Vertex_PositionColor> triangleVertices;
 	// Create the vertex buffer.
 	{
 		// Define the geometry for a triangle.  read the vertices data
-		////test 
-		//triangleVertices = {
-		//	{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::White) },
-		//	{ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Black) },
-		//	{ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Red) },
-		//	{ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Green) },
-		//	{ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Blue) },
-		//	{ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Yellow) },
-		//	{ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Cyan) },
-		//	{ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta) },
-		//};
 		ds->GetPositionColorInput(triangleVertices);
 		const UINT vertexBufferSize = static_cast<UINT>(triangleVertices.size() * sizeof(Vertex_PositionColor));//sizeof(triangleVertices);
 		
@@ -434,32 +421,6 @@ void GraphicRender_LoadModel::LoadAssets()
 
 	//create index buffer 
 	{
-		//std::vector<UINT> indices =
-		//{
-		//	// front face
-		//	0, 1, 2,
-		//	0, 2, 3,
-
-		//	// back face
-		//	4, 6, 5,
-		//	4, 7, 6,
-
-		//	// left face
-		//	4, 5, 1,
-		//	4, 1, 0,
-
-		//	// right face
-		//	3, 2, 6,
-		//	3, 6, 7,
-
-		//	// top face
-		//	1, 5, 6,
-		//	1, 6, 2,
-
-		//	// bottom face
-		//	4, 0, 3,
-		//	4, 3, 7
-		//};
 		std::vector<UINT> indices;
 		ds->GetIndexDataInput(indices);
 		m_indiceSize = static_cast<UINT>(indices.size() * sizeof(UINT));

@@ -67,3 +67,29 @@ An index buffer contains a sequential set of 16-bit or 32-bit indices; each inde
 
 #d3d coder 
 1.[参考](https://github.com/d3dcoder/d3d12book/blob/master/Common/MathHelper.h)
+
+#问题汇总：
+
+DXGIFactory 提供一些访问显卡的函数，枚举显卡
+Adapter  WarpAdapter怎么理解  *****
+D3DDevice Adapter跟Device该怎么去理解抽象 ？ Device是电脑cpu 程序？ *****
+CommandQueue 向GPU 显卡输送命令队列
+CommandList 存放绘制指令用
+CommandAllocator 给CommandList分配空间
+SwapChain 交换链 buffer里存放当前的 RenderTarget内容
+DescriptorHeap (rtv dsv cbv) DescriptorHeap主要用来描述各种 buffer的详细信息，地址等，用于创建buffer  *****
+Fence  负责调度 CPU与GPU的协调执行，确保 当前CPU指令输送完毕之后，再执行下一轮 CPU命令
+Root Signature  根签名用来描述 shader函数的参数情况的，确定当前绘制管线的 输入参数详情
+Pipline State Object  不太理解 管线对象？ *****
+RenderTargetBuffer rtv desriptor 创建 RenderTargetBuffer, RenderTargetBuffer获取句柄和起始指针 还有 SwapChain来创建 RenderTargetView 
+IndexBuffer  顶点buffer
+DepthStentilBuffer 深度 这个还不太理解 ******
+RenderTargetView 双缓冲 buffer ， 跟 SwapChain里的buffer相对应。  如果是三缓冲， 是不是 RenderTarget就是3？？ ****
+IndexBufferView
+ResourceBarrier  用于设置当前 pipeline state object的渲染状态 ？？
+矩阵 MVP矩阵的计算 需要了解一下
+shader register(b0) 跟 RootSignature里的 Init关系
+	
+	
+
+
