@@ -39,32 +39,6 @@ std::wstring DataSource::GetSaveDirectory()
 	return path + L"\\Save\\";
 }
 
-//void DataSource::WriteCameraDataToFile(LPCWSTR fileName, CameraData& cameraData)
-//{
-//	std::wstring fName = m_save_path + fileName;
-//	ofstream wf(fName, ios::out | ios::binary );
-//	if (!wf)
-//	{
-//		cout << "Cannot open file!" << endl;
-//		return;
-//	}
-//	//1.转成byte写
-//	UINT sizeCamera = sizeof(CameraData);
-//	char* cameraBytes = new char[sizeCamera];
-//	memset(cameraBytes, 0, sizeCamera);
-//	memcpy(cameraBytes, (char*)&cameraData, sizeCamera);
-//	wf.write(cameraBytes, sizeCamera);
-//	//2.对于camera data 因为是基本数据类型，可以直接写
-//	//wf.write((char*)&cameraData, sizeof(CameraData));
-//	wf.close();
-//	delete[] cameraBytes;
-//	if (!wf.good())
-//	{
-//		cout << "Error occurred at writing time!" << endl;
-//		return;
-//	}
-//}
-
 void DataSource::ReadCameraDataFromFile(LPCWSTR fileName)
 {
 	std::wstring fName = m_save_path + fileName;
@@ -78,7 +52,7 @@ void DataSource::ReadCameraDataFromFile(LPCWSTR fileName)
 	memset(cameraBuffer, '\0', sizeof(CameraData));
 	rf.read(cameraBuffer, sizeof(CameraData));
 	m_camera_data = *(CameraData*)(cameraBuffer);
-
+	
 	delete[] cameraBuffer;
 	rf.close();
 	if (!rf.good()) {
@@ -86,36 +60,6 @@ void DataSource::ReadCameraDataFromFile(LPCWSTR fileName)
 		return ;
 	}
 }
-
-//void DataSource::WriteMeshDataToFile(LPCWSTR fileName, MeshData& meshData)
-//{
-//	std::wstring fName = m_save_path + fileName;
-//	ofstream wf(fName, ios::out | ios::binary);
-//	if (!wf)
-//	{
-//		cout << "Cannot open file!" << endl;
-//		return;
-//	}
-//
-//	size_t vSize = meshData.vertices.size();
-//	wf.write((char*)&vSize, sizeof(vSize));
-//	wf.write((char*)&meshData.vertices[0], vSize * sizeof(float));
-//
-//	size_t cSize = meshData.colors.size();
-//	wf.write((char*)&cSize, sizeof(cSize));
-//	wf.write((char*)&meshData.colors[0], cSize * sizeof(float));
-//
-//	size_t iSize = meshData.indices.size();
-//	wf.write((char*)&iSize, sizeof(iSize));
-//	wf.write((char*)&meshData.indices[0], iSize * sizeof(UINT));
-//
-//	wf.close();
-//	if (!wf.good())
-//	{
-//		cout << "Error occurred at writing time!" << endl;
-//		return;
-//	}
-//}
 
 void DataSource::ReadMeshDataFromFile(LPCWSTR fileName)
 {
@@ -127,8 +71,8 @@ void DataSource::ReadMeshDataFromFile(LPCWSTR fileName)
 	}
 
 	//vertex positions
-	char* vetLenChar = new char[sizeof(size_t)];
-	rf.read(vetLenChar, sizeof(size_t));
+	char* vetLenChar = new char[sizeof(UINT)];
+	rf.read(vetLenChar, sizeof(UINT));
 	UINT vecSize = *(UINT*)vetLenChar;
 
 	std::vector<float> vertices;
@@ -137,16 +81,17 @@ void DataSource::ReadMeshDataFromFile(LPCWSTR fileName)
 
 	UINT vertexSize = vecSize / 3;
 	m_mesh_data.vertices.reserve(vertexSize);
+	size_t begin = 0;
 	for (size_t i = 0; i < vertexSize; i++)
 	{
-		size_t begin = i * 3;
+		begin = i * 3;
 		XMFLOAT3 location = { vertices[begin], vertices[begin + 1], vertices[begin + 2] };
 		m_mesh_data.vertices.push_back(location);
 	}
 
 	//read color
-	char* cLenChar = new char[sizeof(size_t)];
-	rf.read(cLenChar, sizeof(size_t));
+	char* cLenChar = new char[sizeof(UINT)];
+	rf.read(cLenChar, sizeof(UINT));
 	UINT coSize = *(UINT*)cLenChar;
 
 	std::vector<float> colors;
@@ -157,18 +102,18 @@ void DataSource::ReadMeshDataFromFile(LPCWSTR fileName)
 	m_mesh_data.colors.reserve(colorSize);
 	for (size_t i = 0; i < colorSize; i++)
 	{
-		size_t begin = i * 4;
+		begin = i * 4;
 		XMFLOAT4 color = { colors[begin], colors[begin + 1], colors[begin + 2], colors[begin + 3] };
 		m_mesh_data.colors.push_back(color);
 	}
 
 	//indices
-	char* inLenChar = new char[sizeof(size_t)];
-	rf.read(inLenChar, sizeof(size_t));
+	char* inLenChar = new char[sizeof(UINT)];
+	rf.read(inLenChar, sizeof(UINT));
 	UINT inSize = *(UINT*)inLenChar;
 
 	m_mesh_data.indices.resize(inSize);
-	rf.read((char*)m_mesh_data.indices.data(), inSize * sizeof(UINT));
+	rf.read((char*)m_mesh_data.indices.data(), inSize * sizeof(UINT16));
 	
 	delete[] vetLenChar;
 	delete[] cLenChar;
@@ -180,7 +125,7 @@ void DataSource::ReadMeshDataFromFile(LPCWSTR fileName)
 	}
 }
 
-void DataSource::GetIndexDataInput(std::vector<UINT>& outPut)
+void DataSource::GetIndexDataInput(std::vector<UINT16>& outPut)
 {
 	if (m_mesh_data.indices.size() == 0)
 	{
@@ -212,6 +157,61 @@ void DataSource::GetPositionColorInput(std::vector<Vertex_PositionColor>& outPut
 		XMFLOAT4 color = i >= colorSize ? XMFLOAT4(Colors::Red) : m_mesh_data.colors[i];
 		outPut.push_back({ m_mesh_data.vertices[i], color });
 	}
-
 }
 
+//void DataSource::WriteCameraDataToFile(LPCWSTR fileName, CameraData& cameraData)
+//{
+//	std::wstring fName = m_save_path + fileName;
+//	ofstream wf(fName, ios::out | ios::binary );
+//	if (!wf)
+//	{
+//		cout << "Cannot open file!" << endl;
+//		return;
+//	}
+//	//1.转成byte写
+//	UINT sizeCamera = sizeof(CameraData);
+//	char* cameraBytes = new char[sizeCamera];
+//	memset(cameraBytes, 0, sizeCamera);
+//	memcpy(cameraBytes, (char*)&cameraData, sizeCamera);
+//	wf.write(cameraBytes, sizeCamera);
+//	//2.对于camera data 因为是基本数据类型，可以直接写
+//	//wf.write((char*)&cameraData, sizeof(CameraData));
+//	wf.close();
+//	delete[] cameraBytes;
+//	if (!wf.good())
+//	{
+//		cout << "Error occurred at writing time!" << endl;
+//		return;
+//	}
+//}
+
+
+//void DataSource::WriteMeshDataToFile(LPCWSTR fileName, MeshData& meshData)
+//{
+//	std::wstring fName = m_save_path + fileName;
+//	ofstream wf(fName, ios::out | ios::binary);
+//	if (!wf)
+//	{
+//		cout << "Cannot open file!" << endl;
+//		return;
+//	}
+//
+//	size_t vSize = meshData.vertices.size();
+//	wf.write((char*)&vSize, sizeof(vSize));
+//	wf.write((char*)&meshData.vertices[0], vSize * sizeof(float));
+//
+//	size_t cSize = meshData.colors.size();
+//	wf.write((char*)&cSize, sizeof(cSize));
+//	wf.write((char*)&meshData.colors[0], cSize * sizeof(float));
+//
+//	size_t iSize = meshData.indices.size();
+//	wf.write((char*)&iSize, sizeof(iSize));
+//	wf.write((char*)&meshData.indices[0], iSize * sizeof(UINT));
+//
+//	wf.close();
+//	if (!wf.good())
+//	{
+//		cout << "Error occurred at writing time!" << endl;
+//		return;
+//	}
+//}

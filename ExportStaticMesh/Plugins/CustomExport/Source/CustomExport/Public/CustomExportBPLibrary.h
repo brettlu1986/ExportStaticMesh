@@ -25,24 +25,48 @@
 *	https://wiki.unrealengine.com/Custom_Blueprint_Node_Creation
 */
 
-
-
 #pragma pack(push)
 #pragma pack(4)
-struct CameraData {
+
+USTRUCT()
+struct FMeshData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<float> vertices;
+
+	UPROPERTY()
+	TArray<float> colors;
+
+	UPROPERTY()
+	TArray<uint16> indices;
+};
+
+USTRUCT()
+struct FCameraData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
 	FVector location;
+
+	UPROPERTY()
+	FVector target;
+
+	UPROPERTY()
 	FRotator rotator;
+
+	UPROPERTY()
 	float fov;
+
+	UPROPERTY()
 	float aspect;
 };
 
-struct MeshData
-{
-	std::vector<float> vertices;
-	std::vector<float> colors;
-	std::vector<UINT> indices;
-};
 #pragma pack(pop)
+
+
 
 UCLASS()
 class UCustomExportBPLibrary : public UBlueprintFunctionLibrary

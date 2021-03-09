@@ -8,10 +8,9 @@ using namespace std;
 
 #pragma pack(push)
 #pragma pack(4)
-
-
 struct CameraData {
 	XMFLOAT3 location;
+	XMFLOAT3 target;
 	XMFLOAT3 rotator; // {Pitch, Yaw , Roll}
 	float fov;
 	float aspect;
@@ -21,7 +20,7 @@ struct MeshData
 {
 	vector<XMFLOAT3> vertices;
 	vector<XMFLOAT4> colors;
-	vector<UINT> indices;
+	vector<UINT16> indices;
 };
 #pragma pack(pop)
 
@@ -43,7 +42,7 @@ public:
 	const MeshData& GetMeshData() { return m_mesh_data; }
 
 	void GetPositionColorInput(std::vector<Vertex_PositionColor>& outPut);
-	void GetIndexDataInput(std::vector<UINT>& outPut);
+	void GetIndexDataInput(std::vector<UINT16>& outPut);
 private: 
 	std::wstring GetSaveDirectory();
 	//void WriteCameraDataToFile(LPCWSTR fileName, CameraData& cameraData);

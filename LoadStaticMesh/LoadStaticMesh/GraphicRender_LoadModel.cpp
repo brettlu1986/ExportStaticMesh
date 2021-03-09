@@ -13,12 +13,17 @@ using namespace Microsoft::WRL;
 
 GraphicRender_LoadModel::GraphicRender_LoadModel()
 	: m_frameIndex(0)
-	,m_rtvDescriptorSize(0)
-	,m_vertexBufferView(D3D12_VERTEX_BUFFER_VIEW())
+	, m_rtvDescriptorSize(0)
+	, m_vertexBufferView(D3D12_VERTEX_BUFFER_VIEW())
 	, m_fenceEvent(nullptr)
 	, m_fenceValue(0)
 	, m_pCbvDataBegin(nullptr)
 	, m_objectConstant({})
+	, m_cbvSrvUavDescriptorSize(0)
+	, m_dsvDescriptorSize(0)
+	, m_indexBufferView(D3D12_INDEX_BUFFER_VIEW())
+	, m_indiceSize(0)
+	, m_indicesCount(0)
 {
 
 }
@@ -421,7 +426,7 @@ void GraphicRender_LoadModel::LoadAssets()
 
 	//create index buffer 
 	{
-		std::vector<UINT> indices;
+		std::vector<UINT16> indices;
 		ds->GetIndexDataInput(indices);
 		m_indiceSize = static_cast<UINT>(indices.size() * sizeof(UINT));
 		m_indicesCount = static_cast<UINT>(indices.size());
@@ -464,7 +469,7 @@ void GraphicRender_LoadModel::LoadAssets()
 		m_commandList->ResourceBarrier(1, &rbIndex2);
 
 		m_indexBufferView.BufferLocation = m_indexBuffer->GetGPUVirtualAddress();
-		m_indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+		m_indexBufferView.Format = DXGI_FORMAT_R16_UINT;
 		m_indexBufferView.SizeInBytes = m_indiceSize;
 
 	}
