@@ -3,7 +3,7 @@ first dx12 framework
 #d3d12 与d3d11区别：
 [d3d12与d3d11区别](https://docs.microsoft.com/en-us/windows/win32/direct3d12/important-changes-from-directx-11-to-directx-12)
 
-#window初始化 
+# window初始化 
 1. 构造WNDCLASSEX
 2. 初始化结构体数据， 比如指向窗口过程指针WndProc， 指向窗口过程实例句柄 GetModuleHandle()等
 3. 注册window
@@ -11,7 +11,7 @@ first dx12 framework
 5. 调用CreateWindowEx创建 HWND
 6. ShowWindow
 
-#d3d12初始化
+# d3d12初始化
 - 几个必须包含进来的lib: d3d12.lib dxgi.lib d3dcompiler.lib ：绘制api  硬件显卡相关  shader编译
 
 1. 创建Device 指定feature level
@@ -22,7 +22,7 @@ first dx12 framework
 6. 创建 CommandList
 7. 创建Fence  dx12的fence用来 cpu跟gpu同步，当gpu处理完一组绘制指令的时候cpu可以根据状态提交下一组
 
-#d3d12绘制过程
+# d3d12绘制过程
 
 1. 创建transition barrier 主要用于存储状态之间的切换
 2. 清空commandlist allocator, commandlist memory
@@ -32,18 +32,18 @@ first dx12 framework
 6. 双缓冲present  
 7. m_fence等待 gpu执行完执行下一次
 
-#vertex buffer index buffer 
+# vertex buffer index buffer 
 - vertex buffer 为记录模型所有 顶点信息数组
 - index buffer 索引buffer， 用于快速索引访问 vertex buffer中的点
 
-#vertex shader (HLSL语言)
+# vertex shader (HLSL语言)
 - gpu对 vertex buffer中的点进行变换， 变换到3d空间当中；计算发现
 
-#pixel shader (HLSL语言)
+# pixel shader (HLSL语言)
 -主要用于多边形着色，颜色，贴图，光照等
 
 
-#3d基础笔记 
+# 3d基础笔记 
 
 1. vector 
 方向向量， 大小+方向， 相同向量（大小跟方向一致）在不同做标记，数值是不一样的，所以需要转换
@@ -55,40 +55,40 @@ first dx12 framework
 -vector可以看作方向直接反向反转， x 标量可以看作缩放，不好想象就放到2d坐标系
 (待补充)
 
-#d3d关于 buffer的概念讲解
+# d3d关于 buffer的概念讲解
 [buffer的概念讲解](https://docs.microsoft.com/en-us/windows/win32/direct3d11/overviews-direct3d-11-resources-buffers-intro)
 1. Index buffer: Index buffers contain integer offsets into vertex buffers and are used to render primitives more efficiently. 
 An index buffer contains a sequential set of 16-bit or 32-bit indices; each index is used to identify a vertex in a vertex buffer. An index buffer can be visualized like the following illustration.
 2. const buffer :A constant buffer allows you to efficiently supply shader constants data to the pipeline
 3. vertex buffer:A vertex buffer contains the vertex data used to define your geometry. Vertex data includes position coordinates, color data, texture coordinate data, normal data, and so on.
 
-#shader 传参数
+# shader 传参数
 1. [shader参数传递](https://docs.microsoft.com/en-us/windows/win32/direct3dgetstarted/work-with-shaders-and-shader-resources)
 
-#d3d coder 
+# d3d coder 
 1.[参考](https://github.com/d3dcoder/d3d12book/blob/master/Common/MathHelper.h)
 
-#问题汇总：
+# 问题汇总：
 
-DXGIFactory 提供一些访问显卡的函数，枚举显卡
-Adapter  WarpAdapter怎么理解  *****
-D3DDevice Adapter跟Device该怎么去理解抽象 ？ Device是电脑cpu 程序？ *****
-CommandQueue 向GPU 显卡输送命令队列
-CommandList 存放绘制指令用
-CommandAllocator 给CommandList分配空间
-SwapChain 交换链 buffer里存放当前的 RenderTarget内容
-DescriptorHeap (rtv dsv cbv) DescriptorHeap主要用来描述各种 buffer的详细信息，地址等，用于创建buffer  *****
-Fence  负责调度 CPU与GPU的协调执行，确保 当前CPU指令输送完毕之后，再执行下一轮 CPU命令
-Root Signature  根签名用来描述 shader函数的参数情况的，确定当前绘制管线的 输入参数详情
-Pipline State Object  不太理解 管线对象？ *****
-RenderTargetBuffer rtv desriptor 创建 RenderTargetBuffer, RenderTargetBuffer获取句柄和起始指针 还有 SwapChain来创建 RenderTargetView 
-IndexBuffer  顶点buffer
-DepthStentilBuffer 深度 这个还不太理解 ******
-RenderTargetView 双缓冲 buffer ， 跟 SwapChain里的buffer相对应。  如果是三缓冲， 是不是 RenderTarget就是3？？ ****
-IndexBufferView
-ResourceBarrier  用于设置当前 pipeline state object的渲染状态 ？？
-矩阵 MVP矩阵的计算 需要了解一下
-shader register(b0) 跟 RootSignature里的 Init关系
+1. DXGIFactory 提供一些访问显卡的函数，枚举显卡
+2. Adapter  WarpAdapter怎么理解  *****
+3. D3DDevice Adapter跟Device该怎么去理解抽象 ？ Device是电脑cpu 程序？ *****
+4. CommandQueue 向GPU 显卡输送命令队列
+5. CommandList 存放绘制指令用
+6. CommandAllocator 给CommandList分配空间
+7. SwapChain 交换链 buffer里存放当前的 RenderTarget内容
+8. DescriptorHeap (rtv dsv cbv) DescriptorHeap主要用来描述各种 buffer的详细信息，地址等，用于创建buffer  *****
+9. Fence  负责调度 CPU与GPU的协调执行，确保 当前CPU指令输送完毕之后，再执行下一轮 CPU命令
+10. Root Signature  根签名用来描述 shader函数的参数情况的，确定当前绘制管线的 输入参数详情
+11. Pipline State Object  不太理解 管线对象？ *****
+12. RenderTargetBuffer rtv desriptor 创建 RenderTargetBuffer, RenderTargetBuffer获取句柄和起始指针 还有 SwapChain来创建 RenderTargetView 
+13. IndexBuffer  顶点buffer
+14. DepthStentilBuffer 深度 这个还不太理解 ******
+15. RenderTargetView 双缓冲 buffer ， 跟 SwapChain里的buffer相对应。  如果是三缓冲， 是不是 RenderTarget就是3？？ ****
+16. IndexBufferView
+17. ResourceBarrier  用于设置当前 pipeline state object的渲染状态 ？？
+18. 矩阵 MVP矩阵的计算 需要了解一下
+19. shader register(b0) 跟 RootSignature里的 Init关系
 	
 	
 
