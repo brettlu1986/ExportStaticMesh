@@ -35,9 +35,16 @@ ExportStaticMesh/.vs
 ExportStaticMesh/Binaries
 ExportStaticMesh/DerivedDataCache
 ExportStaticMesh/Intermediate
-ExportStaticMesh/Saved
+
 ExportStaticMesh/Plugins/CustomExport/Binaries
 ExportStaticMesh/Plugins/CustomExport/Intermediate
+
+ExportStaticMesh/Saved/Autosaves
+ExportStaticMesh/Saved/Collections
+ExportStaticMesh/Saved/Config
+ExportStaticMesh/Saved/Crashes
+ExportStaticMesh/Saved/Logs
+ExportStaticMesh/Saved/AutoScreenshot.png
 
 LoadStaticMesh/x64
 LoadStaticMesh/LoadStaticMesh/x64

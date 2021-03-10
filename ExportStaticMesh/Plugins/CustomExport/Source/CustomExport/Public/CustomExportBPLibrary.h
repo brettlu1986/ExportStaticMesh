@@ -34,13 +34,13 @@ struct FMeshData
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TArray<float> vertices;
+	TArray<float> Vertices;
 
 	UPROPERTY()
-	TArray<float> colors;
+	TArray<float> Colors;
 
 	UPROPERTY()
-	TArray<uint16> indices;
+	TArray<uint16> Indices;
 };
 
 USTRUCT()
@@ -49,34 +49,34 @@ struct FCameraData
 	GENERATED_BODY()
 
 	UPROPERTY()
-	FVector location;
+	FVector Location;
 
 	UPROPERTY()
-	FVector target;
+	FVector Target;
 
 	UPROPERTY()
-	FRotator rotator;
+	FRotator Rotator;
 
 	UPROPERTY()
-	float fov;
+	float Fov;
 
 	UPROPERTY()
-	float aspect;
+	float Aspect;
 };
 
 #pragma pack(pop)
-
-
 
 UCLASS()
 class UCustomExportBPLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_UCLASS_BODY()
 
+public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Static Mesh"), Category = "CustomExportBPLibrary")
 	static void ExportStaticMesh(const UStaticMesh* Mesh);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Camera"), Category = "CustomExportBPLibrary")
 	static void ExportCamera(const UCameraComponent* Component);
+
 
 };

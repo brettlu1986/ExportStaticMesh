@@ -1,1 +1,3 @@
-copy .\ExportStaticMesh\Content\Save\*.bin .\LoadStaticMesh\LoadStaticMesh\Save\
+copy .\ExportStaticMesh\Saved\Export\*.bin .\LoadStaticMesh\LoadStaticMesh\Save\
+
+pause

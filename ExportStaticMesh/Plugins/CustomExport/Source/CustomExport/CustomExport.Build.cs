@@ -42,7 +42,8 @@ public class CustomExport : ModuleRules
 				"Slate",
 				"SlateCore",
 				"Json",
-				"JsonUtilities"
+				"JsonUtilities",
+				"Core"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

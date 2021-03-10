@@ -6,28 +6,38 @@
 #include "Serialization/JsonWriter.h"
 #include "Serialization/JsonSerializer.h"
 #include "Policies/PrettyJsonPrintPolicy.h"
+#include "Internationalization/Internationalization.h"
 #include "JsonObjectConverter.h"
+#include "Misc/MessageDialog.h"
 
 #include <iostream>
 #include <fstream>
 
 using namespace std;
 
-typedef TJsonWriter< TCHAR, TPrettyJsonPrintPolicy<TCHAR> > FPrettyJsonStringWriter;
-typedef TJsonWriterFactory< TCHAR, TPrettyJsonPrintPolicy<TCHAR> > FPrettyJsonStringWriterFactory;
+static FString SavePath = FPaths::ProjectSavedDir() + "Export/";
 
-static FString SavePath = FPaths::ProjectContentDir() + "Save/";
 static FString CameraFileName = TEXT("camera.json");
 static FString CameraBinaryFileName = TEXT("camera.bin");
-
 static FString MeshFileName = TEXT("mesh.json");
 static FString MeshBinaryFileName = TEXT("mesh.bin");
 
+const FString Success = "Success";
+const FString Failed = "Fail";
+
 UCustomExportBPLibrary::UCustomExportBPLibrary(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 
 }
+
+#define LOCTEXT_NAMESPACE "CustomExport"
+void ShowMessageDialog(const FText& Target, const FText& Result)
+{
+	const FText WarningMessage = FText::Format(LOCTEXT("CustomExport_Message", "{0} export {1}!"), Target, Result);
+	EAppReturnType::Type ReturnType = FMessageDialog::Open(EAppMsgType::Ok, WarningMessage);
+}
+#undef LOCTEXT_NAMESPACE
 
 void CheckFileExistAndDelete(const FString& FileName)
 {
@@ -50,82 +60,93 @@ void UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh)
 	FRawMesh RawMesh;
 	SourceModels[0].LoadRawMesh(RawMesh);*/
 
-	auto& LODResources = Mesh->RenderData->LODResources;
+	const auto& LODResources = Mesh->RenderData->LODResources;
 	const FStaticMeshLODResources& StaticMeshResource = LODResources[0];
-
 	const FStaticMeshVertexBuffer& VertexBuffer = StaticMeshResource.VertexBuffers.StaticMeshVertexBuffer;
 
-	FMeshData meshData;
+	FMeshData MeshData;
+	//add vertices
 	const FPositionVertexBuffer& PositionBuffers = StaticMeshResource.VertexBuffers.PositionVertexBuffer;
 	UINT NumPositionVertex = PositionBuffers.GetNumVertices();
-	meshData.vertices.Reserve(NumPositionVertex * 3);
+	MeshData.Vertices.Reserve(NumPositionVertex * 3);
 	for (UINT i = 0; i < NumPositionVertex; i++)
 	{
-		meshData.vertices.Add(PositionBuffers.VertexPosition(i).X);
-		meshData.vertices.Add(PositionBuffers.VertexPosition(i).Y);
-		meshData.vertices.Add(PositionBuffers.VertexPosition(i).Z);
+		MeshData.Vertices.Add(PositionBuffers.VertexPosition(i).X);
+		MeshData.Vertices.Add(PositionBuffers.VertexPosition(i).Y);
+		MeshData.Vertices.Add(PositionBuffers.VertexPosition(i).Z);
 	}
 
 	TArray<FColor> ColorVerts;
+	//add colors
 	const FColorVertexBuffer& ColorBuffers = StaticMeshResource.VertexBuffers.ColorVertexBuffer;
 	UINT NumColorVertex = ColorBuffers.GetNumVertices();
 	ColorVerts.Reserve(NumColorVertex);
 	ColorBuffers.GetVertexColors(ColorVerts);
-	meshData.colors.Reserve(NumColorVertex * 4);
-	for (FColor color : ColorVerts)
+	MeshData.Colors.Reserve(NumColorVertex * 4);
+	for (FColor Color : ColorVerts)
 	{
-		meshData.colors.Add(color.R);
-		meshData.colors.Add(color.G);
-		meshData.colors.Add(color.B);
-		meshData.colors.Add(color.A);
+		MeshData.Colors.Add(Color.R);
+		MeshData.Colors.Add(Color.G);
+		MeshData.Colors.Add(Color.B);
+		MeshData.Colors.Add(Color.A);
 	}
 
+	//add indices
 	const FRawStaticIndexBuffer& IndexBuffer = StaticMeshResource.IndexBuffer;
-	UINT NumIndices = IndexBuffer.GetNumIndices();//索引个数
-	TArray<uint32> Indices;//索引数据
+	UINT NumIndices = IndexBuffer.GetNumIndices();
+	TArray<uint32> Indices;
 	Indices.Reserve(NumIndices);
 	IndexBuffer.GetCopy(Indices);
-	meshData.indices.Reserve(NumIndices);
-	for (uint32 index : Indices)
+	MeshData.Indices.Reserve(NumIndices);
+	for (uint32 Index : Indices)
 	{
-		meshData.indices.Add(index);
+		MeshData.Indices.Add(Index);
 	}
 
 	//delete old files
 	CheckFileExistAndDelete(MeshFileName);
 	CheckFileExistAndDelete(MeshBinaryFileName);
 
+	//save json
 	FString Json;
-	FJsonObjectConverter::UStructToJsonObjectString(meshData, Json);
+	FJsonObjectConverter::UStructToJsonObjectString(MeshData, Json);
 	FString MeshSaveFile = SavePath + MeshFileName;
-	FFileHelper::SaveStringToFile(Json, *MeshSaveFile);
+	bool bSaveResult = FFileHelper::SaveStringToFile(Json, *MeshSaveFile);
+	if (!bSaveResult)
+	{
+		ShowMessageDialog(FText::FromString(MeshFileName), FText::FromString(Failed));
+	}
 
 	//save binary file
 	MeshSaveFile = SavePath + MeshBinaryFileName;
-	char* resultName = TCHAR_TO_ANSI(*MeshSaveFile);
-	ofstream wf(resultName, ios::out | ios::binary);
-	if (!wf)
+	char* ResultName = TCHAR_TO_ANSI(*MeshSaveFile);
+	ofstream Wf(ResultName, ios::out | ios::binary);
+	if (!Wf)
 	{
+		ShowMessageDialog(FText::FromString(MeshBinaryFileName), FText::FromString(Failed));
 		return;
 	}
 
-	uint32 vSize = meshData.vertices.Num();
-	wf.write((char*)&vSize, sizeof(uint32));
-	wf.write((char*)(meshData.vertices.GetData()), vSize * sizeof(float));
+	uint32 vSize = MeshData.Vertices.Num();
+	Wf.write((char*)&vSize, sizeof(uint32));
+	Wf.write((char*)(MeshData.Vertices.GetData()), vSize * sizeof(float));
 
-	uint32 cSize = meshData.colors.Num();
-	wf.write((char*)&cSize, sizeof(uint32));
-	wf.write((char*)meshData.colors.GetData(), cSize * sizeof(float));
+	uint32 cSize = MeshData.Colors.Num();
+	Wf.write((char*)&cSize, sizeof(uint32));
+	Wf.write((char*)MeshData.Colors.GetData(), cSize * sizeof(float));
 
-	uint32 iSize = meshData.indices.Num();
-	wf.write((char*)&iSize, sizeof(uint32));
-	wf.write((char*)meshData.indices.GetData(), iSize * sizeof(uint16));
+	uint32 iSize = MeshData.Indices.Num();
+	Wf.write((char*)&iSize, sizeof(uint32));
+	Wf.write((char*)MeshData.Indices.GetData(), iSize * sizeof(uint16));
 
-	wf.close();
-	if (!wf.good())
+	Wf.close();
+	if (!Wf.good())
 	{
+		ShowMessageDialog(FText::FromString(MeshBinaryFileName), FText::FromString(Failed));
 		return;
 	}
+
+	ShowMessageDialog(FText::FromString(MeshFileName +" "+ MeshBinaryFileName), FText::FromString(Success));
 }
 
 void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component)
@@ -134,40 +155,49 @@ void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component)
 	const FRotator& CameraRot = Component->GetComponentRotation();
 	float FOV = Component->FieldOfView;
 	float AspectRatio = Component->AspectRatio;
-	
+
 	FVector FaceDir = CameraRot.Vector();
-	FVector target = FaceDir * 5.f + CameraLocation;
-	//for export binary
-	FCameraData cameraData = {};
-	cameraData.location = FVector(CameraLocation.X, CameraLocation.Y, CameraLocation.Z);
-	cameraData.target = FVector(target.X, target.Y, target.Z);
-	cameraData.rotator = FRotator(CameraRot.Pitch, CameraRot.Yaw, CameraRot.Roll);
-	cameraData.fov = FOV;
-	cameraData.aspect = AspectRatio;
+	FVector Target = FaceDir * 5.f + CameraLocation;
+	
+	FCameraData CameraData = {};
+	CameraData.Location = CameraLocation;
+	CameraData.Target = Target;
+	CameraData.Rotator = CameraRot;
+	CameraData.Fov = FOV;
+	CameraData.Aspect = AspectRatio;
 
 	//delete old files
 	CheckFileExistAndDelete(CameraFileName);
 	CheckFileExistAndDelete(CameraBinaryFileName);
 
+	//save json
 	FString Json;
-	FJsonObjectConverter::UStructToJsonObjectString(cameraData, Json);
+	FJsonObjectConverter::UStructToJsonObjectString(CameraData, Json);
 	FString CameraSaveFile = SavePath + CameraFileName;
-	FFileHelper::SaveStringToFile(Json, *CameraSaveFile);
+	bool bSaveResult = FFileHelper::SaveStringToFile(Json, *CameraSaveFile);
+	if (!bSaveResult)
+	{
+		ShowMessageDialog(FText::FromString(CameraFileName), FText::FromString(Failed));
+	}
 
-	////save binary file
+	//save binary file
 	CameraSaveFile = SavePath + CameraBinaryFileName;
-	char* resultName = TCHAR_TO_ANSI(*CameraSaveFile);
-	ofstream wf(resultName, ios::out | ios::binary);
-	if (!wf)
+	char* ResultName = TCHAR_TO_ANSI(*CameraSaveFile);
+	ofstream Wf(ResultName, ios::out | ios::binary);
+	if (!Wf)
 	{
+		ShowMessageDialog(FText::FromString(CameraBinaryFileName), FText::FromString(Failed));
 		return;
 	}
-	wf.write((char*)&cameraData, sizeof(FCameraData));
-	wf.close();
-	if (!wf.good())
+	Wf.write((char*)&CameraData, sizeof(FCameraData));
+	Wf.close();
+	if (!Wf.good())
 	{
+		ShowMessageDialog(FText::FromString(CameraBinaryFileName), FText::FromString(Failed));
 		return;
 	}
+
+	ShowMessageDialog(FText::FromString(CameraFileName + " " + CameraBinaryFileName), FText::FromString(Success));
 }
 
 
