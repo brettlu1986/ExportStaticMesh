@@ -426,7 +426,7 @@ void GraphicRender_LoadModel::LoadAssets()
 
 	//create index buffer 
 	{
-		std::vector<UINT16> indices;
+		std::vector<UINT32> indices;
 		ds->GetIndexDataInput(indices);
 		m_indiceSize = static_cast<UINT>(indices.size() * sizeof(UINT));
 		m_indicesCount = static_cast<UINT>(indices.size());
@@ -469,7 +469,7 @@ void GraphicRender_LoadModel::LoadAssets()
 		m_commandList->ResourceBarrier(1, &rbIndex2);
 
 		m_indexBufferView.BufferLocation = m_indexBuffer->GetGPUVirtualAddress();
-		m_indexBufferView.Format = DXGI_FORMAT_R16_UINT;
+		m_indexBufferView.Format = DXGI_FORMAT_R32_UINT;
 		m_indexBufferView.SizeInBytes = m_indiceSize;
 
 	}

@@ -64,16 +64,22 @@ void UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh)
 	const FStaticMeshLODResources& StaticMeshResource = LODResources[0];
 	const FStaticMeshVertexBuffer& VertexBuffer = StaticMeshResource.VertexBuffers.StaticMeshVertexBuffer;
 
-	FMeshData MeshData;
+	FMeshDataJson MeshDataJson;
 	//add vertices
 	const FPositionVertexBuffer& PositionBuffers = StaticMeshResource.VertexBuffers.PositionVertexBuffer;
 	UINT NumPositionVertex = PositionBuffers.GetNumVertices();
-	MeshData.Vertices.Reserve(NumPositionVertex * 3);
-	for (UINT i = 0; i < NumPositionVertex; i++)
+	MeshDataJson.Vertices.Reserve(NumPositionVertex * 3);
+
+	UEnum* Enum = StaticEnum<EVSFormat>();
+	if (NumPositionVertex > 3)
 	{
-		MeshData.Vertices.Add(PositionBuffers.VertexPosition(i).X);
-		MeshData.Vertices.Add(PositionBuffers.VertexPosition(i).Y);
-		MeshData.Vertices.Add(PositionBuffers.VertexPosition(i).Z);
+		MeshDataJson.VsFormat.Add(Enum->GetDisplayNameTextByValue((uint32)EVSFormat::POSITION).ToString());
+		for (UINT i = 0; i < NumPositionVertex; i++)
+		{
+			MeshDataJson.Vertices.Add(PositionBuffers.VertexPosition(i).X);
+			MeshDataJson.Vertices.Add(PositionBuffers.VertexPosition(i).Y);
+			MeshDataJson.Vertices.Add(PositionBuffers.VertexPosition(i).Z);
+		}
 	}
 
 	TArray<FColor> ColorVerts;
@@ -82,13 +88,17 @@ void UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh)
 	UINT NumColorVertex = ColorBuffers.GetNumVertices();
 	ColorVerts.Reserve(NumColorVertex);
 	ColorBuffers.GetVertexColors(ColorVerts);
-	MeshData.Colors.Reserve(NumColorVertex * 4);
-	for (FColor Color : ColorVerts)
+	MeshDataJson.Colors.Reserve(NumColorVertex * 4);
+	if (NumColorVertex > 4)
 	{
-		MeshData.Colors.Add(Color.R);
-		MeshData.Colors.Add(Color.G);
-		MeshData.Colors.Add(Color.B);
-		MeshData.Colors.Add(Color.A);
+		MeshDataJson.VsFormat.Add(Enum->GetDisplayNameTextByValue((uint32)EVSFormat::COLOR).ToString());
+		for (FColor Color : ColorVerts)
+		{
+			MeshDataJson.Colors.Add(Color.R);
+			MeshDataJson.Colors.Add(Color.G);
+			MeshDataJson.Colors.Add(Color.B);
+			MeshDataJson.Colors.Add(Color.A);
+		}
 	}
 
 	//add indices
@@ -97,10 +107,10 @@ void UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh)
 	TArray<uint32> Indices;
 	Indices.Reserve(NumIndices);
 	IndexBuffer.GetCopy(Indices);
-	MeshData.Indices.Reserve(NumIndices);
+	MeshDataJson.Indices.Reserve(NumIndices);
 	for (uint32 Index : Indices)
 	{
-		MeshData.Indices.Add(Index);
+		MeshDataJson.Indices.Add(Index);
 	}
 
 	//delete old files
@@ -109,7 +119,7 @@ void UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh)
 
 	//save json
 	FString Json;
-	FJsonObjectConverter::UStructToJsonObjectString(MeshData, Json);
+	FJsonObjectConverter::UStructToJsonObjectString(MeshDataJson, Json);
 	FString MeshSaveFile = SavePath + MeshFileName;
 	bool bSaveResult = FFileHelper::SaveStringToFile(Json, *MeshSaveFile);
 	if (!bSaveResult)
@@ -127,17 +137,17 @@ void UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh)
 		return;
 	}
 
-	uint32 vSize = MeshData.Vertices.Num();
+	uint32 vSize = MeshDataJson.Vertices.Num();
 	Wf.write((char*)&vSize, sizeof(uint32));
-	Wf.write((char*)(MeshData.Vertices.GetData()), vSize * sizeof(float));
+	Wf.write((char*)(MeshDataJson.Vertices.GetData()), vSize * sizeof(float));
 
-	uint32 cSize = MeshData.Colors.Num();
+	uint32 cSize = MeshDataJson.Colors.Num();
 	Wf.write((char*)&cSize, sizeof(uint32));
-	Wf.write((char*)MeshData.Colors.GetData(), cSize * sizeof(float));
+	Wf.write((char*)MeshDataJson.Colors.GetData(), cSize * sizeof(float));
 
-	uint32 iSize = MeshData.Indices.Num();
+	uint32 iSize = MeshDataJson.Indices.Num();
 	Wf.write((char*)&iSize, sizeof(uint32));
-	Wf.write((char*)MeshData.Indices.GetData(), iSize * sizeof(uint16));
+	Wf.write((char*)MeshDataJson.Indices.GetData(), iSize * sizeof(uint32));
 
 	Wf.close();
 	if (!Wf.good())
@@ -146,7 +156,7 @@ void UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh)
 		return;
 	}
 
-	ShowMessageDialog(FText::FromString(MeshFileName +" "+ MeshBinaryFileName), FText::FromString(Success));
+	ShowMessageDialog(FText::FromString(MeshFileName + " " + MeshBinaryFileName), FText::FromString(Success));
 }
 
 void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component)

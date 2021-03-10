@@ -113,7 +113,7 @@ void DataSource::ReadMeshDataFromFile(LPCWSTR fileName)
 	UINT inSize = *(UINT*)inLenChar;
 
 	m_mesh_data.indices.resize(inSize);
-	rf.read((char*)m_mesh_data.indices.data(), inSize * sizeof(UINT16));
+	rf.read((char*)m_mesh_data.indices.data(), inSize * sizeof(UINT32));
 	
 	delete[] vetLenChar;
 	delete[] cLenChar;
@@ -125,7 +125,7 @@ void DataSource::ReadMeshDataFromFile(LPCWSTR fileName)
 	}
 }
 
-void DataSource::GetIndexDataInput(std::vector<UINT16>& outPut)
+void DataSource::GetIndexDataInput(std::vector<UINT32>& outPut)
 {
 	if (m_mesh_data.indices.size() == 0)
 	{

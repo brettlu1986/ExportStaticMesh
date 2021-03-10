@@ -25,13 +25,27 @@
 *	https://wiki.unrealengine.com/Custom_Blueprint_Node_Creation
 */
 
+UENUM(BlueprintType)
+enum class EVSFormat : uint8
+{
+	POSITION = 0 UMETA(DisplayName = "POSITION"),
+	NORMAL		 UMETA(DisplayName = "NORMAL"),
+	TEXCOORD0	 UMETA(DisplayName = "TEXCOORD0"),
+	TEXCOORD1	 UMETA(DisplayName = "TEXCOORD1"),
+	COLOR		 UMETA(DisplayName = "COLOR"),
+	MAX,
+};
+
 #pragma pack(push)
 #pragma pack(4)
 
 USTRUCT()
-struct FMeshData
+struct FMeshDataJson
 {
 	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<FString> VsFormat;
 
 	UPROPERTY()
 	TArray<float> Vertices;
@@ -40,7 +54,13 @@ struct FMeshData
 	TArray<float> Colors;
 
 	UPROPERTY()
-	TArray<uint16> Indices;
+	TArray<uint32> Indices;
+};
+
+struct FMeshDataBinary
+{
+	FVector Location;
+	FColor Color;
 };
 
 USTRUCT()

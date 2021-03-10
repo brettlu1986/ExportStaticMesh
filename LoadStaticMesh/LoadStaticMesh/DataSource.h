@@ -20,7 +20,7 @@ struct MeshData
 {
 	vector<XMFLOAT3> vertices;
 	vector<XMFLOAT4> colors;
-	vector<UINT16> indices;
+	vector<UINT32> indices;
 };
 #pragma pack(pop)
 
@@ -42,7 +42,7 @@ public:
 	const MeshData& GetMeshData() { return m_mesh_data; }
 
 	void GetPositionColorInput(std::vector<Vertex_PositionColor>& outPut);
-	void GetIndexDataInput(std::vector<UINT16>& outPut);
+	void GetIndexDataInput(std::vector<UINT32>& outPut);
 private: 
 	std::wstring GetSaveDirectory();
 	//void WriteCameraDataToFile(LPCWSTR fileName, CameraData& cameraData);
