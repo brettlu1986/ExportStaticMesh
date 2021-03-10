@@ -46,13 +46,15 @@ first dx12 framework
 # 3d基础笔记 
 
 1. vector 
-方向向量， 大小+方向， 相同向量（大小跟方向一致）在不同做标记，数值是不一样的，所以需要转换
+方向向量， 大小+方向， 相同向量（大小跟方向一致）在不同坐标系，数值是不一样的，所以需要转换
 2. 左右手坐标系
 左手坐标系：手掌朝上方平， 手指四指向右指向+x, 四指向上卷曲方向是+y, 拇指方向是+z
 右手坐标系：右手手掌朝上方平，手指四指向右指向+x，四指向上卷曲方向是+y，拇指方向是+z
 左右手区别就是z方向不一样
-3.计算
+3. 计算
 -vector可以看作方向直接反向反转， x 标量可以看作缩放，不好想象就放到2d坐标系
+
+4. [模型变换参考视频，注重推导过程值得一看](https://www.bilibili.com/video/av6731067/?p=1)
 (待补充)
 
 # d3d关于 buffer的概念讲解
@@ -66,7 +68,7 @@ An index buffer contains a sequential set of 16-bit or 32-bit indices; each inde
 1. [shader参数传递](https://docs.microsoft.com/en-us/windows/win32/direct3dgetstarted/work-with-shaders-and-shader-resources)
 
 # d3d coder 
-1.[参考](https://github.com/d3dcoder/d3d12book/blob/master/Common/MathHelper.h)
+1.[参考 d3d sample，龙书上的，很不错](https://github.com/d3dcoder/d3d12book/blob/master/Common/MathHelper.h)
 
 # 问题汇总：
 

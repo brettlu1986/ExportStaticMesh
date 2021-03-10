@@ -26,12 +26,13 @@
 */
 
 UENUM(BlueprintType)
-enum class EVSFormat : uint8
+enum class EVsFormat : uint8
 {
 	POSITION = 0 UMETA(DisplayName = "POSITION"),
 	NORMAL		 UMETA(DisplayName = "NORMAL"),
-	TEXCOORD0	 UMETA(DisplayName = "TEXCOORD0"),
-	TEXCOORD1	 UMETA(DisplayName = "TEXCOORD1"),
+	TANGENT      UMETA(DisplayName = "TANGENT"),
+	TEX0		 UMETA(DisplayName = "TEX0"),
+	TEX1		 UMETA(DisplayName = "TEX1"),
 	COLOR		 UMETA(DisplayName = "COLOR"),
 	MAX,
 };
@@ -48,7 +49,19 @@ struct FMeshDataJson
 	TArray<FString> VsFormat;
 
 	UPROPERTY()
-	TArray<float> Vertices;
+	TArray<float> Positions;
+
+	UPROPERTY()
+	TArray<float> Normals;
+
+	UPROPERTY()
+	TArray<float> Tangents;
+
+	UPROPERTY()
+	TArray<float> Tex0s;
+
+	UPROPERTY()
+	TArray<float> Tex1s;
 
 	UPROPERTY()
 	TArray<float> Colors;
@@ -59,8 +72,12 @@ struct FMeshDataJson
 
 struct FMeshDataBinary
 {
-	FVector Location;
-	FColor Color;
+	FVector Position;
+	FVector Normal;
+	FVector Tangent;
+	FVector2D Tex0;
+	FVector2D Tex1;
+	FLinearColor Color;
 };
 
 USTRUCT()
@@ -94,6 +111,9 @@ class UCustomExportBPLibrary : public UBlueprintFunctionLibrary
 public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Static Mesh"), Category = "CustomExportBPLibrary")
 	static void ExportStaticMesh(const UStaticMesh* Mesh);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Static Mesh New"), Category = "CustomExportBPLibrary")
+	static void ExportStaticMeshNew(const UStaticMesh* Mesh);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Camera"), Category = "CustomExportBPLibrary")
 	static void ExportCamera(const UCameraComponent* Component);
