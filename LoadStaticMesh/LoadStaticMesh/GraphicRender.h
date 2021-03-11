@@ -12,7 +12,7 @@ public:
 	GraphicRender();
 	~GraphicRender();
 
-	void Initialize(ApplicationMain* application, UINT width, UINT height);
+	void Initialize(ApplicationMain* Application, UINT Width, UINT Height);
 
 	virtual void OnInit() = 0;
 	virtual bool Render() = 0;
@@ -21,21 +21,21 @@ public:
 
 protected:
 
-	std::wstring GetAssetFullPath(LPCWSTR assetName);
+	std::wstring GetAssetFullPath(LPCWSTR AssetName);
 
 	void GetHardwareAdapter(
 		_In_ IDXGIFactory1* pFactory,
 		_Outptr_result_maybenull_ IDXGIAdapter1** ppAdapter,
-		bool requestHighPerformanceAdapter = false);
+		bool RequestHighPerformanceAdapter = false);
 
-	UINT m_width;
-	UINT m_height;
-	float m_aspectRatio;
-	bool m_useWarpDevice;
+	UINT WndWidth;
+	UINT WndHeight;
+	float AspectRatio;
+	bool UseWarpDevice;
 
 private: 
-	std::wstring m_assetsPath;
+	std::wstring AssetsPath;
 	
 public:
-	ApplicationMain* m_application;
+	ApplicationMain* MainApplication;
 };

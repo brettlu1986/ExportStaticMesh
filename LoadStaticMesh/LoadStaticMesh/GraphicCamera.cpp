@@ -3,12 +3,12 @@
 using namespace DirectX;
 
 GraphicCamera::GraphicCamera()
-	:m_position(0, 0 , 0)
-	,m_initialPosition(0,0,0)
-	,m_yaw(XM_PI)
-	,m_pitch(0.f)
-	,m_lookDirection(0, 0, -1)
-	,m_upDirection(0, 1, 0)
+	:Position(0, 0 , 0)
+	,InitialPosition(0,0,0)
+	,Yaw(XM_PI)
+	,Pitch(0.f)
+	,LookDirection(0, 0, -1)
+	,UpDirection(0, 1, 0)
 {
 
 }
@@ -18,26 +18,26 @@ GraphicCamera::~GraphicCamera()
 
 }
 
-void GraphicCamera::Init(XMFLOAT3 position)
+void GraphicCamera::Init(XMFLOAT3 InPosition)
 {
-	m_initialPosition = position;
+	InitialPosition = InPosition;
 	Reset();
 }
 
 XMMATRIX GraphicCamera::GetViewMarix()
 {
-	return XMMatrixLookToRH(XMLoadFloat3(&m_position), XMLoadFloat3(&m_lookDirection), XMLoadFloat3(&m_upDirection));
+	return XMMatrixLookToRH(XMLoadFloat3(&Position), XMLoadFloat3(&LookDirection), XMLoadFloat3(&UpDirection));
 }
 
-XMMATRIX GraphicCamera::GetProjectionMatrix(float fov, float aspectRatio, float nearPlane /*= 1.0f*/, float farPlane /*= 1000.0f*/)
+XMMATRIX GraphicCamera::GetProjectionMatrix(float Fov, float AspectRatio, float NearPlane /*= 1.0f*/, float FarPlane /*= 1000.0f*/)
 {
-	return XMMatrixPerspectiveFovRH(fov, aspectRatio, nearPlane, farPlane);
+	return XMMatrixPerspectiveFovRH(Fov, AspectRatio, NearPlane, FarPlane);
 }
 
 void GraphicCamera::Reset()
 {
-	m_position = m_initialPosition;
-	m_yaw = XM_PI;
-	m_pitch = 0.0f;
-	m_lookDirection = { 0, 0, -1 };
+	Position = InitialPosition;
+	Yaw = XM_PI;
+	Pitch = 0.0f;
+	LookDirection = { 0, 0, -1 };
 }

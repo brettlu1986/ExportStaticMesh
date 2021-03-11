@@ -10,8 +10,9 @@
 using namespace std;
 
 DataSource::DataSource()
-	:m_application(nullptr)
-	,m_camera_data(CameraData())
+	:MainApplication(nullptr)
+	,CameraDatas(CameraData())
+	,bUseHalfInt32(false)
 {
 }
 
@@ -19,10 +20,10 @@ DataSource::~DataSource()
 {
 }
 
-void DataSource::Initialize(ApplicationMain* application)
+void DataSource::Initialize(ApplicationMain* Application)
 {
-	m_application = application;
-	m_save_path = GetSaveDirectory();
+	MainApplication = Application;
+	SavePath = GetSaveDirectory();
 
 	ReadCameraDataFromFile(L"camera.bin");
 	ReadMeshDataFromFile(L"mesh.bin");
@@ -30,67 +31,84 @@ void DataSource::Initialize(ApplicationMain* application)
 
 std::wstring DataSource::GetSaveDirectory()
 {
-	WCHAR curPath[512];
-	GetCurrentDirectory(_countof(curPath), curPath);
-	std::wstring path = curPath; 
-	return path + L"\\Save\\";
+	WCHAR CurPath[512];
+	GetCurrentDirectory(_countof(CurPath), CurPath);
+	std::wstring Path = CurPath;
+	return Path + L"\\Save\\";
 }
 
-void DataSource::ReadCameraDataFromFile(LPCWSTR fileName)
+void DataSource::ReadCameraDataFromFile(LPCWSTR FileName)
 {
-	std::wstring fName = m_save_path + fileName;
-	ifstream rf(fName, ios::out | ios::binary);
-	if (!rf) {
+	std::wstring FName = SavePath + FileName;
+	ifstream Rf(FName, ios::out | ios::binary);
+	if (!Rf) {
 		cout << "Cannot open file!" << endl;
 		return;
 	}
 
-	char* cameraBuffer = new char[sizeof(CameraData)];
-	memset(cameraBuffer, '\0', sizeof(CameraData));
-	rf.read(cameraBuffer, sizeof(CameraData));
-	m_camera_data = *(CameraData*)(cameraBuffer);
+	char* CameraBuffer = new char[sizeof(CameraData)];
+	memset(CameraBuffer, '\0', sizeof(CameraData));
+	Rf.read(CameraBuffer, sizeof(CameraData));
+	CameraDatas = *(CameraData*)(CameraBuffer);
 	
-	delete[] cameraBuffer;
-	rf.close();
-	if (!rf.good()) {
+	delete[] CameraBuffer;
+	Rf.close();
+	if (!Rf.good()) {
 		cout << "Error occurred at reading time!" << endl;
 		return ;
 	}
 }
 
-void DataSource::ReadMeshDataFromFile(LPCWSTR fileName)
+void DataSource::ReadMeshDataFromFile(LPCWSTR FileName)
 {
-	std::wstring fName = m_save_path + fileName;
-	ifstream rf(fName, ios::out | ios::binary);
-	if (!rf) {
+	std::wstring FName = SavePath + FileName;
+	ifstream Rf(FName, ios::out | ios::binary);
+	if (!Rf) {
 		cout << "Cannot open file!" << endl;
 		return;
 	}
 
 	char* MeshDataLenChar = new char[sizeof(UINT)];
-	rf.read(MeshDataLenChar, sizeof(UINT));
+	Rf.read(MeshDataLenChar, sizeof(UINT));
 	UINT MeshDataLen = *(UINT*)MeshDataLenChar;
 
 	MeshDatas.resize(MeshDataLen);
-	rf.read((char*)MeshDatas.data(), MeshDataLen * sizeof(MeshDataNew));
+	Rf.read((char*)MeshDatas.data(), MeshDataLen * sizeof(MeshData));
 
 	char* IndicesLenChar = new char[sizeof(UINT)];
-	rf.read(IndicesLenChar, sizeof(UINT));
+	Rf.read(IndicesLenChar, sizeof(UINT));
 	UINT IndicesSize = *(UINT*)IndicesLenChar;
 
-	MeshIndices.resize(IndicesSize);
-	rf.read((char*)MeshIndices.data(), IndicesSize * sizeof(UINT32));
+	UINT Current = (UINT)Rf.tellg();
+	Rf.seekg(0, ios::end);
+	UINT End = (UINT)Rf.tellg();
+	UINT Left = End - Current;
+	Rf.seekg(Current, ios::beg);
+
+	UINT HalfSize = IndicesSize * sizeof(UINT16);
+	UINT Size = IndicesSize * sizeof(UINT32);
+	bUseHalfInt32 = Left <= HalfSize;
+	if(bUseHalfInt32)
+	{
+		MeshIndicesHalf.resize(IndicesSize);
+		Rf.read((char*)MeshIndicesHalf.data(), HalfSize);
+	}
+	else 
+	{
+		MeshIndices.resize(IndicesSize);
+		Rf.read((char*)MeshIndices.data(), Size);
+	}
 	
 	delete[] MeshDataLenChar;
 	delete[] IndicesLenChar;
-	rf.close();
-	if (!rf.good()) {
+	Rf.close();
+	if (!Rf.good()) {
 		cout << "Error occurred at reading time!" << endl;
 		return;
 	}
 }
 
-void DataSource::GetPositionColorInput(std::vector<Vertex_PositionColor>& outPut)
+void DataSource::GetPositionColorInput(std::vector<Vertex_PositionColor>& OutPut)
 {
 	if (MeshDatas.size() == 0)
 	{
@@ -98,10 +116,10 @@ void DataSource::GetPositionColorInput(std::vector<Vertex_PositionColor>& outPut
 		return;
 	}
 		
-	UINT verticesSize = static_cast<UINT>(MeshDatas.size());
-	outPut.reserve(verticesSize);
-	for (size_t i = 0; i < verticesSize; i++)
+	UINT VerticesSize = static_cast<UINT>(MeshDatas.size());
+	OutPut.reserve(VerticesSize);
+	for (size_t i = 0; i < VerticesSize; i++)
 	{
-		outPut.push_back({ MeshDatas[i].Position, MeshDatas[i].Color });
+		OutPut.push_back({ MeshDatas[i].Position, MeshDatas[i].Color });
 	}
 }

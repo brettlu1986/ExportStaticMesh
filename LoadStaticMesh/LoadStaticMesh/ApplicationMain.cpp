@@ -7,11 +7,11 @@
 #include "DataSource.h"
 
 ApplicationMain::ApplicationMain()
-	:m_hInstance(nullptr)
-	,m_window(nullptr)
-	,m_graphics(nullptr)
-	,m_input(nullptr)
-	,m_data_source(nullptr)
+	:hMainInstance(nullptr)
+	,Window(nullptr)
+	,CurrentGraphic(nullptr)
+	,Input(nullptr)
+	,CurrentDataSource(nullptr)
 {
 }
 
@@ -20,21 +20,21 @@ ApplicationMain::~ApplicationMain()
 
 }
 
-bool ApplicationMain::Initialize(HINSTANCE hInstance, UINT width, UINT height, std::wstring name)
+bool ApplicationMain::Initialize(HINSTANCE hInstance, UINT Width, UINT Height, std::wstring Name)
 {
-	m_hInstance = hInstance; 
+	hMainInstance = hInstance; 
 
-	m_data_source = new DataSource();
-	m_data_source->Initialize(this);
+	CurrentDataSource = new DataSource();
+	CurrentDataSource->Initialize(this);
 
-	m_window = new MainWindow();
-	m_window->Initialize(this, width, height, name);
+	Window = new MainWindow();
+	Window->Initialize(this, Width, Height, Name);
 
-	m_graphics = new GraphicRender_LoadModel();//GraphicRender_ClearWindow();
-	m_graphics->Initialize(this, width, height);
+	CurrentGraphic = new GraphicRender_LoadModel();//GraphicRender_ClearWindow();
+	CurrentGraphic->Initialize(this, Width, Height);
 
-	m_input = new InputClass();
-	m_input->Initialize(this);
+	Input = new InputClass();
+	Input->Initialize(this);
 	
 	return true;
 }
@@ -42,42 +42,42 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance, UINT width, UINT height, s
 
 void ApplicationMain::Run()
 {
-	if (m_window)
+	if (Window)
 	{
-		while (m_window->Run())
+		while (Window->Run())
 		{
-			m_input->Update();
-			m_graphics->Update();
-			m_graphics->Render();
+			Input->Update();
+			CurrentGraphic->Update();
+			CurrentGraphic->Render();
 		}
 	}
 }
 
 void ApplicationMain::Destroy()
 {
-	if (m_window)
+	if (Window)
 	{
-		m_window->Destroy();
-		delete m_window;
-		m_window = nullptr;
+		Window->Destroy();
+		delete Window;
+		Window = nullptr;
 	}
 
-	if (m_graphics)
+	if (CurrentGraphic)
 	{
-		m_graphics->Destroy();
-		delete m_graphics;
-		m_graphics = nullptr;
+		CurrentGraphic->Destroy();
+		delete CurrentGraphic;
+		CurrentGraphic = nullptr;
 	}
 
-	if (m_input)
+	if (Input)
 	{
-		m_input->Destroy();
-		delete m_input;
-		m_input = nullptr;
+		Input->Destroy();
+		delete Input;
+		Input = nullptr;
 	}
 }
 
 HWND ApplicationMain::GetHwnd()
 {
-	return m_window->GetHwnd();
+	return Window->GetHwnd();
 }

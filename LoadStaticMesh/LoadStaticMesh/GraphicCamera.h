@@ -10,17 +10,17 @@ public:
 	GraphicCamera();
 	~GraphicCamera();
 
-	void Init(XMFLOAT3 postion);
+	void Init(XMFLOAT3 InPosition);
 	XMMATRIX GetViewMarix();
-	XMMATRIX GetProjectionMatrix(float fov, float aspectRatio, float nearPlane = 1.0f, float farPlane = 1000.0f);
+	XMMATRIX GetProjectionMatrix(float Fov, float AspectRatio, float NearPlane = 1.0f, float FarPlane = 1000.0f);
 
 private:
 	void Reset();
 
-	XMFLOAT3 m_initialPosition;
-	XMFLOAT3 m_position;
-	float m_yaw;
-	float m_pitch;
-	XMFLOAT3 m_lookDirection;
-	XMFLOAT3 m_upDirection;
+	XMFLOAT3 InitialPosition;
+	XMFLOAT3 Position;
+	float Yaw;
+	float Pitch;
+	XMFLOAT3 LookDirection;
+	XMFLOAT3 UpDirection;
 };

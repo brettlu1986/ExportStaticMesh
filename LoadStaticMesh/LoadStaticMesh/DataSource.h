@@ -9,14 +9,14 @@ using namespace std;
 #pragma pack(push)
 #pragma pack(4)
 struct CameraData {
-	XMFLOAT3 location;
-	XMFLOAT3 target;
-	XMFLOAT3 rotator; // {Pitch, Yaw , Roll}
-	float fov;
-	float aspect;
+	XMFLOAT3 Location;
+	XMFLOAT3 Target;
+	XMFLOAT3 Rotator; // {Pitch, Yaw , Roll}
+	float Fov;
+	float Aspect;
 };
 
-struct MeshDataNew
+struct MeshData
 {
 	XMFLOAT3 Position;
 	XMFLOAT3 Normal;
@@ -29,8 +29,8 @@ struct MeshDataNew
 //use for {Position, Color} format
 struct Vertex_PositionColor
 {
-	XMFLOAT3 position;
-	XMFLOAT4 color;
+	XMFLOAT3 Position;
+	XMFLOAT4 Color;
 };
 #pragma pack(pop)
 
@@ -40,26 +40,37 @@ public:
 	DataSource();
 	~DataSource();
 
-	void Initialize(ApplicationMain* application);
+	void Initialize(ApplicationMain* Application);
 
-	const CameraData& GetCameraData() { return m_camera_data; }
+	const CameraData& GetCameraData() { return CameraDatas; }
 
-	void GetPositionColorInput(std::vector<Vertex_PositionColor>& outPut);
+	void GetPositionColorInput(std::vector<Vertex_PositionColor>& OutPut);
 	const vector<UINT>& GetIndexDataInput() 
 	{
 		return MeshIndices;
 	}
 
+	const vector<UINT16>& GetIndexDataValueHalfInput()
+	{
+		return MeshIndicesHalf;
+	}
+
+	bool IsIndicesValueHalfInt32() const {
+		return bUseHalfInt32;
+	}
 private: 
 	std::wstring GetSaveDirectory();
-	void ReadCameraDataFromFile(LPCWSTR fileName);
-	void ReadMeshDataFromFile(LPCWSTR fileName);
+	void ReadCameraDataFromFile(LPCWSTR FileName);
+	void ReadMeshDataFromFile(LPCWSTR FileName);
 
-	ApplicationMain* m_application;
-	std::wstring m_save_path;
+	ApplicationMain* MainApplication;
+	std::wstring SavePath;
 
-	CameraData m_camera_data;
+	CameraData CameraDatas;
 
-	vector<MeshDataNew> MeshDatas;
+	vector<MeshData> MeshDatas;
+
 	vector<UINT> MeshIndices;
+	vector<UINT16> MeshIndicesHalf;
+	bool bUseHalfInt32;
 };

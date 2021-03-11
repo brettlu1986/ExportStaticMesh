@@ -20,54 +20,54 @@
 // referenced by the GPU.
 using Microsoft::WRL::ComPtr;
 
-inline std::string HrToString(HRESULT hr)
+inline std::string HrToString(HRESULT Hr)
 {
     char s_str[64] = {};
-    sprintf_s(s_str, "HRESULT of 0x%08X", static_cast<UINT>(hr));
+    sprintf_s(s_str, "HRESULT of 0x%08X", static_cast<UINT>(Hr));
     return std::string(s_str);
 }
 
 class HrException : public std::runtime_error
 {
 public:
-    HrException(HRESULT hr) : std::runtime_error(HrToString(hr)), m_hr(hr) {}
-    HRESULT Error() const { return m_hr; }
+    HrException(HRESULT Hr) : std::runtime_error(HrToString(Hr)), HR(Hr) {}
+    HRESULT Error() const { return HR; }
 private:
-    const HRESULT m_hr;
+    const HRESULT HR;
 };
 
 #define SAFE_RELEASE(p) if (p) (p)->Release()
 
-inline void ThrowIfFailed(HRESULT hr)
+inline void ThrowIfFailed(HRESULT Hr)
 {
-    if (FAILED(hr))
+    if (FAILED(Hr))
     {
-        throw HrException(hr);
+        throw HrException(Hr);
     }
 }
 
-inline void GetAssetsPath(_Out_writes_(pathSize) WCHAR* path, UINT pathSize)
+inline void GetAssetsPath(_Out_writes_(PathSize) WCHAR* Path, UINT PathSize)
 {
-    if (path == nullptr)
+    if (Path == nullptr)
     {
         throw std::exception();
     }
 
-    DWORD size = GetModuleFileName(nullptr, path, pathSize);
-    if (size == 0 || size == pathSize)
+    DWORD size = GetModuleFileName(nullptr, Path, PathSize);
+    if (size == 0 || size == PathSize)
     {
         // Method failed or path was truncated.
         throw std::exception();
     }
 
-    WCHAR* lastSlash = wcsrchr(path, L'\\');
-    if (lastSlash)
+    WCHAR* LastSlash = wcsrchr(Path, L'\\');
+    if (LastSlash)
     {
-        *(lastSlash + 1) = L'\0';
+        *(LastSlash + 1) = L'\0';
     }
 }
 
-inline HRESULT ReadDataFromFile(LPCWSTR filename, byte** data, UINT* size)
+inline HRESULT ReadDataFromFile(LPCWSTR Filename, byte** Data, UINT* Size)
 {
     using namespace Microsoft::WRL;
 
@@ -80,9 +80,9 @@ inline HRESULT ReadDataFromFile(LPCWSTR filename, byte** data, UINT* size)
     extendedParams.lpSecurityAttributes = nullptr;
     extendedParams.hTemplateFile = nullptr;
 
-    Wrappers::FileHandle file(CreateFile2(filename, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING, &extendedParams));
+    Wrappers::FileHandle file(CreateFile2(Filename, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING, &extendedParams));
 #else
-    Wrappers::FileHandle file(CreateFile(filename, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN | SECURITY_SQOS_PRESENT | SECURITY_ANONYMOUS, nullptr));
+    Wrappers::FileHandle file(CreateFile(Filename, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN | SECURITY_SQOS_PRESENT | SECURITY_ANONYMOUS, nullptr));
 #endif
     if (file.Get() == INVALID_HANDLE_VALUE)
     {
@@ -100,10 +100,10 @@ inline HRESULT ReadDataFromFile(LPCWSTR filename, byte** data, UINT* size)
         throw std::exception();
     }
 
-    *data = reinterpret_cast<byte*>(malloc(fileInfo.EndOfFile.LowPart));
-    *size = fileInfo.EndOfFile.LowPart;
+    *Data = reinterpret_cast<byte*>(malloc(fileInfo.EndOfFile.LowPart));
+    *Size = fileInfo.EndOfFile.LowPart;
 
-    if (!ReadFile(file.Get(), *data, fileInfo.EndOfFile.LowPart, nullptr, nullptr))
+    if (!ReadFile(file.Get(), *Data, fileInfo.EndOfFile.LowPart, nullptr, nullptr))
     {
         throw std::exception();
     }

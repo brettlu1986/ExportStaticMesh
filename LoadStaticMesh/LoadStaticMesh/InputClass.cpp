@@ -3,7 +3,7 @@
 #include "InputClass.h"
 
 InputClass::InputClass()
-	:m_application(nullptr)
+	:MainApplication(nullptr)
 {
 
 }
@@ -14,9 +14,9 @@ InputClass::~InputClass()
 }
 
 
-void InputClass::Initialize(ApplicationMain* application)
+void InputClass::Initialize(ApplicationMain* Application)
 {
-	m_application = application;
+	MainApplication = Application;
 }
 
 bool InputClass::Update()
@@ -28,5 +28,5 @@ bool InputClass::Update()
 
 void InputClass::Destroy()
 {
-	m_application = nullptr;
+	MainApplication = nullptr;
 }

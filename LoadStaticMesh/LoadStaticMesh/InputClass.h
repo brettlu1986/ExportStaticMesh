@@ -18,5 +18,5 @@ public:
 	void OnKeyUp(UINT8 /*key*/) {}
 private:
 
-	ApplicationMain* m_application;
+	ApplicationMain* MainApplication;
 };

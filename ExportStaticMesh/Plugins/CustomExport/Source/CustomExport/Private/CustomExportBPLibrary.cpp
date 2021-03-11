@@ -25,6 +25,7 @@ static FString MeshBinaryFileName = TEXT("mesh.bin");
 const FString Success = "Success";
 const FString Failed = "Fail";
 const uint32 LOD_LEVEL = 0;
+const uint32 MAX_UINT16 = 65535;
 
 UCustomExportBPLibrary::UCustomExportBPLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -141,7 +142,7 @@ bool SaveMeshJsonToFile(const FMeshDataJson& MeshJson)
 	return FFileHelper::SaveStringToFile(Json, *MeshSaveFile);
 }
 
-bool SaveMeshBinaryToFile(const TArray<FMeshDataBinary>& MeshBinArr, const TArray<uint32>& Indices)
+bool SaveMeshBinaryToFile(const TArray<FMeshDataBinary>& MeshBinArr, const TArray<uint32>& Indices, const bool& bUseHalfInt32)
 {
 	FString MeshSaveFile = SavePath + MeshBinaryFileName;
 	char* ResultName = TCHAR_TO_ANSI(*MeshSaveFile);
@@ -157,7 +158,23 @@ bool SaveMeshBinaryToFile(const TArray<FMeshDataBinary>& MeshBinArr, const TArra
 
 	uint32 IndicesSize = Indices.Num();
 	Wf.write((char*)&IndicesSize, sizeof(uint32));
-	Wf.write((char*)Indices.GetData(), IndicesSize * sizeof(uint32));
+
+	if (!bUseHalfInt32)
+	{
+		Wf.write((char*)Indices.GetData(), IndicesSize * sizeof(uint32));
+	}
+	else
+	{
+		char* IndicesBuffer = new char[sizeof(uint16) * IndicesSize];
+		memset(IndicesBuffer, 0, sizeof(uint16) * IndicesSize);
+		for(uint32 i = 0; i < IndicesSize; i++)
+		{
+			uint16 Value = static_cast<uint16>(Indices[i]);
+			memcpy(IndicesBuffer + i * sizeof(uint16),&Value, sizeof(uint16));
+		}
+		Wf.write(IndicesBuffer, IndicesSize * sizeof(uint16));
+		delete[] IndicesBuffer;
+	}
 
 	Wf.close();
 	return Wf.good();
@@ -203,9 +220,15 @@ void UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh)
 	//insert indices
 	const FRawStaticIndexBuffer& IndexBuffer = StaticMeshResource.IndexBuffer;
 	uint32 IndicesCount = IndexBuffer.GetNumIndices();
+	bool bUseHalfInt = true;
 	for (uint32 Idx = 0; Idx < IndicesCount; ++Idx)
 	{
-		MeshJson.Indices.Add(IndexBuffer.GetIndex(Idx));
+		uint32 Value = IndexBuffer.GetIndex(Idx);
+		if(bUseHalfInt && Value > MAX_UINT16)
+		{
+			bUseHalfInt = false;
+		}
+		MeshJson.Indices.Add(Value);
 	}
 
 	//delete old files
@@ -218,7 +241,7 @@ void UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh)
 		return;
 	}
 
-	if(!SaveMeshBinaryToFile(MeshBinArr, MeshJson.Indices))
+	if(!SaveMeshBinaryToFile(MeshBinArr, MeshJson.Indices, bUseHalfInt))
 	{
 		ShowMessageDialog(FText::FromString(MeshBinaryFileName), FText::FromString(Failed));
 		return;

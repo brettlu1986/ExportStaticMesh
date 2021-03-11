@@ -3,10 +3,10 @@
 #include "ApplicationMain.h"
 #include "InputClass.h"
 
-ApplicationMain* MainWindow::m_application = nullptr;
+ApplicationMain* MainWindow::MainApplication = nullptr;
 
 MainWindow::MainWindow()
-	:m_hwnd(nullptr)
+	:hMainWnd(nullptr)
 
 {
 
@@ -17,72 +17,72 @@ MainWindow::~MainWindow()
 
 }
 
-void MainWindow::Initialize(ApplicationMain* application,  UINT width, UINT height, std::wstring name)
+void MainWindow::Initialize(ApplicationMain* Application, UINT Width, UINT Height, std::wstring Name)
 {
-	m_application = application; 
+	MainApplication = Application;
 
-	WNDCLASSEX windowClass = { 0 };
-	windowClass.cbSize = sizeof(WNDCLASSEX);
-	windowClass.style = CS_HREDRAW | CS_VREDRAW;
-	windowClass.lpfnWndProc = WindowProc;
-	windowClass.hInstance = m_application->GetHInstace();
-	windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-	windowClass.lpszClassName = L"MainWindow";
-	RegisterClassEx(&windowClass);
+	WNDCLASSEX WindowClass = { 0 };
+	WindowClass.cbSize = sizeof(WNDCLASSEX);
+	WindowClass.style = CS_HREDRAW | CS_VREDRAW;
+	WindowClass.lpfnWndProc = WindowProc;
+	WindowClass.hInstance = MainApplication->GetHInstace();
+	WindowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+	WindowClass.lpszClassName = L"MainWindow";
+	RegisterClassEx(&WindowClass);
 
-	RECT windowRect = { 0, 0, static_cast<LONG>(width), static_cast<LONG>(height) };
-	AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
+	RECT WindowRect = { 0, 0, static_cast<LONG>(Width), static_cast<LONG>(Height) };
+	AdjustWindowRect(&WindowRect, WS_OVERLAPPEDWINDOW, FALSE);
 
-	m_hwnd = CreateWindow(
-		windowClass.lpszClassName,
-		name.c_str(),
+	hMainWnd = CreateWindow(
+		WindowClass.lpszClassName,
+		Name.c_str(),
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		windowRect.right - windowRect.left,
-		windowRect.bottom - windowRect.top,
+		WindowRect.right - WindowRect.left,
+		WindowRect.bottom - WindowRect.top,
 		nullptr,        // We have no parent window.
 		nullptr,        // We aren't using menus.
-		m_application->GetHInstace(),
+		MainApplication->GetHInstace(),
 		nullptr);
 
-	ShowWindow(m_hwnd, SW_SHOWDEFAULT);
+	ShowWindow(hMainWnd, SW_SHOWDEFAULT);
 }
 
 bool MainWindow::Run()
 {
-	MSG msg = {};
+	MSG Msg = {};
 	// Process any messages in the queue.
-	if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+	if (PeekMessage(&Msg, NULL, 0, 0, PM_REMOVE))
 	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+		TranslateMessage(&Msg);
+		DispatchMessage(&Msg);
 	}
 
-	return msg.message != WM_QUIT;
+	return Msg.message != WM_QUIT;
 }
 
 void MainWindow::Destroy()
 {
 }
 
-LRESULT CALLBACK MainWindow::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK MainWindow::WindowProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
-	switch (message)
+	switch (Message)
 	{
 		case WM_KEYDOWN:
 		{
-			if (m_application)
+			if (MainApplication)
 			{
-				m_application->GetInput()->OnKeyDown(static_cast<UINT8>(wParam));
+				MainApplication->GetInput()->OnKeyDown(static_cast<UINT8>(wParam));
 			}
 		}
 		return 0;
 		case WM_KEYUP:
 		{
-			if (m_application)
+			if (MainApplication)
 			{
-				m_application->GetInput()->OnKeyUp(static_cast<UINT8>(wParam));
+				MainApplication->GetInput()->OnKeyUp(static_cast<UINT8>(wParam));
 			}
 		}
 		return 0;
@@ -92,5 +92,5 @@ LRESULT CALLBACK MainWindow::WindowProc(HWND hWnd, UINT message, WPARAM wParam, 
 		}
 		return 0;
 	}
-	return ::DefWindowProc(hWnd, message, wParam, lParam);
+	return ::DefWindowProc(hWnd, Message, wParam, lParam);
 }

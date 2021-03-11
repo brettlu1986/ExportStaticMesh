@@ -11,17 +11,16 @@ public:
 	MainWindow();
 	~MainWindow();
 
-	void Initialize(ApplicationMain* application, UINT width, UINT height, std::wstring name);
+	void Initialize(ApplicationMain* Application, UINT Width, UINT Height, std::wstring Name);
 	bool Run();
 	void Destroy();
 
-	HWND GetHwnd() { return m_hwnd; }
+	HWND GetHwnd() { return hMainWnd; }
 
 protected:
-	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
 
 private:
-	HWND m_hwnd;
-	std::wstring m_title;
-	static ApplicationMain* m_application;
+	HWND hMainWnd;
+	static ApplicationMain* MainApplication;
 };

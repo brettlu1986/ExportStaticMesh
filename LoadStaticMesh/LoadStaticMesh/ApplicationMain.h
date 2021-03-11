@@ -13,22 +13,22 @@ public:
 	ApplicationMain();
 	~ApplicationMain();
 
-	bool Initialize(HINSTANCE hInstance, UINT width, UINT height, std::wstring name);
+	bool Initialize(HINSTANCE hInstance, UINT Width, UINT Height, std::wstring Name);
 	void Run();
 	void Destroy();
 
-	HINSTANCE GetHInstace() { return m_hInstance; }
-	GraphicRender* GetGraphicRender() { return m_graphics; }
-	InputClass* GetInput() { return m_input; }
-	MainWindow* GetWindow() { return m_window; }
-	DataSource* GetDataSource() { return m_data_source; }
+	HINSTANCE GetHInstace() { return hMainInstance; }
+	GraphicRender* GetGraphicRender() { return CurrentGraphic; }
+	InputClass* GetInput() { return Input; }
+	MainWindow* GetWindow() { return Window; }
+	DataSource* GetDataSource() { return CurrentDataSource; }
 
 	HWND GetHwnd();
 private:
 	 
-	HINSTANCE m_hInstance;
-	MainWindow* m_window;
-	GraphicRender* m_graphics;
-	InputClass* m_input;
-	DataSource* m_data_source;
+	HINSTANCE hMainInstance;
+	MainWindow* Window;
+	GraphicRender* CurrentGraphic;
+	InputClass* Input;
+	DataSource* CurrentDataSource;
 };
