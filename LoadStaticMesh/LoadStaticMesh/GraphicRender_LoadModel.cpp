@@ -24,7 +24,13 @@ GraphicRender_LoadModel::GraphicRender_LoadModel()
 	, IndiceSize(0)
 	, IndicesCount(0)
 {
+	MtWorld = MathHelper::Identity4x4();
+	MtView = MathHelper::Identity4x4();
+	MtProj = MathHelper::Identity4x4();
 
+	Theta = 1.5f * XM_PI;
+	Phi = XM_PIDIV4;
+	Radius = 5.0f;
 }
 
 GraphicRender_LoadModel::~GraphicRender_LoadModel()
@@ -34,12 +40,80 @@ GraphicRender_LoadModel::~GraphicRender_LoadModel()
 
 void GraphicRender_LoadModel::OnInit()
 {
+	//Camera.Init({ 8, 8, 30 });
+	LoadPipline();
+	LoadAssets();
+}
+
+void GraphicRender_LoadModel::LoadPipline()
+{
+	CreateDxgiObjects();
+	CreateCommandObjects();
+	CreateSwapChain();
+	CreateDescriptorHeaps();
+	OnResize();
+}
+
+void GraphicRender_LoadModel::LoadAssets()
+{
+	// Reset the command list to prep for initialization commands.
+	ThrowIfFailed(CommandList->Reset(CommandAllocator.Get(), nullptr));
+
+	CreateConstantBuffer();
+	CreateRootSignature();
+	LoadShadersAndCreatePso();
+	CreateVertexBuffer();
+	CreateIndexBuffer();
+
+	// Execute the initialization commands.
+	ThrowIfFailed(CommandList->Close());
+	ID3D12CommandList* CmdsLists[] = { CommandList.Get() };
+	CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
+
+	// Wait until initialization is complete.
+	FlushCommandQueue();
+}
+
+void GraphicRender_LoadModel::CreateDxgiObjects()
+{
 	Viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(WndWidth), static_cast<float>(WndHeight));
 	ScissorRect = CD3DX12_RECT(0, 0, static_cast<LONG>(WndWidth), static_cast<LONG>(WndHeight));
 
-	//Camera.Init({ 8, 8, 30 });
-	LoadPipeline();
-	LoadAssets();
+#if defined(_DEBUG)
+	// Enable the debug layer (requires the Graphics Tools "optional feature").
+	// NOTE: Enabling the debug layer after device creation will invalidate the active device.
+	{
+		ComPtr<ID3D12Debug> DebugController;
+		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&DebugController))))
+		{
+			DebugController->EnableDebugLayer();
+			ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&DxgiFactory)));
+		}
+	}
+#endif
+	// Try to create hardware device.
+	HRESULT HardwareResult = D3D12CreateDevice(
+		nullptr,             // default adapter
+		D3D_FEATURE_LEVEL_11_0,
+		IID_PPV_ARGS(&Device));
+
+	if (FAILED(HardwareResult))
+	{
+		ComPtr<IDXGIAdapter> pWarpAdapter;
+		ThrowIfFailed(DxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&pWarpAdapter)));
+		ThrowIfFailed(D3D12CreateDevice(
+			pWarpAdapter.Get(),
+			D3D_FEATURE_LEVEL_11_0,
+			IID_PPV_ARGS(&Device)));
+	}
+	NAME_D3D12_OBJECT(Device);
+
+	ThrowIfFailed(Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&Fence)));
+	NAME_D3D12_OBJECT(Fence);
+
+	RtvDescriptorSize = Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	DsvDescriptorSize = Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+	CbvSrvUavDescriptorSize = Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
 void GraphicRender_LoadModel::CreateCommandObjects()
@@ -134,6 +208,222 @@ void GraphicRender_LoadModel::CreateDescriptorHeaps()
 	}
 }
 
+void GraphicRender_LoadModel::CreateConstantBuffer()
+{
+	//constant buffer size must 256's multiple
+	UINT ConstantBufferSize = (sizeof(ObjectConstants) + 255) & ~255;
+	const CD3DX12_HEAP_PROPERTIES ConstantProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	const CD3DX12_RESOURCE_DESC ConstantDesc = CD3DX12_RESOURCE_DESC::Buffer(ConstantBufferSize);
+
+	ThrowIfFailed(Device->CreateCommittedResource(
+		&ConstantProp,
+		D3D12_HEAP_FLAG_NONE,
+		&ConstantDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&ConstantBuffer)));
+
+	ThrowIfFailed(ConstantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&pCbvDataBegin)));
+	memcpy(pCbvDataBegin, &ObjectConstant, sizeof(ObjectConstant));
+	NAME_D3D12_OBJECT(ConstantBuffer);
+
+	D3D12_CONSTANT_BUFFER_VIEW_DESC CbvDesc = {};
+	CbvDesc.BufferLocation = ConstantBuffer->GetGPUVirtualAddress();
+	CbvDesc.SizeInBytes = ConstantBufferSize;
+	Device->CreateConstantBufferView(&CbvDesc, CbvHeap->GetCPUDescriptorHandleForHeapStart());
+}
+
+void GraphicRender_LoadModel::CreateRootSignature()
+{
+	// Create a root Signature consisting of a descriptor table with a single CBV.
+	CD3DX12_ROOT_PARAMETER RootParameters[1];
+	ZeroMemory(RootParameters, sizeof(RootParameters));
+	CD3DX12_DESCRIPTOR_RANGE Ranges[1];
+	ZeroMemory(Ranges, sizeof(Ranges));
+	Ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+	RootParameters[0].InitAsDescriptorTable(1, &Ranges[0]);
+
+	// Allow input layout and deny uneccessary access to certain pipeline stages.
+
+	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(1, RootParameters, 0, nullptr,
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+	ComPtr<ID3DBlob> Signature;
+	ComPtr<ID3DBlob> Error;
+	ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &Signature, &Error));
+	ThrowIfFailed(Device->CreateRootSignature(0, Signature->GetBufferPointer(), Signature->GetBufferSize(), IID_PPV_ARGS(&RootSignature)));
+	NAME_D3D12_OBJECT(RootSignature);
+}
+
+void GraphicRender_LoadModel::LoadShadersAndCreatePso()
+{
+	// Create the pipeline state, which includes compiling and loading shaders.
+	ComPtr<ID3DBlob> pVertexShader;
+	ComPtr<ID3DBlob> pPixelShader;
+
+#if defined(_DEBUG)
+	// Enable better shader debugging with the graphics debugging tools.
+	UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#else
+	UINT compileFlags = 0;
+#endif
+	ComPtr<ID3DBlob> ErrorsVs, ErrorsPs;
+	D3DCompileFromFile(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &pVertexShader, &ErrorsVs);
+	D3DCompileFromFile(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pPixelShader, &ErrorsPs);
+	if (ErrorsVs != nullptr)
+	{
+		OutputDebugStringA((char*)ErrorsVs->GetBufferPointer());
+	}
+	if (ErrorsPs != nullptr)
+	{
+		OutputDebugStringA((char*)ErrorsPs->GetBufferPointer());
+	}
+
+	// Define the vertex input layout.
+	D3D12_INPUT_ELEMENT_DESC InputElementDescs[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+	};
+
+	// Describe and create the graphics pipeline state object (PSO).
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC PsoDesc = {};
+	ZeroMemory(&PsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
+	PsoDesc.InputLayout = { InputElementDescs, _countof(InputElementDescs) };
+	PsoDesc.pRootSignature = RootSignature.Get();
+	PsoDesc.VS = CD3DX12_SHADER_BYTECODE(pVertexShader.Get());
+	PsoDesc.PS = CD3DX12_SHADER_BYTECODE(pPixelShader.Get());
+	PsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	PsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	PsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	PsoDesc.SampleMask = UINT_MAX;
+	PsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	PsoDesc.NumRenderTargets = 1;
+	PsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	PsoDesc.SampleDesc.Count = 1;
+	PsoDesc.SampleDesc.Quality = 0;	////not use 4XMSAA
+	PsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	ThrowIfFailed(Device->CreateGraphicsPipelineState(&PsoDesc, IID_PPV_ARGS(&PipelineState)));
+	NAME_D3D12_OBJECT(PipelineState);
+}
+
+void GraphicRender_LoadModel::CreateVertexBuffer()
+{
+	DataSource* Ds = MainApplication->GetDataSource();
+	std::vector<Vertex_PositionColor> TriangleVertices;
+	// Create the vertex buffer.
+	// Define the geometry for a triangle.  read the vertices data
+	Ds->GetPositionColorInput(TriangleVertices);
+	const UINT VertexBufferSize = static_cast<UINT>(TriangleVertices.size() * sizeof(Vertex_PositionColor));//sizeof(TriangleVertices);
+
+	const CD3DX12_HEAP_PROPERTIES VertexDefaultProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	const CD3DX12_RESOURCE_DESC VertexDefaultDesc = CD3DX12_RESOURCE_DESC::Buffer(VertexBufferSize);
+	ThrowIfFailed(Device->CreateCommittedResource(
+		&VertexDefaultProp,
+		D3D12_HEAP_FLAG_NONE,
+		&VertexDefaultDesc,
+		D3D12_RESOURCE_STATE_COMMON,
+		nullptr,
+		IID_PPV_ARGS(&VertexBuffer)));
+	NAME_D3D12_OBJECT(VertexBuffer);
+
+	//create vertex upload heap
+	const CD3DX12_HEAP_PROPERTIES VertextUploadProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	const CD3DX12_RESOURCE_DESC VertextUploadDesc = CD3DX12_RESOURCE_DESC::Buffer(VertexBufferSize);
+	ThrowIfFailed(Device->CreateCommittedResource(
+		&VertextUploadProp,
+		D3D12_HEAP_FLAG_NONE,
+		&VertextUploadDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&VertexUploadBuffer)));
+	NAME_D3D12_OBJECT(VertexUploadBuffer);
+
+	D3D12_SUBRESOURCE_DATA SubResourceData;
+	SubResourceData.pData = TriangleVertices.data();
+	SubResourceData.RowPitch = VertexBufferSize;
+	SubResourceData.SlicePitch = SubResourceData.RowPitch;
+
+	const D3D12_RESOURCE_BARRIER RbVertex1 = CD3DX12_RESOURCE_BARRIER::Transition(VertexBuffer.Get(),
+		D3D12_RESOURCE_STATE_COMMON,
+		D3D12_RESOURCE_STATE_COPY_DEST);
+	CommandList->ResourceBarrier(1, &RbVertex1);
+	UpdateSubresources<1>(CommandList.Get(), VertexBuffer.Get(), VertexUploadBuffer.Get(), 0, 0, 1, &SubResourceData);
+	const D3D12_RESOURCE_BARRIER RbVertex2 = CD3DX12_RESOURCE_BARRIER::Transition(VertexBuffer.Get(),
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		D3D12_RESOURCE_STATE_GENERIC_READ);
+	CommandList->ResourceBarrier(1, &RbVertex2);
+
+	VertexBufferView.BufferLocation = VertexBuffer->GetGPUVirtualAddress();
+	VertexBufferView.StrideInBytes = sizeof(Vertex_PositionColor);
+	VertexBufferView.SizeInBytes = VertexBufferSize;
+}
+
+void GraphicRender_LoadModel::CreateIndexBuffer()
+{
+	//create index buffer 
+	DataSource* Ds = MainApplication->GetDataSource();
+	bool bUseHalfInt32 = Ds->IsIndicesValueHalfInt32();
+	if (!bUseHalfInt32)
+	{
+		IndicesCount = static_cast<UINT>(Ds->GetIndexDataInput().size());
+		IndiceSize = IndicesCount * sizeof(UINT);
+	}
+	else
+	{
+		IndicesCount = static_cast<UINT>(Ds->GetIndexDataValueHalfInput().size());
+		IndiceSize = IndicesCount * sizeof(UINT16);
+	}
+
+	const CD3DX12_HEAP_PROPERTIES IndexDefaultPro = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	const CD3DX12_RESOURCE_DESC IndexDefaultDesc = CD3DX12_RESOURCE_DESC::Buffer(IndiceSize);
+	ThrowIfFailed(Device->CreateCommittedResource(
+		&IndexDefaultPro,
+		D3D12_HEAP_FLAG_NONE,
+		&IndexDefaultDesc,
+		D3D12_RESOURCE_STATE_COMMON,
+		nullptr,
+		IID_PPV_ARGS(&IndexBuffer)));
+	NAME_D3D12_OBJECT(IndexBuffer);
+
+	const CD3DX12_HEAP_PROPERTIES IndexUploadPro = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	const CD3DX12_RESOURCE_DESC IndexUploadDesc = CD3DX12_RESOURCE_DESC::Buffer(IndiceSize);
+	ThrowIfFailed(Device->CreateCommittedResource(
+		&IndexUploadPro,
+		D3D12_HEAP_FLAG_NONE,
+		&IndexUploadDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&IndexBufferUpload)));
+	NAME_D3D12_OBJECT(IndexBufferUpload);
+
+	D3D12_SUBRESOURCE_DATA SubResourceData;
+	if (bUseHalfInt32)
+		SubResourceData.pData = Ds->GetIndexDataValueHalfInput().data();
+	else
+		SubResourceData.pData = Ds->GetIndexDataInput().data();
+
+	SubResourceData.RowPitch = IndiceSize;
+	SubResourceData.SlicePitch = SubResourceData.RowPitch;
+
+	const D3D12_RESOURCE_BARRIER RbIndex1 = CD3DX12_RESOURCE_BARRIER::Transition(IndexBuffer.Get(),
+		D3D12_RESOURCE_STATE_COMMON,
+		D3D12_RESOURCE_STATE_COPY_DEST);
+	CommandList->ResourceBarrier(1, &RbIndex1);
+	UpdateSubresources<1>(CommandList.Get(), IndexBuffer.Get(), IndexBufferUpload.Get(), 0, 0, 1, &SubResourceData);
+	const D3D12_RESOURCE_BARRIER RbIndex2 = CD3DX12_RESOURCE_BARRIER::Transition(IndexBuffer.Get(),
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		D3D12_RESOURCE_STATE_GENERIC_READ);
+	CommandList->ResourceBarrier(1, &RbIndex2);
+
+	IndexBufferView.BufferLocation = IndexBuffer->GetGPUVirtualAddress();
+	IndexBufferView.Format = bUseHalfInt32 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+	IndexBufferView.SizeInBytes = IndiceSize;
+
+}
+
+
+
 void GraphicRender_LoadModel::FlushCommandQueue()
 {
 	//Create synchronization objects and wait until assets have been uploaded to the GPU.
@@ -203,8 +493,8 @@ void GraphicRender_LoadModel::OnResize()
 	// we need to create the depth buffer resource with a typeless format.  
 	DepthStencilDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 
-	DepthStencilDesc.SampleDesc.Count =  1;
-	DepthStencilDesc.SampleDesc.Quality =  0;
+	DepthStencilDesc.SampleDesc.Count = 1;
+	DepthStencilDesc.SampleDesc.Quality = 0;
 	DepthStencilDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 	DepthStencilDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
@@ -235,7 +525,7 @@ void GraphicRender_LoadModel::OnResize()
 		D3D12_RESOURCE_STATE_COMMON,
 		D3D12_RESOURCE_STATE_DEPTH_WRITE);
 	CommandList->ResourceBarrier(
-		1, 
+		1,
 		&Rb);
 
 	// Execute the resize commands.
@@ -245,276 +535,6 @@ void GraphicRender_LoadModel::OnResize()
 
 	// Wait until resize is complete.
 	FlushCommandQueue();
-}
-
-void GraphicRender_LoadModel::LoadPipeline()
-{
-
-#if defined(_DEBUG)
-	// Enable the debug layer (requires the Graphics Tools "optional feature").
-	// NOTE: Enabling the debug layer after device creation will invalidate the active device.
-	{
-		ComPtr<ID3D12Debug> DebugController;
-		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&DebugController))))
-		{
-			DebugController->EnableDebugLayer();
-			ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&DxgiFactory)));
-		}
-	}
-#endif
-	// Try to create hardware device.
-	HRESULT HardwareResult = D3D12CreateDevice(
-		nullptr,             // default adapter
-		D3D_FEATURE_LEVEL_11_0,
-		IID_PPV_ARGS(&Device));
-
-	if (FAILED(HardwareResult))
-	{
-		ComPtr<IDXGIAdapter> pWarpAdapter;
-		ThrowIfFailed(DxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&pWarpAdapter)));
-		ThrowIfFailed(D3D12CreateDevice(
-			pWarpAdapter.Get(),
-			D3D_FEATURE_LEVEL_11_0,
-			IID_PPV_ARGS(&Device)));
-	}
-	NAME_D3D12_OBJECT(Device);
-
-	ThrowIfFailed(Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&Fence)));
-	NAME_D3D12_OBJECT(Fence);
-
-	RtvDescriptorSize = Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	DsvDescriptorSize = Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-	CbvSrvUavDescriptorSize = Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-	CreateCommandObjects();
-	CreateSwapChain();
-	CreateDescriptorHeaps();
-	OnResize();
-}
-
-void GraphicRender_LoadModel::LoadAssets()
-{
-	// Reset the command list to prep for initialization commands.
-	ThrowIfFailed(CommandList->Reset(CommandAllocator.Get(), nullptr));
-
-	//create constant buffer
-	{
-		//constant buffer size must 256's multiple
-		UINT ConstantBufferSize = (sizeof(ObjectConstants) + 255) & ~255;
-		const CD3DX12_HEAP_PROPERTIES ConstantProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-		const CD3DX12_RESOURCE_DESC ConstantDesc = CD3DX12_RESOURCE_DESC::Buffer(ConstantBufferSize);
-
-		ThrowIfFailed(Device->CreateCommittedResource(
-			&ConstantProp,
-			D3D12_HEAP_FLAG_NONE,
-			&ConstantDesc,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			nullptr,
-			IID_PPV_ARGS(&ConstantBuffer)));
-
-		ThrowIfFailed(ConstantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&pCbvDataBegin)));
-		memcpy(pCbvDataBegin, &ObjectConstant, sizeof(ObjectConstant));
-		NAME_D3D12_OBJECT(ConstantBuffer);
-
-		D3D12_CONSTANT_BUFFER_VIEW_DESC CbvDesc = {};
-		CbvDesc.BufferLocation = ConstantBuffer->GetGPUVirtualAddress();
-		CbvDesc.SizeInBytes = ConstantBufferSize;
-		Device->CreateConstantBufferView(&CbvDesc, CbvHeap->GetCPUDescriptorHandleForHeapStart());
-	}
-
-	// Create a root Signature consisting of a descriptor table with a single CBV.
-	{
-		CD3DX12_ROOT_PARAMETER RootParameters[1];
-		CD3DX12_DESCRIPTOR_RANGE Ranges[1];
-		Ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
-		RootParameters[0].InitAsDescriptorTable(1, &Ranges[0]);
-
-		// Allow input layout and deny uneccessary access to certain pipeline stages.
-
-		CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(1, RootParameters, 0, nullptr,
-			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
-		ComPtr<ID3DBlob> Signature;
-		ComPtr<ID3DBlob> Error;
-		ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &Signature, &Error));
-		ThrowIfFailed(Device->CreateRootSignature(0, Signature->GetBufferPointer(), Signature->GetBufferSize(), IID_PPV_ARGS(&RootSignature)));
-		NAME_D3D12_OBJECT(RootSignature);
-	}
-
-
-	// Create the pipeline state, which includes compiling and loading shaders.
-	ComPtr<ID3DBlob> pVertexShader;
-	ComPtr<ID3DBlob> pPixelShader;
-
-#if defined(_DEBUG)
-	// Enable better shader debugging with the graphics debugging tools.
-	UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#else
-	UINT compileFlags = 0;
-#endif
-	ComPtr<ID3DBlob> ErrorsVs, ErrorsPs;
-	D3DCompileFromFile(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &pVertexShader, &ErrorsVs);
-	D3DCompileFromFile(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pPixelShader, &ErrorsPs);
-	if (ErrorsVs != nullptr)
-	{
-		OutputDebugStringA((char*)ErrorsVs->GetBufferPointer());
-	}
-	if (ErrorsPs != nullptr)
-	{
-		OutputDebugStringA((char*)ErrorsPs->GetBufferPointer());
-	}
-	// Define the vertex input layout.
-	D3D12_INPUT_ELEMENT_DESC InputElementDescs[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-	};
-
-	DataSource* Ds = MainApplication->GetDataSource();
-	std::vector<Vertex_PositionColor> TriangleVertices;
-	// Create the vertex buffer.
-	{
-		// Define the geometry for a triangle.  read the vertices data
-		Ds->GetPositionColorInput(TriangleVertices);
-		const UINT VertexBufferSize = static_cast<UINT>(TriangleVertices.size() * sizeof(Vertex_PositionColor));//sizeof(TriangleVertices);
-		
-		const CD3DX12_HEAP_PROPERTIES VertexDefaultProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-		const CD3DX12_RESOURCE_DESC VertexDefaultDesc = CD3DX12_RESOURCE_DESC::Buffer(VertexBufferSize);
-		ThrowIfFailed(Device->CreateCommittedResource(
-			&VertexDefaultProp,
-			D3D12_HEAP_FLAG_NONE,
-			&VertexDefaultDesc,
-			D3D12_RESOURCE_STATE_COMMON,
-			nullptr,
-			IID_PPV_ARGS(&VertexBuffer)));
-		NAME_D3D12_OBJECT(VertexBuffer);
-
-		//create vertex upload heap
-		const CD3DX12_HEAP_PROPERTIES VertextUploadProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-		const CD3DX12_RESOURCE_DESC VertextUploadDesc = CD3DX12_RESOURCE_DESC::Buffer(VertexBufferSize);
-		ThrowIfFailed(Device->CreateCommittedResource(
-			&VertextUploadProp,
-			D3D12_HEAP_FLAG_NONE,
-			&VertextUploadDesc,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			nullptr,
-			IID_PPV_ARGS(&VertexUploadBuffer)));
-		NAME_D3D12_OBJECT(VertexUploadBuffer);
-
-		D3D12_SUBRESOURCE_DATA SubResourceData;
-		SubResourceData.pData = TriangleVertices.data();
-		SubResourceData.RowPitch = VertexBufferSize;
-		SubResourceData.SlicePitch = SubResourceData.RowPitch;
-
-		const D3D12_RESOURCE_BARRIER RbVertex1 = CD3DX12_RESOURCE_BARRIER::Transition(VertexBuffer.Get(),
-			D3D12_RESOURCE_STATE_COMMON,
-			D3D12_RESOURCE_STATE_COPY_DEST);
-		CommandList->ResourceBarrier(1, &RbVertex1);
-		UpdateSubresources<1>(CommandList.Get(), VertexBuffer.Get(), VertexUploadBuffer.Get(), 0, 0, 1, &SubResourceData);
-		const D3D12_RESOURCE_BARRIER RbVertex2 = CD3DX12_RESOURCE_BARRIER::Transition(VertexBuffer.Get(),
-			D3D12_RESOURCE_STATE_COPY_DEST,
-			D3D12_RESOURCE_STATE_GENERIC_READ);
-		CommandList->ResourceBarrier(1, &RbVertex2);
-
-		VertexBufferView.BufferLocation = VertexBuffer->GetGPUVirtualAddress();
-		VertexBufferView.StrideInBytes = sizeof(Vertex_PositionColor);
-		VertexBufferView.SizeInBytes = VertexBufferSize;
-
-	}
-
-	//create index buffer 
-	{
-		bool bUseHalfInt32 = Ds->IsIndicesValueHalfInt32();
-		
-		if(!bUseHalfInt32)
-		{
-			IndicesCount = static_cast<UINT>(Ds->GetIndexDataInput().size());
-			IndiceSize = IndicesCount * sizeof(UINT);
-		}
-		else 
-		{
-			IndicesCount = static_cast<UINT>(Ds->GetIndexDataValueHalfInput().size());
-			IndiceSize = IndicesCount * sizeof(UINT16);
-		}
-
-		const CD3DX12_HEAP_PROPERTIES IndexDefaultPro = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-		const CD3DX12_RESOURCE_DESC IndexDefaultDesc = CD3DX12_RESOURCE_DESC::Buffer(IndiceSize);
-		ThrowIfFailed(Device->CreateCommittedResource(
-			&IndexDefaultPro,
-			D3D12_HEAP_FLAG_NONE,
-			&IndexDefaultDesc,
-			D3D12_RESOURCE_STATE_COMMON,
-			nullptr,
-			IID_PPV_ARGS(&IndexBuffer)));
-		NAME_D3D12_OBJECT(IndexBuffer);
-
-		const CD3DX12_HEAP_PROPERTIES IndexUploadPro = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-		const CD3DX12_RESOURCE_DESC IndexUploadDesc = CD3DX12_RESOURCE_DESC::Buffer(IndiceSize);
-		ThrowIfFailed(Device->CreateCommittedResource(
-			&IndexUploadPro,
-			D3D12_HEAP_FLAG_NONE,
-			&IndexUploadDesc,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			nullptr,
-			IID_PPV_ARGS(&IndexBufferUpload)));
-		NAME_D3D12_OBJECT(IndexBufferUpload);
-
-		D3D12_SUBRESOURCE_DATA SubResourceData;
-		if(bUseHalfInt32)
-			SubResourceData.pData = Ds->GetIndexDataValueHalfInput().data();
-		else 
-			SubResourceData.pData = Ds->GetIndexDataInput().data();
-		
-		SubResourceData.RowPitch = IndiceSize;
-		SubResourceData.SlicePitch = SubResourceData.RowPitch;
-
-		const D3D12_RESOURCE_BARRIER RbIndex1 = CD3DX12_RESOURCE_BARRIER::Transition(IndexBuffer.Get(),
-			D3D12_RESOURCE_STATE_COMMON,
-			D3D12_RESOURCE_STATE_COPY_DEST);
-		CommandList->ResourceBarrier(1, &RbIndex1);
-		UpdateSubresources<1>(CommandList.Get(), IndexBuffer.Get(), IndexBufferUpload.Get(), 0, 0, 1, &SubResourceData);
-		const D3D12_RESOURCE_BARRIER RbIndex2 = CD3DX12_RESOURCE_BARRIER::Transition(IndexBuffer.Get(),
-			D3D12_RESOURCE_STATE_COPY_DEST,
-			D3D12_RESOURCE_STATE_GENERIC_READ);
-		CommandList->ResourceBarrier(1, &RbIndex2);
-
-		IndexBufferView.BufferLocation = IndexBuffer->GetGPUVirtualAddress();
-		IndexBufferView.Format = bUseHalfInt32 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
-		IndexBufferView.SizeInBytes = IndiceSize;
-
-	}
-
-	//create pipline state object
-	{
-		// Describe and create the graphics pipeline state object (PSO).
-		D3D12_GRAPHICS_PIPELINE_STATE_DESC PsoDesc = {};
-		ZeroMemory(&PsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
-		PsoDesc.InputLayout = { InputElementDescs, _countof(InputElementDescs) };
-		PsoDesc.pRootSignature = RootSignature.Get();
-		PsoDesc.VS = CD3DX12_SHADER_BYTECODE(pVertexShader.Get());
-		PsoDesc.PS = CD3DX12_SHADER_BYTECODE(pPixelShader.Get());
-		PsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-		PsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-		PsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-		PsoDesc.SampleMask = UINT_MAX;
-		PsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-		PsoDesc.NumRenderTargets = 1;
-		PsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-		PsoDesc.SampleDesc.Count = 1;
-		PsoDesc.SampleDesc.Quality = 0;	////²»Ê¹ÓÃ4XMSAA
-		PsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		ThrowIfFailed(Device->CreateGraphicsPipelineState(&PsoDesc, IID_PPV_ARGS(&PipelineState)));
-		NAME_D3D12_OBJECT(PipelineState);
-	}
-
-	// Execute the initialization commands.
-	ThrowIfFailed(CommandList->Close());
-	ID3D12CommandList* CmdsLists[] = { CommandList.Get() };
-	CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
-
-	// Wait until initialization is complete.
-	FlushCommandQueue();
-
 }
 
 void GraphicRender_LoadModel::Update()
@@ -544,8 +564,8 @@ void GraphicRender_LoadModel::Update()
 bool GraphicRender_LoadModel::Render()
 {
 	// Command list allocators can only be reset when the associated 
-  // command lists have finished execution on the GPU; apps should use 
-  // fences to determine GPU execution progress.
+	// command lists have finished execution on the GPU; apps should use 
+	// fences to determine GPU execution progress.
 	ThrowIfFailed(CommandAllocator->Reset());
 
 	// However, when ExecuteCommandList() is called on a particular command 

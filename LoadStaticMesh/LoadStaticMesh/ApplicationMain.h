@@ -17,13 +17,13 @@ public:
 	void Run();
 	void Destroy();
 
-	HINSTANCE GetHInstace() { return hMainInstance; }
-	GraphicRender* GetGraphicRender() { return CurrentGraphic; }
-	InputClass* GetInput() { return Input; }
-	MainWindow* GetWindow() { return Window; }
-	DataSource* GetDataSource() { return CurrentDataSource; }
+	const HINSTANCE& GetHInstace() const { return hMainInstance; }
+	GraphicRender* GetGraphicRender() const { return CurrentGraphic; }
+	InputClass* GetInput() const { return Input; }
+	MainWindow* GetWindow() const { return Window; }
+	DataSource* GetDataSource() const { return CurrentDataSource; }
 
-	HWND GetHwnd();
+	const HWND& GetHwnd();
 private:
 	 
 	HINSTANCE hMainInstance;

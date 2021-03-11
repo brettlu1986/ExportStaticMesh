@@ -18,6 +18,26 @@ public:
 	virtual void Destroy();
 
 private:
+	void LoadPipline();
+	void LoadAssets();
+
+	// pipline step
+	void CreateDxgiObjects();
+	void CreateCommandObjects();
+	void CreateSwapChain();
+	void CreateDescriptorHeaps();
+
+	//create assets step
+	void CreateConstantBuffer();
+	void CreateRootSignature();
+	void LoadShadersAndCreatePso();
+	void CreateVertexBuffer();
+	void CreateIndexBuffer();
+
+	void OnResize();
+	void FlushCommandQueue();
+
+private:
 
 	struct ObjectConstants
 	{
@@ -74,22 +94,11 @@ private:
 	ObjectConstants ObjectConstant;
 
 	//
-	XMFLOAT4X4 MtWorld = MathHelper::Identity4x4();
-	XMFLOAT4X4 MtView = MathHelper::Identity4x4();
-	XMFLOAT4X4 MtProj = MathHelper::Identity4x4();
+	XMFLOAT4X4 MtWorld; 
+	XMFLOAT4X4 MtView; 
+	XMFLOAT4X4 MtProj; 
 
-	float Theta = 1.5f * XM_PI;
-	float Phi = XM_PIDIV4;
-	float Radius = 5.0f;
-	//
-	void CreateCommandObjects();
-	void CreateSwapChain();
-	void CreateDescriptorHeaps();
-
-	void OnResize();
-	void FlushCommandQueue();
-
-	void LoadPipeline();
-	void LoadAssets();
-
+	float Theta;
+	float Phi; 
+	float Radius;
 };

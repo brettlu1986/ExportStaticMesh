@@ -77,7 +77,7 @@ void ApplicationMain::Destroy()
 	}
 }
 
-HWND ApplicationMain::GetHwnd()
+const HWND& ApplicationMain::GetHwnd()
 {
 	return Window->GetHwnd();
 }
