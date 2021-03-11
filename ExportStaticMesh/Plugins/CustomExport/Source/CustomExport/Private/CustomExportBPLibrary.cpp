@@ -26,6 +26,7 @@ const FString Success = "Success";
 const FString Failed = "Fail";
 const uint32 LOD_LEVEL = 0;
 const uint32 MAX_UINT16 = 65535;
+const float POSITION_SCALE = 0.01f;
 
 UCustomExportBPLibrary::UCustomExportBPLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -75,7 +76,8 @@ void GetVertexPosition(const TArray<bool>& ValidFormat, uint32 Index, const FSta
 	if (ValidFormat[(uint32)EVsFormat::POSITION])
 	{
 		const FPositionVertexBuffer& PositionBuffer = VertexBuffer.PositionVertexBuffer;
-		const FVector& Position = PositionBuffer.VertexPosition(Index);
+		FVector Position = PositionBuffer.VertexPosition(Index);
+		Position *= POSITION_SCALE;
 		MeshDataJson.Positions.Append({ Position.X, Position.Y, Position.Z });
 		MeshDataBin.Position = Position;
 	}
@@ -260,8 +262,8 @@ void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component)
 	FVector Target = FaceDir * 5.f + CameraLocation;
 	
 	FCameraData CameraData = {};
-	CameraData.Location = CameraLocation;
-	CameraData.Target = Target;
+	CameraData.Location = CameraLocation * POSITION_SCALE;
+	CameraData.Target = Target * POSITION_SCALE;
 	CameraData.Rotator = CameraRot;
 	CameraData.Fov = FOV;
 	CameraData.Aspect = AspectRatio;

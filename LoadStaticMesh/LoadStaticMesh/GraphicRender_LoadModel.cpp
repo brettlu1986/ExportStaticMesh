@@ -545,7 +545,7 @@ void GraphicRender_LoadModel::Update()
 	float y = Radius * cosf(Phi);
 
 	// Build the view matrix.
-	XMVECTOR Pos = XMVectorSet(x, y * 100.f, z, 1.0f);
+	XMVECTOR Pos = XMVectorSet(x, y, z, 1.0f);
 	XMVECTOR Target = XMVectorZero();
 	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
