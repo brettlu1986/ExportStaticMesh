@@ -78,6 +78,16 @@ struct FMeshDataBinary
 	FVector2D Tex0;
 	FVector2D Tex1;
 	FLinearColor Color;
+
+	FMeshDataBinary()
+		:Position(FVector::ZeroVector)
+		,Normal(FVector::ZeroVector)
+		,Tangent(FVector::ZeroVector)
+		,Tex0(FVector2D::ZeroVector)
+		,Tex1(FVector2D::ZeroVector)
+		,Color(FLinearColor::White)
+	{
+	}
 };
 
 USTRUCT()
@@ -112,11 +122,6 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Static Mesh"), Category = "CustomExportBPLibrary")
 	static void ExportStaticMesh(const UStaticMesh* Mesh);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Static Mesh New"), Category = "CustomExportBPLibrary")
-	static void ExportStaticMeshNew(const UStaticMesh* Mesh);
-
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Camera"), Category = "CustomExportBPLibrary")
 	static void ExportCamera(const UCameraComponent* Component);
-
-
 };

@@ -16,19 +16,23 @@ struct CameraData {
 	float aspect;
 };
 
-struct MeshData
+struct MeshDataNew
 {
-	vector<XMFLOAT3> vertices;
-	vector<XMFLOAT4> colors;
-	vector<UINT32> indices;
+	XMFLOAT3 Position;
+	XMFLOAT3 Normal;
+	XMFLOAT3 Tangent;
+	XMFLOAT2 Tex0;
+	XMFLOAT2 Tex1;
+	XMFLOAT4 Color;
 };
-#pragma pack(pop)
 
+//use for {Position, Color} format
 struct Vertex_PositionColor
 {
 	XMFLOAT3 position;
 	XMFLOAT4 color;
 };
+#pragma pack(pop)
 
 class DataSource
 {
@@ -39,21 +43,23 @@ public:
 	void Initialize(ApplicationMain* application);
 
 	const CameraData& GetCameraData() { return m_camera_data; }
-	const MeshData& GetMeshData() { return m_mesh_data; }
 
 	void GetPositionColorInput(std::vector<Vertex_PositionColor>& outPut);
-	void GetIndexDataInput(std::vector<UINT32>& outPut);
+	const vector<UINT>& GetIndexDataInput() 
+	{
+		return MeshIndices;
+	}
+
 private: 
 	std::wstring GetSaveDirectory();
-	//void WriteCameraDataToFile(LPCWSTR fileName, CameraData& cameraData);
 	void ReadCameraDataFromFile(LPCWSTR fileName);
-
-	//void WriteMeshDataToFile(LPCWSTR fileName, MeshData& meshData);
 	void ReadMeshDataFromFile(LPCWSTR fileName);
 
 	ApplicationMain* m_application;
 	std::wstring m_save_path;
 
 	CameraData m_camera_data;
-	MeshData m_mesh_data;
+
+	vector<MeshDataNew> MeshDatas;
+	vector<UINT> MeshIndices;
 };

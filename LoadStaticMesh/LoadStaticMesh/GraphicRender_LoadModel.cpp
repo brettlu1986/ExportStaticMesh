@@ -426,8 +426,7 @@ void GraphicRender_LoadModel::LoadAssets()
 
 	//create index buffer 
 	{
-		std::vector<UINT32> indices;
-		ds->GetIndexDataInput(indices);
+		const std::vector<UINT32>& indices = ds->GetIndexDataInput();
 		m_indiceSize = static_cast<UINT>(indices.size() * sizeof(UINT));
 		m_indicesCount = static_cast<UINT>(indices.size());
 
