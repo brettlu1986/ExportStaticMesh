@@ -27,6 +27,7 @@ const FString Failed = "Fail";
 const uint32 LOD_LEVEL = 0;
 const uint32 MAX_UINT16 = 65535;
 const float POSITION_SCALE = 0.01f;
+const float CameraTargetOffset = 350.f;
 
 UCustomExportBPLibrary::UCustomExportBPLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -259,7 +260,7 @@ void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component)
 	float AspectRatio = Component->AspectRatio;
 
 	FVector FaceDir = CameraRot.Vector();
-	FVector Target = FaceDir * 5.f + CameraLocation;
+	FVector Target = FaceDir * CameraTargetOffset + CameraLocation;
 	
 	FCameraData CameraData = {};
 	CameraData.Location = CameraLocation * POSITION_SCALE;

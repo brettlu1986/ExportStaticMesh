@@ -539,7 +539,24 @@ void GraphicRender_LoadModel::OnResize()
 
 void GraphicRender_LoadModel::Update()
 {
+	//calculate model matrix : scale * rotation * translation
+	//in ue4: ue4x = Forward ue4y = Right ue4z = Up, so set x-Roll y-Pitch z-Yaw in ue4 is  UE4Roll, UE4Pitch, UE4Yaw
+	//in direct x: use left hand coordinate, x = Right, y = Up, z = Forward
+	//we have the conversion: x = ue4y, y = ue4z, z = ue4x, Roll = UE4Pitch, Pitch = UE4Yaw, Yaw = UE4Roll
+
+	/*DataSource* Ds = MainApplication->GetDataSource();
+	CameraData& CData = Ds->GetCameraData();
+	XMFLOAT3 LocationTarget = CData.GetUe4ConvertLocation(CData.Target);
+	XMStoreFloat4x4(&MtWorld, XMMatrixTranslation(LocationTarget.x, LocationTarget.y, LocationTarget.z));*/
+
+	/*FXMVECTOR EyePosition = XMVectorSet(CData.Location.x, CData.Location.y, CData.Location.z);
+	FXMVECTOR EyeDirection =
+		FXMVECTOR UpDirection
+
+	XMMatrixLookToLH()*/
+
 	// Convert Spherical to Cartesian coordinates.
+	//use left hand coordinates, z point to the screen inside
 	float x = Radius * sinf(Phi) * cosf(Theta);
 	float z = Radius * sinf(Phi) * sinf(Theta);
 	float y = Radius * cosf(Phi);
@@ -556,7 +573,7 @@ void GraphicRender_LoadModel::Update()
 	XMMATRIX Proj = XMLoadFloat4x4(&MtProj);
 	XMMATRIX WorldViewProj = World * View * Proj;
 
-	// Update the constant buffer with the latest WorldViewProj matrix.
+	 //Update the constant buffer with the latest WorldViewProj matrix.
 	XMStoreFloat4x4(&ObjectConstant.WorldViewProj, XMMatrixTranspose(WorldViewProj));
 	memcpy(pCbvDataBegin, &ObjectConstant, sizeof(ObjectConstant));
 }

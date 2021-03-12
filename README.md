@@ -51,7 +51,9 @@ first dx12 framework
 左手坐标系：手掌朝上方平， 手指四指向右指向+x, 四指向上卷曲方向是+y, 拇指方向是+z
 右手坐标系：右手手掌朝上方平，手指四指向右指向+x，四指向上卷曲方向是+y，拇指方向是+z
 左右手区别就是z方向不一样
-3. 计算
+3. [行列式基本计算规则](https://www.math10.com/en/algebra/matrices/determinant.html)
+4. [矩阵 平移 旋转 缩放变换推导](https://zhuanlan.zhihu.com/p/104331790)
+5. 计算
 -vector可以看作方向直接反向反转， x 标量可以看作缩放，不好想象就放到2d坐标系
 
 4. [模型变换参考视频，注重推导过程值得一看](https://www.bilibili.com/video/av6731067/?p=1)
