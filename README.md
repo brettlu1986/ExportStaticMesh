@@ -1,6 +1,4 @@
-# dx12proj1
-first dx12 framework
-#d3d12 与d3d11区别：
+# d3d12 与d3d11区别：
 [d3d12与d3d11区别](https://docs.microsoft.com/en-us/windows/win32/direct3d12/important-changes-from-directx-11-to-directx-12)
 
 # window初始化 
@@ -14,30 +12,65 @@ first dx12 framework
 # d3d12初始化
 - 几个必须包含进来的lib: d3d12.lib dxgi.lib d3dcompiler.lib ：绘制api  硬件显卡相关  shader编译
 
-1. 创建Device 指定feature level
-2. create command queue， 用于向gpu传递指令
-3. 创建DXGI工厂，获取当前的显卡 显卡输出  IDXGIAdapter adapter IDXGIOutput adapterOutput
+1. 通过D3D12Factory枚举显卡adapter, 创建DXGI工厂，获取当前的显卡 显卡输出  IDXGIAdapter adapter IDXGIOutput adapterOutput
+2. 创建Device 指定feature level
+3. create command queue， 用于向gpu传递指令，create commant list, commant allocator, 用于存储绘制指令向 command queue提交
 4. 创建SwapChain 双缓冲 （一般创建都有两步，先有个desc，初始化后再create相应对应） IDXGISwapChain
-5. 创建RenderTargetHandle 初始化双缓冲
-6. 创建 CommandList
-7. 创建Fence  dx12的fence用来 cpu跟gpu同步，当gpu处理完一组绘制指令的时候cpu可以根据状态提交下一组
+5. 创建DescriptionHeap (RtvHeapdesc->RtvHeap ReaderTargetView; DsvHeapDesc->DsvHeap Deapth Stencil View; CbvHeapDesc->CbvHeap)  
+6. 创建Root Signature, 根签名用来描述 shader函数的参数情况的，确定当前绘制管线的 输入参数详情
+7. Create Constant Buffer , 映射ConstantBuffer数据传输指针，用于Update传递参数，比如 MVP矩阵
+8. Load Shader, 创建Vertext Format对齐顶点信息
+9. 创建VertexBuffer， VertexBufferUpload，将VertexBuffer上传到UploadBuffer,用于 GPU快速读取
+10. 创建IndexBuffer, IndexBufferUpload 同理
+11. 创建Fence  dx12的fence用来 cpu跟gpu同步，当gpu处理完一组绘制指令的时候cpu可以根据状态提交下一组
 
 # d3d12绘制过程
+1. Reset CommandAllocation , Reset CommandList, 进入Recording绘制指令状态
+2. 设置ViewPort ScissorRect
+3. 初始化当前barrier状态，还有下一个, resource barrier用于同步并切换，双缓冲的backbuffer，状态切换顺序 RENDER_TARGET->PRESENT->RENDER_TARGET-> ...
+4. Set RetnHandle, DsvHandle, 设置 DescripterHeap为 CbvHeap
+5. Set VertexBUffer, IndexBuffer
+6. 在command queue执行command list 
+7. set RootSignature, 按Index进行绘制  DrawIndexdInstanced()
+8. 双缓冲present  
+9. m_fence等待 gpu执行完执行下一次
 
-1. 创建transition barrier 主要用于存储状态之间的切换
-2. 清空commandlist allocator, commandlist memory
-3. 初始化当前barrier状态，还有下一个, resource barrier用于同步并切换 双缓冲的backbuffer
-4. 将Barrier的资源设置到 commnand list， 状态切换顺序 RENDER_TARGET->PRESENT->RENDER_TARGET-> ...
-5. 在command queue执行command list 
-6. 双缓冲present  
-7. m_fence等待 gpu执行完执行下一次
+#d3d12调试注意点:
+1. 新建工程win32工程往往只是包含了include 路径， lib link可能会有link不进来的情况，保险一点最好 包含进来    
+
+```
+#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "D3DCompiler.lib")
+```
+2. 关闭Windows窗口的时候如果没有正常释放ComPtr引用计数，会报ReportLiveObjects的warning，但是往往看不到是哪些object没有解引用，
+可以在destroy或者析构中加入如下代码，这样就可以打印出object的名字
+```
+#include <dxgidebug.h>
+
+#if defined(_DEBUG)
+	{
+		ComPtr<IDXGIDebug1> DxgiDebug;
+		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&DxgiDebug))))
+		{
+			DxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
+		}
+	}
+#endif
+```
+3. 对于D3D object可以使用NAME_D3D12_OBJECT(object)来把名字注册到debug layer当中，这样当出现绘制报错，或者绘制命令含有已被引用的object的时候，控制台报错就可以看到是哪个名字的object的问题
+```
+NAME_D3D12_OBJECT(Device);
+NAME_D3D12_OBJECT(Fence);
+```
 
 # vertex buffer index buffer 
 - vertex buffer 为记录模型所有 顶点信息数组
 - index buffer 索引buffer， 用于快速索引访问 vertex buffer中的点
 
 # vertex shader (HLSL语言)
-- gpu对 vertex buffer中的点进行变换， 变换到3d空间当中；计算发现
+- gpu对 vertex buffer中的点进行变换， 变换到3d空间当中
 
 # pixel shader (HLSL语言)
 -主要用于多边形着色，颜色，贴图，光照等
@@ -56,7 +89,7 @@ first dx12 framework
 5. 计算
 -vector可以看作方向直接反向反转， x 标量可以看作缩放，不好想象就放到2d坐标系
 
-4. [模型变换参考视频，注重推导过程值得一看](https://www.bilibili.com/video/av6731067/?p=1)
+6. [模型变换参考视频，注重推导过程值得一看](https://www.bilibili.com/video/av6731067/?p=1)
 (待补充)
 
 # d3d关于 buffer的概念讲解

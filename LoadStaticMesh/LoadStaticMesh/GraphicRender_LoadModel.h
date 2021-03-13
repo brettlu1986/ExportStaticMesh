@@ -99,8 +99,4 @@ private:
 	XMFLOAT4X4 MtWorld; 
 	XMFLOAT4X4 MtView; 
 	XMFLOAT4X4 MtProj; 
-
-	float Theta;
-	float Phi; 
-	float Radius;
 };

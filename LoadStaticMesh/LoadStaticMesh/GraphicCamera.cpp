@@ -22,7 +22,7 @@ GraphicCamera::~GraphicCamera()
 
 void GraphicCamera::Init(XMFLOAT3 CameraLocation, XMFLOAT3 CameraTarget, XMFLOAT3 CameraRotator)
 {
-	InitialPosition = MathHelper::GetUe4ConvertLocation(CameraLocation);
+	InitialPosition = CameraLocation;
 	Position = InitialPosition;
 
 	//{x, y, z} == {pitch , yaw, roll}
@@ -33,7 +33,7 @@ void GraphicCamera::Init(XMFLOAT3 CameraLocation, XMFLOAT3 CameraTarget, XMFLOAT
 	LookDirection.y = sinf(Pitch);
 	LookDirection.z = R * cosf(Yaw);
 
-	FocusPosition = MathHelper::GetUe4ConvertLocation(CameraTarget);
+	FocusPosition = CameraTarget;
 }
 
 void GraphicCamera::InitFovAndAspect(float InFov, float Aspect)

@@ -27,10 +27,6 @@ GraphicRender_LoadModel::GraphicRender_LoadModel()
 	MtWorld = MathHelper::Identity4x4();
 	MtView = MathHelper::Identity4x4();
 	MtProj = MathHelper::Identity4x4();
-
-	Theta = 1.5f * XM_PI;
-	Phi = XM_PIDIV4;
-	Radius = 5.0f;
 }
 
 GraphicRender_LoadModel::~GraphicRender_LoadModel()
@@ -66,8 +62,8 @@ void GraphicRender_LoadModel::LoadAssets()
 	// Reset the command list to prep for initialization commands.
 	ThrowIfFailed(CommandList->Reset(CommandAllocator.Get(), nullptr));
 
-	CreateConstantBuffer();
 	CreateRootSignature();
+	CreateConstantBuffer();
 	LoadShadersAndCreatePso();
 	CreateVertexBuffer();
 	CreateIndexBuffer();
@@ -150,15 +146,6 @@ void GraphicRender_LoadModel::CreateSwapChain()
 	SwapChain.Reset();
 
 	// Describe and create the swap chain.
-	DXGI_SWAP_CHAIN_DESC1 SwapChainDesc = {};
-	SwapChainDesc.BufferCount = FrameCount;
-	SwapChainDesc.Width = WndWidth;
-	SwapChainDesc.Height = WndHeight;
-	SwapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	SwapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	SwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-	SwapChainDesc.SampleDesc.Count = 1;
-
 	DXGI_SWAP_CHAIN_DESC Sd;
 	Sd.BufferDesc.Width = WndWidth;
 	Sd.BufferDesc.Height = WndHeight;
@@ -549,16 +536,10 @@ void GraphicRender_LoadModel::OnResize()
 
 void GraphicRender_LoadModel::Update()
 {
-	//calculate model matrix : scale * rotation * translation
-	//in ue4: ue4x = Forward ue4y = Right ue4z = Up
-	//in direct x: use left hand coordinate, x = Right, y = Up, z = Forward
-	//we have the conversion: x = ue4y, y = ue4z, z = ue4x, Yaw Pitch Roll stay the same
-
 	DataSource* Ds = MainApplication->GetDataSource();
 	const CameraData& CData = Ds->GetCameraData();
-	XMFLOAT3 LocationTarget = MathHelper::GetUe4ConvertLocation(CData.Target);
 	//determine the watch target matrix, the M view, make no scale no rotation , so we dont need to multiply scale and rotation
-	XMStoreFloat4x4(&MtWorld, XMMatrixTranslation(LocationTarget.x, LocationTarget.y, LocationTarget.z));
+	XMStoreFloat4x4(&MtWorld, XMMatrixTranslation(CData.Target.x, CData.Target.y, CData.Target.z));
 	XMMATRIX World = XMLoadFloat4x4(&MtWorld);
 
 	//determine the projection matrix
