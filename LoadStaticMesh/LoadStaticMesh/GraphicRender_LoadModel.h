@@ -18,6 +18,8 @@ public:
 	virtual void Destroy();
 
 private:
+	void InitCamera();
+
 	void LoadPipline();
 	void LoadAssets();
 

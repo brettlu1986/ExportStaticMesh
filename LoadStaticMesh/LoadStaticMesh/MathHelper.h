@@ -83,6 +83,11 @@ public:
 		return I;
 	}
 
+	static DirectX::XMFLOAT3 GetUe4ConvertLocation(DirectX::XMFLOAT3 InputLocation)
+	{
+		return DirectX::XMFLOAT3(InputLocation.y, InputLocation.z, InputLocation.x);
+	}
+
 	static DirectX::XMVECTOR RandUnitVec3();
 	static DirectX::XMVECTOR RandHemisphereUnitVec3(DirectX::XMVECTOR n);
 

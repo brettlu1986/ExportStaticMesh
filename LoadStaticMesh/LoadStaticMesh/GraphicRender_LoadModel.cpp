@@ -40,9 +40,16 @@ GraphicRender_LoadModel::~GraphicRender_LoadModel()
 
 void GraphicRender_LoadModel::OnInit()
 {
-	//Camera.Init({ 8, 8, 30 });
+	InitCamera();
 	LoadPipline();
 	LoadAssets();
+}
+
+void GraphicRender_LoadModel::InitCamera()
+{
+	DataSource* Ds = MainApplication->GetDataSource();
+	const CameraData& CData = Ds->GetCameraData();
+	Camera.Init(CData.Location, CData.Target, CData.Rotator);
 }
 
 void GraphicRender_LoadModel::LoadPipline()
@@ -446,8 +453,11 @@ void GraphicRender_LoadModel::FlushCommandQueue()
 void GraphicRender_LoadModel::OnResize()
 {
 	// The window resized, so update the aspect ratio and recompute the projection matrix.
+	DataSource* Ds = MainApplication->GetDataSource();
+	const CameraData& CData = Ds->GetCameraData();
 	AspectRatio = static_cast<float>(WndWidth) / WndHeight;
-	XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f * MathHelper::Pi, AspectRatio, 1.0f, 1000.0f);
+	Camera.InitFovAndAspect(XMConvertToRadians(CData.Fov), AspectRatio);
+	XMMATRIX P = Camera.GetProjectionMatrix();
 	XMStoreFloat4x4(&MtProj, P);
 
 	FlushCommandQueue();
@@ -540,38 +550,20 @@ void GraphicRender_LoadModel::OnResize()
 void GraphicRender_LoadModel::Update()
 {
 	//calculate model matrix : scale * rotation * translation
-	//in ue4: ue4x = Forward ue4y = Right ue4z = Up, so set x-Roll y-Pitch z-Yaw in ue4 is  UE4Roll, UE4Pitch, UE4Yaw
+	//in ue4: ue4x = Forward ue4y = Right ue4z = Up
 	//in direct x: use left hand coordinate, x = Right, y = Up, z = Forward
-	//we have the conversion: x = ue4y, y = ue4z, z = ue4x, Roll = UE4Pitch, Pitch = UE4Yaw, Yaw = UE4Roll
+	//we have the conversion: x = ue4y, y = ue4z, z = ue4x, Yaw Pitch Roll stay the same
 
-	/*DataSource* Ds = MainApplication->GetDataSource();
-	CameraData& CData = Ds->GetCameraData();
-	XMFLOAT3 LocationTarget = CData.GetUe4ConvertLocation(CData.Target);
-	XMStoreFloat4x4(&MtWorld, XMMatrixTranslation(LocationTarget.x, LocationTarget.y, LocationTarget.z));*/
-
-	/*FXMVECTOR EyePosition = XMVectorSet(CData.Location.x, CData.Location.y, CData.Location.z);
-	FXMVECTOR EyeDirection =
-		FXMVECTOR UpDirection
-
-	XMMatrixLookToLH()*/
-
-	// Convert Spherical to Cartesian coordinates.
-	//use left hand coordinates, z point to the screen inside
-	float x = Radius * sinf(Phi) * cosf(Theta);
-	float z = Radius * sinf(Phi) * sinf(Theta);
-	float y = Radius * cosf(Phi);
-
-	// Build the view matrix.
-	XMVECTOR Pos = XMVectorSet(x, y, z, 1.0f);
-	XMVECTOR Target = XMVectorZero();
-	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-	XMMATRIX View = XMMatrixLookAtLH(Pos, Target, Up);
-	XMStoreFloat4x4(&MtView, View);
-
+	DataSource* Ds = MainApplication->GetDataSource();
+	const CameraData& CData = Ds->GetCameraData();
+	XMFLOAT3 LocationTarget = MathHelper::GetUe4ConvertLocation(CData.Target);
+	//determine the watch target matrix, the M view, make no scale no rotation , so we dont need to multiply scale and rotation
+	XMStoreFloat4x4(&MtWorld, XMMatrixTranslation(LocationTarget.x, LocationTarget.y, LocationTarget.z));
 	XMMATRIX World = XMLoadFloat4x4(&MtWorld);
+
+	//determine the projection matrix
 	XMMATRIX Proj = XMLoadFloat4x4(&MtProj);
-	XMMATRIX WorldViewProj = World * View * Proj;
+	XMMATRIX WorldViewProj = World * Camera.GetViewMarix() * Proj;
 
 	 //Update the constant buffer with the latest WorldViewProj matrix.
 	XMStoreFloat4x4(&ObjectConstant.WorldViewProj, XMMatrixTranspose(WorldViewProj));

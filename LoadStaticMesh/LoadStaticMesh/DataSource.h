@@ -14,12 +14,6 @@ struct CameraData {
 	XMFLOAT3 Rotator; // {Pitch, Yaw , Roll}
 	float Fov;
 	float Aspect;
-
-public :
-	XMFLOAT3 GetUe4ConvertLocation(XMFLOAT3 InputLocation)
-	{
-		return XMFLOAT3(InputLocation.y, InputLocation.z, InputLocation.x);
-	}
 };
 
 struct MeshData
@@ -48,7 +42,7 @@ public:
 
 	void Initialize(ApplicationMain* Application);
 
-	 CameraData& GetCameraData() { return CameraDatas; }
+	const CameraData& GetCameraData() { return CameraDatas; }
 
 	void GetPositionColorInput(std::vector<Vertex_PositionColor>& OutPut);
 	const vector<UINT>& GetIndexDataInput() 
