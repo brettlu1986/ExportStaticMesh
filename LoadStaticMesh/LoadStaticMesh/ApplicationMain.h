@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 
-class DataSource;
 class InputClass;
 class GraphicRender;
 class MainWindow;
@@ -21,7 +20,6 @@ public:
 	GraphicRender* GetGraphicRender() const { return CurrentGraphic; }
 	InputClass* GetInput() const { return Input; }
 	MainWindow* GetWindow() const { return Window; }
-	DataSource* GetDataSource() const { return CurrentDataSource; }
 
 	const HWND& GetHwnd();
 private:
@@ -30,5 +28,4 @@ private:
 	MainWindow* Window;
 	GraphicRender* CurrentGraphic;
 	InputClass* Input;
-	DataSource* CurrentDataSource;
 };

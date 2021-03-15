@@ -1,17 +1,14 @@
 
 #include "ApplicationMain.h"
-#include "GraphicRender_ClearWindow.h"
 #include "GraphicRender_LoadModel.h"
 #include "MainWindow.h"
 #include "InputClass.h"
-#include "DataSource.h"
 
 ApplicationMain::ApplicationMain()
 	:hMainInstance(nullptr)
 	,Window(nullptr)
 	,CurrentGraphic(nullptr)
 	,Input(nullptr)
-	,CurrentDataSource(nullptr)
 {
 }
 
@@ -24,13 +21,10 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance, UINT Width, UINT Height, s
 {
 	hMainInstance = hInstance; 
 
-	CurrentDataSource = new DataSource();
-	CurrentDataSource->Initialize(this);
-
 	Window = new MainWindow();
 	Window->Initialize(this, Width, Height, Name);
 
-	CurrentGraphic = new GraphicRender_LoadModel();//GraphicRender_ClearWindow();
+	CurrentGraphic = new GraphicRender_LoadModel();
 	CurrentGraphic->Initialize(this, Width, Height);
 
 	Input = new InputClass();

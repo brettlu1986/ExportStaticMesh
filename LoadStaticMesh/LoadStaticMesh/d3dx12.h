@@ -2159,120 +2159,120 @@ inline ID3D12CommandList * const * CommandListCast(t_CommandListType * const * p
 // To help enable root signature 1.1 features when they are available and not require maintaining
 // two code paths for building root signatures, this helper method reconstructs a 1.0 signature when
 // 1.1 is not supported.
-inline HRESULT D3DX12SerializeVersionedRootSignature(
-    _In_ const D3D12_VERSIONED_ROOT_SIGNATURE_DESC* pRootSignatureDesc,
-    D3D_ROOT_SIGNATURE_VERSION MaxVersion,
-    _Outptr_ ID3DBlob** ppBlob,
-    _Always_(_Outptr_opt_result_maybenull_) ID3DBlob** ppErrorBlob) noexcept
-{
-    if (ppErrorBlob != nullptr)
-    {
-        *ppErrorBlob = nullptr;
-    }
-
-    switch (MaxVersion)
-    {
-        case D3D_ROOT_SIGNATURE_VERSION_1_0:
-            switch (pRootSignatureDesc->Version)
-            {
-                case D3D_ROOT_SIGNATURE_VERSION_1_0:
-                    return D3D12SerializeRootSignature(&pRootSignatureDesc->Desc_1_0, D3D_ROOT_SIGNATURE_VERSION_1, ppBlob, ppErrorBlob);
-
-                case D3D_ROOT_SIGNATURE_VERSION_1_1:
-                {
-                    HRESULT hr = S_OK;
-                    const D3D12_ROOT_SIGNATURE_DESC1& desc_1_1 = pRootSignatureDesc->Desc_1_1;
-
-                    const SIZE_T ParametersSize = sizeof(D3D12_ROOT_PARAMETER) * desc_1_1.NumParameters;
-                    void* pParameters = (ParametersSize > 0) ? HeapAlloc(GetProcessHeap(), 0, ParametersSize) : nullptr;
-                    if (ParametersSize > 0 && pParameters == nullptr)
-                    {
-                        hr = E_OUTOFMEMORY;
-                    }
-                    auto pParameters_1_0 = static_cast<D3D12_ROOT_PARAMETER*>(pParameters);
-
-                    if (SUCCEEDED(hr))
-                    {
-                        for (UINT n = 0; n < desc_1_1.NumParameters; n++)
-                        {
-                            __analysis_assume(ParametersSize == sizeof(D3D12_ROOT_PARAMETER) * desc_1_1.NumParameters);
-                            pParameters_1_0[n].ParameterType = desc_1_1.pParameters[n].ParameterType;
-                            pParameters_1_0[n].ShaderVisibility = desc_1_1.pParameters[n].ShaderVisibility;
-
-                            switch (desc_1_1.pParameters[n].ParameterType)
-                            {
-                            case D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS:
-                                pParameters_1_0[n].Constants.Num32BitValues = desc_1_1.pParameters[n].Constants.Num32BitValues;
-                                pParameters_1_0[n].Constants.RegisterSpace = desc_1_1.pParameters[n].Constants.RegisterSpace;
-                                pParameters_1_0[n].Constants.ShaderRegister = desc_1_1.pParameters[n].Constants.ShaderRegister;
-                                break;
-
-                            case D3D12_ROOT_PARAMETER_TYPE_CBV:
-                            case D3D12_ROOT_PARAMETER_TYPE_SRV:
-                            case D3D12_ROOT_PARAMETER_TYPE_UAV:
-                                pParameters_1_0[n].Descriptor.RegisterSpace = desc_1_1.pParameters[n].Descriptor.RegisterSpace;
-                                pParameters_1_0[n].Descriptor.ShaderRegister = desc_1_1.pParameters[n].Descriptor.ShaderRegister;
-                                break;
-
-                            case D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE:
-                                const D3D12_ROOT_DESCRIPTOR_TABLE1& table_1_1 = desc_1_1.pParameters[n].DescriptorTable;
-
-                                const SIZE_T DescriptorRangesSize = sizeof(D3D12_DESCRIPTOR_RANGE) * table_1_1.NumDescriptorRanges;
-                                void* pDescriptorRanges = (DescriptorRangesSize > 0 && SUCCEEDED(hr)) ? HeapAlloc(GetProcessHeap(), 0, DescriptorRangesSize) : nullptr;
-                                if (DescriptorRangesSize > 0 && pDescriptorRanges == nullptr)
-                                {
-                                    hr = E_OUTOFMEMORY;
-                                }
-                                auto pDescriptorRanges_1_0 = static_cast<D3D12_DESCRIPTOR_RANGE*>(pDescriptorRanges);
-
-                                if (SUCCEEDED(hr))
-                                {
-                                    for (UINT x = 0; x < table_1_1.NumDescriptorRanges; x++)
-                                    {
-                                        __analysis_assume(DescriptorRangesSize == sizeof(D3D12_DESCRIPTOR_RANGE) * table_1_1.NumDescriptorRanges);
-                                        pDescriptorRanges_1_0[x].BaseShaderRegister = table_1_1.pDescriptorRanges[x].BaseShaderRegister;
-                                        pDescriptorRanges_1_0[x].NumDescriptors = table_1_1.pDescriptorRanges[x].NumDescriptors;
-                                        pDescriptorRanges_1_0[x].OffsetInDescriptorsFromTableStart = table_1_1.pDescriptorRanges[x].OffsetInDescriptorsFromTableStart;
-                                        pDescriptorRanges_1_0[x].RangeType = table_1_1.pDescriptorRanges[x].RangeType;
-                                        pDescriptorRanges_1_0[x].RegisterSpace = table_1_1.pDescriptorRanges[x].RegisterSpace;
-                                    }
-                                }
-
-                                D3D12_ROOT_DESCRIPTOR_TABLE& table_1_0 = pParameters_1_0[n].DescriptorTable;
-                                table_1_0.NumDescriptorRanges = table_1_1.NumDescriptorRanges;
-                                table_1_0.pDescriptorRanges = pDescriptorRanges_1_0;
-                            }
-                        }
-                    }
-
-                    if (SUCCEEDED(hr))
-                    {
-                        CD3DX12_ROOT_SIGNATURE_DESC desc_1_0(desc_1_1.NumParameters, pParameters_1_0, desc_1_1.NumStaticSamplers, desc_1_1.pStaticSamplers, desc_1_1.Flags);
-                        hr = D3D12SerializeRootSignature(&desc_1_0, D3D_ROOT_SIGNATURE_VERSION_1, ppBlob, ppErrorBlob);
-                    }
-
-                    if (pParameters)
-                    {
-                        for (UINT n = 0; n < desc_1_1.NumParameters; n++)
-                        {
-                            if (desc_1_1.pParameters[n].ParameterType == D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE)
-                            {
-                                HeapFree(GetProcessHeap(), 0, reinterpret_cast<void*>(const_cast<D3D12_DESCRIPTOR_RANGE*>(pParameters_1_0[n].DescriptorTable.pDescriptorRanges)));
-                            }
-                        }
-                        HeapFree(GetProcessHeap(), 0, pParameters);
-                    }
-                    return hr;
-                }
-            }
-            break;
-
-        case D3D_ROOT_SIGNATURE_VERSION_1_1:
-            return D3D12SerializeVersionedRootSignature(pRootSignatureDesc, ppBlob, ppErrorBlob);
-    }
-
-    return E_INVALIDARG;
-}
+//inline HRESULT D3DX12SerializeVersionedRootSignature(
+//    _In_ const D3D12_VERSIONED_ROOT_SIGNATURE_DESC* pRootSignatureDesc,
+//    D3D_ROOT_SIGNATURE_VERSION MaxVersion,
+//    _Outptr_ ID3DBlob** ppBlob,
+//    _Always_(_Outptr_opt_result_maybenull_) ID3DBlob** ppErrorBlob) noexcept
+//{
+//    if (ppErrorBlob != nullptr)
+//    {
+//        *ppErrorBlob = nullptr;
+//    }
+//
+//    switch (MaxVersion)
+//    {
+//        case D3D_ROOT_SIGNATURE_VERSION_1_0:
+//            switch (pRootSignatureDesc->Version)
+//            {
+//                case D3D_ROOT_SIGNATURE_VERSION_1_0:
+//                    return D3D12SerializeRootSignature(&pRootSignatureDesc->Desc_1_0, D3D_ROOT_SIGNATURE_VERSION_1, ppBlob, ppErrorBlob);
+//
+//                case D3D_ROOT_SIGNATURE_VERSION_1_1:
+//                {
+//                    HRESULT hr = S_OK;
+//                    const D3D12_ROOT_SIGNATURE_DESC1& desc_1_1 = pRootSignatureDesc->Desc_1_1;
+//
+//                    const SIZE_T ParametersSize = sizeof(D3D12_ROOT_PARAMETER) * desc_1_1.NumParameters;
+//                    void* pParameters = (ParametersSize > 0) ? HeapAlloc(GetProcessHeap(), 0, ParametersSize) : nullptr;
+//                    if (ParametersSize > 0 && pParameters == nullptr)
+//                    {
+//                        hr = E_OUTOFMEMORY;
+//                    }
+//                    auto pParameters_1_0 = static_cast<D3D12_ROOT_PARAMETER*>(pParameters);
+//
+//                    if (SUCCEEDED(hr))
+//                    {
+//                        for (UINT n = 0; n < desc_1_1.NumParameters; n++)
+//                        {
+//                            __analysis_assume(ParametersSize == sizeof(D3D12_ROOT_PARAMETER) * desc_1_1.NumParameters);
+//                            pParameters_1_0[n].ParameterType = desc_1_1.pParameters[n].ParameterType;
+//                            pParameters_1_0[n].ShaderVisibility = desc_1_1.pParameters[n].ShaderVisibility;
+//
+//                            switch (desc_1_1.pParameters[n].ParameterType)
+//                            {
+//                            case D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS:
+//                                pParameters_1_0[n].Constants.Num32BitValues = desc_1_1.pParameters[n].Constants.Num32BitValues;
+//                                pParameters_1_0[n].Constants.RegisterSpace = desc_1_1.pParameters[n].Constants.RegisterSpace;
+//                                pParameters_1_0[n].Constants.ShaderRegister = desc_1_1.pParameters[n].Constants.ShaderRegister;
+//                                break;
+//
+//                            case D3D12_ROOT_PARAMETER_TYPE_CBV:
+//                            case D3D12_ROOT_PARAMETER_TYPE_SRV:
+//                            case D3D12_ROOT_PARAMETER_TYPE_UAV:
+//                                pParameters_1_0[n].Descriptor.RegisterSpace = desc_1_1.pParameters[n].Descriptor.RegisterSpace;
+//                                pParameters_1_0[n].Descriptor.ShaderRegister = desc_1_1.pParameters[n].Descriptor.ShaderRegister;
+//                                break;
+//
+//                            case D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE:
+//                                const D3D12_ROOT_DESCRIPTOR_TABLE1& table_1_1 = desc_1_1.pParameters[n].DescriptorTable;
+//
+//                                const SIZE_T DescriptorRangesSize = sizeof(D3D12_DESCRIPTOR_RANGE) * table_1_1.NumDescriptorRanges;
+//                                void* pDescriptorRanges = (DescriptorRangesSize > 0 && SUCCEEDED(hr)) ? HeapAlloc(GetProcessHeap(), 0, DescriptorRangesSize) : nullptr;
+//                                if (DescriptorRangesSize > 0 && pDescriptorRanges == nullptr)
+//                                {
+//                                    hr = E_OUTOFMEMORY;
+//                                }
+//                                auto pDescriptorRanges_1_0 = static_cast<D3D12_DESCRIPTOR_RANGE*>(pDescriptorRanges);
+//
+//                                if (SUCCEEDED(hr))
+//                                {
+//                                    for (UINT x = 0; x < table_1_1.NumDescriptorRanges; x++)
+//                                    {
+//                                        __analysis_assume(DescriptorRangesSize == sizeof(D3D12_DESCRIPTOR_RANGE) * table_1_1.NumDescriptorRanges);
+//                                        pDescriptorRanges_1_0[x].BaseShaderRegister = table_1_1.pDescriptorRanges[x].BaseShaderRegister;
+//                                        pDescriptorRanges_1_0[x].NumDescriptors = table_1_1.pDescriptorRanges[x].NumDescriptors;
+//                                        pDescriptorRanges_1_0[x].OffsetInDescriptorsFromTableStart = table_1_1.pDescriptorRanges[x].OffsetInDescriptorsFromTableStart;
+//                                        pDescriptorRanges_1_0[x].RangeType = table_1_1.pDescriptorRanges[x].RangeType;
+//                                        pDescriptorRanges_1_0[x].RegisterSpace = table_1_1.pDescriptorRanges[x].RegisterSpace;
+//                                    }
+//                                }
+//
+//                                D3D12_ROOT_DESCRIPTOR_TABLE& table_1_0 = pParameters_1_0[n].DescriptorTable;
+//                                table_1_0.NumDescriptorRanges = table_1_1.NumDescriptorRanges;
+//                                table_1_0.pDescriptorRanges = pDescriptorRanges_1_0;
+//                            }
+//                        }
+//                    }
+//
+//                    if (SUCCEEDED(hr))
+//                    {
+//                        CD3DX12_ROOT_SIGNATURE_DESC desc_1_0(desc_1_1.NumParameters, pParameters_1_0, desc_1_1.NumStaticSamplers, desc_1_1.pStaticSamplers, desc_1_1.Flags);
+//                        hr = D3D12SerializeRootSignature(&desc_1_0, D3D_ROOT_SIGNATURE_VERSION_1, ppBlob, ppErrorBlob);
+//                    }
+//
+//                    if (pParameters)
+//                    {
+//                        for (UINT n = 0; n < desc_1_1.NumParameters; n++)
+//                        {
+//                            if (desc_1_1.pParameters[n].ParameterType == D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE)
+//                            {
+//                                HeapFree(GetProcessHeap(), 0, reinterpret_cast<void*>(const_cast<D3D12_DESCRIPTOR_RANGE*>(pParameters_1_0[n].DescriptorTable.pDescriptorRanges)));
+//                            }
+//                        }
+//                        HeapFree(GetProcessHeap(), 0, pParameters);
+//                    }
+//                    return hr;
+//                }
+//            }
+//            break;
+//
+//        case D3D_ROOT_SIGNATURE_VERSION_1_1:
+//            return D3D12SerializeVersionedRootSignature(pRootSignatureDesc, ppBlob, ppErrorBlob);
+//    }
+//
+//    return E_INVALIDARG;
+//}
 
 //------------------------------------------------------------------------------------------------
 struct CD3DX12_RT_FORMAT_ARRAY : public D3D12_RT_FORMAT_ARRAY

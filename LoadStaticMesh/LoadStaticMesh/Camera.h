@@ -4,18 +4,38 @@
 
 using namespace DirectX;
 
-class GraphicCamera
+#pragma pack(push)
+#pragma pack(4)
+struct CameraData {
+	XMFLOAT3 Location;
+	XMFLOAT3 Target;
+	XMFLOAT3 Rotator; // {Pitch, Yaw , Roll}
+	float Fov;
+	float Aspect;
+};
+#pragma pack(pop)
+
+class Camera
 {
 public:
-	GraphicCamera();
-	~GraphicCamera();
+	Camera();
+	~Camera();
 
-	void Init(XMFLOAT3 CameraLocation, XMFLOAT3 CameraTarget, XMFLOAT3 CameraRotator);
-	void InitFovAndAspect(float InFov, float Aspect);
+	void Init();
+	void OnResize(float WndWidth, float WndHeight);
+	
 	XMMATRIX GetViewMarix();
 	XMMATRIX GetProjectionMatrix(float NearPlane = 1.0f, float FarPlane = 1000.0f);
 
+	const XMFLOAT3& GetViewTargetLocation() {
+		return CameraDatas.Target;
+	}
+
 private:
+
+	void ReadCameraDataFromFile(LPCWSTR FileName );
+
+	CameraData CameraDatas;
 	//use for reset
 	XMFLOAT3 InitialPosition;
 	XMFLOAT3 Position;

@@ -142,29 +142,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ApplicationMain.cpp" />
-    <ClCompile Include="DataSource.cpp" />
-    <ClCompile Include="GraphicCamera.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GraphicRender.cpp" />
-    <ClCompile Include="GraphicRender_ClearWindow.cpp" />
     <ClCompile Include="GraphicRender_LoadModel.cpp" />
     <ClCompile Include="InputClass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="MathHelper.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApplicationMain.h" />
     <ClInclude Include="d3dx12.h" />
-    <ClInclude Include="DataSource.h" />
-    <ClInclude Include="GraphicCamera.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="GraphicHelper.h" />
     <ClInclude Include="GraphicRender.h" />
-    <ClInclude Include="GraphicRender_ClearWindow.h" />
     <ClInclude Include="GraphicRender_LoadModel.h" />
     <ClInclude Include="InputClass.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="MathHelper.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>

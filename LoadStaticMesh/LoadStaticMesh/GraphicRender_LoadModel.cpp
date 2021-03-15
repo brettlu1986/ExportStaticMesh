@@ -7,22 +7,16 @@
 #include <DirectXColors.h>
 
 #include "ApplicationMain.h"
-#include "DataSource.h"
 
 using namespace Microsoft::WRL;
 
 GraphicRender_LoadModel::GraphicRender_LoadModel()
 	: FrameIndex(0)
 	, RtvDescriptorSize(0)
-	, VertexBufferView(D3D12_VERTEX_BUFFER_VIEW())
 	, FenceValue(0)
-	, pCbvDataBegin(nullptr)
-	, ObjectConstant({})
 	, CbvSrvUavDescriptorSize(0)
 	, DsvDescriptorSize(0)
-	, IndexBufferView(D3D12_INDEX_BUFFER_VIEW())
-	, IndiceSize(0)
-	, IndicesCount(0)
+	
 {
 	MtWorld = MathHelper::Identity4x4();
 	MtView = MathHelper::Identity4x4();
@@ -37,15 +31,20 @@ GraphicRender_LoadModel::~GraphicRender_LoadModel()
 void GraphicRender_LoadModel::OnInit()
 {
 	InitCamera();
+	InitModel();
 	LoadPipline();
 	LoadAssets();
 }
 
 void GraphicRender_LoadModel::InitCamera()
 {
-	DataSource* Ds = MainApplication->GetDataSource();
-	const CameraData& CData = Ds->GetCameraData();
-	Camera.Init(CData.Location, CData.Target, CData.Rotator);
+	Camera.Init();
+}
+
+void GraphicRender_LoadModel::InitModel()
+{
+	ModelGeo.Init();
+	ModelGeo.SetModelLocation(Camera.GetViewTargetLocation());
 }
 
 void GraphicRender_LoadModel::LoadPipline()
@@ -204,27 +203,9 @@ void GraphicRender_LoadModel::CreateDescriptorHeaps()
 
 void GraphicRender_LoadModel::CreateConstantBuffer()
 {
-	//constant buffer size must 256's multiple
-	UINT ConstantBufferSize = (sizeof(ObjectConstants) + 255) & ~255;
-	const CD3DX12_HEAP_PROPERTIES ConstantProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-	const CD3DX12_RESOURCE_DESC ConstantDesc = CD3DX12_RESOURCE_DESC::Buffer(ConstantBufferSize);
-
-	ThrowIfFailed(Device->CreateCommittedResource(
-		&ConstantProp,
-		D3D12_HEAP_FLAG_NONE,
-		&ConstantDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&ConstantBuffer)));
-
-	ThrowIfFailed(ConstantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&pCbvDataBegin)));
-	memcpy(pCbvDataBegin, &ObjectConstant, sizeof(ObjectConstant));
-	NAME_D3D12_OBJECT(ConstantBuffer);
-
-	D3D12_CONSTANT_BUFFER_VIEW_DESC CbvDesc = {};
-	CbvDesc.BufferLocation = ConstantBuffer->GetGPUVirtualAddress();
-	CbvDesc.SizeInBytes = ConstantBufferSize;
-	Device->CreateConstantBufferView(&CbvDesc, CbvHeap->GetCPUDescriptorHandleForHeapStart());
+	ModelGeo.CreateConstantBuffer(Device.Get());
+	D3D12_CONSTANT_BUFFER_VIEW_DESC ConstantBufferDesc = ModelGeo.GetConstantBufferDesc();
+	Device->CreateConstantBufferView(&ConstantBufferDesc, CbvHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
 void GraphicRender_LoadModel::CreateRootSignature()
@@ -303,120 +284,13 @@ void GraphicRender_LoadModel::LoadShadersAndCreatePso()
 
 void GraphicRender_LoadModel::CreateVertexBuffer()
 {
-	DataSource* Ds = MainApplication->GetDataSource();
-	std::vector<Vertex_PositionColor> TriangleVertices;
-	// Create the vertex buffer.
-	// Define the geometry for a triangle.  read the vertices data
-	Ds->GetPositionColorInput(TriangleVertices);
-	const UINT VertexBufferSize = static_cast<UINT>(TriangleVertices.size() * sizeof(Vertex_PositionColor));//sizeof(TriangleVertices);
-
-	const CD3DX12_HEAP_PROPERTIES VertexDefaultProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-	const CD3DX12_RESOURCE_DESC VertexDefaultDesc = CD3DX12_RESOURCE_DESC::Buffer(VertexBufferSize);
-	ThrowIfFailed(Device->CreateCommittedResource(
-		&VertexDefaultProp,
-		D3D12_HEAP_FLAG_NONE,
-		&VertexDefaultDesc,
-		D3D12_RESOURCE_STATE_COMMON,
-		nullptr,
-		IID_PPV_ARGS(&VertexBuffer)));
-	NAME_D3D12_OBJECT(VertexBuffer);
-
-	//create vertex upload heap
-	const CD3DX12_HEAP_PROPERTIES VertextUploadProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-	const CD3DX12_RESOURCE_DESC VertextUploadDesc = CD3DX12_RESOURCE_DESC::Buffer(VertexBufferSize);
-	ThrowIfFailed(Device->CreateCommittedResource(
-		&VertextUploadProp,
-		D3D12_HEAP_FLAG_NONE,
-		&VertextUploadDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&VertexUploadBuffer)));
-	NAME_D3D12_OBJECT(VertexUploadBuffer);
-
-	D3D12_SUBRESOURCE_DATA SubResourceData;
-	SubResourceData.pData = TriangleVertices.data();
-	SubResourceData.RowPitch = VertexBufferSize;
-	SubResourceData.SlicePitch = SubResourceData.RowPitch;
-
-	const D3D12_RESOURCE_BARRIER RbVertex1 = CD3DX12_RESOURCE_BARRIER::Transition(VertexBuffer.Get(),
-		D3D12_RESOURCE_STATE_COMMON,
-		D3D12_RESOURCE_STATE_COPY_DEST);
-	CommandList->ResourceBarrier(1, &RbVertex1);
-	UpdateSubresources<1>(CommandList.Get(), VertexBuffer.Get(), VertexUploadBuffer.Get(), 0, 0, 1, &SubResourceData);
-	const D3D12_RESOURCE_BARRIER RbVertex2 = CD3DX12_RESOURCE_BARRIER::Transition(VertexBuffer.Get(),
-		D3D12_RESOURCE_STATE_COPY_DEST,
-		D3D12_RESOURCE_STATE_GENERIC_READ);
-	CommandList->ResourceBarrier(1, &RbVertex2);
-
-	VertexBufferView.BufferLocation = VertexBuffer->GetGPUVirtualAddress();
-	VertexBufferView.StrideInBytes = sizeof(Vertex_PositionColor);
-	VertexBufferView.SizeInBytes = VertexBufferSize;
+	ModelGeo.CreateVertexBufferView(Device.Get(), CommandList.Get());
 }
 
 void GraphicRender_LoadModel::CreateIndexBuffer()
 {
-	//create index buffer 
-	DataSource* Ds = MainApplication->GetDataSource();
-	bool bUseHalfInt32 = Ds->IsIndicesValueHalfInt32();
-	if (!bUseHalfInt32)
-	{
-		IndicesCount = static_cast<UINT>(Ds->GetIndexDataInput().size());
-		IndiceSize = IndicesCount * sizeof(UINT);
-	}
-	else
-	{
-		IndicesCount = static_cast<UINT>(Ds->GetIndexDataValueHalfInput().size());
-		IndiceSize = IndicesCount * sizeof(UINT16);
-	}
-
-	const CD3DX12_HEAP_PROPERTIES IndexDefaultPro = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-	const CD3DX12_RESOURCE_DESC IndexDefaultDesc = CD3DX12_RESOURCE_DESC::Buffer(IndiceSize);
-	ThrowIfFailed(Device->CreateCommittedResource(
-		&IndexDefaultPro,
-		D3D12_HEAP_FLAG_NONE,
-		&IndexDefaultDesc,
-		D3D12_RESOURCE_STATE_COMMON,
-		nullptr,
-		IID_PPV_ARGS(&IndexBuffer)));
-	NAME_D3D12_OBJECT(IndexBuffer);
-
-	const CD3DX12_HEAP_PROPERTIES IndexUploadPro = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-	const CD3DX12_RESOURCE_DESC IndexUploadDesc = CD3DX12_RESOURCE_DESC::Buffer(IndiceSize);
-	ThrowIfFailed(Device->CreateCommittedResource(
-		&IndexUploadPro,
-		D3D12_HEAP_FLAG_NONE,
-		&IndexUploadDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&IndexBufferUpload)));
-	NAME_D3D12_OBJECT(IndexBufferUpload);
-
-	D3D12_SUBRESOURCE_DATA SubResourceData;
-	if (bUseHalfInt32)
-		SubResourceData.pData = Ds->GetIndexDataValueHalfInput().data();
-	else
-		SubResourceData.pData = Ds->GetIndexDataInput().data();
-
-	SubResourceData.RowPitch = IndiceSize;
-	SubResourceData.SlicePitch = SubResourceData.RowPitch;
-
-	const D3D12_RESOURCE_BARRIER RbIndex1 = CD3DX12_RESOURCE_BARRIER::Transition(IndexBuffer.Get(),
-		D3D12_RESOURCE_STATE_COMMON,
-		D3D12_RESOURCE_STATE_COPY_DEST);
-	CommandList->ResourceBarrier(1, &RbIndex1);
-	UpdateSubresources<1>(CommandList.Get(), IndexBuffer.Get(), IndexBufferUpload.Get(), 0, 0, 1, &SubResourceData);
-	const D3D12_RESOURCE_BARRIER RbIndex2 = CD3DX12_RESOURCE_BARRIER::Transition(IndexBuffer.Get(),
-		D3D12_RESOURCE_STATE_COPY_DEST,
-		D3D12_RESOURCE_STATE_GENERIC_READ);
-	CommandList->ResourceBarrier(1, &RbIndex2);
-
-	IndexBufferView.BufferLocation = IndexBuffer->GetGPUVirtualAddress();
-	IndexBufferView.Format = bUseHalfInt32 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
-	IndexBufferView.SizeInBytes = IndiceSize;
-
+	ModelGeo.CreateIndexBufferView(Device.Get(), CommandList.Get());
 }
-
-
 
 void GraphicRender_LoadModel::FlushCommandQueue()
 {
@@ -440,10 +314,7 @@ void GraphicRender_LoadModel::FlushCommandQueue()
 void GraphicRender_LoadModel::OnResize()
 {
 	// The window resized, so update the aspect ratio and recompute the projection matrix.
-	DataSource* Ds = MainApplication->GetDataSource();
-	const CameraData& CData = Ds->GetCameraData();
-	AspectRatio = static_cast<float>(WndWidth) / WndHeight;
-	Camera.InitFovAndAspect(XMConvertToRadians(CData.Fov), AspectRatio);
+	Camera.OnResize(static_cast<float>(WndWidth), static_cast<float>(WndHeight));
 	XMMATRIX P = Camera.GetProjectionMatrix();
 	XMStoreFloat4x4(&MtProj, P);
 
@@ -536,19 +407,14 @@ void GraphicRender_LoadModel::OnResize()
 
 void GraphicRender_LoadModel::Update()
 {
-	DataSource* Ds = MainApplication->GetDataSource();
-	const CameraData& CData = Ds->GetCameraData();
-	//determine the watch target matrix, the M view, make no scale no rotation , so we dont need to multiply scale and rotation
-	XMStoreFloat4x4(&MtWorld, XMMatrixTranslation(CData.Target.x, CData.Target.y, CData.Target.z));
-	XMMATRIX World = XMLoadFloat4x4(&MtWorld);
-
 	//determine the projection matrix
-	XMMATRIX Proj = XMLoadFloat4x4(&MtProj);
-	XMMATRIX WorldViewProj = World * Camera.GetViewMarix() * Proj;
+	//XMMATRIX Proj = XMLoadFloat4x4(&MtProj);
+	ModelGeo.UpdateConstantBuffers(Camera.GetViewMarix(), XMLoadFloat4x4(&MtProj));
+	//XMMATRIX WorldViewProj = ModelGeo.GetModelMatrix() * Camera.GetViewMarix() * Proj;
 
 	 //Update the constant buffer with the latest WorldViewProj matrix.
-	XMStoreFloat4x4(&ObjectConstant.WorldViewProj, XMMatrixTranspose(WorldViewProj));
-	memcpy(pCbvDataBegin, &ObjectConstant, sizeof(ObjectConstant));
+	/*XMStoreFloat4x4(&ObjectConstant.WorldViewProj, XMMatrixTranspose(WorldViewProj));
+	memcpy(pCbvDataBegin, &ObjectConstant, sizeof(ObjectConstant));*/
 }
 
 bool GraphicRender_LoadModel::Render()
@@ -583,13 +449,13 @@ bool GraphicRender_LoadModel::Render()
 	// Set necessary state.
 	CommandList->SetGraphicsRootSignature(RootSignature.Get());
 
-	CommandList->IASetVertexBuffers(0, 1, &VertexBufferView);
-	CommandList->IASetIndexBuffer(&IndexBufferView);
+	CommandList->IASetVertexBuffers(0, 1, &ModelGeo.GetVertexBufferView());
+	CommandList->IASetIndexBuffer(&ModelGeo.GetIndexBufferView());
 	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	
 	CommandList->SetGraphicsRootDescriptorTable(0, CbvHeap->GetGPUDescriptorHandleForHeapStart());
 	
-	CommandList->DrawIndexedInstanced(IndicesCount, 1, 0, 0, 0);
+	CommandList->DrawIndexedInstanced(ModelGeo.GetIndicesCount(), 1, 0, 0, 0);
 
 	// Indicate that the back buffer will now be used to present.
 	const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
@@ -624,11 +490,8 @@ void GraphicRender_LoadModel::Destroy()
 	DsvHeap.Reset();
 	ResetComPtrArray(&RenderTargets);
 	DepthStencilBuffer.Reset();
-	VertexBuffer.Reset();
-	VertexUploadBuffer.Reset();
-	IndexBuffer.Reset();
-	IndexBufferUpload.Reset();
-	ConstantBuffer.Reset();
+	ModelGeo.Destroy();
+	
 	CommandQueue.Reset();
 	SwapChain.Reset();
 	Device.Reset();

@@ -45,6 +45,14 @@ inline void ThrowIfFailed(HRESULT Hr)
     }
 }
 
+inline std::wstring GetSaveDirectory()
+{
+	WCHAR CurPath[512];
+	GetCurrentDirectory(_countof(CurPath), CurPath);
+	std::wstring Path = CurPath;
+	return Path + L"\\Save\\";
+}
+
 inline void GetAssetsPath(_Out_writes_(PathSize) WCHAR* Path, UINT PathSize)
 {
     if (Path == nullptr)
