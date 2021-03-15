@@ -114,7 +114,7 @@ An index buffer contains a sequential set of 16-bit or 32-bit indices; each inde
 5. CommandList 存放绘制指令用
 6. CommandAllocator 给CommandList分配空间
 7. SwapChain 交换链 buffer里存放当前的 RenderTarget内容
-8. DescriptorHeap (rtv dsv cbv) DescriptorHeap主要用来描述各种 buffer的详细信息，地址等，用于创建buffer  *****
+8. DescriptorHeap (rtv dsv cbv) DescriptorHeap主要用来描述各种 buffer的详细信息，地址等，用于创建buffer [decripter heap说的比较清楚](https://blog.csdn.net/u013412391/article/details/110679071)
 9. Fence  负责调度 CPU与GPU的协调执行，确保 当前CPU指令输送完毕之后，再执行下一轮 CPU命令
 10. Root Signature  根签名用来描述 shader函数的参数情况的，确定当前绘制管线的 输入参数详情
 11. Pipline State Object  不太理解 管线对象？ *****

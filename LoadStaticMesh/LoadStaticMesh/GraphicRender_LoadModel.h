@@ -32,11 +32,11 @@ private:
 	void CreateDescriptorHeaps();
 
 	//create assets step
-	void CreateConstantBuffer();
+	void CreateConstantBufferView();
 	void CreateRootSignature();
 	void LoadShadersAndCreatePso();
-	void CreateVertexBuffer();
-	void CreateIndexBuffer();
+	void CreateVertexBufferView();
+	void CreateIndexBufferView();
 
 	void OnResize();
 	void FlushCommandQueue();

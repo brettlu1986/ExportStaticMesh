@@ -62,10 +62,10 @@ void GraphicRender_LoadModel::LoadAssets()
 	ThrowIfFailed(CommandList->Reset(CommandAllocator.Get(), nullptr));
 
 	CreateRootSignature();
-	CreateConstantBuffer();
+	CreateConstantBufferView();
 	LoadShadersAndCreatePso();
-	CreateVertexBuffer();
-	CreateIndexBuffer();
+	CreateVertexBufferView();
+	CreateIndexBufferView();
 
 	// Execute the initialization commands.
 	ThrowIfFailed(CommandList->Close());
@@ -89,10 +89,10 @@ void GraphicRender_LoadModel::CreateDxgiObjects()
 		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&DebugController))))
 		{
 			DebugController->EnableDebugLayer();
-			ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&DxgiFactory)));
 		}
 	}
 #endif
+	ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&DxgiFactory)));
 	// Try to create hardware device.
 	HRESULT HardwareResult = D3D12CreateDevice(
 		nullptr,             // default adapter
@@ -201,7 +201,7 @@ void GraphicRender_LoadModel::CreateDescriptorHeaps()
 	}
 }
 
-void GraphicRender_LoadModel::CreateConstantBuffer()
+void GraphicRender_LoadModel::CreateConstantBufferView()
 {
 	ModelGeo.CreateConstantBuffer(Device.Get());
 	D3D12_CONSTANT_BUFFER_VIEW_DESC ConstantBufferDesc = ModelGeo.GetConstantBufferDesc();
@@ -282,12 +282,12 @@ void GraphicRender_LoadModel::LoadShadersAndCreatePso()
 	NAME_D3D12_OBJECT(PipelineState);
 }
 
-void GraphicRender_LoadModel::CreateVertexBuffer()
+void GraphicRender_LoadModel::CreateVertexBufferView()
 {
 	ModelGeo.CreateVertexBufferView(Device.Get(), CommandList.Get());
 }
 
-void GraphicRender_LoadModel::CreateIndexBuffer()
+void GraphicRender_LoadModel::CreateIndexBufferView()
 {
 	ModelGeo.CreateIndexBufferView(Device.Get(), CommandList.Get());
 }
@@ -407,14 +407,7 @@ void GraphicRender_LoadModel::OnResize()
 
 void GraphicRender_LoadModel::Update()
 {
-	//determine the projection matrix
-	//XMMATRIX Proj = XMLoadFloat4x4(&MtProj);
 	ModelGeo.UpdateConstantBuffers(Camera.GetViewMarix(), XMLoadFloat4x4(&MtProj));
-	//XMMATRIX WorldViewProj = ModelGeo.GetModelMatrix() * Camera.GetViewMarix() * Proj;
-
-	 //Update the constant buffer with the latest WorldViewProj matrix.
-	/*XMStoreFloat4x4(&ObjectConstant.WorldViewProj, XMMatrixTranspose(WorldViewProj));
-	memcpy(pCbvDataBegin, &ObjectConstant, sizeof(ObjectConstant));*/
 }
 
 bool GraphicRender_LoadModel::Render()

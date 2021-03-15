@@ -155,6 +155,7 @@ void Model::CreateIndexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandLis
 void Model::CreateConstantBuffer(ID3D12Device* Device)
 {
 	//constant buffer size must 256's multiple
+
 	ConstantBufferSize = (sizeof(ObjectConstants) + 255) & ~255;
 	const CD3DX12_HEAP_PROPERTIES ConstantProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	const CD3DX12_RESOURCE_DESC ConstantDesc = CD3DX12_RESOURCE_DESC::Buffer(ConstantBufferSize);
@@ -181,7 +182,7 @@ XMMATRIX Model::GetModelMatrix()
 {
 	//calculate model matrix : scale * rotation * translation
 	//determine the watch target matrix, the M view, make no scale no rotation , so we dont need to multiply scale and rotation
-	return XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
+	return XMMatrixRotationRollPitchYaw(0.f, 0.f, 0.f) * XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
 }
 
 void Model::UpdateConstantBuffers(FXMMATRIX View, CXMMATRIX Projection)
