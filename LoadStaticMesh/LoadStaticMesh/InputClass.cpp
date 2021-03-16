@@ -25,7 +25,6 @@ bool InputClass::Update()
 	return true;
 }
 
-
 void InputClass::Destroy()
 {
 	MainApplication = nullptr;

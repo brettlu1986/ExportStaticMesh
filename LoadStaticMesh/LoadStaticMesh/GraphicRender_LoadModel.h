@@ -18,6 +18,10 @@ public:
 	virtual void Update();
 	virtual void Destroy();
 
+	virtual void OnMouseDown(WPARAM btnState, int x, int y) override;
+	virtual void OnMouseUp(WPARAM btnState, int x, int y) override;
+	virtual void OnMouseMove(WPARAM btnState, int x, int y) override;
+
 private:
 	void InitCamera();
 	void InitModel();
@@ -75,7 +79,6 @@ private:
 	Model ModelGeo;
 	Camera Camera;
 	
-	XMFLOAT4X4 MtWorld; 
-	XMFLOAT4X4 MtView; 
 	XMFLOAT4X4 MtProj; 
+	POINT LastMousePoint;
 };

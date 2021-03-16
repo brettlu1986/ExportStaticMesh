@@ -5,7 +5,7 @@
 #include <dxgidebug.h>
 #include <d3dcompiler.h>
 #include <DirectXColors.h>
-
+#include <iostream>
 #include "ApplicationMain.h"
 
 using namespace Microsoft::WRL;
@@ -18,9 +18,6 @@ GraphicRender_LoadModel::GraphicRender_LoadModel()
 	, DsvDescriptorSize(0)
 	
 {
-	MtWorld = MathHelper::Identity4x4();
-	MtView = MathHelper::Identity4x4();
-	MtProj = MathHelper::Identity4x4();
 }
 
 GraphicRender_LoadModel::~GraphicRender_LoadModel()
@@ -403,6 +400,31 @@ void GraphicRender_LoadModel::OnResize()
 
 	// Wait until resize is complete.
 	FlushCommandQueue();
+}
+
+void GraphicRender_LoadModel::OnMouseDown(WPARAM btnState, int x, int y)
+{
+	LastMousePoint.x = x; 
+	LastMousePoint.y = y;
+	SetCapture(MainApplication->GetHwnd());
+}
+
+void GraphicRender_LoadModel::OnMouseUp(WPARAM btnState, int x, int y)
+{
+	ReleaseCapture();
+}
+
+void GraphicRender_LoadModel::OnMouseMove(WPARAM btnState, int x, int y)
+{
+	if((btnState & MK_LBUTTON) != 0 ) 
+	{
+		float dx = XMConvertToRadians(0.25f * static_cast<float>(x - LastMousePoint.x));
+		float dy = XMConvertToRadians(0.25f * static_cast<float>(y - LastMousePoint.y));
+		Camera.ChangeViewMatrixByMouseEvent(dx, dy);
+	}
+
+	LastMousePoint.x = x; 
+	LastMousePoint.y = y;
 }
 
 void GraphicRender_LoadModel::Update()

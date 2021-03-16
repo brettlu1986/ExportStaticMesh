@@ -96,4 +96,6 @@ private:
 	bool bUseHalfInt32;
 
 	XMFLOAT3 ModelLocation;
+
+	
 };

@@ -27,6 +27,8 @@ public:
 	XMMATRIX GetViewMarix();
 	XMMATRIX GetProjectionMatrix(float NearPlane = 1.0f, float FarPlane = 1000.0f);
 
+	void ChangeViewMatrixByMouseEvent(float x, float y);
+
 	const XMFLOAT3& GetViewTargetLocation() {
 		return CameraDatas.Target;
 	}
@@ -49,4 +51,9 @@ private:
 
 	float Fov;
 	float AspectRatio;
+
+	//use to rotate camera
+	float Alpha;// Spherical coordinate, direction vector up angle to y
+	float Theta;// Spherical coordinate, direction vector angle in x-z plain to x
+	float Radius;
 };

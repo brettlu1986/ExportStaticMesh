@@ -2,6 +2,8 @@
 #include "MainWindow.h"
 #include "ApplicationMain.h"
 #include "InputClass.h"
+#include "GraphicRender.h"
+#include <windowsx.h>
 
 ApplicationMain* MainWindow::MainApplication = nullptr;
 
@@ -70,20 +72,31 @@ LRESULT CALLBACK MainWindow::WindowProc(HWND hWnd, UINT Message, WPARAM wParam, 
 {
 	switch (Message)
 	{
+		case WM_LBUTTONDOWN:
+		case WM_MBUTTONDOWN:
+		{
+			MainApplication->GetGraphicRender()->OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		}
+		return 0;
+		case WM_LBUTTONUP:
+		case WM_MBUTTONUP:
+		{
+			MainApplication->GetGraphicRender()->OnMouseUp(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		}
+		return 0;
+		case WM_MOUSEMOVE:
+		{
+			MainApplication->GetGraphicRender()->OnMouseMove(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		}
+		return 0;
 		case WM_KEYDOWN:
 		{
-			if (MainApplication)
-			{
-				MainApplication->GetInput()->OnKeyDown(static_cast<UINT8>(wParam));
-			}
+			MainApplication->GetInput()->OnKeyDown(static_cast<UINT8>(wParam));
 		}
 		return 0;
 		case WM_KEYUP:
 		{
-			if (MainApplication)
-			{
-				MainApplication->GetInput()->OnKeyUp(static_cast<UINT8>(wParam));
-			}
+			MainApplication->GetInput()->OnKeyUp(static_cast<UINT8>(wParam));
 		}
 		return 0;
 		case WM_DESTROY:

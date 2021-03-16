@@ -19,6 +19,10 @@ public:
 	virtual void Update() = 0;
 	virtual void Destroy() = 0;
 
+	virtual void OnMouseDown(WPARAM btnState, int x, int y){}
+	virtual void OnMouseUp(WPARAM btnState, int x, int y){}
+	virtual void OnMouseMove(WPARAM btnState, int x, int y){}
+
 protected:
 
 	std::wstring GetAssetFullPath(LPCWSTR AssetName);
