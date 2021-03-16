@@ -79,13 +79,6 @@ void Camera::ReadCameraDataFromFile(LPCWSTR FileName)
 	Rf.read(CameraBuffer, sizeof(CameraData));
 	CameraDatas = *(CameraData*)(CameraBuffer);
 
-	//calculate model matrix : scale * rotation * translation
-	//in ue4: ue4x = Forward ue4y = Right ue4z = Up
-	//in direct x: use left hand coordinate, x = Right, y = Up, z = Forward
-	//we have the conversion: x = ue4y, y = ue4z, z = ue4x, Yaw Pitch Roll stay the same
-	CameraDatas.Location = MathHelper::GetUe4ConvertLocation(CameraDatas.Location);
-	CameraDatas.Target = MathHelper::GetUe4ConvertLocation(CameraDatas.Target);
-
 	delete[] CameraBuffer;
 	Rf.close();
 	if (!Rf.good()) {

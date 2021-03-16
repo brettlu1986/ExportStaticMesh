@@ -66,7 +66,6 @@ public:
 
 	XMMATRIX GetModelMatrix();
 private: 
-
 	void GetPositionColorInput(std::vector<Vertex_PositionColor>& OutPut);
 	void ReadMeshDataFromFile(LPCWSTR FileName);
 

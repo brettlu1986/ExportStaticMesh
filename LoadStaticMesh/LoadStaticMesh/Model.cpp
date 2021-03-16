@@ -27,15 +27,6 @@ Model::~Model()
 	
 }
 
-void Model::Destroy()
-{
-	VertexBuffer.Reset();
-	VertexUploadBuffer.Reset();
-	IndexBuffer.Reset();
-	IndexBufferUpload.Reset();
-	ConstantBuffer.Reset();
-}
-
 void Model::Init()
 {
 	ReadMeshDataFromFile(ModelBinName.c_str());
@@ -194,6 +185,15 @@ void Model::UpdateConstantBuffers(FXMMATRIX View, CXMMATRIX Projection)
 	memcpy(pCbvDataBegin, &ObjectConstant, sizeof(ObjectConstant));
 }
 
+void Model::Destroy()
+{
+	VertexBuffer.Reset();
+	VertexUploadBuffer.Reset();
+	IndexBuffer.Reset();
+	IndexBufferUpload.Reset();
+	ConstantBuffer.Reset();
+}
+
 void Model::ReadMeshDataFromFile(LPCWSTR FileName)
 {
 	std::wstring FName = GetSaveDirectory() + FileName;
@@ -236,6 +236,7 @@ void Model::ReadMeshDataFromFile(LPCWSTR FileName)
 
 	delete[] MeshDataLenChar;
 	delete[] IndicesLenChar;
+
 	Rf.close();
 	if (!Rf.good()) {
 		cout << "Error occurred at reading time!" << endl;
