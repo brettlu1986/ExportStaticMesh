@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="ApplicationMain.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="GraphicRender.cpp" />
     <ClCompile Include="GraphicRender_LoadModel.cpp" />
     <ClCompile Include="InputClass.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="ApplicationMain.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="GraphicHelper.h" />
     <ClInclude Include="GraphicRender.h" />
     <ClInclude Include="GraphicRender_LoadModel.h" />
@@ -176,6 +178,9 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">copy %(Identity) "$(OutDir)" &gt; NUL</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)\%(Identity)</Outputs>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="T_Chair_M.dds" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

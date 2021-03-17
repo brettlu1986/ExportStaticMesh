@@ -21,6 +21,9 @@ Camera::Camera()
 	,Fov(XM_PI/2)
 	,AspectRatio(1.777f)
 	,CameraDatas(CameraData())
+	,Radius(1.f)
+	,Alpha(0.f)
+	,Theta(0.f)
 {
 
 }

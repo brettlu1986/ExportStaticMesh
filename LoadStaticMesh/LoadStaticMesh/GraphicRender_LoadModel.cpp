@@ -18,6 +18,8 @@ GraphicRender_LoadModel::GraphicRender_LoadModel()
 	, DsvDescriptorSize(0)
 	
 {
+	MtProj = MathHelper::Identity4x4();
+	LastMousePoint = {0 , 0};
 }
 
 GraphicRender_LoadModel::~GraphicRender_LoadModel()
@@ -225,6 +227,7 @@ void GraphicRender_LoadModel::CreateRootSignature()
 	ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &Signature, &Error));
 	ThrowIfFailed(Device->CreateRootSignature(0, Signature->GetBufferPointer(), Signature->GetBufferSize(), IID_PPV_ARGS(&RootSignature)));
 	NAME_D3D12_OBJECT(RootSignature);
+
 }
 
 void GraphicRender_LoadModel::LoadShadersAndCreatePso()
