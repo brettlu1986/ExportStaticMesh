@@ -51,10 +51,16 @@ void Camera::Init()
 
 	FocusPosition = CameraDatas.Target;
 
-	Alpha = XM_PIDIV2 - Pitch;
-	Theta = XM_PIDIV2 - Yaw;
-	XMVECTOR Target = XMVector3Length(XMVectorSet(FocusPosition.x - Position.x, FocusPosition.y - Position.y, FocusPosition.z - Position.z, 1.f));
+	//change Cartesian coordinate to Spherical coordinate, so it will be easy to use mouse rotate camera
+	XMVECTOR Target = XMVector3Length(XMVectorSet(Position.x - FocusPosition.x, Position.y - FocusPosition.y, Position.z - FocusPosition.z, 1.f));
 	Radius = XMVectorGetX(Target);
+	// Spherical coordinate, direction vector up angle to y
+	Alpha = acosf( (Position.y - FocusPosition.y) / Radius);
+	// Spherical coordinate, direction shadow vector angle in x-z plain to x
+	Theta = atanf( (Position.z - FocusPosition.z) / (Position.x - FocusPosition.x));
+	//Theta range is [0, 2Pi]
+	if(Theta < 0.f)
+		Theta += XM_PI * 2;
 }
 
 void Camera::OnResize(float WndWidth, float WndHeight)
@@ -65,13 +71,16 @@ void Camera::OnResize(float WndWidth, float WndHeight)
 
 void Camera::ChangeViewMatrixByMouseEvent(float x, float y)
 {
-	/*Alpha += x;
-	Theta += y;
-	Theta = MathHelper::Clamp(Theta, 0.1f, MathHelper::Pi - 0.1f);
+	Theta += x;
+	Alpha += y;
+	Alpha = MathHelper::Clamp(Alpha, 0.1f, MathHelper::Pi - 0.1f);
 
-	Position.x = Radius*sinf(Alpha)*cosf(Theta);
-	Position.y = Radius*cosf(Alpha);
-	Position.z = Radius*sinf(Alpha)*sinf(Theta);*/
+	XMVECTOR V = MathHelper::SphericalToCartesian(Radius, Theta, Alpha);
+	V += XMLoadFloat3(&FocusPosition);
+	Position.x = XMVectorGetX(V);
+	Position.y = XMVectorGetY(V);
+	Position.z = XMVectorGetZ(V);
+
 }
 
 XMMATRIX Camera::GetViewMarix()

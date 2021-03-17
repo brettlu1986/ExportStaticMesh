@@ -54,6 +54,6 @@ private:
 
 	//use to rotate camera
 	float Alpha;// Spherical coordinate, direction vector up angle to y
-	float Theta;// Spherical coordinate, direction vector angle in x-z plain to x
+	float Theta;// Spherical coordinate, direction shadow vector angle in x-z plain to x
 	float Radius;
 };
