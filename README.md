@@ -103,7 +103,10 @@ An index buffer contains a sequential set of 16-bit or 32-bit indices; each inde
 1. [shader参数传递](https://docs.microsoft.com/en-us/windows/win32/direct3dgetstarted/work-with-shaders-and-shader-resources)
 
 # d3d coder 
-1.[参考 d3d sample，龙书上的，很不错](https://github.com/d3dcoder/d3d12book/blob/master/Common/MathHelper.h)
+1. [参考 d3d sample，龙书上的，很不错](https://github.com/d3dcoder/d3d12book/blob/master/Common/MathHelper.h)
+
+# d3d texture convert
+1. [tga convert dds](https://www.aconvert.com/image/tga-to-dds/)
 
 # 问题汇总：
 

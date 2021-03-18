@@ -1,5 +1,6 @@
 #include "Model.h"
 #include "GraphicHelper.h"
+#include "DDSTextureLoader.h"
 
 #include <iostream>
 #include <fstream>
@@ -8,6 +9,7 @@ using namespace DirectX;
 using namespace std;
 
 static const wstring ModelBinName = L"mesh.bin";
+static const wstring TexFileName = L"T_Chair_M.dds";
 
 Model::Model()
 	:bUseHalfInt32(false)
@@ -39,6 +41,8 @@ void Model::Destroy()
 	IndexBuffer.Reset();
 	IndexBufferUpload.Reset();
 	ConstantBuffer.Reset();
+	TextureResource.Reset();
+	TextureResourceUpload.Reset();
 }
 
 void Model::SetModelLocation(XMFLOAT3 Location)
@@ -129,13 +133,29 @@ void Model::GetPositionColorInput(std::vector<Vertex_PositionColor>& OutPut)
 	}
 }
 
+void Model::GetPositionTex0Input(std::vector<Vertex_PositionTex0>& OutPut)
+{
+	if (MeshDatas.size() == 0)
+	{
+		cout << "Mesh vertices is zero!" << endl;
+		return;
+	}
+
+	UINT VerticesSize = static_cast<UINT>(MeshDatas.size());
+	OutPut.reserve(VerticesSize);
+	for (size_t i = 0; i < VerticesSize; i++)
+	{
+		OutPut.push_back({ MeshDatas[i].Position, MeshDatas[i].Tex0 });
+	}
+}
+
 void Model::CreateVertexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList)
 {
-	std::vector<Vertex_PositionColor> TriangleVertices;
+	std::vector<Vertex_PositionTex0> TriangleVertices;
 	// Create the vertex buffer.
 	// Define the geometry for a triangle.  read the vertices data
-	GetPositionColorInput(TriangleVertices);
-	const UINT VertexBufferSize = static_cast<UINT>(TriangleVertices.size() * sizeof(Vertex_PositionColor));//sizeof(TriangleVertices);
+	GetPositionTex0Input(TriangleVertices);
+	const UINT VertexBufferSize = static_cast<UINT>(TriangleVertices.size() * sizeof(Vertex_PositionTex0));//sizeof(TriangleVertices);
 
 	const CD3DX12_HEAP_PROPERTIES VertexDefaultProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 	const CD3DX12_RESOURCE_DESC VertexDefaultDesc = CD3DX12_RESOURCE_DESC::Buffer(VertexBufferSize);
@@ -187,7 +207,7 @@ void Model::CreateVertexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandLi
 	// The caller can Release the uploadBuffer after it knows the copy has been executed.
 
 	VertexBufferView.BufferLocation = VertexBuffer->GetGPUVirtualAddress();
-	VertexBufferView.StrideInBytes = sizeof(Vertex_PositionColor);
+	VertexBufferView.StrideInBytes = sizeof(Vertex_PositionTex0);
 	VertexBufferView.SizeInBytes = VertexBufferSize;
 }
 
@@ -270,4 +290,11 @@ void Model::CreateConstantBuffer(ID3D12Device* Device)
 	ThrowIfFailed(ConstantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&pCbvDataBegin)));
 	memcpy(pCbvDataBegin, &ObjectConstant, sizeof(ObjectConstant));
 	NAME_D3D12_OBJECT(ConstantBuffer);
+}
+
+void Model::CreateDDSTextureFomFile(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList)
+{
+	DirectX::CreateDDSTextureFromFile12(Device, CommandList, TexFileName.c_str(), TextureResource, TextureResourceUpload);	
+	NAME_D3D12_OBJECT(TextureResource);
+	NAME_D3D12_OBJECT(TextureResourceUpload);
 }

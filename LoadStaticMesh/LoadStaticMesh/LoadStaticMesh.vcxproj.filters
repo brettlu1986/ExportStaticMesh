@@ -103,6 +103,12 @@
     <CustomBuild Include="shaders.hlsl">
       <Filter>Resource Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="shader_vs.hlsl">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shader_ps.hlsl">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Image Include="T_Chair_M.dds">

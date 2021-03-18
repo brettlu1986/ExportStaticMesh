@@ -41,6 +41,7 @@ private:
 	void LoadShadersAndCreatePso();
 	void CreateVertexBufferView();
 	void CreateIndexBufferView();
+	void CreateTextureAndSampler();
 
 	void OnResize();
 	void FlushCommandQueue();
@@ -62,7 +63,8 @@ private:
 
 	ComPtr<ID3D12DescriptorHeap> RtvHeap;
 	ComPtr<ID3D12DescriptorHeap> DsvHeap;;
-	ComPtr<ID3D12DescriptorHeap> CbvHeap;
+	ComPtr<ID3D12DescriptorHeap> CbvSrvHeap;
+	ComPtr<ID3D12DescriptorHeap> SamplerHeap;
 
 	ComPtr<ID3D12PipelineState> PipelineState;
 	ComPtr<ID3D12GraphicsCommandList> CommandList;

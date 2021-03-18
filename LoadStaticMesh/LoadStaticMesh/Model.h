@@ -26,6 +26,11 @@ struct Vertex_PositionColor
 	XMFLOAT4 Color;
 };
 
+struct Vertex_PositionTex0
+{
+	XMFLOAT3 Position;
+	XMFLOAT2 Tex0;
+};
 
 class Model
 {
@@ -41,6 +46,7 @@ public:
 	void CreateVertexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList);
 	void CreateIndexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList);
 	void CreateConstantBuffer(ID3D12Device* Device);
+	void CreateDDSTextureFomFile(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList);
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const
 	{
@@ -50,6 +56,11 @@ public:
 	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const 
 	{
 		return IndexBufferView;
+	}
+
+	ID3D12Resource* GetTextureResource() const
+	{
+		return TextureResource.Get();
 	}
 
 	UINT GetIndicesCount() const { return IndicesCount; }
@@ -62,11 +73,22 @@ public:
 		return CbvDesc;
 	}
 
+	D3D12_SHADER_RESOURCE_VIEW_DESC GetShaderResourceViewDesc()
+	{
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.Format = TextureResource->GetDesc().Format;
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MipLevels = TextureResource->GetDesc().MipLevels;
+		return srvDesc;
+	}
+
 	void SetModelLocation(XMFLOAT3 Location);
 
 	XMMATRIX GetModelMatrix();
 private: 
 	void GetPositionColorInput(std::vector<Vertex_PositionColor>& OutPut);
+	void GetPositionTex0Input(std::vector<Vertex_PositionTex0>& OutPut);
 	void ReadMeshDataFromFile(LPCWSTR FileName);
 
 	struct ObjectConstants
@@ -85,6 +107,9 @@ private:
 	ComPtr<ID3D12Resource> ConstantBuffer;
 	ObjectConstants ObjectConstant;
 	UINT8* pCbvDataBegin;
+
+	ComPtr<ID3D12Resource> TextureResource ;
+	ComPtr<ID3D12Resource> TextureResourceUpload ;
 
 	UINT IndiceSize;
 	UINT IndicesCount;
