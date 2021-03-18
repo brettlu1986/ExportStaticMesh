@@ -277,6 +277,7 @@ void GraphicRender_LoadModel::LoadShadersAndCreatePso()
 	};
 
 	CD3DX12_RASTERIZER_DESC rasterizerStateDesc(D3D12_DEFAULT);
+	//rasterizerStateDesc.FrontCounterClockwise = true;
 	rasterizerStateDesc.CullMode = D3D12_CULL_MODE_NONE;
 
 	// Describe and create the graphics pipeline state object (PSO).
