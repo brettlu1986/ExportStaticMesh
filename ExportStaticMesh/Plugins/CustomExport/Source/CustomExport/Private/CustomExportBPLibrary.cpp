@@ -80,8 +80,7 @@ void GetVertexPosition(const TArray<bool>& ValidFormat, uint32 Index, const FSta
 		FVector Position = PositionBuffer.VertexPosition(Index);
 		Position *= POSITION_SCALE;
 		MeshDataJson.Positions.Append({ Position.X, Position.Y, Position.Z });
-		//convert the ue4 coordinate to left hand coordinate in dx12
-		MeshDataBin.Position = { Position.Y , Position.Z , Position.X };
+		MeshDataBin.Position = Position;
 	}
 }
 
@@ -268,10 +267,8 @@ void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component)
 	//in direct x: use left hand coordinate, x = Right, y = Up, z = Forward
 	//we have the conversion: x = ue4y, y = ue4z, z = ue4x, Yaw Pitch Roll stay the same
 	FCameraData CameraData = {};
-	CameraData.Location = { CameraLocation.Y, CameraLocation.Z, CameraLocation.X } ;
-	CameraData.Location *=  POSITION_SCALE;
-	CameraData.Target = { Target.Y, Target.Z, Target.X };
-	CameraData.Target *= POSITION_SCALE;
+	CameraData.Location = CameraLocation * POSITION_SCALE;//{ CameraLocation.Y, CameraLocation.Z, CameraLocation.X } ;
+	CameraData.Target = Target * POSITION_SCALE;//{ Target.Y, Target.Z, Target.X };
 	CameraData.Rotator = CameraRot;
 	CameraData.Fov = FOV;
 	CameraData.Aspect = AspectRatio;
