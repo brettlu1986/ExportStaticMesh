@@ -35,7 +35,7 @@
 8. 双缓冲present  
 9. m_fence等待 gpu执行完执行下一次
 
-#d3d12调试注意点:
+# d3d12调试注意点:
 1. 新建工程win32工程往往只是包含了include 路径， lib link可能会有link不进来的情况，保险一点最好 包含进来    
 
 ```
@@ -129,6 +129,9 @@ An index buffer contains a sequential set of 16-bit or 32-bit indices; each inde
 17. ResourceBarrier  用于设置当前 pipeline state object的渲染状态 ？？
 18. 矩阵 MVP矩阵的计算 需要了解一下
 19. shader register(b0) 跟 RootSignature里的 Init关系
+
+# directx 多线程性能分析
+[多线程性能](https://software.intel.com/content/www/cn/zh/develop/articles/understanding-directx-multithreaded-rendering-performance-by-experiments.html)
 	
 	
 
