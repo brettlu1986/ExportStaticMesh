@@ -23,6 +23,12 @@ public:
 	virtual void OnMouseMove(WPARAM btnState, int x, int y) override;
 
 private:
+
+	struct ObjectConstants
+	{
+		XMFLOAT4X4 WorldViewProj = MathHelper::Identity4x4();
+	};
+
 	void InitCamera();
 	void InitModel();
 
@@ -68,6 +74,11 @@ private:
 
 	ComPtr<ID3D12PipelineState> PipelineState;
 	ComPtr<ID3D12GraphicsCommandList> CommandList;
+
+	ComPtr<ID3D12Resource> ConstantBuffer;
+	ObjectConstants ObjectConstant;
+	UINT8* pCbvDataBegin;
+	UINT ConstantBufferSize;
 
 	UINT RtvDescriptorSize;
 	UINT DsvDescriptorSize;

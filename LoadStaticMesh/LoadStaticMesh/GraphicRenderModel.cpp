@@ -8,8 +8,12 @@
 #include <iostream>
 #include "ApplicationMain.h"
 #include "d3dx12.h"
+#include "DDSTextureLoader.h"
 
 using namespace Microsoft::WRL;
+using namespace DirectX;
+
+static const wstring TexFileName = L"T_Chair_M.dds";
 
 GraphicRenderModel::GraphicRenderModel()
 	: FrameIndex(0)
@@ -17,6 +21,9 @@ GraphicRenderModel::GraphicRenderModel()
 	, FenceValue(0)
 	, CbvSrvUavDescriptorSize(0)
 	, DsvDescriptorSize(0)
+	, pCbvDataBegin(nullptr)
+	, ObjectConstant({})
+	, ConstantBufferSize(0)
 	
 {
 	MtProj = MathHelper::Identity4x4();
@@ -240,9 +247,27 @@ void GraphicRenderModel::CreateRootSignature()
 
 void GraphicRenderModel::CreateConstantBufferView()
 {
-	ModelGeo.CreateConstantBuffer(Device.Get());
-	D3D12_CONSTANT_BUFFER_VIEW_DESC ConstantBufferDesc = ModelGeo.GetConstantBufferDesc();
-	Device->CreateConstantBufferView(&ConstantBufferDesc, CbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
+	//constant buffer size must 256's multiple
+	ConstantBufferSize = (sizeof(ObjectConstants) + 255) & ~255;
+	const CD3DX12_HEAP_PROPERTIES ConstantProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	const CD3DX12_RESOURCE_DESC ConstantDesc = CD3DX12_RESOURCE_DESC::Buffer(ConstantBufferSize);
+
+	ThrowIfFailed(Device->CreateCommittedResource(
+		&ConstantProp,
+		D3D12_HEAP_FLAG_NONE,
+		&ConstantDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&ConstantBuffer)));
+
+	ThrowIfFailed(ConstantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&pCbvDataBegin)));
+	memcpy(pCbvDataBegin, &ObjectConstant, sizeof(ObjectConstant));
+	NAME_D3D12_OBJECT(ConstantBuffer);
+
+	D3D12_CONSTANT_BUFFER_VIEW_DESC CbvDesc = {};
+	CbvDesc.BufferLocation = ConstantBuffer->GetGPUVirtualAddress();
+	CbvDesc.SizeInBytes = ConstantBufferSize;
+	Device->CreateConstantBufferView(&CbvDesc, CbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
 void GraphicRenderModel::LoadShadersAndCreatePso()
@@ -303,20 +328,46 @@ void GraphicRenderModel::LoadShadersAndCreatePso()
 
 void GraphicRenderModel::CreateVertexBufferView()
 {
-	ModelGeo.CreateVertexBufferView(Device.Get(), CommandList.Get());
+	std::vector<Vertex_PositionTex0> TriangleVertices;
+	ModelGeo.GetPositionTex0Input(TriangleVertices);
+	const UINT VertexBufferSize = static_cast<UINT>(TriangleVertices.size() * sizeof(Vertex_PositionTex0));
+	CreateBuffer(Device.Get(), CommandList.Get(), TriangleVertices.data(), VertexBufferSize, ModelGeo.VertexBuffer, ModelGeo.VertexUploadBuffer);
+	ModelGeo.VertexBufferSize = VertexBufferSize;
+
+	NAME_D3D12_OBJECT(ModelGeo.VertexBuffer);
+	NAME_D3D12_OBJECT(ModelGeo.VertexUploadBuffer);
+
+	ModelGeo.CreateVertexBufferView();
 }
 
 void GraphicRenderModel::CreateIndexBufferView()
 {
-	ModelGeo.CreateIndexBufferView(Device.Get(), CommandList.Get());
+	ModelGeo.IndicesCount = ModelGeo.bUseHalfInt32 ? 
+		static_cast<UINT>(ModelGeo.MeshIndicesHalf.size()) : static_cast<UINT>(ModelGeo.MeshIndices.size());
+
+	ModelGeo.IndiceSize = ModelGeo.bUseHalfInt32 ? 
+		ModelGeo.IndicesCount * sizeof(UINT16) : ModelGeo.IndicesCount * sizeof(UINT) ;
+
+	const void* InitData = ModelGeo.bUseHalfInt32 ? 
+		reinterpret_cast<void*>(ModelGeo.MeshIndicesHalf.data()) : reinterpret_cast<void*>(ModelGeo.MeshIndices.data());
+
+	CreateBuffer(Device.Get(), CommandList.Get(), InitData, ModelGeo.IndiceSize, ModelGeo.IndexBuffer, ModelGeo.IndexBufferUpload);
+
+	NAME_D3D12_OBJECT(ModelGeo.IndexBuffer);
+	NAME_D3D12_OBJECT(ModelGeo.IndexBufferUpload);
+
+	ModelGeo.CreateIndexBufferView();
 }
 
 void GraphicRenderModel::CreateTextureAndSampler()
 {
-	ModelGeo.CreateDDSTextureFomFile(Device.Get(), CommandList.Get());
+	DirectX::CreateDDSTextureFromFile12(Device.Get(), CommandList.Get(), TexFileName.c_str(), ModelGeo.TextureResource, ModelGeo.TextureResourceUpload);
+	NAME_D3D12_OBJECT(ModelGeo.TextureResource);
+	NAME_D3D12_OBJECT(ModelGeo.TextureResourceUpload);
+
 	D3D12_SHADER_RESOURCE_VIEW_DESC SrvDesc = ModelGeo.GetShaderResourceViewDesc();
 	CD3DX12_CPU_DESCRIPTOR_HANDLE CbvSrvHandle(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart(), 1, CbvSrvUavDescriptorSize);
-	Device->CreateShaderResourceView(ModelGeo.GetTextureResource(), &SrvDesc, CbvSrvHandle);
+	Device->CreateShaderResourceView(ModelGeo.TextureResource.Get(), &SrvDesc, CbvSrvHandle);
 
 	// Describe and create a sampler.
 	D3D12_SAMPLER_DESC SamplerDesc = {};
@@ -447,7 +498,10 @@ void GraphicRenderModel::OnMouseMove(WPARAM btnState, int x, int y)
 
 void GraphicRenderModel::Update()
 {
-	ModelGeo.UpdateConstantBuffers(Camera.GetViewMarix(), XMLoadFloat4x4(&MtProj));
+	XMMATRIX WorldViewProj = ModelGeo.GetModelMatrix() * Camera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
+	//Update the constant buffer with the latest WorldViewProj matrix.
+	XMStoreFloat4x4(&ObjectConstant.WorldViewProj, XMMatrixTranspose(WorldViewProj));
+	memcpy(pCbvDataBegin, &ObjectConstant, sizeof(ObjectConstant));
 }
 
 bool GraphicRenderModel::Render()
@@ -528,6 +582,9 @@ void GraphicRenderModel::Destroy()
 	SamplerHeap.Reset();
 	ResetComPtrArray(&RenderTargets);
 	DepthStencilBuffer.Reset();
+
+	ConstantBuffer->Unmap(0, nullptr);
+	ConstantBuffer.Reset();
 	ModelGeo.Destroy();
 	
 	CommandQueue.Reset();

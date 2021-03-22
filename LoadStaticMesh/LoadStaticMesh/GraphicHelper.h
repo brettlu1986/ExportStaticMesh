@@ -176,12 +176,60 @@ inline HRESULT ReadDataFromDDSFile(LPCWSTR filename, byte** data, UINT* offset, 
     return S_OK;
 }
 
-inline void CreateVertexBuffer()
+inline void CreateBuffer(ID3D12Device* Device, ID3D12GraphicsCommandList* CmdList, const void* InitData, 
+    UINT64 ByteSize, Microsoft::WRL::ComPtr<ID3D12Resource>& VertexBuffer, 
+    Microsoft::WRL::ComPtr<ID3D12Resource>& UploadBuffer)
 {
-    
+
+	const CD3DX12_HEAP_PROPERTIES VertexDefaultProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	const CD3DX12_RESOURCE_DESC VertexDefaultDesc = CD3DX12_RESOURCE_DESC::Buffer(ByteSize);
+	//create actual default buffer resource
+	ThrowIfFailed(Device->CreateCommittedResource(
+		&VertexDefaultProp,
+		D3D12_HEAP_FLAG_NONE,
+		&VertexDefaultDesc,
+		D3D12_RESOURCE_STATE_COMMON,
+		nullptr,
+		IID_PPV_ARGS(&VertexBuffer)));
+
+	// In order to copy CPU memory data into our default buffer, we need to create
+	// an intermediate upload heap. 
+	const CD3DX12_HEAP_PROPERTIES VertextUploadProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	const CD3DX12_RESOURCE_DESC VertextUploadDesc = CD3DX12_RESOURCE_DESC::Buffer(ByteSize);
+	ThrowIfFailed(Device->CreateCommittedResource(
+		&VertextUploadProp,
+		D3D12_HEAP_FLAG_NONE,
+		&VertextUploadDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&UploadBuffer)));
+
+	// Describe the data we want to copy into the default buffer.
+	D3D12_SUBRESOURCE_DATA SubResourceData;
+	SubResourceData.pData = InitData;
+	SubResourceData.RowPitch = ByteSize;
+	SubResourceData.SlicePitch = SubResourceData.RowPitch;
+
+	// Schedule to copy the data to the default buffer resource.  the function UpdateSubresources
+	// will copy the CPU memory into the intermediate upload heap.  Then, using ID3D12CommandList::CopySubresourceRegion,
+	// the intermediate upload heap data will be copied to default buffer.
+	const D3D12_RESOURCE_BARRIER RbVertex1 = CD3DX12_RESOURCE_BARRIER::Transition(VertexBuffer.Get(),
+		D3D12_RESOURCE_STATE_COMMON,
+		D3D12_RESOURCE_STATE_COPY_DEST);
+    CmdList->ResourceBarrier(1, &RbVertex1);
+
+	UpdateSubresources<1>(CmdList, VertexBuffer.Get(), UploadBuffer.Get(), 0, 0, 1, &SubResourceData);
+	const D3D12_RESOURCE_BARRIER RbVertex2 = CD3DX12_RESOURCE_BARRIER::Transition(VertexBuffer.Get(),
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		D3D12_RESOURCE_STATE_GENERIC_READ);
+    CmdList->ResourceBarrier(1, &RbVertex2);
+
+	// uploadBuffer has to be kept alive after the above function calls because
+	// the command list has not been executed yet that performs the actual copy.
+	// The caller can Release the uploadBuffer after it knows the copy has been executed.
 }
 
-inline void CreateIndexBuffer()
+inline void CreateConstantBuffer()
 {
     
 }
