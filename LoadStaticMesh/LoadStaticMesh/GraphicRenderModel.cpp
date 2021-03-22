@@ -1,7 +1,7 @@
 
 
 #include "stdafx.h"
-#include "GraphicRender_LoadModel.h"
+#include "GraphicRenderModel.h"
 #include <dxgidebug.h>
 #include <d3dcompiler.h>
 #include <DirectXColors.h>
@@ -11,7 +11,7 @@
 
 using namespace Microsoft::WRL;
 
-GraphicRender_LoadModel::GraphicRender_LoadModel()
+GraphicRenderModel::GraphicRenderModel()
 	: FrameIndex(0)
 	, RtvDescriptorSize(0)
 	, FenceValue(0)
@@ -23,12 +23,12 @@ GraphicRender_LoadModel::GraphicRender_LoadModel()
 	LastMousePoint = {0 , 0};
 }
 
-GraphicRender_LoadModel::~GraphicRender_LoadModel()
+GraphicRenderModel::~GraphicRenderModel()
 {
 
 }
 
-void GraphicRender_LoadModel::OnInit()
+void GraphicRenderModel::OnInit()
 {
 	InitCamera();
 	InitModel();
@@ -36,18 +36,18 @@ void GraphicRender_LoadModel::OnInit()
 	LoadAssets();
 }
 
-void GraphicRender_LoadModel::InitCamera()
+void GraphicRenderModel::InitCamera()
 {
 	Camera.Init();
 }
 
-void GraphicRender_LoadModel::InitModel()
+void GraphicRenderModel::InitModel()
 {
 	ModelGeo.Init();
 	ModelGeo.SetModelLocation(Camera.GetViewTargetLocation());
 }
 
-void GraphicRender_LoadModel::LoadPipline()
+void GraphicRenderModel::LoadPipline()
 {
 	CreateDxgiObjects();
 	CreateCommandObjects();
@@ -56,7 +56,7 @@ void GraphicRender_LoadModel::LoadPipline()
 	OnResize();
 }
 
-void GraphicRender_LoadModel::LoadAssets()
+void GraphicRenderModel::LoadAssets()
 {
 	// Reset the command list to prep for initialization commands.
 	ThrowIfFailed(CommandList->Reset(CommandAllocator.Get(), nullptr));
@@ -77,7 +77,7 @@ void GraphicRender_LoadModel::LoadAssets()
 	FlushCommandQueue();
 }
 
-void GraphicRender_LoadModel::CreateDxgiObjects()
+void GraphicRenderModel::CreateDxgiObjects()
 {
 	Viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(WndWidth), static_cast<float>(WndHeight));
 	ScissorRect = CD3DX12_RECT(0, 0, static_cast<LONG>(WndWidth), static_cast<LONG>(WndHeight));
@@ -119,7 +119,7 @@ void GraphicRender_LoadModel::CreateDxgiObjects()
 	CbvSrvUavDescriptorSize = Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
-void GraphicRender_LoadModel::CreateCommandObjects()
+void GraphicRenderModel::CreateCommandObjects()
 {
 	// Describe and create the command queue.
 	D3D12_COMMAND_QUEUE_DESC QueueDesc = {};
@@ -140,7 +140,7 @@ void GraphicRender_LoadModel::CreateCommandObjects()
 	ThrowIfFailed(CommandList->Close());
 }
 
-void GraphicRender_LoadModel::CreateSwapChain()
+void GraphicRenderModel::CreateSwapChain()
 {
 	// Release the previous swapchain we will be recreating.
 	SwapChain.Reset();
@@ -170,7 +170,7 @@ void GraphicRender_LoadModel::CreateSwapChain()
 
 }
 
-void GraphicRender_LoadModel::CreateDescriptorHeaps()
+void GraphicRenderModel::CreateDescriptorHeaps()
 {
 	// Create descriptor heaps.
 	{
@@ -210,7 +210,7 @@ void GraphicRender_LoadModel::CreateDescriptorHeaps()
 	}
 }
 
-void GraphicRender_LoadModel::CreateRootSignature()
+void GraphicRenderModel::CreateRootSignature()
 {
 	// Create a root Signature consisting of a descriptor table with a single CBV.
 	CD3DX12_ROOT_PARAMETER RootParameters[3];
@@ -238,14 +238,14 @@ void GraphicRender_LoadModel::CreateRootSignature()
 
 }
 
-void GraphicRender_LoadModel::CreateConstantBufferView()
+void GraphicRenderModel::CreateConstantBufferView()
 {
 	ModelGeo.CreateConstantBuffer(Device.Get());
 	D3D12_CONSTANT_BUFFER_VIEW_DESC ConstantBufferDesc = ModelGeo.GetConstantBufferDesc();
 	Device->CreateConstantBufferView(&ConstantBufferDesc, CbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
-void GraphicRender_LoadModel::LoadShadersAndCreatePso()
+void GraphicRenderModel::LoadShadersAndCreatePso()
 {
 	// Create the pipeline state, which includes compiling and loading shaders.
 	ComPtr<ID3DBlob> pVertexShader;
@@ -301,17 +301,17 @@ void GraphicRender_LoadModel::LoadShadersAndCreatePso()
 	NAME_D3D12_OBJECT(PipelineState);
 }
 
-void GraphicRender_LoadModel::CreateVertexBufferView()
+void GraphicRenderModel::CreateVertexBufferView()
 {
 	ModelGeo.CreateVertexBufferView(Device.Get(), CommandList.Get());
 }
 
-void GraphicRender_LoadModel::CreateIndexBufferView()
+void GraphicRenderModel::CreateIndexBufferView()
 {
 	ModelGeo.CreateIndexBufferView(Device.Get(), CommandList.Get());
 }
 
-void GraphicRender_LoadModel::CreateTextureAndSampler()
+void GraphicRenderModel::CreateTextureAndSampler()
 {
 	ModelGeo.CreateDDSTextureFomFile(Device.Get(), CommandList.Get());
 	D3D12_SHADER_RESOURCE_VIEW_DESC SrvDesc = ModelGeo.GetShaderResourceViewDesc();
@@ -332,7 +332,7 @@ void GraphicRender_LoadModel::CreateTextureAndSampler()
 	Device->CreateSampler(&SamplerDesc, SamplerHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
-void GraphicRender_LoadModel::FlushCommandQueue()
+void GraphicRenderModel::FlushCommandQueue()
 {
 	//Create synchronization objects and wait until assets have been uploaded to the GPU.
 	{
@@ -351,7 +351,7 @@ void GraphicRender_LoadModel::FlushCommandQueue()
 	}
 }
 
-void GraphicRender_LoadModel::OnResize()
+void GraphicRenderModel::OnResize()
 {
 	// The window resized, so update the aspect ratio and recompute the projection matrix.
 	Camera.OnResize(static_cast<float>(WndWidth), static_cast<float>(WndHeight));
@@ -420,19 +420,19 @@ void GraphicRender_LoadModel::OnResize()
 	FlushCommandQueue();
 }
 
-void GraphicRender_LoadModel::OnMouseDown(WPARAM btnState, int x, int y)
+void GraphicRenderModel::OnMouseDown(WPARAM btnState, int x, int y)
 {
 	LastMousePoint.x = x; 
 	LastMousePoint.y = y;
 	SetCapture(MainApplication->GetHwnd());
 }
 
-void GraphicRender_LoadModel::OnMouseUp(WPARAM btnState, int x, int y)
+void GraphicRenderModel::OnMouseUp(WPARAM btnState, int x, int y)
 {
 	ReleaseCapture();
 }
 
-void GraphicRender_LoadModel::OnMouseMove(WPARAM btnState, int x, int y)
+void GraphicRenderModel::OnMouseMove(WPARAM btnState, int x, int y)
 {
 	if((btnState & MK_LBUTTON) != 0 ) 
 	{
@@ -445,12 +445,12 @@ void GraphicRender_LoadModel::OnMouseMove(WPARAM btnState, int x, int y)
 	LastMousePoint.y = y;
 }
 
-void GraphicRender_LoadModel::Update()
+void GraphicRenderModel::Update()
 {
 	ModelGeo.UpdateConstantBuffers(Camera.GetViewMarix(), XMLoadFloat4x4(&MtProj));
 }
 
-bool GraphicRender_LoadModel::Render()
+bool GraphicRenderModel::Render()
 {
 	// Command list allocators can only be reset when the associated 
 	// command lists have finished execution on the GPU; apps should use 
@@ -512,7 +512,7 @@ bool GraphicRender_LoadModel::Render()
 	return true;
 }
 
-void GraphicRender_LoadModel::Destroy()
+void GraphicRenderModel::Destroy()
 {
 	// Ensure that the GPU is no longer referencing resources that are about to be
 	// cleaned up by the destructor.

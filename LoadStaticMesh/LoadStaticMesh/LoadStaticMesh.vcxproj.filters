@@ -42,9 +42,6 @@
     <ClCompile Include="GraphicRender.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicRender_LoadModel.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
     <ClCompile Include="MathHelper.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
@@ -60,6 +57,9 @@
     <ClCompile Include="DDSTextureLoader.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
+    <ClCompile Include="GraphicRenderModel.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApplicationMain.h">
@@ -72,9 +72,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GraphicRender.h">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicRender_LoadModel.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="MathHelper.h">
@@ -97,6 +94,9 @@
     </ClInclude>
     <ClInclude Include="DDSTextureLoader.h">
       <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicRenderModel.h">
+      <Filter>Header Files\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

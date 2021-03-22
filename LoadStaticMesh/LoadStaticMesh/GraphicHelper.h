@@ -176,6 +176,16 @@ inline HRESULT ReadDataFromDDSFile(LPCWSTR filename, byte** data, UINT* offset, 
     return S_OK;
 }
 
+inline void CreateVertexBuffer()
+{
+    
+}
+
+inline void CreateIndexBuffer()
+{
+    
+}
+
 // Assign a name to the object to aid with debugging.
 #if defined(_DEBUG) || defined(DBG)
 inline void SetName(ID3D12Object* pObject, LPCWSTR name)

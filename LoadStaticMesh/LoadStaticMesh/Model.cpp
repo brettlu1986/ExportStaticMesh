@@ -76,39 +76,29 @@ void Model::ReadMeshDataFromFile(LPCWSTR FileName)
 		return;
 	}
 
-	char* MeshDataLenChar = new char[sizeof(UINT)];
-	Rf.read(MeshDataLenChar, sizeof(UINT));
-	UINT MeshDataLen = *(UINT*)MeshDataLenChar;
+	UINT MeshDataLen; 
+	Rf.read((char*)&MeshDataLen, sizeof(UINT));
 
 	MeshDatas.resize(MeshDataLen);
 	Rf.read((char*)MeshDatas.data(), MeshDataLen * sizeof(MeshData));
 
-	char* IndicesLenChar = new char[sizeof(UINT)];
-	Rf.read(IndicesLenChar, sizeof(UINT));
-	UINT IndicesSize = *(UINT*)IndicesLenChar;
+	Rf.read((char*)&bUseHalfInt32, sizeof(UINT8));
 
-	UINT Current = (UINT)Rf.tellg();
-	Rf.seekg(0, ios::end);
-	UINT End = (UINT)Rf.tellg();
-	UINT Left = End - Current;
-	Rf.seekg(Current, ios::beg);
-
-	UINT HalfSize = IndicesSize * sizeof(UINT16);
-	UINT Size = IndicesSize * sizeof(UINT32);
-	bUseHalfInt32 = Left <= HalfSize;
+	UINT IndicesSize; 
+	Rf.read((char*)&IndicesSize, sizeof(UINT));
+	
 	if (bUseHalfInt32)
 	{
+		UINT HalfSize = IndicesSize * sizeof(UINT16);
 		MeshIndicesHalf.resize(IndicesSize);
 		Rf.read((char*)MeshIndicesHalf.data(), HalfSize);
 	}
 	else
 	{
+		UINT Size = IndicesSize * sizeof(UINT32);
 		MeshIndices.resize(IndicesSize);
 		Rf.read((char*)MeshIndices.data(), Size);
 	}
-
-	delete[] MeshDataLenChar;
-	delete[] IndicesLenChar;
 
 	Rf.close();
 	if (!Rf.good()) {

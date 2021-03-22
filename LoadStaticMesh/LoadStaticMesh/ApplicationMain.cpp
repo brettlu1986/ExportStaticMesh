@@ -1,6 +1,6 @@
 
 #include "ApplicationMain.h"
-#include "GraphicRender_LoadModel.h"
+#include "GraphicRenderModel.h"
 #include "MainWindow.h"
 #include "InputClass.h"
 
@@ -24,7 +24,7 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance, UINT Width, UINT Height, s
 	Window = new MainWindow();
 	Window->Initialize(this, Width, Height, Name);
 
-	CurrentGraphic = new GraphicRender_LoadModel();
+	CurrentGraphic = new GraphicRenderModel();
 	CurrentGraphic->Initialize(this, Width, Height);
 
 	Input = new InputClass();

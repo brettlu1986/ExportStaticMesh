@@ -159,6 +159,8 @@ bool SaveMeshBinaryToFile(const TArray<FMeshDataBinary>& MeshBinArr, const TArra
 	Wf.write((char*)&MeshBinSize, sizeof(uint32));
 	Wf.write((char*)MeshBinArr.GetData(), sizeof(FMeshDataBinary) * MeshBinSize);
 
+	Wf.write((char*)&bUseHalfInt32, sizeof(uint8));
+
 	uint32 IndicesSize = Indices.Num();
 	Wf.write((char*)&IndicesSize, sizeof(uint32));
 

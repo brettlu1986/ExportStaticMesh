@@ -7,11 +7,11 @@
 
 using namespace DirectX;
 
-class GraphicRender_LoadModel : public GraphicRender
+class GraphicRenderModel : public GraphicRender
 {
 public:
-	GraphicRender_LoadModel();
-	~GraphicRender_LoadModel();
+	GraphicRenderModel();
+	~GraphicRenderModel();
 
 	virtual void OnInit();
 	virtual bool Render();
