@@ -53,7 +53,7 @@ private:
 	void FlushCommandQueue();
 
 private:
-	static const UINT FrameCount = 2;
+	static const UINT FrameCount = 3;
 
 	// Pipeline objects.
 	CD3DX12_VIEWPORT Viewport;
@@ -71,6 +71,14 @@ private:
 	ComPtr<ID3D12DescriptorHeap> DsvHeap;;
 	ComPtr<ID3D12DescriptorHeap> CbvSrvHeap;
 	ComPtr<ID3D12DescriptorHeap> SamplerHeap;
+
+	//
+	ComPtr<ID3D12CommandAllocator> CommandAllocatorPre;
+	ComPtr<ID3D12GraphicsCommandList> CommandListPre;
+
+	ComPtr<ID3D12CommandAllocator> CommandAllocatorPost;
+	ComPtr<ID3D12GraphicsCommandList> CommandListPost;
+	//
 
 	ComPtr<ID3D12PipelineState> PipelineState;
 	ComPtr<ID3D12GraphicsCommandList> CommandList;

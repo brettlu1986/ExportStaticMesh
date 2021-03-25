@@ -69,8 +69,9 @@ void GraphicRenderModel::LoadAssets()
 	ThrowIfFailed(CommandList->Reset(CommandAllocator.Get(), nullptr));
 
 	CreateRootSignature();
-	CreateConstantBufferView();
 	LoadShadersAndCreatePso();
+
+	CreateConstantBufferView();
 	CreateVertexBufferView();
 	CreateIndexBufferView();
 	CreateTextureAndSampler();
@@ -145,6 +146,9 @@ void GraphicRenderModel::CreateCommandObjects()
 	// Command lists are created in the recording state, but there is nothing
 	// to record yet. The main loop expects it to be closed, so close it now.
 	ThrowIfFailed(CommandList->Close());
+
+	//CommandListPre 
+	//ThrowIfFailed(Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS())
 }
 
 void GraphicRenderModel::CreateSwapChain()
@@ -245,31 +249,6 @@ void GraphicRenderModel::CreateRootSignature()
 
 }
 
-void GraphicRenderModel::CreateConstantBufferView()
-{
-	//constant buffer size must 256's multiple
-	ConstantBufferSize = (sizeof(ObjectConstants) + 255) & ~255;
-	const CD3DX12_HEAP_PROPERTIES ConstantProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-	const CD3DX12_RESOURCE_DESC ConstantDesc = CD3DX12_RESOURCE_DESC::Buffer(ConstantBufferSize);
-
-	ThrowIfFailed(Device->CreateCommittedResource(
-		&ConstantProp,
-		D3D12_HEAP_FLAG_NONE,
-		&ConstantDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&ConstantBuffer)));
-
-	ThrowIfFailed(ConstantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&pCbvDataBegin)));
-	memcpy(pCbvDataBegin, &ObjectConstant, sizeof(ObjectConstant));
-	NAME_D3D12_OBJECT(ConstantBuffer);
-
-	D3D12_CONSTANT_BUFFER_VIEW_DESC CbvDesc = {};
-	CbvDesc.BufferLocation = ConstantBuffer->GetGPUVirtualAddress();
-	CbvDesc.SizeInBytes = ConstantBufferSize;
-	Device->CreateConstantBufferView(&CbvDesc, CbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
-}
-
 void GraphicRenderModel::LoadShadersAndCreatePso()
 {
 	// Create the pipeline state, which includes compiling and loading shaders.
@@ -325,6 +304,33 @@ void GraphicRenderModel::LoadShadersAndCreatePso()
 	ThrowIfFailed(Device->CreateGraphicsPipelineState(&PsoDesc, IID_PPV_ARGS(&PipelineState)));
 	NAME_D3D12_OBJECT(PipelineState);
 }
+
+void GraphicRenderModel::CreateConstantBufferView()
+{
+	//constant buffer size must 256's multiple
+	ConstantBufferSize = (sizeof(ObjectConstants) + 255) & ~255;
+	const CD3DX12_HEAP_PROPERTIES ConstantProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	const CD3DX12_RESOURCE_DESC ConstantDesc = CD3DX12_RESOURCE_DESC::Buffer(ConstantBufferSize);
+
+	ThrowIfFailed(Device->CreateCommittedResource(
+		&ConstantProp,
+		D3D12_HEAP_FLAG_NONE,
+		&ConstantDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&ConstantBuffer)));
+
+	ThrowIfFailed(ConstantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&pCbvDataBegin)));
+	memcpy(pCbvDataBegin, &ObjectConstant, sizeof(ObjectConstant));
+	NAME_D3D12_OBJECT(ConstantBuffer);
+
+	D3D12_CONSTANT_BUFFER_VIEW_DESC CbvDesc = {};
+	CbvDesc.BufferLocation = ConstantBuffer->GetGPUVirtualAddress();
+	CbvDesc.SizeInBytes = ConstantBufferSize;
+	Device->CreateConstantBufferView(&CbvDesc, CbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
+}
+
+
 
 void GraphicRenderModel::CreateVertexBufferView()
 {
