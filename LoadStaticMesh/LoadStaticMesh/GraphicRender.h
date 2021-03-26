@@ -36,6 +36,7 @@ protected:
 	UINT WndHeight;
 	float AspectRatio;
 	bool UseWarpDevice;
+	bool bDestroy;
 
 private: 
 	std::wstring AssetsPath;

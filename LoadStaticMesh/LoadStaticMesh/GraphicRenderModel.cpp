@@ -15,6 +15,8 @@ using namespace DirectX;
 
 static const wstring TexFileName = L"T_Chair_M.dds";
 
+GraphicRenderModel* GraphicRenderModel::ThisRenderModel = nullptr;
+
 GraphicRenderModel::GraphicRenderModel()
 	: FrameIndex(0)
 	, RtvDescriptorSize(0)
@@ -24,10 +26,12 @@ GraphicRenderModel::GraphicRenderModel()
 	, pCbvDataBegin(nullptr)
 	, ObjectConstant({})
 	, ConstantBufferSize(0)
+	, State(0)
 	
 {
 	MtProj = MathHelper::Identity4x4();
 	LastMousePoint = {0 , 0};
+	ThisRenderModel = this;
 }
 
 GraphicRenderModel::~GraphicRenderModel()
@@ -37,21 +41,9 @@ GraphicRenderModel::~GraphicRenderModel()
 
 void GraphicRenderModel::OnInit()
 {
-	InitCamera();
-	InitModel();
 	LoadPipline();
 	LoadAssets();
-}
-
-void GraphicRenderModel::InitCamera()
-{
-	Camera.Init();
-}
-
-void GraphicRenderModel::InitModel()
-{
-	ModelGeo.Init();
-	ModelGeo.SetModelLocation(Camera.GetViewTargetLocation());
+	CreateRenderThread();
 }
 
 void GraphicRenderModel::LoadPipline()
@@ -60,29 +52,12 @@ void GraphicRenderModel::LoadPipline()
 	CreateCommandObjects();
 	CreateSwapChain();
 	CreateDescriptorHeaps();
-	OnResize();
 }
 
 void GraphicRenderModel::LoadAssets()
 {
-	// Reset the command list to prep for initialization commands.
-	ThrowIfFailed(CommandList->Reset(CommandAllocator.Get(), nullptr));
-
 	CreateRootSignature();
 	LoadShadersAndCreatePso();
-
-	CreateConstantBufferView();
-	CreateVertexBufferView();
-	CreateIndexBufferView();
-	CreateTextureAndSampler();
-
-	// Execute the initialization commands.
-	ThrowIfFailed(CommandList->Close());
-	ID3D12CommandList* CmdsLists[] = { CommandList.Get() };
-	CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
-
-	// Wait until initialization is complete.
-	FlushCommandQueue();
 }
 
 void GraphicRenderModel::CreateDxgiObjects()
@@ -121,6 +96,7 @@ void GraphicRenderModel::CreateDxgiObjects()
 
 	ThrowIfFailed(Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&Fence)));
 	NAME_D3D12_OBJECT(Fence);
+	FenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
 	RtvDescriptorSize = Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	DsvDescriptorSize = Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
@@ -137,18 +113,20 @@ void GraphicRenderModel::CreateCommandObjects()
 	ThrowIfFailed(Device->CreateCommandQueue(&QueueDesc, IID_PPV_ARGS(&CommandQueue)));
 	NAME_D3D12_OBJECT(CommandQueue);
 
-	ThrowIfFailed(Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&CommandAllocator)));
-	NAME_D3D12_OBJECT(CommandAllocator);
-
-	// Create the command list.
-	ThrowIfFailed(Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, CommandAllocator.Get(), nullptr, IID_PPV_ARGS(&CommandList)));
-	NAME_D3D12_OBJECT(CommandList);
-	// Command lists are created in the recording state, but there is nothing
-	// to record yet. The main loop expects it to be closed, so close it now.
-	ThrowIfFailed(CommandList->Close());
-
 	//CommandListPre 
-	//ThrowIfFailed(Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS())
+	ThrowIfFailed(Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&CommandAllocatorPre)));
+	NAME_D3D12_OBJECT(CommandAllocatorPre);
+	ThrowIfFailed(Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, CommandAllocatorPre.Get(), nullptr, IID_PPV_ARGS(&CommandListPre)));
+	NAME_D3D12_OBJECT(CommandListPre);
+
+	//CommandListPost 
+	ThrowIfFailed(Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&CommandAllocatorPost)));
+	NAME_D3D12_OBJECT(CommandAllocatorPost);
+	ThrowIfFailed(Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, CommandAllocatorPost.Get(), nullptr, IID_PPV_ARGS(&CommandListPost)));
+	NAME_D3D12_OBJECT(CommandListPost);
+
+	ThrowIfFailed(CommandListPre->Close());
+	ThrowIfFailed(CommandListPost->Close());
 }
 
 void GraphicRenderModel::CreateSwapChain()
@@ -303,6 +281,134 @@ void GraphicRenderModel::LoadShadersAndCreatePso()
 	PsoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 	ThrowIfFailed(Device->CreateGraphicsPipelineState(&PsoDesc, IID_PPV_ARGS(&PipelineState)));
 	NAME_D3D12_OBJECT(PipelineState);
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart());
+	// Create a RTV for each frame.
+	for (UINT n = 0; n < FrameCount; n++)
+	{
+		ThrowIfFailed(SwapChain->GetBuffer(n, IID_PPV_ARGS(&RenderTargets[n])));
+		Device->CreateRenderTargetView(RenderTargets[n].Get(), nullptr, RtvHandle);
+		RtvHandle.Offset(1, RtvDescriptorSize);
+	}
+}
+
+//------------- render thread
+
+void GraphicRenderModel::CreateRenderThread()
+{
+	struct ThreadWrapper
+	{
+		static unsigned int WINAPI Thunk(void* LParameter)
+		{
+			GraphicRenderModel::Get()->RenderThread(LParameter);
+			return 0;
+		}
+	};
+
+	ThrowIfFailed(Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&RenderThreadCmdAllocator)));
+	ThrowIfFailed(Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, RenderThreadCmdAllocator.Get(), nullptr, IID_PPV_ARGS(&RenderThreadCmdList)));
+	NAME_D3D12_OBJECT(RenderThreadCmdAllocator);
+	NAME_D3D12_OBJECT(RenderThreadCmdList);
+
+	ThreadParam.RenderBegin = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	ThreadParam.RenderRun = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	ThreadParam.RenderEnd = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+
+	HWaitedArr.push_back(ThreadParam.RenderBegin);
+
+	ThreadParam.ThisThread = reinterpret_cast<HANDLE>(_beginthreadex(
+		nullptr, 
+			0, 
+		ThreadWrapper::Thunk,
+		(void*)&ThreadParam, 
+		CREATE_SUSPENDED, 
+		(UINT*)&ThreadParam.ThreadId));
+
+	ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
+	ResumeThread(ThreadParam.ThisThread);
+}
+
+UINT GraphicRenderModel::RenderThread(void* Param)
+{
+	RenderThreadInit();
+	SetEvent(ThreadParam.RenderBegin);
+	RenderThreadRun();
+	return 0;
+}
+
+void GraphicRenderModel::RenderThreadInit()
+{
+	InitCamera();
+	InitModel();
+	CreateConstantBufferView();
+	CreateDepthStencilView();
+	CreateVertexBufferView();
+	CreateIndexBufferView();
+	CreateTextureAndSampler();
+}
+
+void GraphicRenderModel::RenderThreadRun()
+{
+	DWORD Ret = 0;
+	while (!bDestroy)
+	{
+		//update matrix
+		XMMATRIX WorldViewProj = ModelGeo.GetModelMatrix() * Camera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
+		//Update the constant buffer with the latest WorldViewProj matrix.
+		XMStoreFloat4x4(&ObjectConstant.WorldViewProj, XMMatrixTranspose(WorldViewProj));
+		memcpy(pCbvDataBegin, &ObjectConstant, sizeof(ObjectConstant));
+
+		Ret = WaitForSingleObject(ThreadParam.RenderRun, INFINITE);
+		if (Ret - WAIT_OBJECT_0 == 0)
+		{
+			RenderThreadCmdAllocator->Reset();
+			RenderThreadCmdList->Reset(RenderThreadCmdAllocator.Get(), PipelineState.Get());
+
+			//clear back buffer and depth buffer
+			CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart(), FrameIndex, RtvDescriptorSize);
+			D3D12_CPU_DESCRIPTOR_HANDLE DsvHandle = DsvHeap->GetCPUDescriptorHandleForHeapStart();
+			RenderThreadCmdList->OMSetRenderTargets(1, &RtvHandle, true, &DsvHandle);
+			RenderThreadCmdList->RSSetViewports(1, &Viewport);
+			RenderThreadCmdList->RSSetScissorRects(1, &ScissorRect);
+
+			// Set necessary state.
+			RenderThreadCmdList->SetGraphicsRootSignature(RootSignature.Get());
+			RenderThreadCmdList->SetPipelineState(PipelineState.Get());
+
+			ID3D12DescriptorHeap* ppHeaps[] = { CbvSrvHeap.Get(), SamplerHeap.Get() };
+			RenderThreadCmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+
+			RenderThreadCmdList->SetGraphicsRootDescriptorTable(0, CbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
+			CD3DX12_GPU_DESCRIPTOR_HANDLE tex(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
+			tex.Offset(1, CbvSrvUavDescriptorSize);
+			RenderThreadCmdList->SetGraphicsRootDescriptorTable(1, tex);
+			RenderThreadCmdList->SetGraphicsRootDescriptorTable(2, SamplerHeap->GetGPUDescriptorHandleForHeapStart());
+
+			RenderThreadCmdList->IASetVertexBuffers(0, 1, &ModelGeo.GetVertexBufferView());
+			RenderThreadCmdList->IASetIndexBuffer(&ModelGeo.GetIndexBufferView());
+			RenderThreadCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			RenderThreadCmdList->DrawIndexedInstanced(ModelGeo.GetIndicesCount(), 1, 0, 0, 0);
+			RenderThreadCmdList->Close();
+
+			SetEvent(ThreadParam.RenderEnd);
+		}
+	}
+}
+
+void GraphicRenderModel::InitCamera()
+{
+	Camera.Init();
+	// The window resized, so update the aspect ratio and recompute the projection matrix.
+	Camera.OnResize(static_cast<float>(WndWidth), static_cast<float>(WndHeight));
+	XMMATRIX P = Camera.GetProjectionMatrix();
+	XMStoreFloat4x4(&MtProj, P);
+}
+
+void GraphicRenderModel::InitModel()
+{
+	ModelGeo.Init();
+	ModelGeo.SetModelLocation(Camera.GetViewTargetLocation());
 }
 
 void GraphicRenderModel::CreateConstantBufferView()
@@ -330,6 +436,33 @@ void GraphicRenderModel::CreateConstantBufferView()
 	Device->CreateConstantBufferView(&CbvDesc, CbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
+void GraphicRenderModel::CreateDepthStencilView()
+{
+	// Create the depth/stencil buffer and view.
+	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
+	depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
+
+	D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
+	depthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
+	depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
+	depthOptimizedClearValue.DepthStencil.Stencil = 0;
+
+	CD3DX12_HEAP_PROPERTIES ProDefault = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	CD3DX12_RESOURCE_DESC ResDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, WndWidth, WndHeight, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+	ThrowIfFailed(Device->CreateCommittedResource(
+		&ProDefault,
+		D3D12_HEAP_FLAG_NONE,
+		&ResDesc,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		&depthOptimizedClearValue,
+		IID_PPV_ARGS(&DepthStencilBuffer)
+	));
+
+	NAME_D3D12_OBJECT(DepthStencilBuffer);
+	Device->CreateDepthStencilView(DepthStencilBuffer.Get(), &depthStencilDesc, DsvHeap->GetCPUDescriptorHandleForHeapStart());
+}
 
 
 void GraphicRenderModel::CreateVertexBufferView()
@@ -337,7 +470,7 @@ void GraphicRenderModel::CreateVertexBufferView()
 	std::vector<Vertex_PositionTex0> TriangleVertices;
 	ModelGeo.GetPositionTex0Input(TriangleVertices);
 	const UINT VertexBufferSize = static_cast<UINT>(TriangleVertices.size() * sizeof(Vertex_PositionTex0));
-	CreateBuffer(Device.Get(), CommandList.Get(), TriangleVertices.data(), VertexBufferSize, ModelGeo.VertexBuffer, ModelGeo.VertexUploadBuffer);
+	CreateBuffer(Device.Get(), RenderThreadCmdList.Get(), TriangleVertices.data(), VertexBufferSize, ModelGeo.VertexBuffer, ModelGeo.VertexUploadBuffer);
 	ModelGeo.VertexBufferSize = VertexBufferSize;
 
 	NAME_D3D12_OBJECT(ModelGeo.VertexBuffer);
@@ -357,7 +490,7 @@ void GraphicRenderModel::CreateIndexBufferView()
 	const void* InitData = ModelGeo.bUseHalfInt32 ? 
 		reinterpret_cast<void*>(ModelGeo.MeshIndicesHalf.data()) : reinterpret_cast<void*>(ModelGeo.MeshIndices.data());
 
-	CreateBuffer(Device.Get(), CommandList.Get(), InitData, ModelGeo.IndiceSize, ModelGeo.IndexBuffer, ModelGeo.IndexBufferUpload);
+	CreateBuffer(Device.Get(), RenderThreadCmdList.Get(), InitData, ModelGeo.IndiceSize, ModelGeo.IndexBuffer, ModelGeo.IndexBufferUpload);
 
 	NAME_D3D12_OBJECT(ModelGeo.IndexBuffer);
 	NAME_D3D12_OBJECT(ModelGeo.IndexBufferUpload);
@@ -367,7 +500,7 @@ void GraphicRenderModel::CreateIndexBufferView()
 
 void GraphicRenderModel::CreateTextureAndSampler()
 {
-	DirectX::CreateDDSTextureFromFile12(Device.Get(), CommandList.Get(), TexFileName.c_str(), ModelGeo.TextureResource, ModelGeo.TextureResourceUpload);
+	DirectX::CreateDDSTextureFromFile12(Device.Get(), RenderThreadCmdList.Get(), TexFileName.c_str(), ModelGeo.TextureResource, ModelGeo.TextureResourceUpload);
 	NAME_D3D12_OBJECT(ModelGeo.TextureResource);
 	NAME_D3D12_OBJECT(ModelGeo.TextureResourceUpload);
 
@@ -392,89 +525,10 @@ void GraphicRenderModel::CreateTextureAndSampler()
 void GraphicRenderModel::FlushCommandQueue()
 {
 	//Create synchronization objects and wait until assets have been uploaded to the GPU.
-	{
-		FenceValue++;
-		ThrowIfFailed(CommandQueue->Signal(Fence.Get(), FenceValue));
-		if (Fence->GetCompletedValue() < FenceValue)
-		{
-			// Create an event handle to use for frame synchronization.
-			HANDLE FenceEvent = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
-			ThrowIfFailed(Fence->SetEventOnCompletion(FenceValue, FenceEvent));
-
-			// Wait until the GPU hits current fence event is fired.
-			WaitForSingleObject(FenceEvent, INFINITE);
-			CloseHandle(FenceEvent);
-		}
-	}
-}
-
-void GraphicRenderModel::OnResize()
-{
-	// The window resized, so update the aspect ratio and recompute the projection matrix.
-	Camera.OnResize(static_cast<float>(WndWidth), static_cast<float>(WndHeight));
-	XMMATRIX P = Camera.GetProjectionMatrix();
-	XMStoreFloat4x4(&MtProj, P);
-
-	FlushCommandQueue();
-
-	ThrowIfFailed(CommandList->Reset(CommandAllocator.Get(), nullptr));
-	for (int i = 0; i < FrameCount; ++i)
-		RenderTargets[i].Reset();
-	DepthStencilBuffer.Reset();
-
-	ThrowIfFailed(SwapChain->ResizeBuffers(
-		FrameCount,
-		WndWidth, WndHeight,
-		DXGI_FORMAT_R8G8B8A8_UNORM,
-		DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
-
-	FrameIndex = 0;
-
-	// Create frame resources.
-	{
-		CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart());
-		// Create a RTV for each frame.
-		for (UINT n = 0; n < FrameCount; n++)
-		{
-			ThrowIfFailed(SwapChain->GetBuffer(n, IID_PPV_ARGS(&RenderTargets[n])));
-			Device->CreateRenderTargetView(RenderTargets[n].Get(), nullptr, RtvHandle);
-			RtvHandle.Offset(1, RtvDescriptorSize);
-		}
-	}
-
-	// Create the depth/stencil buffer and view.
-	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
-	depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-	depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
-
-	D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
-	depthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
-	depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
-	depthOptimizedClearValue.DepthStencil.Stencil = 0;
-
-	CD3DX12_HEAP_PROPERTIES ProDefault = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-	CD3DX12_RESOURCE_DESC ResDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, WndWidth, WndHeight, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
-	ThrowIfFailed(Device->CreateCommittedResource(
-		&ProDefault,
-		D3D12_HEAP_FLAG_NONE,
-		&ResDesc,
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		&depthOptimizedClearValue,
-		IID_PPV_ARGS(&DepthStencilBuffer)
-	));
-
-	NAME_D3D12_OBJECT(DepthStencilBuffer);
-
-	Device->CreateDepthStencilView(DepthStencilBuffer.Get(), &depthStencilDesc, DsvHeap->GetCPUDescriptorHandleForHeapStart());
-
-	// Execute the resize commands.
-	ThrowIfFailed(CommandList->Close());
-	ID3D12CommandList* CmdsLists[] = { CommandList.Get() };
-	CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
-
-	// Wait until resize is complete.
-	FlushCommandQueue();
+	UINT64 FenceNum = FenceValue;
+	ThrowIfFailed(CommandQueue->Signal(Fence.Get(), FenceNum));
+	FenceValue++;
+	ThrowIfFailed(Fence->SetEventOnCompletion(FenceNum, FenceEvent));
 }
 
 void GraphicRenderModel::OnMouseDown(WPARAM btnState, int x, int y)
@@ -504,71 +558,82 @@ void GraphicRenderModel::OnMouseMove(WPARAM btnState, int x, int y)
 
 void GraphicRenderModel::Update()
 {
-	XMMATRIX WorldViewProj = ModelGeo.GetModelMatrix() * Camera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
-	//Update the constant buffer with the latest WorldViewProj matrix.
-	XMStoreFloat4x4(&ObjectConstant.WorldViewProj, XMMatrixTranspose(WorldViewProj));
-	memcpy(pCbvDataBegin, &ObjectConstant, sizeof(ObjectConstant));
+	
 }
 
 bool GraphicRenderModel::Render()
 {
-	// Command list allocators can only be reset when the associated 
-	// command lists have finished execution on the GPU; apps should use 
-	// fences to determine GPU execution progress.
-	ThrowIfFailed(CommandAllocator->Reset());
+	DWORD Ret = WaitForMultipleObjects(static_cast<DWORD>(HWaitedArr.size()), HWaitedArr.data(), TRUE, INFINITE);
+	if( Ret - WAIT_OBJECT_0 == 0 )
+	{
+		switch (State)
+		{
+		case RENDER_INIT:// first create vertex/index/texture view, and push to GPU to excute
+		{
+			// Execute the initialization commands.
+			RenderThreadCmdList->Close();
+			ID3D12CommandList* CmdsLists[] = { RenderThreadCmdList.Get() };
+			CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
+			//// Wait until initialization is complete.
+			FlushCommandQueue();
+			State = RENDER_PRE;
+			HWaitedArr.clear();
+			HWaitedArr.push_back(FenceEvent);
+		}
+		break;
+		case RENDER_PRE://
+		{
+			ThrowIfFailed(CommandAllocatorPre->Reset());
+			ThrowIfFailed(CommandListPre->Reset(CommandAllocatorPre.Get(), PipelineState.Get()));
 
-	// However, when ExecuteCommandList() is called on a particular command 
-	// list, that command list can then be reset at any time and must be before 
-	// re-recording.
-	ThrowIfFailed(CommandList->Reset(CommandAllocator.Get(), PipelineState.Get()));
+			ThrowIfFailed(CommandAllocatorPost->Reset());
+			ThrowIfFailed(CommandListPost->Reset(CommandAllocatorPost.Get(), PipelineState.Get()));
 
-	CommandList->RSSetViewports(1, &Viewport);
-	CommandList->RSSetScissorRects(1, &ScissorRect);
+			CommandListPre->RSSetViewports(1, &Viewport);
+			CommandListPre->RSSetScissorRects(1, &ScissorRect);
 
-	// Indicate that the back buffer will be used as a render target.
-	const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	CommandList->ResourceBarrier(1, &Rb1);
+			// Indicate that the back buffer will be used as a render target.
+			const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			CommandListPre->ResourceBarrier(1, &Rb1);
 
-	//clear back buffer and depth buffer
-	CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart(), FrameIndex, RtvDescriptorSize);
-	CommandList->ClearRenderTargetView(RtvHandle, Colors::LightSteelBlue, 0, nullptr);
-	CommandList->ClearDepthStencilView(DsvHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH , 1.0f, 0, 0, nullptr);
-	D3D12_CPU_DESCRIPTOR_HANDLE DsvHandle = DsvHeap->GetCPUDescriptorHandleForHeapStart();
-	CommandList->OMSetRenderTargets(1, &RtvHandle, true, &DsvHandle);
+			//clear back buffer and depth buffer
+			CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart(), FrameIndex, RtvDescriptorSize);
+			CommandListPre->ClearRenderTargetView(RtvHandle, Colors::LightSteelBlue, 0, nullptr);
+			CommandListPre->ClearDepthStencilView(DsvHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH , 1.0f, 0, 0, nullptr);
+			D3D12_CPU_DESCRIPTOR_HANDLE DsvHandle = DsvHeap->GetCPUDescriptorHandleForHeapStart();
+			CommandListPre->OMSetRenderTargets(1, &RtvHandle, true, &DsvHandle);
+			State = RENDER_POST;
 
-	ID3D12DescriptorHeap* ppHeaps[] = { CbvSrvHeap.Get(), SamplerHeap.Get() };
-	CommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+			HWaitedArr.clear();
+			HWaitedArr.push_back(ThreadParam.RenderEnd);
+			//ThreadParam.FrameIndex = FrameIndex;
+			SetEvent(ThreadParam.RenderRun);
+		}
+		break;
+		case RENDER_POST:
+		{
+			const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+			CommandListPost->ResourceBarrier(1, &Rb2);
 
-	// Set necessary state.
-	CommandList->SetGraphicsRootSignature(RootSignature.Get());
+			CommandListPre->Close();
+			CommandListPost->Close();
 
-	CommandList->IASetVertexBuffers(0, 1, &ModelGeo.GetVertexBufferView());
-	CommandList->IASetIndexBuffer(&ModelGeo.GetIndexBufferView());
-	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	
-	CommandList->SetGraphicsRootDescriptorTable(0, CbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
-	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
-	tex.Offset(1, CbvSrvUavDescriptorSize);
-	CommandList->SetGraphicsRootDescriptorTable(1, tex);
-	CommandList->SetGraphicsRootDescriptorTable(2, SamplerHeap->GetGPUDescriptorHandleForHeapStart());
-	
-	CommandList->DrawIndexedInstanced(ModelGeo.GetIndicesCount(), 1, 0, 0, 0);
+			ID3D12CommandList* ppCommandLists[] = { CommandListPre.Get(), RenderThreadCmdList.Get(), CommandListPost.Get() };
+			CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+			ThrowIfFailed(SwapChain->Present(1, 0));
+			FlushCommandQueue();
+			State = RENDER_PRE;
 
-	// Indicate that the back buffer will now be used to present.
-	const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-	CommandList->ResourceBarrier(1, &Rb2);
+			HWaitedArr.clear();
+			HWaitedArr.push_back(FenceEvent);
 
-	ThrowIfFailed(CommandList->Close());
+			FrameIndex = (FrameIndex + 1) % FrameCount;
+		}
+		break;
+		default:{}
+		}
+	}
 
-	// Execute the command list.
-	ID3D12CommandList* ppCommandLists[] = { CommandList.Get() };
-	CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-	// Present the frame.
-	ThrowIfFailed(SwapChain->Present(0, 0));
-	FrameIndex = (FrameIndex + 1) % FrameCount;
-
-	FlushCommandQueue();
 	return true;
 }
 
@@ -576,12 +641,23 @@ void GraphicRenderModel::Destroy()
 {
 	// Ensure that the GPU is no longer referencing resources that are about to be
 	// cleaned up by the destructor.
+	bDestroy = true;
+
+	CloseHandle(ThreadParam.ThisThread);
+	CloseHandle(ThreadParam.RenderBegin);
+	CloseHandle(ThreadParam.RenderRun);
+	CloseHandle(ThreadParam.RenderEnd);
+
+	CommandAllocatorPre.Reset();
+	CommandListPre.Reset();
+	CommandAllocatorPost.Reset();
+	CommandListPost.Reset();
+	RenderThreadCmdAllocator.Reset();
+	RenderThreadCmdList.Reset();
 
 	Fence.Reset();
 	PipelineState.Reset();
 	RootSignature.Reset();
-	CommandList.Reset();
-	CommandAllocator.Reset();
 	RtvHeap.Reset();
 	CbvSrvHeap.Reset();
 	DsvHeap.Reset();
@@ -597,7 +673,7 @@ void GraphicRenderModel::Destroy()
 	SwapChain.Reset();
 	Device.Reset();
 	
-
+	ThisRenderModel = nullptr;
 #if defined(_DEBUG)
 	{
 		ComPtr<IDXGIDebug1> DxgiDebug;

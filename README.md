@@ -132,6 +132,7 @@ An index buffer contains a sequential set of 16-bit or 32-bit indices; each inde
 
 # directx 多线程性能分析
 [多线程性能](https://software.intel.com/content/www/cn/zh/develop/articles/understanding-directx-multithreaded-rendering-performance-by-experiments.html)
+[dx12多线程参考](https://blog.csdn.net/u014038143/article/details/86484014)
 	
 	
 

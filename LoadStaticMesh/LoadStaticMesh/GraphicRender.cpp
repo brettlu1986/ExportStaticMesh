@@ -9,6 +9,7 @@ GraphicRender::GraphicRender()
 	,AspectRatio(0.f)
 	,UseWarpDevice(false)
 	,MainApplication(nullptr)
+	,bDestroy(false)
 {
 
 }
