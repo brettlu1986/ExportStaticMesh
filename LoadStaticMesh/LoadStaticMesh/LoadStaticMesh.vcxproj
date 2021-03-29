@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Private\D3D12RHI\D3D12Adapter.cpp" />
+    <ClCompile Include="Private\D3D12RHI\D3D12Fence.cpp" />
     <ClCompile Include="Private\D3D12RHI\WindowsD3D12Device.cpp" />
     <ClCompile Include="Private\Main\ApplicationMain.cpp" />
     <ClCompile Include="Private\Main\Camera.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="Public\Main\MainWindow.h" />
     <ClInclude Include="Public\Main\Model.h" />
     <ClInclude Include="Public\Main\stdafx.h" />
+    <ClInclude Include="Public\RHI\D3D12Fence.h" />
     <ClInclude Include="Public\RHI\DynamicRHI.h" />
     <ClInclude Include="Public\RHI\RHI.h" />
     <ClInclude Include="Public\Util\DDSTextureLoader.h" />
