@@ -10,6 +10,8 @@
 #include "d3dx12.h"
 #include "DDSTextureLoader.h"
 
+#include "RHI.h"
+
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
@@ -41,6 +43,8 @@ GraphicRenderModel::~GraphicRenderModel()
 
 void GraphicRenderModel::OnInit()
 {
+	//RHIInit();
+
 	LoadPipline();
 	LoadAssets();
 	CreateRenderThread();
@@ -76,10 +80,16 @@ void GraphicRenderModel::CreateDxgiObjects()
 		}
 	}
 #endif
+	
+
 	ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&DxgiFactory)));
+
+	ComPtr<IDXGIAdapter1> hardwareAdapter;
+	GetHardwareAdapter(DxgiFactory.Get(), &hardwareAdapter);
+
 	// Try to create hardware device.
 	HRESULT HardwareResult = D3D12CreateDevice(
-		nullptr,             // default adapter
+		hardwareAdapter.Get(),             // default adapter
 		D3D_FEATURE_LEVEL_11_0,
 		IID_PPV_ARGS(&Device));
 
@@ -639,6 +649,7 @@ bool GraphicRenderModel::Render()
 
 void GraphicRenderModel::Destroy()
 {
+	//RHIExit();
 	// Ensure that the GPU is no longer referencing resources that are about to be
 	// cleaned up by the destructor.
 	bDestroy = true;

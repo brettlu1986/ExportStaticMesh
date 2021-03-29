@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)\Public\Main;$(ProjectDir)\Public\Util;$(ProjectDir)\Public\RHI;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Public\Main;$(ProjectDir)\Public\Util;$(ProjectDir)\Public\RHI;$(ProjectDir)\Public\D3D12RHI;$(IncludePath)</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -143,6 +143,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Private\D3D12RHI\D3D12Adapter.cpp" />
+    <ClCompile Include="Private\D3D12RHI\WindowsD3D12Device.cpp" />
     <ClCompile Include="Private\Main\ApplicationMain.cpp" />
     <ClCompile Include="Private\Main\Camera.cpp" />
     <ClCompile Include="Private\Main\GraphicRender.cpp" />
@@ -175,6 +177,8 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Public\D3D12RHI\D3D12Adapter.h" />
+    <ClInclude Include="Public\D3D12RHI\D3D12RHIPrivate.h" />
     <ClInclude Include="Public\Main\ApplicationMain.h" />
     <ClInclude Include="Public\Main\Camera.h" />
     <ClInclude Include="Public\Main\d3dx12.h" />

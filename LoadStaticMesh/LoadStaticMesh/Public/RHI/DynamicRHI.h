@@ -2,6 +2,10 @@
 
 class DynamicRHI
 {
+public:
+
+	virtual ~DynamicRHI() { }
+
 	virtual void Init() = 0;
 
 	virtual void PostInit() {}
@@ -19,5 +23,5 @@ class IDynamicRHIModule
 public:
 
 	virtual bool IsSupported() = 0;
-	virtual DynamicRHI* CrateRHI() = 0;
+	virtual DynamicRHI* CreateRHI() = 0;
 };

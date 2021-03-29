@@ -10,14 +10,19 @@ void RHIInit()
 	{
 		GDynamicRHI = PlatformCreateDynamicRHI();
 	}
+
+	if(GDynamicRHI)
+		GDynamicRHI->Init();
 }
 
 void RHIPostInit()
-{
-
+{	
+	GDynamicRHI->PostInit();
 }
 
 void RHIExit()
 {
-
+	GDynamicRHI->ShutDown();
+	delete GDynamicRHI;
+	GDynamicRHI = nullptr;
 }
