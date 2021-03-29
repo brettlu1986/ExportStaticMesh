@@ -25,7 +25,7 @@ private:
 class D3D12DynamicRHI : public DynamicRHI
 {
 public:
-	D3D12DynamicRHI(D3D12Adapter*& ChosenAdapter);
+	D3D12DynamicRHI(D3D12Adapter* ChosenAdapterIn);
 
 	virtual void Init() override;
 	virtual void PostInit() override;

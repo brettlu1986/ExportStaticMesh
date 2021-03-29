@@ -88,14 +88,18 @@ void D3D12DynamicRHIModule::FindAdapter()
 }
 
 
-D3D12DynamicRHI::D3D12DynamicRHI(D3D12Adapter*& ChosenAdapter)
+D3D12DynamicRHI::D3D12DynamicRHI(D3D12Adapter* ChosenAdapterIn)
 {
-	ChosenAdapter = ChosenAdapter;
+	ChosenAdapter = ChosenAdapterIn;
 }
 
 void D3D12DynamicRHI::Init() 
 {
-
+	if(ChosenAdapter)
+	{
+		ChosenAdapter->Initialize(this);
+		ChosenAdapter->InitializeDevices();
+	}
 }
 
 void D3D12DynamicRHI::PostInit()
@@ -105,5 +109,5 @@ void D3D12DynamicRHI::PostInit()
 
 void D3D12DynamicRHI::ShutDown()
 {
-	
+	ChosenAdapter = nullptr;
 }

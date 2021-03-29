@@ -43,8 +43,6 @@ GraphicRenderModel::~GraphicRenderModel()
 
 void GraphicRenderModel::OnInit()
 {
-	//RHIInit();
-
 	LoadPipline();
 	LoadAssets();
 	CreateRenderThread();
@@ -52,6 +50,7 @@ void GraphicRenderModel::OnInit()
 
 void GraphicRenderModel::LoadPipline()
 {
+	RHIInit();
 	CreateDxgiObjects();
 	CreateCommandObjects();
 	CreateSwapChain();
@@ -69,6 +68,7 @@ void GraphicRenderModel::CreateDxgiObjects()
 	Viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(WndWidth), static_cast<float>(WndHeight));
 	ScissorRect = CD3DX12_RECT(0, 0, static_cast<LONG>(WndWidth), static_cast<LONG>(WndHeight));
 
+
 #if defined(_DEBUG)
 	// Enable the debug layer (requires the Graphics Tools "optional feature").
 	// NOTE: Enabling the debug layer after device creation will invalidate the active device.
@@ -84,12 +84,12 @@ void GraphicRenderModel::CreateDxgiObjects()
 
 	ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&DxgiFactory)));
 
-	ComPtr<IDXGIAdapter1> hardwareAdapter;
-	GetHardwareAdapter(DxgiFactory.Get(), &hardwareAdapter);
+	ComPtr<IDXGIAdapter1> HardwareAdapter;
+	GetHardwareAdapter(DxgiFactory.Get(), &HardwareAdapter);
 
 	// Try to create hardware device.
 	HRESULT HardwareResult = D3D12CreateDevice(
-		hardwareAdapter.Get(),             // default adapter
+		HardwareAdapter.Get(),             // default adapter
 		D3D_FEATURE_LEVEL_11_0,
 		IID_PPV_ARGS(&Device));
 
@@ -649,9 +649,25 @@ bool GraphicRenderModel::Render()
 
 void GraphicRenderModel::Destroy()
 {
-	//RHIExit();
+	RHIExit();
 	// Ensure that the GPU is no longer referencing resources that are about to be
 	// cleaned up by the destructor.
+	{
+		const UINT64 fence = FenceValue;
+		const UINT64 lastCompletedFence = Fence->GetCompletedValue();
+		// Signal and increment the fence value.
+		ThrowIfFailed(CommandQueue->Signal(Fence.Get(), FenceValue));
+		FenceValue++;
+
+		// Wait until the previous frame is finished.
+		if (lastCompletedFence < fence)
+		{
+			ThrowIfFailed(Fence->SetEventOnCompletion(fence, FenceEvent));
+			WaitForSingleObject(FenceEvent, INFINITE);
+		}
+		CloseHandle(FenceEvent);
+	}
+
 	bDestroy = true;
 
 	CloseHandle(ThreadParam.ThisThread);
