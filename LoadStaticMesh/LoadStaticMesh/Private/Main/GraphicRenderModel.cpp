@@ -13,7 +13,7 @@
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
-static const wstring TexFileName = L"T_Chair_M.dds";
+static const wstring TexFileName = L"Resource/T_Chair_M.dds";
 
 GraphicRenderModel* GraphicRenderModel::ThisRenderModel = nullptr;
 
@@ -240,8 +240,8 @@ void GraphicRenderModel::LoadShadersAndCreatePso()
 	UINT compileFlags = 0;
 #endif
 	ComPtr<ID3DBlob> ErrorsVs, ErrorsPs;
-	D3DCompileFromFile(GetAssetFullPath(L"shader_vs.hlsl").c_str(), nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &pVertexShader, &ErrorsVs);
-	D3DCompileFromFile(GetAssetFullPath(L"shader_ps.hlsl").c_str(), nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pPixelShader, &ErrorsPs);
+	D3DCompileFromFile(GetAssetFullPath(L"Resource/shader_vs.hlsl").c_str(), nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &pVertexShader, &ErrorsVs);
+	D3DCompileFromFile(GetAssetFullPath(L"Resource/shader_ps.hlsl").c_str(), nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pPixelShader, &ErrorsPs);
 	if (ErrorsVs != nullptr)
 	{
 		OutputDebugStringA((char*)ErrorsVs->GetBufferPointer());

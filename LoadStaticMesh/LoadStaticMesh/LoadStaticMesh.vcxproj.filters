@@ -13,103 +13,130 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\Render">
-      <UniqueIdentifier>{109f2f71-b4ca-4190-9f43-a18ed5da0864}</UniqueIdentifier>
+    <Filter Include="Source Files\D3D12RHI">
+      <UniqueIdentifier>{01994b3b-8018-4fa4-baa4-a429f016ed01}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Render">
-      <UniqueIdentifier>{925181c3-6527-480d-8e81-70bbf8cc4c7c}</UniqueIdentifier>
+    <Filter Include="Source Files\Main">
+      <UniqueIdentifier>{9911bbf3-e263-468f-9014-553b6fefa52d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Util">
-      <UniqueIdentifier>{408019bb-1bb7-415c-8569-1650205c2aa9}</UniqueIdentifier>
+    <Filter Include="Source Files\RHI">
+      <UniqueIdentifier>{c94106e2-3fdb-4282-8998-491f063cf617}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Util">
-      <UniqueIdentifier>{b225502f-0cca-4742-8997-615aa584f702}</UniqueIdentifier>
+      <UniqueIdentifier>{f601fd15-fe3e-4617-a12c-f94e41953f61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\D3D12RHI">
+      <UniqueIdentifier>{0e9ad7f7-ad8f-4e78-8760-0d21962e802f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Main">
+      <UniqueIdentifier>{551f98c8-6e06-41d0-9c28-bd539b299cd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Util">
+      <UniqueIdentifier>{08896c1e-cafb-4131-ad35-a26081b53c07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RHI">
+      <UniqueIdentifier>{d55cad2b-05f6-4626-85ec-1d3e0ce2a175}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ApplicationMain.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Private\RHI\DynamicRHI.cpp">
+      <Filter>Source Files\RHI</Filter>
     </ClCompile>
-    <ClCompile Include="InputClass.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Private\RHI\RHI.cpp">
+      <Filter>Source Files\RHI</Filter>
     </ClCompile>
-    <ClCompile Include="MainWindow.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Private\RHI\WindowsDynamicRHI.cpp">
+      <Filter>Source Files\RHI</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicRender.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="MathHelper.cpp">
+    <ClCompile Include="Private\Util\DDSTextureLoader.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="DDSTextureLoader.cpp">
+    <ClCompile Include="Private\Util\MathHelper.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicRenderModel.cpp">
-      <Filter>Source Files\Render</Filter>
+    <ClCompile Include="Private\Main\ApplicationMain.cpp">
+      <Filter>Source Files\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Main\Camera.cpp">
+      <Filter>Source Files\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Main\GraphicRender.cpp">
+      <Filter>Source Files\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Main\GraphicRenderModel.cpp">
+      <Filter>Source Files\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Main\InputClass.cpp">
+      <Filter>Source Files\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Main\MainWindow.cpp">
+      <Filter>Source Files\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Main\Model.cpp">
+      <Filter>Source Files\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Main\stdafx.cpp">
+      <Filter>Source Files\Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ApplicationMain.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InputClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MainWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicRender.h">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="MathHelper.h">
-      <Filter>Header Files\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicHelper.h">
-      <Filter>Header Files\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="d3dx12.h">
-      <Filter>Header Files\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="DDSTextureLoader.h">
-      <Filter>Header Files\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicRenderModel.h">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="shader_vs.hlsl">
+    <CustomBuild Include="Resource\shader_ps.hlsl">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="shader_ps.hlsl">
+    <CustomBuild Include="Resource\shader_vs.hlsl">
       <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="T_Chair_M.dds">
+    <Image Include="Resource\T_Chair_M.dds">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Public\RHI\DynamicRHI.h">
+      <Filter>Header Files\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RHI\RHI.h">
+      <Filter>Header Files\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Util\DDSTextureLoader.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Util\GraphicHelper.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Util\MathHelper.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Main\ApplicationMain.h">
+      <Filter>Header Files\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Main\Camera.h">
+      <Filter>Header Files\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Main\d3dx12.h">
+      <Filter>Header Files\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Main\GraphicRender.h">
+      <Filter>Header Files\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Main\GraphicRenderModel.h">
+      <Filter>Header Files\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Main\InputClass.h">
+      <Filter>Header Files\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Main\MainWindow.h">
+      <Filter>Header Files\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Main\Model.h">
+      <Filter>Header Files\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Main\stdafx.h">
+      <Filter>Header Files\Main</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
