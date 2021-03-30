@@ -1,5 +1,5 @@
 #include "Model.h"
-#include "GraphicHelper.h"
+#include "D3D12Helper.h"
 #include "DDSTextureLoader.h"
 
 #include <iostream>

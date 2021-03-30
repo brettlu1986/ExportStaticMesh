@@ -38,14 +38,11 @@ public:
 
 	void Initialize(D3D12DynamicRHI* RHI);
 	void InitializeDevices();
-	IDXGIAdapter1* GetAdapter() { return DxgiAdapter.Get(); }
+	IDXGIAdapter1* GetAdapter() const { return DxgiAdapter.Get(); }
 	D3D12DynamicRHI* GetOwningRHI() const { return OwningRHI; }
-private:
+	ID3D12Device* GetRootDevice() const { return RootDevice.Get(); }
 
-	void GetHardwareAdapter(
-		_In_ IDXGIFactory1* pFactory,
-		_Outptr_result_maybenull_ IDXGIAdapter1** ppAdapter,
-		bool RequestHighPerformanceAdapter = false);
+private:
 
 	D3D12AdapterDesc Desc;
 	D3D12DynamicRHI* OwningRHI;

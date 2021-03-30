@@ -229,11 +229,6 @@ inline void CreateBuffer(ID3D12Device* Device, ID3D12GraphicsCommandList* CmdLis
 	// The caller can Release the uploadBuffer after it knows the copy has been executed.
 }
 
-inline void CreateConstantBuffer()
-{
-    
-}
-
 // Assign a name to the object to aid with debugging.
 #if defined(_DEBUG) || defined(DBG)
 inline void SetName(ID3D12Object* pObject, LPCWSTR name)

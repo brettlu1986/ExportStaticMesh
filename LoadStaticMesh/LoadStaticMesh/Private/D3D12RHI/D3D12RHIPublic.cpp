@@ -1,8 +1,7 @@
 
 #include "stdafx.h"
 #include "D3D12RHIPrivate.h"
-#include "GraphicHelper.h"
-#include "D3D12Adapter.h"
+#include "D3D12Helper.h"
 
 using namespace Microsoft::WRL;
 
@@ -87,7 +86,7 @@ void D3D12DynamicRHIModule::FindAdapter()
 	ChosenAdapter = new D3D12Adapter(CurrentAdapter);
 }
 
-
+/////////////////////////// dynamic RHI implement
 D3D12DynamicRHI::D3D12DynamicRHI(D3D12Adapter* ChosenAdapterIn)
 {
 	ChosenAdapter = ChosenAdapterIn;
@@ -110,4 +109,10 @@ void D3D12DynamicRHI::PostInit()
 void D3D12DynamicRHI::ShutDown()
 {
 	ChosenAdapter = nullptr;
+}
+
+
+GenericFence* D3D12DynamicRHI::RHICreateFence(const std::string& Name) 
+{
+	return new D3D12Fence(Name, ChosenAdapter);
 }

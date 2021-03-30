@@ -145,7 +145,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Private\D3D12RHI\D3D12Adapter.cpp" />
     <ClCompile Include="Private\D3D12RHI\D3D12Fence.cpp" />
-    <ClCompile Include="Private\D3D12RHI\WindowsD3D12Device.cpp" />
+    <ClCompile Include="Private\D3D12RHI\D3D12RHIPublic.cpp" />
+    <ClCompile Include="Private\D3D12RHI\DDSTextureLoader.cpp" />
     <ClCompile Include="Private\Main\ApplicationMain.cpp" />
     <ClCompile Include="Private\Main\Camera.cpp" />
     <ClCompile Include="Private\Main\GraphicRender.cpp" />
@@ -157,7 +158,6 @@
     <ClCompile Include="Private\RHI\DynamicRHI.cpp" />
     <ClCompile Include="Private\RHI\RHI.cpp" />
     <ClCompile Include="Private\RHI\WindowsDynamicRHI.cpp" />
-    <ClCompile Include="Private\Util\DDSTextureLoader.cpp" />
     <ClCompile Include="Private\Util\MathHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +180,8 @@
   <ItemGroup>
     <ClInclude Include="Public\D3D12RHI\D3D12Adapter.h" />
     <ClInclude Include="Public\D3D12RHI\D3D12RHIPrivate.h" />
+    <ClInclude Include="Public\D3D12RHI\D3D12Helper.h" />
+    <ClInclude Include="Public\D3D12RHI\DDSTextureLoader.h" />
     <ClInclude Include="Public\Main\ApplicationMain.h" />
     <ClInclude Include="Public\Main\Camera.h" />
     <ClInclude Include="Public\Main\d3dx12.h" />
@@ -192,8 +194,8 @@
     <ClInclude Include="Public\RHI\D3D12Fence.h" />
     <ClInclude Include="Public\RHI\DynamicRHI.h" />
     <ClInclude Include="Public\RHI\RHI.h" />
-    <ClInclude Include="Public\Util\DDSTextureLoader.h" />
-    <ClInclude Include="Public\Util\GraphicHelper.h" />
+    <ClInclude Include="Public\RHI\RHIDef.h" />
+    <ClInclude Include="Public\RHI\RHIResource.h" />
     <ClInclude Include="Public\Util\MathHelper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

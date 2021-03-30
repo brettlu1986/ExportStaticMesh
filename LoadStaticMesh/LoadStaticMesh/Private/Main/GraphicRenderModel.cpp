@@ -50,7 +50,7 @@ void GraphicRenderModel::OnInit()
 
 void GraphicRenderModel::LoadPipline()
 {
-	RHIInit();
+	//RHIInit();
 	CreateDxgiObjects();
 	CreateCommandObjects();
 	CreateSwapChain();
@@ -649,7 +649,7 @@ bool GraphicRenderModel::Render()
 
 void GraphicRenderModel::Destroy()
 {
-	RHIExit();
+	//RHIExit();
 	// Ensure that the GPU is no longer referencing resources that are about to be
 	// cleaned up by the destructor.
 	{

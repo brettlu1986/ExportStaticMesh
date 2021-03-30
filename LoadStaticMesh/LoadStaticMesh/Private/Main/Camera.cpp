@@ -1,6 +1,6 @@
 #include "Camera.h"
 #include "MathHelper.h"
-#include "GraphicHelper.h"
+#include "D3D12Helper.h"
 #include <DirectXMath.h>
 #include <iostream>
 #include <fstream>
