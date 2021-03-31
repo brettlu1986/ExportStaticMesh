@@ -47,6 +47,36 @@ struct RHISwapObjectInfo
 	void* WindowHandle;
 };
 
+typedef enum RHI_DATA_FORMAT
+{
+	FORMAT_UNKNONWN = 0,
+    FORMAT_R32G32B32_FLOAT,
+	FORMAT_R32G32_FLOAT,
+}RHI_DATA_FORMAT;
+
+typedef enum RHI_INPUT_CLASSIFICATION
+{
+	CLASSIFICATION_PER_VERTEX_DATA = 0,
+	INPUT_CLASSIFICATION_PER_INSTANCE_DATA = 1
+} 	RHI_INPUT_CLASSIFICATION;
+
+struct RHIInput
+{
+	std::string SemanticName;
+	UINT SemanticIndex;
+	RHI_DATA_FORMAT Format;
+	UINT InputSlot;
+	UINT AlignedByteOffset;
+	RHI_INPUT_CLASSIFICATION InputSlotClass;
+	UINT InstanceDataStepRate;
+};
+
+struct RHIPiplineStateInitializer
+{
+    
+
+};
+
 class DynamicRHI
 {
 public:

@@ -51,9 +51,9 @@ void GraphicRenderModel::OnInit()
 	RHISwapObjectInfo SwapObj = RHISwapObjectInfo(WndWidth, WndHeight, FrameCount, MainApplication->GetHwnd());
 	GDynamicRHI->RHICreateSwapObject(SwapObj);
 
-	//LoadPipline();
-	//LoadAssets();
-	//CreateRenderThread();
+	/*LoadPipline();
+	LoadAssets();
+	CreateRenderThread();*/
 }
 
 void GraphicRenderModel::LoadPipline()
@@ -219,6 +219,7 @@ void GraphicRenderModel::CreateDescriptorHeaps()
 void GraphicRenderModel::CreateRootSignature()
 {
 	// Create a root Signature consisting of a descriptor table with a single CBV.
+
 	CD3DX12_ROOT_PARAMETER RootParameters[3];
 	ZeroMemory(RootParameters, sizeof(RootParameters));
 	CD3DX12_DESCRIPTOR_RANGE Ranges[3];
@@ -238,7 +239,12 @@ void GraphicRenderModel::CreateRootSignature()
 
 	ComPtr<ID3DBlob> Signature;
 	ComPtr<ID3DBlob> Error;
-	ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &Signature, &Error));
+	D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &Signature, &Error);
+	if (Error != nullptr)
+	{
+		OutputDebugStringA((char*)Error->GetBufferPointer());
+	}
+	//ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &Signature, &Error));
 	ThrowIfFailed(Device->CreateRootSignature(0, Signature->GetBufferPointer(), Signature->GetBufferSize(), IID_PPV_ARGS(&RootSignature)));
 	NAME_D3D12_OBJECT(RootSignature);
 
@@ -658,8 +664,8 @@ void GraphicRenderModel::Destroy()
 {
 	RHIExit();
 	
-	//// Ensure that the GPU is no longer referencing resources that are about to be
-	//// cleaned up by the destructor.
+	// Ensure that the GPU is no longer referencing resources that are about to be
+	// cleaned up by the destructor.
 	//{
 	//	const UINT64 fence = FenceValue;
 	//	const UINT64 lastCompletedFence = Fence->GetCompletedValue();

@@ -49,12 +49,22 @@ public:
 	ID3D12Device* GetD3DDevice() const { return D3DDevice.Get(); }
 	D3D12Device* GetDevice() const { return Device;}
 
+	ID3D12RootSignature* GetRootSignature() const {
+		return RootSignature.Get();
+	}
+
 	void SetViewPort(const RHIViewPort& InViewPort);
 	void SetScissorRect(const RHIScissorRect& InRect);
 
 	void CreateSwapChain(const RHISwapObjectInfo& SwapInfo);
+	
 private:
 	void InitializeDevices();
+	void CreateDescriptorHeaps();
+	void CreateDescripterHeap(UINT NumDescripters, D3D12_DESCRIPTOR_HEAP_TYPE Type, 
+		D3D12_DESCRIPTOR_HEAP_FLAGS, UINT NodeMask, REFIID riid,
+		_COM_Outptr_  void** ppvHeap);
+	void CreateSignature();
 
 	D3D12AdapterDesc Desc;
 	D3D12DynamicRHI* OwningRHI;
@@ -68,4 +78,12 @@ private:
 	ComPtr<IDXGIFactory4> DxgiFactory;
 	ComPtr<IDXGIAdapter1> DxgiAdapter;
 	ComPtr<IDXGISwapChain> SwapChain;
+
+	ComPtr<ID3D12DescriptorHeap> RtvHeap;
+	ComPtr<ID3D12DescriptorHeap> DsvHeap;
+	ComPtr<ID3D12DescriptorHeap> CbvSrvHeap;
+	ComPtr<ID3D12DescriptorHeap> SamplerHeap;
+
+	ComPtr<ID3D12RootSignature> RootSignature;
+	ComPtr<ID3D12PipelineState> PipelineState;
 };
