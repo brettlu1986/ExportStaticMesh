@@ -4,6 +4,7 @@
 #include "D3D12Helper.h"
 
 using namespace Microsoft::WRL;
+using namespace DirectX;
 
 D3D12DynamicRHI* GD3D12RHI = nullptr;
 
@@ -97,7 +98,7 @@ void D3D12DynamicRHI::Init()
 	if(ChosenAdapter)
 	{
 		ChosenAdapter->Initialize(this);
-		ChosenAdapter->InitializeDevices();
+		
 	}
 }
 
@@ -108,11 +109,28 @@ void D3D12DynamicRHI::PostInit()
 
 void D3D12DynamicRHI::ShutDown()
 {
-	ChosenAdapter = nullptr;
+	if(ChosenAdapter)
+	{
+		ChosenAdapter->ShutDown();
+		ChosenAdapter = nullptr;
+	}
 }
 
 
 GenericFence* D3D12DynamicRHI::RHICreateFence(const std::string& Name) 
 {
 	return new D3D12Fence(Name, ChosenAdapter);
+}
+
+
+void D3D12DynamicRHI::RHICreateViewPort(RHIViewPort& ViewPort)
+{
+	ChosenAdapter->SetViewPort(ViewPort);
+	RHIScissorRect Rect = RHIScissorRect(0, 0, static_cast<LONG>(ViewPort.Width), static_cast<LONG>(ViewPort.Height));
+	ChosenAdapter->SetScissorRect(Rect);
+}
+
+void D3D12DynamicRHI::RHICreateSwapObject(RHISwapObjectInfo& SwapInfo) 
+{
+	ChosenAdapter->CreateSwapChain(SwapInfo);
 }

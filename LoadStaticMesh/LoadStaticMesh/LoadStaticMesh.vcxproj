@@ -144,6 +144,10 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Private\D3D12RHI\D3D12Adapter.cpp" />
+    <ClCompile Include="Private\D3D12RHI\D3D12CommandList.cpp" />
+    <ClCompile Include="Private\D3D12RHI\D3D12CommandListAllocator.cpp" />
+    <ClCompile Include="Private\D3D12RHI\D3D12CommandListManager.cpp" />
+    <ClCompile Include="Private\D3D12RHI\D3D12Device.cpp" />
     <ClCompile Include="Private\D3D12RHI\D3D12Fence.cpp" />
     <ClCompile Include="Private\D3D12RHI\D3D12RHIPublic.cpp" />
     <ClCompile Include="Private\D3D12RHI\DDSTextureLoader.cpp" />
@@ -179,6 +183,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\D3D12RHI\D3D12Adapter.h" />
+    <ClInclude Include="Public\D3D12RHI\D3D12CommandList.h" />
+    <ClInclude Include="Public\D3D12RHI\D3D12CommandListAllocator.h" />
+    <ClInclude Include="Public\D3D12RHI\D3D12CommandListManager.h" />
+    <ClInclude Include="Public\D3D12RHI\D3D12Device.h" />
     <ClInclude Include="Public\D3D12RHI\D3D12RHIPrivate.h" />
     <ClInclude Include="Public\D3D12RHI\D3D12Helper.h" />
     <ClInclude Include="Public\D3D12RHI\DDSTextureLoader.h" />

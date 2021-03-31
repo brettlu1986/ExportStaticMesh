@@ -23,6 +23,8 @@ private:
 	void FindAdapter();
 };
 
+
+
 class D3D12DynamicRHI : public DynamicRHI
 {
 public:
@@ -33,6 +35,9 @@ public:
 	virtual void ShutDown() override;
 
 	virtual GenericFence* RHICreateFence(const std::string& Name) override;
+
+	virtual void RHICreateViewPort(RHIViewPort& ViewPort) override;
+	virtual void RHICreateSwapObject(RHISwapObjectInfo& SwapInfo) override;
 private: 
 	D3D12Adapter* ChosenAdapter = nullptr;
 

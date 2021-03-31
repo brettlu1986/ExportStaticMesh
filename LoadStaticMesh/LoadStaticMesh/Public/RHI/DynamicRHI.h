@@ -3,6 +3,50 @@
 #include "RHIDef.h"
 #include "RHIResource.h"
 
+struct RHIViewPort
+{
+public:
+	RHIViewPort(float SizeX, float SizeY)
+		:Width(SizeX)
+		, Height(SizeY)
+	{
+	}
+	float Width;
+	float Height;
+};
+
+struct RHIScissorRect
+{
+public:
+	RHIScissorRect(LONG InLeft, LONG InTop, LONG InRight, LONG InBottom)
+		:Left(InLeft)
+		, Top(InTop)
+		, Right(InRight)
+		, Bottom(InBottom)
+	{
+	}
+	LONG Left;
+	LONG Top;
+	LONG Right;
+	LONG Bottom;
+};
+
+struct RHISwapObjectInfo
+{
+	RHISwapObjectInfo(UINT InWidth, UINT InHeight, UINT InObjectCount, void* InWindow)
+	:Width(InWidth)
+	,Height(InHeight)
+	,ObjectCount(InObjectCount)
+	,WindowHandle(InWindow)
+	{
+	}
+	
+	UINT Width;
+	UINT Height;
+	UINT ObjectCount;
+	void* WindowHandle;
+};
+
 class DynamicRHI
 {
 public:
@@ -19,6 +63,9 @@ public:
 	{
 		return new GenericFence(Name);
 	}
+
+	virtual void RHICreateViewPort(RHIViewPort& ViewPort) = 0;
+	virtual void RHICreateSwapObject(RHISwapObjectInfo& SwapInfo) = 0;
 };
 
 extern DynamicRHI* GDynamicRHI;

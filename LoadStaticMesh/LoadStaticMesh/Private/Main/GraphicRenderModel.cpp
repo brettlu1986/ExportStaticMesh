@@ -43,14 +43,21 @@ GraphicRenderModel::~GraphicRenderModel()
 
 void GraphicRenderModel::OnInit()
 {
-	LoadPipline();
-	LoadAssets();
-	CreateRenderThread();
+	//create adapter , create device, create command queue, create command manager, create command allocator/list
+	RHIInit();
+	RHIViewPort ViewPort = RHIViewPort(static_cast<float>(WndWidth), static_cast<float>(WndHeight));
+	GDynamicRHI->RHICreateViewPort(ViewPort);
+
+	RHISwapObjectInfo SwapObj = RHISwapObjectInfo(WndWidth, WndHeight, FrameCount, MainApplication->GetHwnd());
+	GDynamicRHI->RHICreateSwapObject(SwapObj);
+
+	//LoadPipline();
+	//LoadAssets();
+	//CreateRenderThread();
 }
 
 void GraphicRenderModel::LoadPipline()
 {
-	//RHIInit();
 	CreateDxgiObjects();
 	CreateCommandObjects();
 	CreateSwapChain();
@@ -573,134 +580,135 @@ void GraphicRenderModel::Update()
 
 bool GraphicRenderModel::Render()
 {
-	DWORD Ret = WaitForMultipleObjects(static_cast<DWORD>(HWaitedArr.size()), HWaitedArr.data(), TRUE, INFINITE);
-	if( Ret - WAIT_OBJECT_0 == 0 )
-	{
-		switch (State)
-		{
-		case RENDER_INIT:// first create vertex/index/texture view, and push to GPU to excute
-		{
-			// Execute the initialization commands.
-			RenderThreadCmdList->Close();
-			ID3D12CommandList* CmdsLists[] = { RenderThreadCmdList.Get() };
-			CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
-			//// Wait until initialization is complete.
-			FlushCommandQueue();
-			State = RENDER_PRE;
-			HWaitedArr.clear();
-			HWaitedArr.push_back(FenceEvent);
-		}
-		break;
-		case RENDER_PRE://
-		{
-			ThrowIfFailed(CommandAllocatorPre->Reset());
-			ThrowIfFailed(CommandListPre->Reset(CommandAllocatorPre.Get(), PipelineState.Get()));
+	//DWORD Ret = WaitForMultipleObjects(static_cast<DWORD>(HWaitedArr.size()), HWaitedArr.data(), TRUE, INFINITE);
+	//if( Ret - WAIT_OBJECT_0 == 0 )
+	//{
+	//	switch (State)
+	//	{
+	//	case RENDER_INIT:// first create vertex/index/texture view, and push to GPU to excute
+	//	{
+	//		// Execute the initialization commands.
+	//		RenderThreadCmdList->Close();
+	//		ID3D12CommandList* CmdsLists[] = { RenderThreadCmdList.Get() };
+	//		CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
+	//		//// Wait until initialization is complete.
+	//		FlushCommandQueue();
+	//		State = RENDER_PRE;
+	//		HWaitedArr.clear();
+	//		HWaitedArr.push_back(FenceEvent);
+	//	}
+	//	break;
+	//	case RENDER_PRE://
+	//	{
+	//		ThrowIfFailed(CommandAllocatorPre->Reset());
+	//		ThrowIfFailed(CommandListPre->Reset(CommandAllocatorPre.Get(), PipelineState.Get()));
 
-			ThrowIfFailed(CommandAllocatorPost->Reset());
-			ThrowIfFailed(CommandListPost->Reset(CommandAllocatorPost.Get(), PipelineState.Get()));
+	//		ThrowIfFailed(CommandAllocatorPost->Reset());
+	//		ThrowIfFailed(CommandListPost->Reset(CommandAllocatorPost.Get(), PipelineState.Get()));
 
-			CommandListPre->RSSetViewports(1, &Viewport);
-			CommandListPre->RSSetScissorRects(1, &ScissorRect);
+	//		CommandListPre->RSSetViewports(1, &Viewport);
+	//		CommandListPre->RSSetScissorRects(1, &ScissorRect);
 
-			// Indicate that the back buffer will be used as a render target.
-			const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-			CommandListPre->ResourceBarrier(1, &Rb1);
+	//		// Indicate that the back buffer will be used as a render target.
+	//		const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	//		CommandListPre->ResourceBarrier(1, &Rb1);
 
-			//clear back buffer and depth buffer
-			CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart(), FrameIndex, RtvDescriptorSize);
-			CommandListPre->ClearRenderTargetView(RtvHandle, Colors::LightSteelBlue, 0, nullptr);
-			CommandListPre->ClearDepthStencilView(DsvHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH , 1.0f, 0, 0, nullptr);
-			D3D12_CPU_DESCRIPTOR_HANDLE DsvHandle = DsvHeap->GetCPUDescriptorHandleForHeapStart();
-			CommandListPre->OMSetRenderTargets(1, &RtvHandle, true, &DsvHandle);
-			State = RENDER_POST;
+	//		//clear back buffer and depth buffer
+	//		CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart(), FrameIndex, RtvDescriptorSize);
+	//		CommandListPre->ClearRenderTargetView(RtvHandle, Colors::LightSteelBlue, 0, nullptr);
+	//		CommandListPre->ClearDepthStencilView(DsvHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH , 1.0f, 0, 0, nullptr);
+	//		D3D12_CPU_DESCRIPTOR_HANDLE DsvHandle = DsvHeap->GetCPUDescriptorHandleForHeapStart();
+	//		CommandListPre->OMSetRenderTargets(1, &RtvHandle, true, &DsvHandle);
+	//		State = RENDER_POST;
 
-			HWaitedArr.clear();
-			HWaitedArr.push_back(ThreadParam.RenderEnd);
-			//ThreadParam.FrameIndex = FrameIndex;
-			SetEvent(ThreadParam.RenderRun);
-		}
-		break;
-		case RENDER_POST:
-		{
-			const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-			CommandListPost->ResourceBarrier(1, &Rb2);
+	//		HWaitedArr.clear();
+	//		HWaitedArr.push_back(ThreadParam.RenderEnd);
+	//		//ThreadParam.FrameIndex = FrameIndex;
+	//		SetEvent(ThreadParam.RenderRun);
+	//	}
+	//	break;
+	//	case RENDER_POST:
+	//	{
+	//		const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	//		CommandListPost->ResourceBarrier(1, &Rb2);
 
-			CommandListPre->Close();
-			CommandListPost->Close();
+	//		CommandListPre->Close();
+	//		CommandListPost->Close();
 
-			ID3D12CommandList* ppCommandLists[] = { CommandListPre.Get(), RenderThreadCmdList.Get(), CommandListPost.Get() };
-			CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-			ThrowIfFailed(SwapChain->Present(1, 0));
-			FlushCommandQueue();
-			State = RENDER_PRE;
+	//		ID3D12CommandList* ppCommandLists[] = { CommandListPre.Get(), RenderThreadCmdList.Get(), CommandListPost.Get() };
+	//		CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+	//		ThrowIfFailed(SwapChain->Present(1, 0));
+	//		FlushCommandQueue();
+	//		State = RENDER_PRE;
 
-			HWaitedArr.clear();
-			HWaitedArr.push_back(FenceEvent);
+	//		HWaitedArr.clear();
+	//		HWaitedArr.push_back(FenceEvent);
 
-			FrameIndex = (FrameIndex + 1) % FrameCount;
-		}
-		break;
-		default:{}
-		}
-	}
+	//		FrameIndex = (FrameIndex + 1) % FrameCount;
+	//	}
+	//	break;
+	//	default:{}
+	//	}
+	//}
 
 	return true;
 }
 
 void GraphicRenderModel::Destroy()
 {
-	//RHIExit();
-	// Ensure that the GPU is no longer referencing resources that are about to be
-	// cleaned up by the destructor.
-	{
-		const UINT64 fence = FenceValue;
-		const UINT64 lastCompletedFence = Fence->GetCompletedValue();
-		// Signal and increment the fence value.
-		ThrowIfFailed(CommandQueue->Signal(Fence.Get(), FenceValue));
-		FenceValue++;
-
-		// Wait until the previous frame is finished.
-		if (lastCompletedFence < fence)
-		{
-			ThrowIfFailed(Fence->SetEventOnCompletion(fence, FenceEvent));
-			WaitForSingleObject(FenceEvent, INFINITE);
-		}
-		CloseHandle(FenceEvent);
-	}
-
-	bDestroy = true;
-
-	CloseHandle(ThreadParam.ThisThread);
-	CloseHandle(ThreadParam.RenderBegin);
-	CloseHandle(ThreadParam.RenderRun);
-	CloseHandle(ThreadParam.RenderEnd);
-
-	CommandAllocatorPre.Reset();
-	CommandListPre.Reset();
-	CommandAllocatorPost.Reset();
-	CommandListPost.Reset();
-	RenderThreadCmdAllocator.Reset();
-	RenderThreadCmdList.Reset();
-
-	Fence.Reset();
-	PipelineState.Reset();
-	RootSignature.Reset();
-	RtvHeap.Reset();
-	CbvSrvHeap.Reset();
-	DsvHeap.Reset();
-	SamplerHeap.Reset();
-	ResetComPtrArray(&RenderTargets);
-	DepthStencilBuffer.Reset();
-
-	ConstantBuffer->Unmap(0, nullptr);
-	ConstantBuffer.Reset();
-	ModelGeo.Destroy();
+	RHIExit();
 	
-	CommandQueue.Reset();
-	SwapChain.Reset();
-	Device.Reset();
-	
-	ThisRenderModel = nullptr;
+	//// Ensure that the GPU is no longer referencing resources that are about to be
+	//// cleaned up by the destructor.
+	//{
+	//	const UINT64 fence = FenceValue;
+	//	const UINT64 lastCompletedFence = Fence->GetCompletedValue();
+	//	// Signal and increment the fence value.
+	//	ThrowIfFailed(CommandQueue->Signal(Fence.Get(), FenceValue));
+	//	FenceValue++;
+
+	//	// Wait until the previous frame is finished.
+	//	if (lastCompletedFence < fence)
+	//	{
+	//		ThrowIfFailed(Fence->SetEventOnCompletion(fence, FenceEvent));
+	//		WaitForSingleObject(FenceEvent, INFINITE);
+	//	}
+	//	CloseHandle(FenceEvent);
+	//}
+
+	//bDestroy = true;
+
+	//CloseHandle(ThreadParam.ThisThread);
+	//CloseHandle(ThreadParam.RenderBegin);
+	//CloseHandle(ThreadParam.RenderRun);
+	//CloseHandle(ThreadParam.RenderEnd);
+
+	//CommandAllocatorPre.Reset();
+	//CommandListPre.Reset();
+	//CommandAllocatorPost.Reset();
+	//CommandListPost.Reset();
+	//RenderThreadCmdAllocator.Reset();
+	//RenderThreadCmdList.Reset();
+
+	//Fence.Reset();
+	//PipelineState.Reset();
+	//RootSignature.Reset();
+	//RtvHeap.Reset();
+	//CbvSrvHeap.Reset();
+	//DsvHeap.Reset();
+	//SamplerHeap.Reset();
+	//ResetComPtrArray(&RenderTargets);
+	//DepthStencilBuffer.Reset();
+
+	//ConstantBuffer->Unmap(0, nullptr);
+	//ConstantBuffer.Reset();
+	//ModelGeo.Destroy();
+	//
+	//CommandQueue.Reset();
+	//SwapChain.Reset();
+	//Device.Reset();
+	//
+	//ThisRenderModel = nullptr;
 #if defined(_DEBUG)
 	{
 		ComPtr<IDXGIDebug1> DxgiDebug;

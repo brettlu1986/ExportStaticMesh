@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
+#include "DynamicRHI.h"
 
 using namespace Microsoft::WRL;
 
@@ -29,6 +30,8 @@ struct D3D12AdapterDesc
 };
 
 class D3D12DynamicRHI; 
+class D3D12Fence;
+class D3D12Device;
 
 class D3D12Adapter
 {
@@ -36,17 +39,33 @@ public:
 	D3D12Adapter(D3D12AdapterDesc& DescIn);
 	virtual ~D3D12Adapter() { }
 
-	void Initialize(D3D12DynamicRHI* RHI);
-	void InitializeDevices();
-	IDXGIAdapter1* GetAdapter() const { return DxgiAdapter.Get(); }
-	D3D12DynamicRHI* GetOwningRHI() const { return OwningRHI; }
-	ID3D12Device* GetRootDevice() const { return RootDevice.Get(); }
+	void ShutDown();
 
+	void Initialize(D3D12DynamicRHI* RHI);
+
+	D3D12DynamicRHI* GetOwningRHI() const { return OwningRHI; }
+	IDXGIAdapter1* GetAdapter() const { return DxgiAdapter.Get(); }
+
+	ID3D12Device* GetD3DDevice() const { return D3DDevice.Get(); }
+	D3D12Device* GetDevice() const { return Device;}
+
+	void SetViewPort(const RHIViewPort& InViewPort);
+	void SetScissorRect(const RHIScissorRect& InRect);
+
+	void CreateSwapChain(const RHISwapObjectInfo& SwapInfo);
 private:
+	void InitializeDevices();
 
 	D3D12AdapterDesc Desc;
 	D3D12DynamicRHI* OwningRHI;
-	ComPtr<ID3D12Device> RootDevice;
+
+	CD3DX12_VIEWPORT ViewPort;
+	CD3DX12_RECT ScissorRect;
+
+	D3D12Fence* Fence;
+	D3D12Device* Device;
+	ComPtr<ID3D12Device> D3DDevice;
 	ComPtr<IDXGIFactory4> DxgiFactory;
 	ComPtr<IDXGIAdapter1> DxgiAdapter;
+	ComPtr<IDXGISwapChain> SwapChain;
 };
