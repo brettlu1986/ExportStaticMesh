@@ -1,6 +1,7 @@
 #pragma once
 #include "D3D12Adapter.h"
 #include "D3D12CommandListManager.h"
+#include "D3D12ResourceManager.h"
 
 class D3D12Device
 {
@@ -20,6 +21,11 @@ public:
 		return CommandListManager;
 	}
 
+	D3D12ResourceManager* GetResourceManager() const 
+	{
+		return ResourceManager;
+	}
+
 	ID3D12CommandQueue* GetD3DCommandQueue() const 
 	{
 		return GetCommandListManager()->GetD3DCommandQueue();
@@ -31,8 +37,5 @@ private:
 
 	D3D12Adapter* ParentAdapter;
 	D3D12CommandListManager* CommandListManager;
-
-	UINT RtvDescriptorSize;
-	UINT DsvDescriptorSize;
-	UINT CbvSrvUavDescriptorSize;
+	D3D12ResourceManager* ResourceManager;
 };

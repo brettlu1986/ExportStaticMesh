@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "D3D12RHIPrivate.h"
 #include "D3D12Helper.h"
+#include "D3D12Device.h"
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
@@ -98,7 +99,6 @@ void D3D12DynamicRHI::Init()
 	if(ChosenAdapter)
 	{
 		ChosenAdapter->Initialize(this);
-		
 	}
 }
 
@@ -133,4 +133,28 @@ void D3D12DynamicRHI::RHICreateViewPort(RHIViewPort& ViewPort)
 void D3D12DynamicRHI::RHICreateSwapObject(RHISwapObjectInfo& SwapInfo) 
 {
 	ChosenAdapter->CreateSwapChain(SwapInfo);
+}
+
+void D3D12DynamicRHI::RHICreatePiplineStateObject(RHIPiplineStateInitializer& Initializer) 
+{
+	ChosenAdapter->CreatePso(Initializer);
+}
+
+void D3D12DynamicRHI::RHIReadShaderDataFromFile(std::wstring FileName, byte** Data, UINT* Size)
+{
+	ThrowIfFailed(ReadDataFromFile(FileName.c_str(), Data, Size));
+}
+
+void D3D12DynamicRHI::RHICreateRenderTarget(UINT TargetCount)
+{
+	D3D12Device* Device = ChosenAdapter->GetDevice();
+	D3D12ResourceManager* ResourceManager = Device->GetResourceManager();
+	ResourceManager->CreateRenderTarget(TargetCount);
+}
+
+void D3D12DynamicRHI::RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, void** ppDataMap)
+{
+	D3D12Device* Device = ChosenAdapter->GetDevice();
+	D3D12ResourceManager* ResourceManager = Device->GetResourceManager();
+	ResourceManager->CreateConstantBuffer(BufferSize, pDataFrom, ppDataMap);
 }

@@ -24,7 +24,6 @@ private:
 };
 
 
-
 class D3D12DynamicRHI : public DynamicRHI
 {
 public:
@@ -38,6 +37,10 @@ public:
 
 	virtual void RHICreateViewPort(RHIViewPort& ViewPort) override;
 	virtual void RHICreateSwapObject(RHISwapObjectInfo& SwapInfo) override;
+	virtual void RHICreatePiplineStateObject(RHIPiplineStateInitializer& Initializer) override;
+	virtual void RHIReadShaderDataFromFile(std::wstring FileName, byte** Data, UINT* Size) override;
+	virtual void RHICreateRenderTarget(UINT TargetCount) override;
+	virtual void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, void** pDataMap) override;
 private: 
 	D3D12Adapter* ChosenAdapter = nullptr;
 

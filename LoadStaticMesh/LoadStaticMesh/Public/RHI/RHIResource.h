@@ -17,3 +17,36 @@ public:
 protected:
 	std::string FenceName;
 };
+
+class RHIResource
+{
+public:
+	RHIResource() { InitData = nullptr; };
+	RHIResource(const std::string& InResourceName, void* InData)
+	:ResourceName(InResourceName)
+	,InitData(InData)
+	{}
+	virtual ~RHIResource() {};
+
+protected:
+	void* InitData;
+	std::string ResourceName;
+};
+
+
+class RHIView
+{
+public:
+	RHIView(UINT64* InLocation, UINT InBytes, UINT InSizeBytes)
+	:Location(InLocation)
+	, StrideInBytes(InBytes)
+	, SizeInBytes(InSizeBytes)
+	{
+	}
+	virtual ~RHIView() {};
+
+protected:
+	UINT64* Location;
+	UINT StrideInBytes;
+	UINT SizeInBytes;
+};

@@ -56,11 +56,11 @@ typedef enum RHI_DATA_FORMAT
 
 typedef enum RHI_INPUT_CLASSIFICATION
 {
-	CLASSIFICATION_PER_VERTEX_DATA = 0,
+	INPUT_CLASSIFICATION_PER_VERTEX_DATA = 0,
 	INPUT_CLASSIFICATION_PER_INSTANCE_DATA = 1
 } 	RHI_INPUT_CLASSIFICATION;
 
-struct RHIInput
+struct RHIInputElement
 {
 	std::string SemanticName;
 	UINT SemanticIndex;
@@ -71,11 +71,18 @@ struct RHIInput
 	UINT InstanceDataStepRate;
 };
 
+//later will add more param, temp use these for this project
 struct RHIPiplineStateInitializer
 {
-    
-
+    const RHIInputElement* pInpueElement;
+	UINT NumElements;
+	BYTE* pVSPointer;
+	SIZE_T VsPointerLength;
+	BYTE* pPsPointer;
+	SIZE_T PsPointerLength;
+	UINT NumRenderTargets;
 };
+
 
 class DynamicRHI
 {
@@ -96,6 +103,10 @@ public:
 
 	virtual void RHICreateViewPort(RHIViewPort& ViewPort) = 0;
 	virtual void RHICreateSwapObject(RHISwapObjectInfo& SwapInfo) = 0;
+	virtual void RHICreatePiplineStateObject(RHIPiplineStateInitializer& Initializer) = 0;
+	virtual void RHIReadShaderDataFromFile(std::wstring FileName, byte** Data, UINT* Size) = 0;
+	virtual void RHICreateRenderTarget(UINT TargetCount) = 0;
+	virtual void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, void **pDataMap) = 0;
 };
 
 extern DynamicRHI* GDynamicRHI;

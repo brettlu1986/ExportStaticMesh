@@ -3,6 +3,7 @@
 #include "D3D12Device.h"
 #include "D3D12Fence.h"
 #include "D3D12Helper.h"
+#include "d3dx12.h"
 
 D3D12Adapter::D3D12Adapter(D3D12AdapterDesc& DescIn)
 :OwningRHI(nullptr)
@@ -10,7 +11,6 @@ D3D12Adapter::D3D12Adapter(D3D12AdapterDesc& DescIn)
 ,Device(nullptr)
 ,Fence(nullptr)
 {
-
 }
 
 void D3D12Adapter::ShutDown()
@@ -18,19 +18,26 @@ void D3D12Adapter::ShutDown()
 	if(Device)
 	{
 		Device->ShutDown();
+		delete Device;
+		Device = nullptr;
 	}
 
 	if(Fence)
 	{
 		Fence->ShutDown();
+		delete Fence;
+		Fence = nullptr;
 	}
-
 	RtvHeap.Reset();
 	DsvHeap.Reset();
 	CbvSrvHeap.Reset();
 	SamplerHeap.Reset();
 	SwapChain.Reset();
 	RootSignature.Reset();
+	for (size_t i = 0; i < PiplelineStateCache.size(); ++i)
+	{
+		PiplelineStateCache[i].Reset();
+	}
 	D3DDevice.Reset();
 }
 
@@ -156,8 +163,8 @@ void D3D12Adapter::CreateSwapChain(const RHISwapObjectInfo& SwapInfo)
 		&Sd,
 		&SwapChain));
 
-    // rtv create here because we can use swap count to create rtv count
-	CreateDescripterHeap(SwapInfo.ObjectCount, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 
+	//rtv
+	CreateDescripterHeap(SwapInfo.ObjectCount, D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
 		D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 0, IID_PPV_ARGS(&RtvHeap));
 	NAME_D3D12_OBJECT(RtvHeap);
 }
@@ -186,4 +193,70 @@ void D3D12Adapter::CreateSignature()
 	ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &Signature, &Error));
 	ThrowIfFailed(GetD3DDevice()->CreateRootSignature(0, Signature->GetBufferPointer(), Signature->GetBufferSize(), IID_PPV_ARGS(&RootSignature)));
 	NAME_D3D12_OBJECT(RootSignature);
+}
+
+void D3D12Adapter::CreatePso(const RHIPiplineStateInitializer& PsoInitializer)
+{
+	CD3DX12_RASTERIZER_DESC rasterizerStateDesc(D3D12_DEFAULT);
+	rasterizerStateDesc.FrontCounterClockwise = true;
+	rasterizerStateDesc.CullMode = D3D12_CULL_MODE_NONE;
+
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC PsoDesc = {};
+	ZeroMemory(&PsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
+
+	std::vector<D3D12_INPUT_ELEMENT_DESC> InputElementDescs;
+	auto ConvertRHIFormatToD3DFormat = [](RHI_DATA_FORMAT InFormat) -> DXGI_FORMAT
+	{
+		switch(InFormat)
+		{
+		case FORMAT_R32G32B32_FLOAT: { return DXGI_FORMAT_R32G32B32_FLOAT;}
+		case FORMAT_R32G32_FLOAT:{ return DXGI_FORMAT_R32G32_FLOAT;}
+		default: {return DXGI_FORMAT_UNKNOWN;}
+		}
+	};
+
+	auto ConvertRHIClassificationToD3D = [](RHI_INPUT_CLASSIFICATION InClassify) ->D3D12_INPUT_CLASSIFICATION
+	{
+		switch (InClassify)
+		{
+		case INPUT_CLASSIFICATION_PER_VERTEX_DATA: { return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA; }
+		case INPUT_CLASSIFICATION_PER_INSTANCE_DATA: { return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA; }
+		default: { return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;}
+		}
+	};
+
+	for(UINT i = 0; i < PsoInitializer.NumElements; i++)
+	{
+		RHIInputElement* RHIDesc = (RHIInputElement*)(PsoInitializer.pInpueElement + i);
+		D3D12_INPUT_ELEMENT_DESC D3DInputDesc;
+		D3DInputDesc.SemanticName = RHIDesc->SemanticName.c_str();
+		D3DInputDesc.SemanticIndex = RHIDesc->SemanticIndex;
+		D3DInputDesc.Format = ConvertRHIFormatToD3DFormat(RHIDesc->Format);
+		D3DInputDesc.InputSlot = RHIDesc->InputSlot;
+		D3DInputDesc.AlignedByteOffset = RHIDesc->AlignedByteOffset;
+		D3DInputDesc.InputSlotClass = ConvertRHIClassificationToD3D(RHIDesc->InputSlotClass);
+		D3DInputDesc.InstanceDataStepRate = RHIDesc->InstanceDataStepRate;
+		InputElementDescs.push_back(D3DInputDesc);
+	}
+
+	PsoDesc.InputLayout = { InputElementDescs.data(), PsoInitializer.NumElements };
+	PsoDesc.pRootSignature = GetRootSignature();
+	PsoDesc.VS = CD3DX12_SHADER_BYTECODE(PsoInitializer.pVSPointer, PsoInitializer.VsPointerLength);
+	PsoDesc.PS = CD3DX12_SHADER_BYTECODE(PsoInitializer.pPsPointer, PsoInitializer.PsPointerLength);
+	PsoDesc.RasterizerState = rasterizerStateDesc;
+	PsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	PsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	PsoDesc.SampleMask = UINT_MAX;
+	PsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	PsoDesc.NumRenderTargets = PsoInitializer.NumRenderTargets;
+	PsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	PsoDesc.SampleDesc.Count = 1;
+	PsoDesc.SampleDesc.Quality = 0;	////not use 4XMSAA
+	PsoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+
+	ComPtr<ID3D12PipelineState> PipelineState;
+	ThrowIfFailed(GetD3DDevice()->CreateGraphicsPipelineState(&PsoDesc, IID_PPV_ARGS(&PipelineState)));
+	NAME_D3D12_OBJECT(PipelineState);
+	PiplelineStateCache.push_back(PipelineState);
+	
 }

@@ -51,9 +51,40 @@ void GraphicRenderModel::OnInit()
 	RHISwapObjectInfo SwapObj = RHISwapObjectInfo(WndWidth, WndHeight, FrameCount, MainApplication->GetHwnd());
 	GDynamicRHI->RHICreateSwapObject(SwapObj);
 
-	/*LoadPipline();
-	LoadAssets();
-	CreateRenderThread();*/
+	// load shader object
+	UINT8* pVs = nullptr;
+	UINT VsLen = 0;
+	UINT8* pPs = nullptr;
+	UINT PsLen = 0;
+
+	GDynamicRHI->RHIReadShaderDataFromFile(GetAssetFullPath(L"shader_vs.cso"), &pVs, &VsLen);
+	GDynamicRHI->RHIReadShaderDataFromFile(GetAssetFullPath(L"shader_ps.cso"), &pPs, &PsLen);
+
+	RHIInputElement RHIInputElementDescs[] =
+	{
+		{ "POSITION", 0, FORMAT_R32G32B32_FLOAT, 0, 0, INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, FORMAT_R32G32_FLOAT, 0, 12, INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+	};
+
+	RHIPiplineStateInitializer RHIPsoInitializer = {
+		RHIInputElementDescs,
+		_countof(RHIInputElementDescs),
+		pVs,
+		VsLen,
+		pPs,
+		PsLen,
+		1
+	};
+	GDynamicRHI->RHICreatePiplineStateObject(RHIPsoInitializer);
+	GDynamicRHI->RHICreateRenderTarget(FrameCount);
+
+	//
+	UINT BufferSize = (sizeof(ObjectConstants) + 255) & ~255;
+	GDynamicRHI->RHICreateConstantBuffer(BufferSize, &ObjectConstant, reinterpret_cast<void**>(&pCbvDataBegin));
+
+	//LoadPipline();
+	//LoadAssets();
+	//CreateRenderThread();
 }
 
 void GraphicRenderModel::LoadPipline()
@@ -253,6 +284,11 @@ void GraphicRenderModel::CreateRootSignature()
 void GraphicRenderModel::LoadShadersAndCreatePso()
 {
 	// Create the pipeline state, which includes compiling and loading shaders.
+	UINT8* pVs = nullptr;
+	UINT VsLen = 0;
+	UINT8* pPs = nullptr;
+	UINT PsLen = 0;
+
 	ComPtr<ID3DBlob> pVertexShader;
 	ComPtr<ID3DBlob> pPixelShader;
 
@@ -263,16 +299,20 @@ void GraphicRenderModel::LoadShadersAndCreatePso()
 	UINT compileFlags = 0;
 #endif
 	ComPtr<ID3DBlob> ErrorsVs, ErrorsPs;
-	D3DCompileFromFile(GetAssetFullPath(L"Resource/shader_vs.hlsl").c_str(), nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &pVertexShader, &ErrorsVs);
-	D3DCompileFromFile(GetAssetFullPath(L"Resource/shader_ps.hlsl").c_str(), nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pPixelShader, &ErrorsPs);
-	if (ErrorsVs != nullptr)
-	{
-		OutputDebugStringA((char*)ErrorsVs->GetBufferPointer());
-	}
-	if (ErrorsPs != nullptr)
-	{
-		OutputDebugStringA((char*)ErrorsPs->GetBufferPointer());
-	}
+
+	ThrowIfFailed(ReadDataFromFile(GetAssetFullPath(L"shader_vs.cso").c_str(), &pVs, &VsLen));
+	ThrowIfFailed(ReadDataFromFile(GetAssetFullPath(L"shader_ps.cso").c_str(), &pPs, &PsLen));
+
+	//D3DCompileFromFile(GetAssetFullPath(L"Resource/shader_vs.hlsl").c_str(), nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &pVertexShader, &ErrorsVs);
+	//D3DCompileFromFile(GetAssetFullPath(L"Resource/shader_ps.hlsl").c_str(), nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pPixelShader, &ErrorsPs);
+	//if (ErrorsVs != nullptr)
+	//{
+	//	OutputDebugStringA((char*)ErrorsVs->GetBufferPointer());
+	//}
+	//if (ErrorsPs != nullptr)
+	//{
+	//	OutputDebugStringA((char*)ErrorsPs->GetBufferPointer());
+	//}
 
 	// Define the vertex input layout.
 	D3D12_INPUT_ELEMENT_DESC InputElementDescs[] =
@@ -290,8 +330,11 @@ void GraphicRenderModel::LoadShadersAndCreatePso()
 	ZeroMemory(&PsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
 	PsoDesc.InputLayout = { InputElementDescs, _countof(InputElementDescs) };
 	PsoDesc.pRootSignature = RootSignature.Get();
-	PsoDesc.VS = CD3DX12_SHADER_BYTECODE(pVertexShader.Get());
-	PsoDesc.PS = CD3DX12_SHADER_BYTECODE(pPixelShader.Get());
+	PsoDesc.VS = CD3DX12_SHADER_BYTECODE(pVs, VsLen);
+	
+	//CD3DX12_SHADER_BYTECODE(pVertexShader.Get());
+	PsoDesc.PS = CD3DX12_SHADER_BYTECODE(pPs, PsLen);
+	//CD3DX12_SHADER_BYTECODE(pPixelShader.Get());
 	PsoDesc.RasterizerState = rasterizerStateDesc;
 	PsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	PsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
