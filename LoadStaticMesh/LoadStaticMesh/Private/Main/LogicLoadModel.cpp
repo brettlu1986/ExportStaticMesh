@@ -206,6 +206,9 @@ bool LogicLoadModel::Render(void* Param)
 void LogicLoadModel::Destroy()
 {	
 	bDestroy = true;
+	//wait gpu to excute finish
+	GDynamicRHI->RHISignalCurrentFence();
+
 	RHIExit();
 	ModelGeo.Destroy();
 	ThisLogic = nullptr;
