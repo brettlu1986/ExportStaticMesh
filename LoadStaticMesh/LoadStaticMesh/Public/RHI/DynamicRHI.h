@@ -84,6 +84,7 @@ struct RHIPiplineStateInitializer
 };
 
 
+
 class DynamicRHI
 {
 public:
@@ -91,8 +92,6 @@ public:
 	virtual ~DynamicRHI() { }
 
 	virtual void Init() = 0;
-
-	virtual void PostInit() {}
 
 	virtual void ShutDown() = 0;
 
@@ -106,7 +105,25 @@ public:
 	virtual void RHICreatePiplineStateObject(RHIPiplineStateInitializer& Initializer) = 0;
 	virtual void RHIReadShaderDataFromFile(std::wstring FileName, byte** Data, UINT* Size) = 0;
 	virtual void RHICreateRenderTarget(UINT TargetCount) = 0;
-	virtual void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, void **pDataMap) = 0;
+	virtual void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize) = 0;
+	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) = 0;
+	virtual void RHICreateDepthStencilBuffer(UINT Width, UINT Height) = 0;
+	virtual RHIView* RHICreateVertexBufferView(const void* InitData, UINT StrideInByte, UINT DataSize) = 0;
+	virtual RHIView* RHICreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, bool bUseHalfInt32) = 0;
+	virtual RHIView* RHICreateShaderResourceView(std::wstring TextureName) = 0;
+	virtual RHICommandList& RHIGetCommandList(UINT Index) = 0;
+	virtual void RHIExcuteCommandList(RHICommandList& CommandList) = 0;
+	virtual void RHICloseCommandList(RHICommandList& CommandList) = 0;
+	virtual void RHISignalCurrentFence() = 0;
+	virtual bool RHIIsFenceComplete() = 0;
+	virtual void RHIResetCommandList(RHICommandList& CommandList) = 0;
+	virtual void RHISetCurrentViewPortAndScissorRect(RHICommandList& CommandList) = 0;
+	virtual void RHITransitionToState(RHICommandList& CommandList, UINT TargetFrame, ETransitionState State) = 0;
+	virtual void RHIClearRenderTargetAndDepthStencilView(RHICommandList& CommandList, UINT TargetFrame, RHIColor ClearColor) = 0;
+
+	virtual void RHISetGraphicRootDescripterTable(RHICommandList& CommandList) = 0;
+	virtual void RHIDrawWithVertexAndIndexBufferView(RHICommandList& CommandList, RHIView* VertexBufferView, RHIView* IndexBufferView) = 0;
+	virtual void RHISwapObjectPresent() = 0;
 };
 
 extern DynamicRHI* GDynamicRHI;

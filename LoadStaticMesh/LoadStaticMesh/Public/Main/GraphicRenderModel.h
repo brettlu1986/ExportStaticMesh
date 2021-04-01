@@ -24,6 +24,8 @@ public:
 	virtual void OnMouseUp(WPARAM btnState, int x, int y) override;
 	virtual void OnMouseMove(WPARAM btnState, int x, int y) override;
 
+	
+
 private:
 
 	struct ObjectConstants
@@ -139,4 +141,6 @@ private:
 	XMFLOAT4X4 MtProj; 
 	POINT LastMousePoint;
 	UINT State;
+
+	
 };

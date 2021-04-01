@@ -4,7 +4,7 @@
 #include "D3D12CommandListManager.h"
 #include "D3D12ResourceManager.h"
 
-#define COMMAND_LIST_NUM 3 // pre/ render/ post
+#define COMMAND_LIST_NUM 1 // pre/ render/ post
 
 D3D12Device::D3D12Device()
 {

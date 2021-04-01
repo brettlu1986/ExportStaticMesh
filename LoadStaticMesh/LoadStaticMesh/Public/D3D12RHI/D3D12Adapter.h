@@ -48,6 +48,7 @@ public:
 
 	ID3D12Device* GetD3DDevice() const { return D3DDevice.Get(); }
 	D3D12Device* GetDevice() const { return Device;}
+	D3D12Fence* GetFence() const {return Fence;}
 
 	ID3D12RootSignature* GetRootSignature() const {
 		return RootSignature.Get();
@@ -74,6 +75,9 @@ public:
 	ComPtr<ID3D12DescriptorHeap> CbvSrvHeap;
 	ComPtr<ID3D12DescriptorHeap> SamplerHeap;
 	
+	CD3DX12_VIEWPORT ViewPort;
+	CD3DX12_RECT ScissorRect;
+
 private:
 	void InitializeDevices();
 	void CreateDescriptorHeaps();
@@ -82,12 +86,10 @@ private:
 		D3D12_DESCRIPTOR_HEAP_FLAGS, UINT NodeMask, REFIID riid, _COM_Outptr_  void** ppvHeap);
 	
 	void CreateSignature();
+	void CreateSampler();
 
 	D3D12AdapterDesc Desc;
 	D3D12DynamicRHI* OwningRHI;
-
-	CD3DX12_VIEWPORT ViewPort;
-	CD3DX12_RECT ScissorRect;
 
 	D3D12Fence* Fence;
 	D3D12Device* Device;

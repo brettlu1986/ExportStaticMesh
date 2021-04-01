@@ -3,6 +3,8 @@
 #include "D3D12Helper.h"
 #include "MathHelper.h"
 
+#include "RHIResource.h"
+
 using namespace DirectX;
 using namespace std;
 
@@ -89,6 +91,12 @@ public:
 
 	ComPtr<ID3D12Resource> TextureResource;
 	ComPtr<ID3D12Resource> TextureResourceUpload;
+
+	//
+	RHIView* RHIVertexBufferView;
+	RHIView* RHIIndexBufferView;
+	RHIView* RHIShaderResourceView;
+	//
 
 private: 
 	void GetPositionColorInput(std::vector<Vertex_PositionColor>& OutPut);

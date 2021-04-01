@@ -5,6 +5,7 @@
 #include "D3D12Adapter.h"
 #include "D3D12Fence.h"
 
+
 using namespace Microsoft::WRL;
 
 
@@ -23,14 +24,13 @@ private:
 	void FindAdapter();
 };
 
-
+class D3D12ResourceManager;
 class D3D12DynamicRHI : public DynamicRHI
 {
 public:
 	D3D12DynamicRHI(D3D12Adapter* ChosenAdapterIn);
 
 	virtual void Init() override;
-	virtual void PostInit() override;
 	virtual void ShutDown() override;
 
 	virtual GenericFence* RHICreateFence(const std::string& Name) override;
@@ -40,8 +40,29 @@ public:
 	virtual void RHICreatePiplineStateObject(RHIPiplineStateInitializer& Initializer) override;
 	virtual void RHIReadShaderDataFromFile(std::wstring FileName, byte** Data, UINT* Size) override;
 	virtual void RHICreateRenderTarget(UINT TargetCount) override;
-	virtual void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, void** pDataMap) override;
+	virtual void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize) override;
+	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) ;
+
+	virtual void RHICreateDepthStencilBuffer(UINT Width, UINT Height) override;
+	virtual RHIView* RHICreateVertexBufferView(const void* InitData, UINT StrideInByte, UINT DataSize) override;
+	virtual RHIView* RHICreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, bool bUseHalfInt32) override;
+	virtual RHIView* RHICreateShaderResourceView(std::wstring TextureName);
+	virtual RHICommandList& RHIGetCommandList(UINT Index) ;
+	virtual void RHIExcuteCommandList(RHICommandList& CommandList);
+	virtual void RHICloseCommandList(RHICommandList& CommandList);
+	virtual void RHISignalCurrentFence() ;
+	virtual bool RHIIsFenceComplete() ;
+	virtual void RHIResetCommandList(RHICommandList& CommandList);
+	virtual void RHISetCurrentViewPortAndScissorRect(RHICommandList& CommandList);
+	virtual void RHITransitionToState(RHICommandList& CommandList, UINT TargetFrame, ETransitionState State);
+	virtual void RHIClearRenderTargetAndDepthStencilView(RHICommandList& CommandList, UINT TargetFrame, RHIColor ClearColor);
+
+	virtual void RHISetGraphicRootDescripterTable(RHICommandList& CommandList);
+	virtual void RHIDrawWithVertexAndIndexBufferView(RHICommandList& CommandList, RHIView* VertexBufferView, RHIView* IndexBufferView);
+	virtual void RHISwapObjectPresent();
+
 private: 
+	D3D12ResourceManager* GetResourceManager();
 	D3D12Adapter* ChosenAdapter = nullptr;
 
 };

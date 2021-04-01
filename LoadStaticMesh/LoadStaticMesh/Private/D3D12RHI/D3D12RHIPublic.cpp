@@ -3,6 +3,7 @@
 #include "D3D12RHIPrivate.h"
 #include "D3D12Helper.h"
 #include "D3D12Device.h"
+#include "D3D12ResourceManager.h"
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
@@ -26,6 +27,18 @@ DynamicRHI* D3D12DynamicRHIModule::CreateRHI()
 
 void D3D12DynamicRHIModule::FindAdapter()
 {
+#if defined(_DEBUG)
+	// Enable the debug layer (requires the Graphics Tools "optional feature").
+	// NOTE: Enabling the debug layer after device creation will invalidate the active device.
+	{
+		ComPtr<ID3D12Debug> DebugController;
+		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&DebugController))))
+		{
+			DebugController->EnableDebugLayer();
+		}
+	}
+#endif
+
 	ComPtr<IDXGIFactory4> DxgiFactory;
 	ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&DxgiFactory)));
 
@@ -86,6 +99,7 @@ void D3D12DynamicRHIModule::FindAdapter()
 	}
 	D3D12AdapterDesc CurrentAdapter(Desc, Index, MaxSupportedFeatureLevel, pDevice->GetNodeCount());
 	ChosenAdapter = new D3D12Adapter(CurrentAdapter);
+	pDevice->Release();
 }
 
 /////////////////////////// dynamic RHI implement
@@ -100,11 +114,6 @@ void D3D12DynamicRHI::Init()
 	{
 		ChosenAdapter->Initialize(this);
 	}
-}
-
-void D3D12DynamicRHI::PostInit()
-{
-
 }
 
 void D3D12DynamicRHI::ShutDown()
@@ -145,16 +154,108 @@ void D3D12DynamicRHI::RHIReadShaderDataFromFile(std::wstring FileName, byte** Da
 	ThrowIfFailed(ReadDataFromFile(FileName.c_str(), Data, Size));
 }
 
-void D3D12DynamicRHI::RHICreateRenderTarget(UINT TargetCount)
+D3D12ResourceManager* D3D12DynamicRHI::GetResourceManager()
 {
 	D3D12Device* Device = ChosenAdapter->GetDevice();
-	D3D12ResourceManager* ResourceManager = Device->GetResourceManager();
-	ResourceManager->CreateRenderTarget(TargetCount);
+	return Device->GetResourceManager();
 }
 
-void D3D12DynamicRHI::RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, void** ppDataMap)
+void D3D12DynamicRHI::RHICreateRenderTarget(UINT TargetCount)
 {
-	D3D12Device* Device = ChosenAdapter->GetDevice();
-	D3D12ResourceManager* ResourceManager = Device->GetResourceManager();
-	ResourceManager->CreateConstantBuffer(BufferSize, pDataFrom, ppDataMap);
+	GetResourceManager()->CreateRenderTarget(TargetCount);
 }
+
+void D3D12DynamicRHI::RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
+{
+	GetResourceManager()->CreateConstantBuffer(BufferSize, pDataFrom, DataSize);
+}
+
+void D3D12DynamicRHI::RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize)
+{
+	GetResourceManager()->UpdateConstantBufferData(pUpdateData, DataSize);
+}
+
+void D3D12DynamicRHI::RHICreateDepthStencilBuffer(UINT Width, UINT Height) 
+{
+	GetResourceManager()->CreateDepthStencilBuffer(Width, Height);
+}
+
+RHIView* D3D12DynamicRHI::RHICreateVertexBufferView(const void* InitData, UINT StrideInByte, UINT DataSize)
+{
+	return GetResourceManager()->CreateVertexBufferView(InitData, StrideInByte, DataSize);
+}
+
+RHIView* D3D12DynamicRHI::RHICreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, bool bUseHalfInt32)
+{
+	return GetResourceManager()->CreateIndexBufferView(InitData, DataSize, IndicesCount, bUseHalfInt32);
+}
+
+RHIView* D3D12DynamicRHI::RHICreateShaderResourceView(std::wstring TextureName)
+{
+	return GetResourceManager()->CreateShaderResourceView(TextureName);
+}
+
+RHICommandList& D3D12DynamicRHI::RHIGetCommandList(UINT Index)
+{
+	return ChosenAdapter->GetDevice()->GetCommandListManager()->GetCommandList(Index);
+}
+
+void D3D12DynamicRHI::RHIExcuteCommandList(RHICommandList& CommandList)
+{
+	CommandList.Close();
+	CommandList.Excute();
+}
+
+void D3D12DynamicRHI::RHICloseCommandList(RHICommandList& CommandList)
+{
+	CommandList.Close();
+}
+
+void D3D12DynamicRHI::RHISignalCurrentFence()
+{
+	D3D12Fence* Fence = ChosenAdapter->GetFence();
+	Fence->SignalCurrentFence();
+}
+
+bool D3D12DynamicRHI::RHIIsFenceComplete()
+{
+	D3D12Fence* Fence = ChosenAdapter->GetFence();
+	return Fence->IsFenceComplete();
+}
+
+void D3D12DynamicRHI::RHIResetCommandList(RHICommandList& CommandList)
+{
+	CommandList.Reset();
+}
+
+void D3D12DynamicRHI::RHISetCurrentViewPortAndScissorRect(RHICommandList& CommandList)
+{
+	CommandList.SetViewPort();
+	CommandList.SetScissorRect();
+}
+
+void D3D12DynamicRHI::RHITransitionToState(RHICommandList& CommandList, UINT TargetFrame, ETransitionState State)
+{
+	CommandList.TransitionToState(TargetFrame, State);
+}
+
+void D3D12DynamicRHI::RHIClearRenderTargetAndDepthStencilView(RHICommandList& CommandList, UINT TargetFrame, RHIColor ClearColor)
+{
+	CommandList.ClearRenderTargetAndDepthStencilView(TargetFrame, ClearColor);
+}
+
+ void D3D12DynamicRHI::RHISetGraphicRootDescripterTable(RHICommandList& CommandList)
+ {
+	 CommandList.SetGraphicRootDescripterTable();
+ }
+
+ void D3D12DynamicRHI::RHIDrawWithVertexAndIndexBufferView(RHICommandList& CommandList, RHIView* VertexBufferView, RHIView* IndexBufferView)
+ {
+	 CommandList.DrawWithVertexAndIndexBufferView(VertexBufferView, IndexBufferView);
+ }
+
+ void D3D12DynamicRHI::RHISwapObjectPresent()
+ {
+	 IDXGISwapChain* SwapChain = ChosenAdapter->GetSwapChain();
+	 SwapChain->Present(1, 0);
+ }

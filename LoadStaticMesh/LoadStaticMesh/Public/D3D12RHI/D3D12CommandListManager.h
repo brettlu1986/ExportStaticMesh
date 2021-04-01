@@ -1,10 +1,10 @@
 #pragma once
 
 #include "stdafx.h"
+#include "D3D12CommandList.h"
 using namespace Microsoft::WRL;
 
 class D3D12Device;
-class D3D12CommandList;
 class D3D12CommandListManager
 {
 public:
@@ -14,6 +14,13 @@ public:
 	void Clear();
 	void CreateCommandLists(UINT NumCommandLists);
 
+	D3D12CommandList& GetCommandList(UINT Index)
+	{
+		return ComandLists[Index];
+	}
+	ID3D12GraphicsCommandList* GetDefaultCommandList() {
+		return ComandLists[0].GetD3DCommandList();
+	}
 	ID3D12CommandQueue* GetD3DCommandQueue() const { return CommandQueue.Get(); }
 private:
 

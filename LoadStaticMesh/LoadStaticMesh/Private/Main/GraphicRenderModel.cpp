@@ -16,6 +16,7 @@ using namespace Microsoft::WRL;
 using namespace DirectX;
 
 static const wstring TexFileName = L"Resource/T_Chair_M.dds";
+static const RHIColor ClearColor = { 0.690196097f, 0.768627524f, 0.870588303f, 1.000000000f };
 
 GraphicRenderModel* GraphicRenderModel::ThisRenderModel = nullptr;
 
@@ -43,6 +44,9 @@ GraphicRenderModel::~GraphicRenderModel()
 
 void GraphicRenderModel::OnInit()
 {
+	InitCamera();
+	InitModel();
+
 	//create adapter , create device, create command queue, create command manager, create command allocator/list
 	RHIInit();
 	RHIViewPort ViewPort = RHIViewPort(static_cast<float>(WndWidth), static_cast<float>(WndHeight));
@@ -80,12 +84,95 @@ void GraphicRenderModel::OnInit()
 
 	//
 	UINT BufferSize = (sizeof(ObjectConstants) + 255) & ~255;
-	GDynamicRHI->RHICreateConstantBuffer(BufferSize, &ObjectConstant, reinterpret_cast<void**>(&pCbvDataBegin));
+	GDynamicRHI->RHICreateConstantBuffer(BufferSize, &ObjectConstant, sizeof(ObjectConstant));
+	//
+	GDynamicRHI->RHICreateDepthStencilBuffer(WndWidth, WndHeight);
 
-	//LoadPipline();
-	//LoadAssets();
-	//CreateRenderThread();
+	//create model vertex buffer view
+	std::vector<Vertex_PositionTex0> TriangleVertices;
+	ModelGeo.GetPositionTex0Input(TriangleVertices);
+	const UINT VertexBufferSize = static_cast<UINT>(TriangleVertices.size() * sizeof(Vertex_PositionTex0));
+	const UINT StrideInByte = sizeof(Vertex_PositionTex0);
+	ModelGeo.RHIVertexBufferView = GDynamicRHI->RHICreateVertexBufferView(TriangleVertices.data(), StrideInByte, VertexBufferSize);
+
+	//create model index buffer view
+	ModelGeo.IndicesCount = ModelGeo.bUseHalfInt32 ?
+		static_cast<UINT>(ModelGeo.MeshIndicesHalf.size()) : static_cast<UINT>(ModelGeo.MeshIndices.size());
+	ModelGeo.IndiceSize = ModelGeo.bUseHalfInt32 ?
+		ModelGeo.IndicesCount * sizeof(UINT16) : ModelGeo.IndicesCount * sizeof(UINT);
+	const void* InitData = ModelGeo.bUseHalfInt32 ?
+		reinterpret_cast<void*>(ModelGeo.MeshIndicesHalf.data()) : reinterpret_cast<void*>(ModelGeo.MeshIndices.data());
+	ModelGeo.RHIIndexBufferView = GDynamicRHI->RHICreateIndexBufferView(InitData, ModelGeo.IndiceSize, ModelGeo.IndicesCount, ModelGeo.bUseHalfInt32);
+
+	//create model shader resource view
+	ModelGeo.RHIShaderResourceView = GDynamicRHI->RHICreateShaderResourceView(TexFileName);
+
+	//first flush
+	RHICommandList& CommandList = GDynamicRHI->RHIGetCommandList(0);
+	GDynamicRHI->RHIExcuteCommandList(CommandList);
+	GDynamicRHI->RHISignalCurrentFence();
 }
+
+void GraphicRenderModel::Update()
+{
+	//update matrix
+	XMMATRIX WorldViewProj = ModelGeo.GetModelMatrix() * Camera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
+	//Update the constant buffer with the latest WorldViewProj matrix.
+	XMStoreFloat4x4(&ObjectConstant.WorldViewProj, XMMatrixTranspose(WorldViewProj));
+	GDynamicRHI->RHIUpdateConstantBuffer(&ObjectConstant, sizeof(ObjectConstant));
+	//memcpy(pCbvDataBegin, &ObjectConstant, sizeof(ObjectConstant));
+	
+}
+
+bool GraphicRenderModel::Render()
+{
+	if (!GDynamicRHI->RHIIsFenceComplete()) 
+		return true; 
+
+	RHICommandList& CommandList = GDynamicRHI->RHIGetCommandList(0);
+	GDynamicRHI->RHIResetCommandList(CommandList);
+	GDynamicRHI->RHISetCurrentViewPortAndScissorRect(CommandList);
+
+	GDynamicRHI->RHITransitionToState(CommandList, FrameIndex, ETransitionState::STATE_RENDER);
+	
+	GDynamicRHI->RHIClearRenderTargetAndDepthStencilView(CommandList, FrameIndex, ClearColor);
+	GDynamicRHI->RHISetGraphicRootDescripterTable(CommandList);
+	GDynamicRHI->RHIDrawWithVertexAndIndexBufferView(CommandList, ModelGeo.RHIVertexBufferView, ModelGeo.RHIIndexBufferView);
+
+	GDynamicRHI->RHITransitionToState(CommandList, FrameIndex, ETransitionState::STATE_PRESENT);
+	GDynamicRHI->RHIExcuteCommandList(CommandList);
+	GDynamicRHI->RHISwapObjectPresent();
+
+	GDynamicRHI->RHISignalCurrentFence();
+	FrameIndex = (FrameIndex + 1) % FrameCount;
+	return true;
+}
+
+void GraphicRenderModel::Destroy()
+{
+	RHIExit();
+#if defined(_DEBUG)
+	{
+		ComPtr<IDXGIDebug1> DxgiDebug;
+		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&DxgiDebug))))
+		{
+			DxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
+		}
+	}
+#endif
+}
+
+//void GraphicRenderModel::Update()
+//{}
+//
+//
+//void GraphicRenderModel::OnInit()
+//{
+//	LoadPipline();
+//	LoadAssets();
+//	CreateRenderThread();
+//}
+
 
 void GraphicRenderModel::LoadPipline()
 {
@@ -469,12 +556,14 @@ void GraphicRenderModel::InitCamera()
 	Camera.OnResize(static_cast<float>(WndWidth), static_cast<float>(WndHeight));
 	XMMATRIX P = Camera.GetProjectionMatrix();
 	XMStoreFloat4x4(&MtProj, P);
+
 }
 
 void GraphicRenderModel::InitModel()
 {
 	ModelGeo.Init();
 	ModelGeo.SetModelLocation(Camera.GetViewTargetLocation());
+
 }
 
 void GraphicRenderModel::CreateConstantBufferView()
@@ -622,149 +711,146 @@ void GraphicRenderModel::OnMouseMove(WPARAM btnState, int x, int y)
 	LastMousePoint.y = y;
 }
 
-void GraphicRenderModel::Update()
-{
-	
-}
 
-bool GraphicRenderModel::Render()
-{
-	//DWORD Ret = WaitForMultipleObjects(static_cast<DWORD>(HWaitedArr.size()), HWaitedArr.data(), TRUE, INFINITE);
-	//if( Ret - WAIT_OBJECT_0 == 0 )
-	//{
-	//	switch (State)
-	//	{
-	//	case RENDER_INIT:// first create vertex/index/texture view, and push to GPU to excute
-	//	{
-	//		// Execute the initialization commands.
-	//		RenderThreadCmdList->Close();
-	//		ID3D12CommandList* CmdsLists[] = { RenderThreadCmdList.Get() };
-	//		CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
-	//		//// Wait until initialization is complete.
-	//		FlushCommandQueue();
-	//		State = RENDER_PRE;
-	//		HWaitedArr.clear();
-	//		HWaitedArr.push_back(FenceEvent);
-	//	}
-	//	break;
-	//	case RENDER_PRE://
-	//	{
-	//		ThrowIfFailed(CommandAllocatorPre->Reset());
-	//		ThrowIfFailed(CommandListPre->Reset(CommandAllocatorPre.Get(), PipelineState.Get()));
 
-	//		ThrowIfFailed(CommandAllocatorPost->Reset());
-	//		ThrowIfFailed(CommandListPost->Reset(CommandAllocatorPost.Get(), PipelineState.Get()));
-
-	//		CommandListPre->RSSetViewports(1, &Viewport);
-	//		CommandListPre->RSSetScissorRects(1, &ScissorRect);
-
-	//		// Indicate that the back buffer will be used as a render target.
-	//		const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	//		CommandListPre->ResourceBarrier(1, &Rb1);
-
-	//		//clear back buffer and depth buffer
-	//		CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart(), FrameIndex, RtvDescriptorSize);
-	//		CommandListPre->ClearRenderTargetView(RtvHandle, Colors::LightSteelBlue, 0, nullptr);
-	//		CommandListPre->ClearDepthStencilView(DsvHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH , 1.0f, 0, 0, nullptr);
-	//		D3D12_CPU_DESCRIPTOR_HANDLE DsvHandle = DsvHeap->GetCPUDescriptorHandleForHeapStart();
-	//		CommandListPre->OMSetRenderTargets(1, &RtvHandle, true, &DsvHandle);
-	//		State = RENDER_POST;
-
-	//		HWaitedArr.clear();
-	//		HWaitedArr.push_back(ThreadParam.RenderEnd);
-	//		//ThreadParam.FrameIndex = FrameIndex;
-	//		SetEvent(ThreadParam.RenderRun);
-	//	}
-	//	break;
-	//	case RENDER_POST:
-	//	{
-	//		const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-	//		CommandListPost->ResourceBarrier(1, &Rb2);
-
-	//		CommandListPre->Close();
-	//		CommandListPost->Close();
-
-	//		ID3D12CommandList* ppCommandLists[] = { CommandListPre.Get(), RenderThreadCmdList.Get(), CommandListPost.Get() };
-	//		CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-	//		ThrowIfFailed(SwapChain->Present(1, 0));
-	//		FlushCommandQueue();
-	//		State = RENDER_PRE;
-
-	//		HWaitedArr.clear();
-	//		HWaitedArr.push_back(FenceEvent);
-
-	//		FrameIndex = (FrameIndex + 1) % FrameCount;
-	//	}
-	//	break;
-	//	default:{}
-	//	}
-	//}
-
-	return true;
-}
-
-void GraphicRenderModel::Destroy()
-{
-	RHIExit();
-	
-	// Ensure that the GPU is no longer referencing resources that are about to be
-	// cleaned up by the destructor.
-	//{
-	//	const UINT64 fence = FenceValue;
-	//	const UINT64 lastCompletedFence = Fence->GetCompletedValue();
-	//	// Signal and increment the fence value.
-	//	ThrowIfFailed(CommandQueue->Signal(Fence.Get(), FenceValue));
-	//	FenceValue++;
-
-	//	// Wait until the previous frame is finished.
-	//	if (lastCompletedFence < fence)
-	//	{
-	//		ThrowIfFailed(Fence->SetEventOnCompletion(fence, FenceEvent));
-	//		WaitForSingleObject(FenceEvent, INFINITE);
-	//	}
-	//	CloseHandle(FenceEvent);
-	//}
-
-	//bDestroy = true;
-
-	//CloseHandle(ThreadParam.ThisThread);
-	//CloseHandle(ThreadParam.RenderBegin);
-	//CloseHandle(ThreadParam.RenderRun);
-	//CloseHandle(ThreadParam.RenderEnd);
-
-	//CommandAllocatorPre.Reset();
-	//CommandListPre.Reset();
-	//CommandAllocatorPost.Reset();
-	//CommandListPost.Reset();
-	//RenderThreadCmdAllocator.Reset();
-	//RenderThreadCmdList.Reset();
-
-	//Fence.Reset();
-	//PipelineState.Reset();
-	//RootSignature.Reset();
-	//RtvHeap.Reset();
-	//CbvSrvHeap.Reset();
-	//DsvHeap.Reset();
-	//SamplerHeap.Reset();
-	//ResetComPtrArray(&RenderTargets);
-	//DepthStencilBuffer.Reset();
-
-	//ConstantBuffer->Unmap(0, nullptr);
-	//ConstantBuffer.Reset();
-	//ModelGeo.Destroy();
-	//
-	//CommandQueue.Reset();
-	//SwapChain.Reset();
-	//Device.Reset();
-	//
-	//ThisRenderModel = nullptr;
-#if defined(_DEBUG)
-	{
-		ComPtr<IDXGIDebug1> DxgiDebug;
-		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&DxgiDebug))))
-		{
-			DxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
-		}
-	}
-#endif
-}
+//bool GraphicRenderModel::Render()
+//{
+//	DWORD Ret = WaitForMultipleObjects(static_cast<DWORD>(HWaitedArr.size()), HWaitedArr.data(), TRUE, INFINITE);
+//	if( Ret - WAIT_OBJECT_0 == 0 )
+//	{
+//		switch (State)
+//		{
+//		case RENDER_INIT:// first create vertex/index/texture view, and push to GPU to excute
+//		{
+//			// Execute the initialization commands.
+//			RenderThreadCmdList->Close();
+//			ID3D12CommandList* CmdsLists[] = { RenderThreadCmdList.Get() };
+//			CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
+//			//// Wait until initialization is complete.
+//			FlushCommandQueue();
+//			State = RENDER_PRE;
+//			HWaitedArr.clear();
+//			HWaitedArr.push_back(FenceEvent);
+//		}
+//		break;
+//		case RENDER_PRE://
+//		{
+//			ThrowIfFailed(CommandAllocatorPre->Reset());
+//			ThrowIfFailed(CommandListPre->Reset(CommandAllocatorPre.Get(), PipelineState.Get()));
+//
+//			ThrowIfFailed(CommandAllocatorPost->Reset());
+//			ThrowIfFailed(CommandListPost->Reset(CommandAllocatorPost.Get(), PipelineState.Get()));
+//
+//			CommandListPre->RSSetViewports(1, &Viewport);
+//			CommandListPre->RSSetScissorRects(1, &ScissorRect);
+//
+//			// Indicate that the back buffer will be used as a render target.
+//			const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+//			CommandListPre->ResourceBarrier(1, &Rb1);
+//
+//			//clear back buffer and depth buffer
+//			CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart(), FrameIndex, RtvDescriptorSize);
+//			CommandListPre->ClearRenderTargetView(RtvHandle, Colors::LightSteelBlue, 0, nullptr);
+//			CommandListPre->ClearDepthStencilView(DsvHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH , 1.0f, 0, 0, nullptr);
+//			D3D12_CPU_DESCRIPTOR_HANDLE DsvHandle = DsvHeap->GetCPUDescriptorHandleForHeapStart();
+//			CommandListPre->OMSetRenderTargets(1, &RtvHandle, true, &DsvHandle);
+//			State = RENDER_POST;
+//
+//			HWaitedArr.clear();
+//			HWaitedArr.push_back(ThreadParam.RenderEnd);
+//			//ThreadParam.FrameIndex = FrameIndex;
+//			SetEvent(ThreadParam.RenderRun);
+//		}
+//		break;
+//		case RENDER_POST:
+//		{
+//			const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+//			CommandListPost->ResourceBarrier(1, &Rb2);
+//
+//			CommandListPre->Close();
+//			CommandListPost->Close();
+//
+//			ID3D12CommandList* ppCommandLists[] = { CommandListPre.Get(), RenderThreadCmdList.Get(), CommandListPost.Get() };
+//			CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+//			ThrowIfFailed(SwapChain->Present(1, 0));
+//			FlushCommandQueue();
+//			State = RENDER_PRE;
+//
+//			HWaitedArr.clear();
+//			HWaitedArr.push_back(FenceEvent);
+//
+//			FrameIndex = (FrameIndex + 1) % FrameCount;
+//		}
+//		break;
+//		default:{}
+//		}
+//	}
+//
+//	return true;
+//}
+//
+//void GraphicRenderModel::Destroy()
+//{
+//
+//	
+//	 /*Ensure that the GPU is no longer referencing resources that are about to be
+//	 cleaned up by the destructor.*/
+//	{
+//		const UINT64 fence = FenceValue;
+//		const UINT64 lastCompletedFence = Fence->GetCompletedValue();
+//		// Signal and increment the fence value.
+//		ThrowIfFailed(CommandQueue->Signal(Fence.Get(), FenceValue));
+//		FenceValue++;
+//
+//		// Wait until the previous frame is finished.
+//		if (lastCompletedFence < fence)
+//		{
+//			ThrowIfFailed(Fence->SetEventOnCompletion(fence, FenceEvent));
+//			WaitForSingleObject(FenceEvent, INFINITE);
+//		}
+//		CloseHandle(FenceEvent);
+//	}
+//
+//	bDestroy = true;
+//
+//	CloseHandle(ThreadParam.ThisThread);
+//	CloseHandle(ThreadParam.RenderBegin);
+//	CloseHandle(ThreadParam.RenderRun);
+//	CloseHandle(ThreadParam.RenderEnd);
+//
+//	CommandAllocatorPre.Reset();
+//	CommandListPre.Reset();
+//	CommandAllocatorPost.Reset();
+//	CommandListPost.Reset();
+//	RenderThreadCmdAllocator.Reset();
+//	RenderThreadCmdList.Reset();
+//
+//	Fence.Reset();
+//	PipelineState.Reset();
+//	RootSignature.Reset();
+//	RtvHeap.Reset();
+//	CbvSrvHeap.Reset();
+//	DsvHeap.Reset();
+//	SamplerHeap.Reset();
+//	ResetComPtrArray(&RenderTargets);
+//	DepthStencilBuffer.Reset();
+//
+//	ConstantBuffer->Unmap(0, nullptr);
+//	ConstantBuffer.Reset();
+//	ModelGeo.Destroy();
+//	
+//	CommandQueue.Reset();
+//	SwapChain.Reset();
+//	Device.Reset();
+//	
+//	ThisRenderModel = nullptr;
+//#if defined(_DEBUG)
+//	{
+//		ComPtr<IDXGIDebug1> DxgiDebug;
+//		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&DxgiDebug))))
+//		{
+//			DxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
+//		}
+//	}
+//#endif
+//}

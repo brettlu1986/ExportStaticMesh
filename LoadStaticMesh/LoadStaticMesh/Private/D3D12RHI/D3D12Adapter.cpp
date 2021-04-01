@@ -47,21 +47,11 @@ void D3D12Adapter::Initialize(D3D12DynamicRHI* RHI)
 	InitializeDevices();
 	CreateDescriptorHeaps();
 	CreateSignature();
+	CreateSampler();
 }
 
 void D3D12Adapter::InitializeDevices()
 {
-#if defined(_DEBUG)
-	// Enable the debug layer (requires the Graphics Tools "optional feature").
-	// NOTE: Enabling the debug layer after device creation will invalidate the active device.
-	{
-		ComPtr<ID3D12Debug> DebugController;
-		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&DebugController))))
-		{
-			DebugController->EnableDebugLayer();
-		}
-	}
-#endif
 
 	if(!D3DDevice)
 	{
@@ -113,6 +103,21 @@ void D3D12Adapter::CreateDescriptorHeaps()
 	CreateDescripterHeap(1, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER,
 		D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 0, IID_PPV_ARGS(&SamplerHeap));
 	NAME_D3D12_OBJECT(SamplerHeap);
+}
+
+void D3D12Adapter::CreateSampler()
+{
+	D3D12_SAMPLER_DESC SamplerDesc = {};
+	SamplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	SamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	SamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	SamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	SamplerDesc.MinLOD = 0;
+	SamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
+	SamplerDesc.MipLODBias = 0.0f;
+	SamplerDesc.MaxAnisotropy = 1;
+	SamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+	GetD3DDevice()->CreateSampler(&SamplerDesc, SamplerHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
 void D3D12Adapter::CreateDescripterHeap(UINT NumDescripters, D3D12_DESCRIPTOR_HEAP_TYPE Type, D3D12_DESCRIPTOR_HEAP_FLAGS Flag, UINT NodeMask, REFIID riid,

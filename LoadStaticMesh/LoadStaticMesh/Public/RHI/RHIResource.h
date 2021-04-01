@@ -37,7 +37,12 @@ protected:
 class RHIView
 {
 public:
-	RHIView(UINT64* InLocation, UINT InBytes, UINT InSizeBytes)
+	RHIView()
+	:Location(0)
+	,StrideInBytes(0)
+	,SizeInBytes(0)
+	{  };
+	RHIView(UINT64 InLocation, UINT InBytes, UINT InSizeBytes)
 	:Location(InLocation)
 	, StrideInBytes(InBytes)
 	, SizeInBytes(InSizeBytes)
@@ -45,8 +50,10 @@ public:
 	}
 	virtual ~RHIView() {};
 
+	virtual void Clear() {};
+
 protected:
-	UINT64* Location;
+	UINT64 Location;
 	UINT StrideInBytes;
 	UINT SizeInBytes;
 };

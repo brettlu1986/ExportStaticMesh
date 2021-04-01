@@ -15,11 +15,6 @@ void RHIInit()
 		GDynamicRHI->Init();
 }
 
-void RHIPostInit()
-{	
-	GDynamicRHI->PostInit();
-}
-
 void RHIExit()
 {
 	GDynamicRHI->ShutDown();
