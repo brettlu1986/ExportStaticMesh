@@ -1,4 +1,4 @@
-#include "Camera.h"
+#include "LCamera.h"
 #include "MathHelper.h"
 #include "D3D12Helper.h"
 #include <DirectXMath.h>
@@ -10,7 +10,7 @@ using namespace std;
 
 static const wstring CameraBinName = L"camera.bin";
 
-Camera::Camera()
+LCamera::LCamera()
 	:Position(0, 0, 0)
 	,InitialPosition(0,0,0)
 	,Yaw(0)
@@ -28,12 +28,12 @@ Camera::Camera()
 
 }
 
-Camera::~Camera()
+LCamera::~LCamera()
 {
 
 }
 
-void Camera::Init()
+void LCamera::Init()
 {
 	ReadCameraDataFromFile(CameraBinName.c_str());
 
@@ -66,13 +66,13 @@ void Camera::Init()
 		Theta += XM_PI * 2;
 }
 
-void Camera::OnResize(float WndWidth, float WndHeight)
+void LCamera::OnResize(float WndWidth, float WndHeight)
 {
 	Fov = XMConvertToRadians(CameraDatas.Fov);
 	AspectRatio = static_cast<float>(WndWidth) / WndHeight;
 }
 
-void Camera::ChangeViewMatrixByMouseEvent(float x, float y)
+void LCamera::ChangeViewMatrixByMouseEvent(float x, float y)
 {
 	Alpha += y;
 	Theta += x;
@@ -88,18 +88,18 @@ void Camera::ChangeViewMatrixByMouseEvent(float x, float y)
 	Position.z = XMVectorGetZ(V);
 }
 
-XMMATRIX Camera::GetViewMarix()
+XMMATRIX LCamera::GetViewMarix()
 {
 	return XMMatrixLookAtLH(XMLoadFloat3(&Position), XMLoadFloat3(&FocusPosition), XMLoadFloat3(&UpDirection));
 	 //XMMatrixLookToLH(XMLoadFloat3(&Position), XMLoadFloat3(&LookDirection), XMLoadFloat3(&UpDirection));
 }
 
-XMMATRIX Camera::GetProjectionMatrix(float NearPlane /*= 1.0f*/, float FarPlane /*= 1000.0f*/)
+XMMATRIX LCamera::GetProjectionMatrix(float NearPlane /*= 1.0f*/, float FarPlane /*= 1000.0f*/)
 {
 	return XMMatrixPerspectiveFovLH(Fov, AspectRatio, NearPlane, FarPlane);
 }
 
-void Camera::ReadCameraDataFromFile(LPCWSTR FileName)
+void LCamera::ReadCameraDataFromFile(LPCWSTR FileName)
 {
 	std::wstring FName = GetSaveDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);

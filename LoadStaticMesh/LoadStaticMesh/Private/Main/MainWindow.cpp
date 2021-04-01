@@ -2,7 +2,7 @@
 #include "MainWindow.h"
 #include "ApplicationMain.h"
 #include "InputClass.h"
-#include "GraphicRender.h"
+#include "Logic.h"
 #include <windowsx.h>
 
 ApplicationMain* MainWindow::MainApplication = nullptr;

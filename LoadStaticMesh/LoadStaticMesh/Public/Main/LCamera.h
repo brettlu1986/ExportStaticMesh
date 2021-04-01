@@ -15,11 +15,11 @@ struct CameraData {
 };
 #pragma pack(pop)
 
-class Camera
+class LCamera
 {
 public:
-	Camera();
-	~Camera();
+	LCamera();
+	~LCamera();
 
 	void Init();
 	void OnResize(float WndWidth, float WndHeight);

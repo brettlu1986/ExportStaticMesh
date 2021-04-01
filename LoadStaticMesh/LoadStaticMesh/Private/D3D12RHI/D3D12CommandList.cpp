@@ -101,7 +101,6 @@ void D3D12CommandList::DrawWithVertexAndIndexBufferView(RHIView* VertexBufferVie
 
 void D3D12CommandList::Clear()
 {
-	Close();
 	if(CurrentCommandAllocator)
 	{
 		CurrentCommandAllocator->Reset();

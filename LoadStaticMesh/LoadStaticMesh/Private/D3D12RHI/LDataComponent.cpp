@@ -1,6 +1,6 @@
-#include "Model.h"
+
+#include "LDataComponent.h"
 #include "D3D12Helper.h"
-#include "DDSTextureLoader.h"
 
 #include <iostream>
 #include <fstream>
@@ -10,50 +10,38 @@ using namespace std;
 
 static const wstring ModelBinName = L"mesh.bin";
 
-Model::Model()
-	:bUseHalfInt32(false)
-	,VertexBufferView(D3D12_VERTEX_BUFFER_VIEW())
-	,IndexBufferView(D3D12_INDEX_BUFFER_VIEW())
-	,IndiceSize(0)
-	,IndicesCount(0)
-	,VertexBufferSize(0)
+LDataComponent::LDataComponent()
+:bUseHalfInt32(false)
+, IndiceSize(0)
+, IndicesCount(0)
 {
 	ModelLocation = XMFLOAT3(0, 0, 0);
 }
 
-Model::~Model()
-{
-}
-
-void Model::Init()
+void LDataComponent::Init()
 {
 	ReadMeshDataFromFile(ModelBinName.c_str());
 }
 
-void Model::Destroy()
+void LDataComponent::Destroy()
 {
-	VertexBuffer.Reset();
-	VertexUploadBuffer.Reset();
-	IndexBuffer.Reset();
-	IndexBufferUpload.Reset();
-	TextureResource.Reset();
-	TextureResourceUpload.Reset();
+
 }
 
-void Model::SetModelLocation(XMFLOAT3 Location)
+void LDataComponent::SetModelLocation(XMFLOAT3 Location)
 {
 	ModelLocation = Location;
 }
 
-XMMATRIX Model::GetModelMatrix()
+XMMATRIX LDataComponent::GetModelMatrix()
 {
 	//calculate model matrix : scale * rotation * translation
 	//determine the watch target matrix, the M view, make no scale no rotation , so we dont need to multiply scale and rotation
 	 //XMMatrixRotationRollPitchYaw(0.f, 0.f, 0.f) * XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
-	 return XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
+	return XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
 }
 
-void Model::ReadMeshDataFromFile(LPCWSTR FileName)
+void LDataComponent::ReadMeshDataFromFile(LPCWSTR FileName)
 {
 	std::wstring FName = GetSaveDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
@@ -62,16 +50,16 @@ void Model::ReadMeshDataFromFile(LPCWSTR FileName)
 		return;
 	}
 
-	UINT MeshDataLen; 
+	UINT MeshDataLen;
 	Rf.read((char*)&MeshDataLen, sizeof(UINT));
 
 	MeshDatas.resize(MeshDataLen);
 	Rf.read((char*)MeshDatas.data(), MeshDataLen * sizeof(MeshData));
 	Rf.read((char*)&bUseHalfInt32, sizeof(UINT8));
 
-	UINT IndicesSize; 
+	UINT IndicesSize;
 	Rf.read((char*)&IndicesSize, sizeof(UINT));
-	
+
 	if (bUseHalfInt32)
 	{
 		UINT HalfSize = IndicesSize * sizeof(UINT16);
@@ -92,7 +80,7 @@ void Model::ReadMeshDataFromFile(LPCWSTR FileName)
 	}
 }
 
-void Model::GetPositionColorInput(std::vector<Vertex_PositionColor>& OutPut)
+void LDataComponent::GetPositionColorInput(std::vector<Vertex_PositionColor>& OutPut)
 {
 	if (MeshDatas.size() == 0)
 	{
@@ -108,7 +96,7 @@ void Model::GetPositionColorInput(std::vector<Vertex_PositionColor>& OutPut)
 	}
 }
 
-void Model::GetPositionTex0Input(std::vector<Vertex_PositionTex0>& OutPut)
+void LDataComponent::GetPositionTex0Input(std::vector<Vertex_PositionTex0>& OutPut)
 {
 	if (MeshDatas.size() == 0)
 	{
@@ -123,18 +111,3 @@ void Model::GetPositionTex0Input(std::vector<Vertex_PositionTex0>& OutPut)
 		OutPut.push_back({ MeshDatas[i].Position, MeshDatas[i].Tex0 });
 	}
 }
-
-void Model::CreateVertexBufferView()
-{
-	VertexBufferView.BufferLocation = VertexBuffer->GetGPUVirtualAddress();
-	VertexBufferView.StrideInBytes = sizeof(Vertex_PositionTex0);
-	VertexBufferView.SizeInBytes = VertexBufferSize;
-}
-
-void Model::CreateIndexBufferView()
-{
-	IndexBufferView.BufferLocation = IndexBuffer->GetGPUVirtualAddress();
-	IndexBufferView.Format = bUseHalfInt32 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
-	IndexBufferView.SizeInBytes = IndiceSize;
-}
-

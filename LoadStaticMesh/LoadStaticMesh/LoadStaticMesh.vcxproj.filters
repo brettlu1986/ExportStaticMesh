@@ -40,6 +40,12 @@
     <Filter Include="Source Files\RHI\Windows">
       <UniqueIdentifier>{4eb575d5-bf9d-4579-a669-1471b2a0e3d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Main\Model">
+      <UniqueIdentifier>{d11b8cb6-cc01-4871-abb8-383e10a2187d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Main\Model">
+      <UniqueIdentifier>{84e3b1fc-8acf-454c-b7e4-01ac5ab01b7e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -57,22 +63,13 @@
     <ClCompile Include="Private\Main\ApplicationMain.cpp">
       <Filter>Source Files\Main</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Main\Camera.cpp">
-      <Filter>Source Files\Main</Filter>
-    </ClCompile>
     <ClCompile Include="Private\Main\GraphicRender.cpp">
-      <Filter>Source Files\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Main\GraphicRenderModel.cpp">
       <Filter>Source Files\Main</Filter>
     </ClCompile>
     <ClCompile Include="Private\Main\InputClass.cpp">
       <Filter>Source Files\Main</Filter>
     </ClCompile>
     <ClCompile Include="Private\Main\MainWindow.cpp">
-      <Filter>Source Files\Main</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Main\Model.cpp">
       <Filter>Source Files\Main</Filter>
     </ClCompile>
     <ClCompile Include="Private\Main\stdafx.cpp">
@@ -111,11 +108,21 @@
     <ClCompile Include="Public\D3D12RHI\D3D12ResourceManager.cpp">
       <Filter>Source Files\D3D12RHI</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="Resource\shader_ps.hlsl">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
+    <ClCompile Include="Private\Main\LCamera.cpp">
+      <Filter>Source Files\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Main\AModel.cpp">
+      <Filter>Source Files\Main\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\D3D12RHI\LDataComponent.cpp">
+      <Filter>Source Files\Main\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\D3D12RHI\FRenderComponent.cpp">
+      <Filter>Source Files\Main\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Main\LogicLoadModel.cpp">
+      <Filter>Source Files\Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds">
@@ -135,25 +142,13 @@
     <ClInclude Include="Public\Main\ApplicationMain.h">
       <Filter>Header Files\Main</Filter>
     </ClInclude>
-    <ClInclude Include="Public\Main\Camera.h">
-      <Filter>Header Files\Main</Filter>
-    </ClInclude>
     <ClInclude Include="Public\Main\d3dx12.h">
-      <Filter>Header Files\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Main\GraphicRender.h">
-      <Filter>Header Files\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Main\GraphicRenderModel.h">
       <Filter>Header Files\Main</Filter>
     </ClInclude>
     <ClInclude Include="Public\Main\InputClass.h">
       <Filter>Header Files\Main</Filter>
     </ClInclude>
     <ClInclude Include="Public\Main\MainWindow.h">
-      <Filter>Header Files\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Main\Model.h">
       <Filter>Header Files\Main</Filter>
     </ClInclude>
     <ClInclude Include="Public\Main\stdafx.h">
@@ -198,10 +193,29 @@
     <ClInclude Include="Public\D3D12RHI\D3D12ResourceManager.h">
       <Filter>Header Files\D3D12RHI</Filter>
     </ClInclude>
+    <ClInclude Include="Public\Main\LCamera.h">
+      <Filter>Header Files\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Main\AModel.h">
+      <Filter>Header Files\Main\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Main\FRenderComponent.h">
+      <Filter>Header Files\Main\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Main\LDataComponent.h">
+      <Filter>Header Files\Main\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Main\Logic.h">
+      <Filter>Header Files\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Main\LogicLoadModel.h">
+      <Filter>Header Files\Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resource\shader_vs.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="Resource\shader_ps.hlsl" />
   </ItemGroup>
 </Project>

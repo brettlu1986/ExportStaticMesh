@@ -1,8 +1,8 @@
 #include "D3D12CommandListManager.h"
 #include "D3D12Device.h"
-#include "GraphicRender.h"
 #include "D3D12CommandListAllocator.h"
 #include "D3D12CommandList.h"
+#include "D3D12Helper.h"
 
 D3D12CommandListManager::D3D12CommandListManager(D3D12Device* InParent)
 :ParentDevice(InParent)

@@ -1,13 +1,13 @@
 
 #include "ApplicationMain.h"
-#include "GraphicRenderModel.h"
+#include "LogicLoadModel.h"
 #include "MainWindow.h"
 #include "InputClass.h"
 
 ApplicationMain::ApplicationMain()
 	:hMainInstance(nullptr)
 	,Window(nullptr)
-	,CurrentGraphic(nullptr)
+	,CurrentLogic(nullptr)
 	,Input(nullptr)
 {
 }
@@ -24,8 +24,8 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance, UINT Width, UINT Height, s
 	Window = new MainWindow();
 	Window->Initialize(this, Width, Height, Name);
 
-	CurrentGraphic = new GraphicRenderModel();
-	CurrentGraphic->Initialize(this, Width, Height);
+	CurrentLogic = new LogicLoadModel();
+	CurrentLogic->Initialize(this, Width, Height);
 
 	Input = new InputClass();
 	Input->Initialize(this);
@@ -41,8 +41,7 @@ void ApplicationMain::Run()
 		while (Window->Run())
 		{
 			Input->Update();
-			CurrentGraphic->Update();
-			CurrentGraphic->Render();
+			CurrentLogic->Update();
 		}
 	}
 }
@@ -56,11 +55,11 @@ void ApplicationMain::Destroy()
 		Window = nullptr;
 	}
 
-	if (CurrentGraphic)
+	if (CurrentLogic)
 	{
-		CurrentGraphic->Destroy();
-		delete CurrentGraphic;
-		CurrentGraphic = nullptr;
+		CurrentLogic->Destroy();
+		delete CurrentLogic;
+		CurrentLogic = nullptr;
 	}
 
 	if (Input)

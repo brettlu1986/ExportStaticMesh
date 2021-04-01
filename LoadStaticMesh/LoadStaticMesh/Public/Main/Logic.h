@@ -5,17 +5,17 @@
 #include "ApplicationMain.h"
 
 
-class GraphicRender
+class Logic
 {
 
 public:
-	GraphicRender();
-	~GraphicRender();
+	Logic();
+	~Logic();
 
 	void Initialize(ApplicationMain* Application, UINT Width, UINT Height);
 
 	virtual void OnInit() = 0;
-	virtual bool Render() = 0;
+	virtual bool Render(void* Param) = 0;
 	virtual void Update() = 0;
 	virtual void Destroy() = 0;
 

@@ -1,9 +1,9 @@
 
-#include "GraphicRender.h"
+#include "Logic.h"
 
 using namespace Microsoft::WRL;
 
-GraphicRender::GraphicRender()
+Logic::Logic()
 	:WndWidth(0)
 	,WndHeight(0)
 	,AspectRatio(0.f)
@@ -14,12 +14,12 @@ GraphicRender::GraphicRender()
 
 }
 
-GraphicRender::~GraphicRender()
+Logic::~Logic()
 {
 
 }
 
-void GraphicRender::Initialize(ApplicationMain* Application, UINT Width, UINT Height)
+void Logic::Initialize(ApplicationMain* Application, UINT Width, UINT Height)
 {
 	MainApplication = Application;
 	WndWidth = Width;
@@ -33,7 +33,7 @@ void GraphicRender::Initialize(ApplicationMain* Application, UINT Width, UINT He
 	OnInit();
 }
 
-std::wstring GraphicRender::GetAssetFullPath(LPCWSTR AssetName)
+std::wstring Logic::GetAssetFullPath(LPCWSTR AssetName)
 {
 	return AssetsPath + AssetName;
 }
@@ -41,7 +41,7 @@ std::wstring GraphicRender::GetAssetFullPath(LPCWSTR AssetName)
 // Helper function for acquiring the first available hardware adapter that supports Direct3D 12.
 // If no such adapter can be found, *ppAdapter will be set to nullptr.
 _Use_decl_annotations_
-void GraphicRender::GetHardwareAdapter(
+void Logic::GetHardwareAdapter(
 	IDXGIFactory1* pFactory,
 	IDXGIAdapter1** ppAdapter,
 	bool RequestHighPerformanceAdapter)
