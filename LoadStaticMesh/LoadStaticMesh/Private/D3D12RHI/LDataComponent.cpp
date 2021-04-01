@@ -14,6 +14,7 @@ LDataComponent::LDataComponent()
 :bUseHalfInt32(false)
 , IndiceSize(0)
 , IndicesCount(0)
+, IndicesData(nullptr)
 {
 	ModelLocation = XMFLOAT3(0, 0, 0);
 }
@@ -21,6 +22,10 @@ LDataComponent::LDataComponent()
 void LDataComponent::Init()
 {
 	ReadMeshDataFromFile(ModelBinName.c_str());
+
+	IndicesCount = bUseHalfInt32 ? static_cast<UINT>(MeshIndicesHalf.size()) : static_cast<UINT>(MeshIndices.size());
+	IndiceSize = bUseHalfInt32 ?IndicesCount * sizeof(UINT16) : IndicesCount * sizeof(UINT);
+	IndicesData = bUseHalfInt32 ? reinterpret_cast<void*>(MeshIndicesHalf.data()) : reinterpret_cast<void*>(MeshIndices.data());
 }
 
 void LDataComponent::Destroy()

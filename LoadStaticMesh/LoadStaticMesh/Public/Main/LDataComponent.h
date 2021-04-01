@@ -51,6 +51,7 @@ public:
 
 	UINT IndiceSize;
 	UINT IndicesCount;
+	void* IndicesData;
 
 	vector<UINT> MeshIndices;
 	vector<UINT16> MeshIndicesHalf;
@@ -63,6 +64,7 @@ private:
 
 	bool bUseHalfInt32;
 	XMFLOAT3 ModelLocation;
+	
 };
 
 

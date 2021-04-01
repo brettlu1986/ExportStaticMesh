@@ -135,16 +135,8 @@ void LogicLoadModel::RenderThreadInit()
 	ModelGeo.RenderComponent->RHIVertexBufferView = GDynamicRHI->RHICreateVertexBufferView(TriangleVertices.data(), StrideInByte, VertexBufferSize);
 
 	//create model index buffer view
-	ModelGeo.DataComponent->IndicesCount = ModelGeo.DataComponent->IsUseHalfInt32() ?
-		static_cast<UINT>(ModelGeo.DataComponent->MeshIndicesHalf.size()) : static_cast<UINT>(ModelGeo.DataComponent->MeshIndices.size());
-
-	ModelGeo.DataComponent->IndiceSize = ModelGeo.DataComponent->IsUseHalfInt32() ?
-		ModelGeo.DataComponent->IndicesCount * sizeof(UINT16) : ModelGeo.DataComponent->IndicesCount * sizeof(UINT);
-
-	const void* InitData = ModelGeo.DataComponent->IsUseHalfInt32() ?
-		reinterpret_cast<void*>(ModelGeo.DataComponent->MeshIndicesHalf.data()) : reinterpret_cast<void*>(ModelGeo.DataComponent->MeshIndices.data());
-
-	ModelGeo.RenderComponent->RHIIndexBufferView = GDynamicRHI->RHICreateIndexBufferView(InitData, ModelGeo.DataComponent->IndiceSize, ModelGeo.DataComponent->IndicesCount, ModelGeo.DataComponent->IsUseHalfInt32());
+	ModelGeo.RenderComponent->RHIIndexBufferView = GDynamicRHI->RHICreateIndexBufferView(ModelGeo.DataComponent->IndicesData, ModelGeo.DataComponent->IndiceSize,
+		ModelGeo.DataComponent->IndicesCount, ModelGeo.DataComponent->IsUseHalfInt32());
 
 	//create model shader resource view
 	ModelGeo.RenderComponent->RHIShaderResourceView = GDynamicRHI->RHICreateShaderResourceView(TexFileName);
@@ -213,6 +205,7 @@ bool LogicLoadModel::Render(void* Param)
 
 void LogicLoadModel::Destroy()
 {	
+	bDestroy = true;
 	RHIExit();
 	ModelGeo.Destroy();
 	ThisLogic = nullptr;
