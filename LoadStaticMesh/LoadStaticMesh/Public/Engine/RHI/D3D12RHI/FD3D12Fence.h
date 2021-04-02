@@ -1,16 +1,16 @@
 #pragma once
 
 #include "stdafx.h"
-#include "RHIResource.h"
+#include "FRHIResource.h"
 
 using namespace Microsoft::WRL;
 
-class D3D12Adapter;
-class D3D12Fence : public GenericFence
+class FD3D12Adapter;
+class FD3D12Fence : public FGenericFence
 {
 public:
-	D3D12Fence(const std::string& Name, D3D12Adapter* InParent);
-	virtual ~D3D12Fence();
+	FD3D12Fence(const std::string& Name, FD3D12Adapter* InParent);
+	virtual ~FD3D12Fence();
 	void ShutDown();
 	void Initialize();
 
@@ -20,7 +20,7 @@ public:
 	virtual bool IsFenceComplete() override;
 	
 private:
-	D3D12Adapter* ParentAdapter;
+	FD3D12Adapter* ParentAdapter;
 	ComPtr<ID3D12Fence> Fence;
 	HANDLE FenceEvent;
 	UINT64 FenceValue;

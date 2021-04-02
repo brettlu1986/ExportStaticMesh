@@ -1,12 +1,12 @@
 
-#include "D3D12CommandList.h"
-#include "D3D12Device.h"
-#include "D3D12CommandListAllocator.h"
-#include "D3D12Helper.h"
-#include "D3D12ResourceManager.h"
-#include "D3D12Resource.h"
+#include "FD3D12CommandList.h"
+#include "FD3D12Device.h"
+#include "FD3D12CommandListAllocator.h"
+#include "FD3D12Helper.h"
+#include "FD3D12ResourceManager.h"
+#include "FD3D12Resource.h"
 
-D3D12CommandList::D3D12CommandList(D3D12Device* ParentDevice, D3D12CommandListAllocator* CommandAllocator, UINT InCommandListIndex)
+FD3D12CommandList::FD3D12CommandList(FD3D12Device* ParentDevice, FD3D12CommandListAllocator* CommandAllocator, UINT InCommandListIndex)
 :ParentDevice(ParentDevice)
 ,CurrentCommandAllocator(CommandAllocator)
 {
@@ -16,30 +16,30 @@ D3D12CommandList::D3D12CommandList(D3D12Device* ParentDevice, D3D12CommandListAl
 	NAME_D3D12_OBJECT_WITHINDEX(CommandList, CommandListIndex);
 }
 
-D3D12CommandList::~D3D12CommandList()
+FD3D12CommandList::~FD3D12CommandList()
 {
 }
 
-void D3D12CommandList::Excute()
+void FD3D12CommandList::Excute()
 {
 	ID3D12CommandQueue* CommandQueue = ParentDevice->GetD3DCommandQueue();
 	ID3D12CommandList* CmdsLists[] = { CommandList.Get() };
 	CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
 }
 
-void D3D12CommandList::SetViewPort()
+void FD3D12CommandList::SetViewPort()
 {
 	CommandList->RSSetViewports(1, &(ParentDevice->GetParentAdapter()->ViewPort));
 }
 
-void D3D12CommandList::SetScissorRect()
+void FD3D12CommandList::SetScissorRect()
 {
 	CommandList->RSSetScissorRects(1, &(ParentDevice->GetParentAdapter()->ScissorRect));
 }
 
-void D3D12CommandList::TransitionToState(UINT TargetFrame, ETransitionState State)
+void FD3D12CommandList::TransitionToState(UINT TargetFrame, ETransitionState State)
 {
-	D3D12ResourceManager* SourceManager = ParentDevice->GetResourceManager();
+	FD3D12ResourceManager* SourceManager = ParentDevice->GetResourceManager();
 	switch (State)
 	{
 	case ETransitionState::STATE_RENDER:
@@ -59,10 +59,10 @@ void D3D12CommandList::TransitionToState(UINT TargetFrame, ETransitionState Stat
 	}
 }
 
-void D3D12CommandList::ClearRenderTargetAndDepthStencilView(UINT TargetFrame, RHIColor Color)
+void FD3D12CommandList::ClearRenderTargetAndDepthStencilView(UINT TargetFrame, FRHIColor Color)
 {
-	D3D12Adapter* Adapter = ParentDevice->GetParentAdapter();
-	D3D12ResourceManager* SourceManager = ParentDevice->GetResourceManager();
+	FD3D12Adapter* Adapter = ParentDevice->GetParentAdapter();
+	FD3D12ResourceManager* SourceManager = ParentDevice->GetResourceManager();
 	CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(Adapter->RtvHeap->GetCPUDescriptorHandleForHeapStart(), TargetFrame, SourceManager->GetRenderTarget()->GetRtvDescriptorSize());
 	float ClearColor[4] = { Color.R, Color.G, Color.B, Color.A };
 	CommandList->ClearRenderTargetView(RtvHandle, ClearColor, 0, nullptr);
@@ -71,10 +71,10 @@ void D3D12CommandList::ClearRenderTargetAndDepthStencilView(UINT TargetFrame, RH
 	CommandList->OMSetRenderTargets(1, &RtvHandle, true, &DsvHandle);
 }
 
-void D3D12CommandList::SetGraphicRootDescripterTable()
+void FD3D12CommandList::SetGraphicRootDescripterTable()
 {
-	D3D12Adapter* Adapter = ParentDevice->GetParentAdapter();
-	D3D12ResourceManager* SourceManager = ParentDevice->GetResourceManager();
+	FD3D12Adapter* Adapter = ParentDevice->GetParentAdapter();
+	FD3D12ResourceManager* SourceManager = ParentDevice->GetResourceManager();
 	D3DConstantBuffer* ConstantBuffer = SourceManager->GetConstantBuffer();
 	CommandList->SetGraphicsRootSignature(Adapter->GetRootSignature());
 	CommandList->SetPipelineState(Adapter->GetDefaultPiplineState());
@@ -89,7 +89,7 @@ void D3D12CommandList::SetGraphicRootDescripterTable()
 	CommandList->SetGraphicsRootDescriptorTable(2, Adapter->SamplerHeap->GetGPUDescriptorHandleForHeapStart());
 }
 
-void D3D12CommandList::DrawWithVertexAndIndexBufferView(RHIView* VertexBufferView, RHIView* IndexBufferView)
+void FD3D12CommandList::DrawWithVertexAndIndexBufferView(FRHIView* VertexBufferView, FRHIView* IndexBufferView)
 {
 	D3DVertexBufferView* VBufferView = (D3DVertexBufferView*)VertexBufferView;
 	D3DIndexBufferView* IBufferView = (D3DIndexBufferView*)IndexBufferView;
@@ -99,7 +99,7 @@ void D3D12CommandList::DrawWithVertexAndIndexBufferView(RHIView* VertexBufferVie
 	CommandList->DrawIndexedInstanced(IBufferView->GetIndicesCount(), 1, 0, 0, 0);
 }
 
-void D3D12CommandList::Clear()
+void FD3D12CommandList::Clear()
 {
 	if(CurrentCommandAllocator)
 	{
@@ -110,12 +110,12 @@ void D3D12CommandList::Clear()
 	CommandList.Reset();
 }
 
-void D3D12CommandList::Close()
+void FD3D12CommandList::Close()
 {
 	CommandList->Close();
 }
 
-void D3D12CommandList::Reset()
+void FD3D12CommandList::Reset()
 {
 	CurrentCommandAllocator->Reset();
 	CommandList->Reset(CurrentCommandAllocator->GetD3DCommandAllocator(), ParentDevice->GetParentAdapter()->GetDefaultPiplineState());

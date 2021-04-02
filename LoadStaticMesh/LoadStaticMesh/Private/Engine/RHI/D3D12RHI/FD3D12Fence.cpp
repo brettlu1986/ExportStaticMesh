@@ -1,12 +1,12 @@
 
 #include "stdafx.h"
-#include "D3D12Fence.h"
-#include "D3D12Adapter.h"
-#include "D3D12Device.h"
-#include "D3D12Helper.h"
+#include "FD3D12Fence.h"
+#include "FD3D12Adapter.h"
+#include "FD3D12Device.h"
+#include "FD3D12Helper.h"
 
-D3D12Fence::D3D12Fence(const std::string& Name, D3D12Adapter* InParent)
-	:GenericFence(Name)
+FD3D12Fence::FD3D12Fence(const std::string& Name, FD3D12Adapter* InParent)
+	:FGenericFence(Name)
 	,ParentAdapter(InParent)
 	,FenceValue(0)
 	,LastSignalFenceValue(0)
@@ -14,18 +14,18 @@ D3D12Fence::D3D12Fence(const std::string& Name, D3D12Adapter* InParent)
 	CreateFence();
 }
 
-D3D12Fence::~D3D12Fence()
+FD3D12Fence::~FD3D12Fence()
 {
 	
 }
 
-void D3D12Fence::ShutDown()
+void FD3D12Fence::ShutDown()
 {
 	Fence.Reset();
 	CloseHandle(FenceEvent);
 }
 
-void D3D12Fence::CreateFence()
+void FD3D12Fence::CreateFence()
 {
 	ID3D12Device* Device = ParentAdapter->GetD3DDevice();
 	ThrowIfFailed(Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&Fence)));
@@ -33,14 +33,14 @@ void D3D12Fence::CreateFence()
 	FenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
 
-void D3D12Fence::Initialize()
+void FD3D12Fence::Initialize()
 {
 
 }
 
-void D3D12Fence::SignalCurrentFence()
+void FD3D12Fence::SignalCurrentFence()
 {
-	D3D12Device* Device = ParentAdapter->GetDevice();
+	FD3D12Device* Device = ParentAdapter->GetDevice();
 	ID3D12CommandQueue* CommandQueue = Device->GetD3DCommandQueue();
 
 	UINT64 FenceNum = FenceValue;
@@ -56,12 +56,12 @@ void D3D12Fence::SignalCurrentFence()
 	
 }
 
-UINT64 D3D12Fence::GetCompletedValue()
+UINT64 FD3D12Fence::GetCompletedValue()
 {
 	return Fence->GetCompletedValue();
 }
 
-bool D3D12Fence::IsFenceComplete()
+bool FD3D12Fence::IsFenceComplete()
 {
 	return GetCompletedValue() == LastSignalFenceValue;
 }

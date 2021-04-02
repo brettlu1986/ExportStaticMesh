@@ -1,5 +1,5 @@
 #pragma once
-#include "DynamicRHI.h"
+#include "FDynamicRHI.h"
 
 extern void RHIInit();
 

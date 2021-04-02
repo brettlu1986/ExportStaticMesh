@@ -1,17 +1,17 @@
 #pragma once
 #include "stdafx.h"
-#include "RHIDef.h"
+#include "FRHIDef.h"
 
 using namespace Microsoft::WRL;
 
-class D3D12Device;
-class D3D12CommandListAllocator;
-class D3D12CommandList : public RHICommandList
+class FD3D12Device;
+class FD3D12CommandListAllocator;
+class FD3D12CommandList : public FRHICommandList
 {
 public:
-	D3D12CommandList(D3D12Device* ParentDevice, D3D12CommandListAllocator* CommandAllocator,UINT InCommandListIndex);
+	FD3D12CommandList(FD3D12Device* ParentDevice, FD3D12CommandListAllocator* CommandAllocator,UINT InCommandListIndex);
 
-	~D3D12CommandList();
+	~FD3D12CommandList();
 	ID3D12GraphicsCommandList* GetD3DCommandList() 
 	{
 		return CommandList.Get();
@@ -24,13 +24,13 @@ public:
 	virtual void SetViewPort() override;
 	virtual void SetScissorRect() override;
 	virtual void TransitionToState(UINT TargetFrame, ETransitionState State) override;
-	virtual void ClearRenderTargetAndDepthStencilView(UINT TargetFrame, RHIColor Color) override;
+	virtual void ClearRenderTargetAndDepthStencilView(UINT TargetFrame, FRHIColor Color) override;
 	virtual void SetGraphicRootDescripterTable() override;
-	virtual void DrawWithVertexAndIndexBufferView(RHIView* VertexBufferView, RHIView* IndexBufferView) override;
+	virtual void DrawWithVertexAndIndexBufferView(FRHIView* VertexBufferView, FRHIView* IndexBufferView) override;
 
 private: 
 	
-	D3D12Device* ParentDevice;
-	D3D12CommandListAllocator* CurrentCommandAllocator;
+	FD3D12Device* ParentDevice;
+	FD3D12CommandListAllocator* CurrentCommandAllocator;
 	ComPtr<ID3D12GraphicsCommandList> CommandList;
 };

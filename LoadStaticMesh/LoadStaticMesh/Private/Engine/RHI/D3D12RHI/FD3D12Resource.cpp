@@ -1,20 +1,20 @@
 
-#include "D3D12Resource.h"
-#include "D3D12Helper.h"
-#include "DDSTextureLoader.h"
+#include "FD3D12Resource.h"
+#include "FD3D12Helper.h"
+#include "FDDSTextureLoader.h"
 
-D3DResource::D3DResource()
+FD3DResource::FD3DResource()
 :ParentDevice(nullptr)
 {
 
 }
 
-D3DResource::D3DResource(D3D12Device* InDevice)
+FD3DResource::FD3DResource(FD3D12Device* InDevice)
 :ParentDevice(InDevice)
 {
 }
 
-D3DResource::~D3DResource()
+FD3DResource::~FD3DResource()
 {
 }
 
@@ -24,8 +24,8 @@ D3DRenderTarget::D3DRenderTarget()
 	ResourceName = "RenderTarget";
 }
 
-D3DRenderTarget::D3DRenderTarget(D3D12Device* InDevice)
-:D3DResource(InDevice)
+D3DRenderTarget::D3DRenderTarget(FD3D12Device* InDevice)
+:FD3DResource(InDevice)
 ,TargetCount(0)
 {
 	ResourceName = "RenderTarget";
@@ -79,8 +79,8 @@ D3DConstantBuffer::D3DConstantBuffer()
 	ResourceName = "ConstantBuffer";
 }
 
-D3DConstantBuffer::D3DConstantBuffer(D3D12Device* InDevice)
-	:D3DResource(InDevice)
+D3DConstantBuffer::D3DConstantBuffer(FD3D12Device* InDevice)
+	:FD3DResource(InDevice)
 	,pCbvDataBegin(nullptr)
 {	
 	ResourceName = "ConstantBuffer";
@@ -131,8 +131,8 @@ D3DDepthStencilBuffer::D3DDepthStencilBuffer()
 	ResourceName = "DepthStencilBuffer";
 }
 
-D3DDepthStencilBuffer::D3DDepthStencilBuffer(D3D12Device* InDevice)
-	:D3DResource(InDevice)
+D3DDepthStencilBuffer::D3DDepthStencilBuffer(FD3D12Device* InDevice)
+	:FD3DResource(InDevice)
 {
 	ResourceName = "DepthStencilBuffer";
 }
@@ -178,8 +178,8 @@ D3DVertexBuffer::D3DVertexBuffer()
 	ResourceName = "VertexBuffer";
 }
 
-D3DVertexBuffer::D3DVertexBuffer(D3D12Device* InDevice, const void* InitData,UINT StrideInByte, UINT ByteSize)
-	:D3DResource(InDevice)
+D3DVertexBuffer::D3DVertexBuffer(FD3D12Device* InDevice, const void* InitData,UINT StrideInByte, UINT ByteSize)
+	:FD3DResource(InDevice)
 	,StrideInByte(StrideInByte)
 	,ByteSize(ByteSize)
 {
@@ -213,8 +213,8 @@ D3DIndexBuffer::D3DIndexBuffer()
 	ResourceName = "IndexBuffer";
 }
 
-D3DIndexBuffer::D3DIndexBuffer(D3D12Device* InDevice, const void* InitData, UINT ByteSize, UINT IndicesCount, bool bUseHalfInt32)
-:D3DResource(InDevice)
+D3DIndexBuffer::D3DIndexBuffer(FD3D12Device* InDevice, const void* InitData, UINT ByteSize, UINT IndicesCount, bool bUseHalfInt32)
+:FD3DResource(InDevice)
 , bUseHalfInt32(bUseHalfInt32)
 , ByteSize(ByteSize)
 , IndicesCount(IndicesCount)
@@ -248,8 +248,8 @@ D3DShaderResource::D3DShaderResource()
 	ResourceName = "ShaderResource";
 }
 
-D3DShaderResource::D3DShaderResource(D3D12Device* InDevice, std::wstring TextureName)
-:D3DResource(InDevice)
+D3DShaderResource::D3DShaderResource(FD3D12Device* InDevice, std::wstring TextureName)
+:FD3DResource(InDevice)
 {
 	ResourceName = "ShaderResource";
 	ID3D12GraphicsCommandList* CommandList = ParentDevice->GetCommandListManager()->GetDefaultCommandList();
@@ -281,13 +281,13 @@ void D3DShaderResource::Initialize()
 
 
 D3DView::D3DView()
-:RHIView()
+:FRHIView()
 ,ParentDevice(nullptr)
 {
 }
 
-D3DView::D3DView(D3D12Device* InDevice, UINT64 InLocation, UINT InBytes, UINT InSizeBytes)
-: RHIView(InLocation, InBytes, InSizeBytes)
+D3DView::D3DView(FD3D12Device* InDevice, UINT64 InLocation, UINT InBytes, UINT InSizeBytes)
+: FRHIView(InLocation, InBytes, InSizeBytes)
 , ParentDevice(InDevice)
 {
 }
@@ -298,7 +298,7 @@ D3DView::~D3DView()
 }
 
 
-D3DConstantBufferView::D3DConstantBufferView(D3D12Device* InDevice, UINT64 InLocation, UINT InBytes, UINT InSizeBytes)
+D3DConstantBufferView::D3DConstantBufferView(FD3D12Device* InDevice, UINT64 InLocation, UINT InBytes, UINT InSizeBytes)
 :D3DView(InDevice, InLocation, InBytes, InSizeBytes)
 {
 	ComPtr<ID3D12DescriptorHeap> CbvSrvHeap = ParentDevice->GetParentAdapter()->CbvSrvHeap;
@@ -314,7 +314,7 @@ D3DConstantBufferView::~D3DConstantBufferView()
 }
 
 
-D3DDepthStencilView::D3DDepthStencilView(D3D12Device* InDevice, ID3D12Resource* DepthStencilBuffer)
+D3DDepthStencilView::D3DDepthStencilView(FD3D12Device* InDevice, ID3D12Resource* DepthStencilBuffer)
 {
 	ParentDevice = InDevice;
 
@@ -333,7 +333,7 @@ D3DDepthStencilView::~D3DDepthStencilView()
 }
 
 
-D3DVertexBufferView::D3DVertexBufferView(D3D12Device* InDevice, D3DVertexBuffer* InVertexBuffer)
+D3DVertexBufferView::D3DVertexBufferView(FD3D12Device* InDevice, D3DVertexBuffer* InVertexBuffer)
 {
 	ParentDevice = InDevice;
 	VertexBuffer = InVertexBuffer;
@@ -358,7 +358,7 @@ void D3DVertexBufferView::Clear()
 }
 
 
-D3DIndexBufferView::D3DIndexBufferView(D3D12Device* InDevice, D3DIndexBuffer* InIndexBuffer)
+D3DIndexBufferView::D3DIndexBufferView(FD3D12Device* InDevice, D3DIndexBuffer* InIndexBuffer)
 {
 	ParentDevice = InDevice;
 	IndexBuffer = InIndexBuffer;
@@ -383,7 +383,7 @@ void D3DIndexBufferView::Clear()
 	}
 }
 
-D3DShaderResourceView::D3DShaderResourceView(D3D12Device* InDevice, D3DShaderResource* InShaderResource)
+D3DShaderResourceView::D3DShaderResourceView(FD3D12Device* InDevice, D3DShaderResource* InShaderResource)
 {
 	ParentDevice = InDevice;
 	ShaderResource = InShaderResource;

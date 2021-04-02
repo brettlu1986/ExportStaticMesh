@@ -1,11 +1,11 @@
 
-#include "D3D12Adapter.h"
-#include "D3D12Device.h"
-#include "D3D12Fence.h"
-#include "D3D12Helper.h"
+#include "FD3D12Adapter.h"
+#include "FD3D12Device.h"
+#include "FD3D12Fence.h"
+#include "FD3D12Helper.h"
 #include "d3dx12.h"
 
-D3D12Adapter::D3D12Adapter(D3D12AdapterDesc& DescIn)
+FD3D12Adapter::FD3D12Adapter(D3D12AdapterDesc& DescIn)
 :OwningRHI(nullptr)
 ,Desc(DescIn)
 ,Device(nullptr)
@@ -13,7 +13,7 @@ D3D12Adapter::D3D12Adapter(D3D12AdapterDesc& DescIn)
 {
 }
 
-void D3D12Adapter::ShutDown()
+void FD3D12Adapter::ShutDown()
 {
 	if(Device)
 	{
@@ -41,7 +41,7 @@ void D3D12Adapter::ShutDown()
 	D3DDevice.Reset();
 }
 
-void D3D12Adapter::Initialize(D3D12DynamicRHI* RHI)
+void FD3D12Adapter::Initialize(D3D12DynamicRHI* RHI)
 {
 	OwningRHI = RHI;
 	InitializeDevices();
@@ -50,7 +50,7 @@ void D3D12Adapter::Initialize(D3D12DynamicRHI* RHI)
 	CreateSampler();
 }
 
-void D3D12Adapter::InitializeDevices()
+void FD3D12Adapter::InitializeDevices()
 {
 
 	if(!D3DDevice)
@@ -81,15 +81,15 @@ void D3D12Adapter::InitializeDevices()
 		}
 		NAME_D3D12_OBJECT(D3DDevice);
 		
-		Device = new D3D12Device(this);
+		Device = new FD3D12Device(this);
 		Device->Initialize();
 
-		Fence = new D3D12Fence("GPUFence", this);
+		Fence = new FD3D12Fence("GPUFence", this);
 		Fence->Initialize();
 	}
 }
 
-void D3D12Adapter::CreateDescriptorHeaps()
+void FD3D12Adapter::CreateDescriptorHeaps()
 {
 	//dsv
 	CreateDescripterHeap(1, D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
@@ -105,7 +105,7 @@ void D3D12Adapter::CreateDescriptorHeaps()
 	NAME_D3D12_OBJECT(SamplerHeap);
 }
 
-void D3D12Adapter::CreateSampler()
+void FD3D12Adapter::CreateSampler()
 {
 	D3D12_SAMPLER_DESC SamplerDesc = {};
 	SamplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
@@ -120,7 +120,7 @@ void D3D12Adapter::CreateSampler()
 	GetD3DDevice()->CreateSampler(&SamplerDesc, SamplerHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
-void D3D12Adapter::CreateDescripterHeap(UINT NumDescripters, D3D12_DESCRIPTOR_HEAP_TYPE Type, D3D12_DESCRIPTOR_HEAP_FLAGS Flag, UINT NodeMask, REFIID riid,
+void FD3D12Adapter::CreateDescripterHeap(UINT NumDescripters, D3D12_DESCRIPTOR_HEAP_TYPE Type, D3D12_DESCRIPTOR_HEAP_FLAGS Flag, UINT NodeMask, REFIID riid,
 	_COM_Outptr_  void** ppvHeap)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC Desc = {};
@@ -131,17 +131,17 @@ void D3D12Adapter::CreateDescripterHeap(UINT NumDescripters, D3D12_DESCRIPTOR_HE
 	ThrowIfFailed(GetD3DDevice()->CreateDescriptorHeap(&Desc, riid, ppvHeap));
 }
 
-void D3D12Adapter::SetViewPort(const RHIViewPort& InViewPort)
+void FD3D12Adapter::SetViewPort(const FRHIViewPort& InViewPort)
 {
 	ViewPort = CD3DX12_VIEWPORT(0.0f, 0.0f, InViewPort.Width, InViewPort.Height);
 }
 
-void D3D12Adapter::SetScissorRect(const RHIScissorRect& InRect)
+void FD3D12Adapter::SetScissorRect(const FRHIScissorRect& InRect)
 {
 	ScissorRect = CD3DX12_RECT(InRect.Left, InRect.Top, InRect.Right, InRect.Bottom);
 }
 
-void D3D12Adapter::CreateSwapChain(const RHISwapObjectInfo& SwapInfo)
+void FD3D12Adapter::CreateSwapChain(const FRHISwapObjectInfo& SwapInfo)
 {	
 	SwapChain.Reset();
 
@@ -174,7 +174,7 @@ void D3D12Adapter::CreateSwapChain(const RHISwapObjectInfo& SwapInfo)
 	NAME_D3D12_OBJECT(RtvHeap);
 }
 
-void D3D12Adapter::CreateSignature()
+void FD3D12Adapter::CreateSignature()
 {
 	CD3DX12_ROOT_PARAMETER RootParameters[3];
 	ZeroMemory(RootParameters, sizeof(RootParameters));
@@ -200,7 +200,7 @@ void D3D12Adapter::CreateSignature()
 	NAME_D3D12_OBJECT(RootSignature);
 }
 
-void D3D12Adapter::CreatePso(const RHIPiplineStateInitializer& PsoInitializer)
+void FD3D12Adapter::CreatePso(const FRHIPiplineStateInitializer& PsoInitializer)
 {
 	CD3DX12_RASTERIZER_DESC rasterizerStateDesc(D3D12_DEFAULT);
 	rasterizerStateDesc.FrontCounterClockwise = true;
@@ -210,29 +210,29 @@ void D3D12Adapter::CreatePso(const RHIPiplineStateInitializer& PsoInitializer)
 	ZeroMemory(&PsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
 
 	std::vector<D3D12_INPUT_ELEMENT_DESC> InputElementDescs;
-	auto ConvertRHIFormatToD3DFormat = [](RHI_DATA_FORMAT InFormat) -> DXGI_FORMAT
+	auto ConvertRHIFormatToD3DFormat = [](ERHI_DATA_FORMAT InFormat) -> DXGI_FORMAT
 	{
 		switch(InFormat)
 		{
-		case FORMAT_R32G32B32_FLOAT: { return DXGI_FORMAT_R32G32B32_FLOAT;}
-		case FORMAT_R32G32_FLOAT:{ return DXGI_FORMAT_R32G32_FLOAT;}
+		case ERHI_DATA_FORMAT::FORMAT_R32G32B32_FLOAT: { return DXGI_FORMAT_R32G32B32_FLOAT;}
+		case ERHI_DATA_FORMAT::FORMAT_R32G32_FLOAT:{ return DXGI_FORMAT_R32G32_FLOAT;}
 		default: {return DXGI_FORMAT_UNKNOWN;}
 		}
 	};
 
-	auto ConvertRHIClassificationToD3D = [](RHI_INPUT_CLASSIFICATION InClassify) ->D3D12_INPUT_CLASSIFICATION
+	auto ConvertRHIClassificationToD3D = [](ERHI_INPUT_CLASSIFICATION InClassify) ->D3D12_INPUT_CLASSIFICATION
 	{
 		switch (InClassify)
 		{
-		case INPUT_CLASSIFICATION_PER_VERTEX_DATA: { return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA; }
-		case INPUT_CLASSIFICATION_PER_INSTANCE_DATA: { return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA; }
+		case ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_VERTEX_DATA: { return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA; }
+		case ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_INSTANCE_DATA: { return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA; }
 		default: { return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;}
 		}
 	};
 
 	for(UINT i = 0; i < PsoInitializer.NumElements; i++)
 	{
-		RHIInputElement* RHIDesc = (RHIInputElement*)(PsoInitializer.pInpueElement + i);
+		FRHIInputElement* RHIDesc = (FRHIInputElement*)(PsoInitializer.pInpueElement + i);
 		D3D12_INPUT_ELEMENT_DESC D3DInputDesc;
 		D3DInputDesc.SemanticName = RHIDesc->SemanticName.c_str();
 		D3DInputDesc.SemanticIndex = RHIDesc->SemanticIndex;

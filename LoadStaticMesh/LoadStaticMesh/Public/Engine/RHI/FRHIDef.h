@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "RHIResource.h"
+#include "FRHIResource.h"
 
 typedef enum class EDynamicModuleType : UINT8
 {
@@ -15,7 +15,7 @@ typedef enum class ETransitionState : UINT8
 	STATE_PRESENT,
 } ETransitionState;
 
-struct RHIColor
+struct FRHIColor
 {
 	float R;
 	float G;
@@ -23,11 +23,11 @@ struct RHIColor
 	float A;
 };
 
-class RHICommandList
+class FRHICommandList
 {
 public:
-	RHICommandList() { CommandListIndex = 0;};
-	virtual ~RHICommandList() {};
+	FRHICommandList() { CommandListIndex = 0;};
+	virtual ~FRHICommandList() {};
 
 	virtual void Clear() = 0;
 	virtual void Close() = 0;
@@ -36,10 +36,10 @@ public:
 	virtual void SetViewPort() = 0;
 	virtual void SetScissorRect() = 0;
 	virtual void TransitionToState(UINT TargetFrame, ETransitionState State) = 0;
-	virtual void ClearRenderTargetAndDepthStencilView(UINT TargetFrame, RHIColor Color) = 0;
+	virtual void ClearRenderTargetAndDepthStencilView(UINT TargetFrame, FRHIColor Color) = 0;
 
 	virtual void SetGraphicRootDescripterTable() = 0;
-	virtual void DrawWithVertexAndIndexBufferView(RHIView* VertexBufferView, RHIView* IndexBufferView) = 0;
+	virtual void DrawWithVertexAndIndexBufferView(FRHIView* VertexBufferView, FRHIView* IndexBufferView) = 0;
 
 protected:
 	UINT CommandListIndex;

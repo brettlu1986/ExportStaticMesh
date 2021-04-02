@@ -1,16 +1,16 @@
 #pragma once
 
-#include "RHIResource.h"
-#include "RHIDef.h"
+#include "FRHIResource.h"
+#include "FRHIDef.h"
 class FRenderComponent
 {
 public:
 	FRenderComponent();
 	void Init();
 	void Destroy();
-	void Render(RHICommandList& CommandList);
+	void Render(FRHICommandList& CommandList);
 	
-	RHIView* RHIVertexBufferView;
-	RHIView* RHIIndexBufferView;
-	RHIView* RHIShaderResourceView;
+	FRHIView* RHIVertexBufferView;
+	FRHIView* RHIIndexBufferView;
+	FRHIView* RHIShaderResourceView;
 };

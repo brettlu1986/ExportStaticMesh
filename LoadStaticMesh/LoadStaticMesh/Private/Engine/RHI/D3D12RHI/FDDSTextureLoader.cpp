@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------------------
-// File: DDSTextureLoader.cpp
+// File: FDDSTextureLoader.cpp
 //
 // Functions for loading a DDS texture and creating a Direct3D 11 runtime resource for it
 //
@@ -23,7 +23,7 @@
 #include <memory>
 #include <wrl.h>
 
-#include "DDSTextureLoader.h" 
+#include "FDDSTextureLoader.h" 
 
 using namespace Microsoft::WRL;
 
@@ -1076,7 +1076,7 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device* d3dDevice,
                     }
                     else
                     {
-                        SetDebugObjectName(tex, "DDSTextureLoader");
+                        SetDebugObjectName(tex, "FDDSTextureLoader");
                         tex->Release();
                     }
                 }
@@ -1163,7 +1163,7 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device* d3dDevice,
                     }
                     else
                     {
-                        SetDebugObjectName(tex, "DDSTextureLoader");
+                        SetDebugObjectName(tex, "FDDSTextureLoader");
                         tex->Release();
                     }
                 }
@@ -1216,7 +1216,7 @@ static HRESULT CreateD3DResources( _In_ ID3D11Device* d3dDevice,
                     }
                     else
                     {
-                        SetDebugObjectName(tex, "DDSTextureLoader");
+                        SetDebugObjectName(tex, "FDDSTextureLoader");
                         tex->Release();
                     }
                 }
@@ -2110,12 +2110,12 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx( ID3D11Device* d3dDevice,
     {
         if (texture != 0 && *texture != 0)
         {
-            SetDebugObjectName(*texture, "DDSTextureLoader");
+            SetDebugObjectName(*texture, "FDDSTextureLoader");
         }
 
         if (textureView != 0 && *textureView != 0)
         {
-            SetDebugObjectName(*textureView, "DDSTextureLoader");
+            SetDebugObjectName(*textureView, "FDDSTextureLoader");
         }
 
         if ( alphaMode )

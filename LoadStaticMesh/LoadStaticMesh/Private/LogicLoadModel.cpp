@@ -8,7 +8,7 @@
 #include <iostream>
 #include "ApplicationMain.h"
 #include "d3dx12.h"
-#include "DDSTextureLoader.h"
+#include "FDDSTextureLoader.h"
 
 #include "FRHI.h"
 
@@ -16,7 +16,7 @@ using namespace Microsoft::WRL;
 using namespace DirectX;
 
 static const wstring TexFileName = L"Resource/T_Chair_M.dds";
-static const RHIColor ClearColor = { 0.690196097f, 0.768627524f, 0.870588303f, 1.000000000f };
+static const FRHIColor ClearColor = { 0.690196097f, 0.768627524f, 0.870588303f, 1.000000000f };
 
 LogicLoadModel* LogicLoadModel::ThisLogic = nullptr;
 
@@ -88,10 +88,10 @@ void LogicLoadModel::RenderThreadInit()
 {
 	//create adapter , create device, create command queue, create command manager, create command allocator/list
 	RHIInit();
-	RHIViewPort ViewPort = RHIViewPort(static_cast<float>(WndWidth), static_cast<float>(WndHeight));
+	FRHIViewPort ViewPort = FRHIViewPort(static_cast<float>(WndWidth), static_cast<float>(WndHeight));
 	GDynamicRHI->RHICreateViewPort(ViewPort);
 
-	RHISwapObjectInfo SwapObj = RHISwapObjectInfo(WndWidth, WndHeight, FrameCount, MainApplication->GetHwnd());
+	FRHISwapObjectInfo SwapObj = FRHISwapObjectInfo(WndWidth, WndHeight, FrameCount, MainApplication->GetHwnd());
 	GDynamicRHI->RHICreateSwapObject(SwapObj);
 
 	// load shader object
@@ -103,13 +103,13 @@ void LogicLoadModel::RenderThreadInit()
 	GDynamicRHI->RHIReadShaderDataFromFile(GetAssetFullPath(L"shader_vs.cso"), &pVs, &VsLen);
 	GDynamicRHI->RHIReadShaderDataFromFile(GetAssetFullPath(L"shader_ps.cso"), &pPs, &PsLen);
 
-	RHIInputElement RHIInputElementDescs[] =
+	FRHIInputElement RHIInputElementDescs[] =
 	{
-		{ "POSITION", 0, FORMAT_R32G32B32_FLOAT, 0, 0, INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, FORMAT_R32G32_FLOAT, 0, 12, INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "POSITION", 0, ERHI_DATA_FORMAT::FORMAT_R32G32B32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, ERHI_DATA_FORMAT::FORMAT_R32G32_FLOAT, 0, 12, ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	};
 
-	RHIPiplineStateInitializer RHIPsoInitializer = {
+	FRHIPiplineStateInitializer RHIPsoInitializer = {
 		RHIInputElementDescs,
 		_countof(RHIInputElementDescs),
 		pVs,
@@ -142,7 +142,7 @@ void LogicLoadModel::RenderThreadInit()
 	ModelGeo.RenderComponent->RHIShaderResourceView = GDynamicRHI->RHICreateShaderResourceView(TexFileName);
 
 	//first flush
-	RHICommandList& CommandList = GDynamicRHI->RHIGetCommandList(0);
+	FRHICommandList& CommandList = GDynamicRHI->RHIGetCommandList(0);
 	GDynamicRHI->RHIExcuteCommandList(CommandList);
 	GDynamicRHI->RHISignalCurrentFence();
 }
@@ -152,7 +152,7 @@ void LogicLoadModel::RenderThreadRun()
 	if (!GDynamicRHI->RHIIsFenceComplete())
 		return ;
 
-	RHICommandList& CommandList = GDynamicRHI->RHIGetCommandList(0);
+	FRHICommandList& CommandList = GDynamicRHI->RHIGetCommandList(0);
 	GDynamicRHI->RHIResetCommandList(CommandList);
 	GDynamicRHI->RHISetCurrentViewPortAndScissorRect(CommandList);
 

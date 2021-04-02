@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-class InputClass;
+class LInput;
 class Logic;
 class MainWindow;
 
@@ -18,7 +18,7 @@ public:
 
 	const HINSTANCE& GetHInstace() const { return hMainInstance; }
 	Logic* GetGraphicRender() const { return CurrentLogic; }
-	InputClass* GetInput() const { return Input; }
+	LInput* GetInput() const { return Input; }
 	MainWindow* GetWindow() const { return Window; }
 
 	const HWND& GetHwnd();
@@ -27,5 +27,5 @@ private:
 	HINSTANCE hMainInstance;
 	MainWindow* Window;
 	Logic* CurrentLogic;
-	InputClass* Input;
+	LInput* Input;
 };

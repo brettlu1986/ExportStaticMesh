@@ -1,6 +1,6 @@
 
 #include "FRHI.h"
-#include "D3D12RHIPrivate.h"
+#include "FD3D12RHIPrivate.h"
 
 EDynamicModuleType DynamicModuleType = EDynamicModuleType::MODULE_D3D12;
 

@@ -1,9 +1,9 @@
 
 
-#include "D3D12ResourceManager.h"
-#include "D3D12Resource.h"
+#include "FD3D12ResourceManager.h"
+#include "FD3D12Resource.h"
 
-D3D12ResourceManager::D3D12ResourceManager(D3D12Device* InParent)
+FD3D12ResourceManager::FD3D12ResourceManager(FD3D12Device* InParent)
 :ParentDevice(InParent)
 , RenderTarget(nullptr)
 , ConstantBuffer(nullptr)
@@ -11,17 +11,17 @@ D3D12ResourceManager::D3D12ResourceManager(D3D12Device* InParent)
 
 }
 
-D3D12ResourceManager::~D3D12ResourceManager()
+FD3D12ResourceManager::~FD3D12ResourceManager()
 {
 
 }
 
-void D3D12ResourceManager::Initialize()
+void FD3D12ResourceManager::Initialize()
 {
 
 }
 
-void D3D12ResourceManager::Clear()
+void FD3D12ResourceManager::Clear()
 {
 	if(RenderTarget)
 	{
@@ -64,7 +64,7 @@ void D3D12ResourceManager::Clear()
 	
 }
 
-void D3D12ResourceManager::CreateRenderTarget(UINT TargetCount)
+void FD3D12ResourceManager::CreateRenderTarget(UINT TargetCount)
 {
 	if(!RenderTarget)
 	{
@@ -74,7 +74,7 @@ void D3D12ResourceManager::CreateRenderTarget(UINT TargetCount)
 	}
 }
 
-void D3D12ResourceManager::CreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
+void FD3D12ResourceManager::CreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
 {
 	if(!ConstantBuffer)
 	{
@@ -86,7 +86,7 @@ void D3D12ResourceManager::CreateConstantBuffer(UINT BufferSize, void* pDataFrom
 	CreateConstantBufferView();
 }
 
-void D3D12ResourceManager::UpdateConstantBufferData(void* pUpdateData, UINT DataSize)
+void FD3D12ResourceManager::UpdateConstantBufferData(void* pUpdateData, UINT DataSize)
 {
 	if (ConstantBuffer)
 	{
@@ -94,7 +94,7 @@ void D3D12ResourceManager::UpdateConstantBufferData(void* pUpdateData, UINT Data
 	}
 }
 
-void D3D12ResourceManager::CreateDepthStencilBuffer(UINT Width, UINT Height)
+void FD3D12ResourceManager::CreateDepthStencilBuffer(UINT Width, UINT Height)
 {
 	if(!DepthStencilBuffer)
 	{
@@ -105,7 +105,7 @@ void D3D12ResourceManager::CreateDepthStencilBuffer(UINT Width, UINT Height)
 	CreateDepthStencilView();
 }
 
-void D3D12ResourceManager::CreateConstantBufferView()
+void FD3D12ResourceManager::CreateConstantBufferView()
 {
 	if(ConstantBuffer)
 	{
@@ -114,7 +114,7 @@ void D3D12ResourceManager::CreateConstantBufferView()
 	}
 }
 
-void D3D12ResourceManager::CreateDepthStencilView()
+void FD3D12ResourceManager::CreateDepthStencilView()
 {
 	if (DepthStencilBuffer)
 	{
@@ -123,29 +123,29 @@ void D3D12ResourceManager::CreateDepthStencilView()
 	}
 }
 
-RHIView* D3D12ResourceManager::CreateVertexBufferView(const void* InitData, UINT StrideInByte, UINT DataSize)
+FRHIView* FD3D12ResourceManager::CreateVertexBufferView(const void* InitData, UINT StrideInByte, UINT DataSize)
 {
 	D3DVertexBuffer* VertexBuffer = new D3DVertexBuffer(ParentDevice, InitData, StrideInByte, DataSize);
 	VertexBuffer->Initialize();
-	RHIView* View = new D3DVertexBufferView(ParentDevice, VertexBuffer);
+	FRHIView* View = new D3DVertexBufferView(ParentDevice, VertexBuffer);
 	VertexBufferViews.push_back(View);
 	return View;
 }
 
-RHIView* D3D12ResourceManager::CreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, bool bUseHalfInt32)
+FRHIView* FD3D12ResourceManager::CreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, bool bUseHalfInt32)
 {
 	D3DIndexBuffer* IndexBuffer = new D3DIndexBuffer(ParentDevice, InitData, DataSize, IndicesCount, bUseHalfInt32);
 	IndexBuffer->Initialize();
-	RHIView* View = new D3DIndexBufferView(ParentDevice, IndexBuffer);
+	FRHIView* View = new D3DIndexBufferView(ParentDevice, IndexBuffer);
 	IndexBufferViews.push_back(View);
 	return View;
 }
 
-RHIView* D3D12ResourceManager::CreateShaderResourceView(std::wstring TextureName)
+FRHIView* FD3D12ResourceManager::CreateShaderResourceView(std::wstring TextureName)
 {
 	D3DShaderResource* ShaderResource = new D3DShaderResource(ParentDevice, TextureName);
 	ShaderResource->Initialize();
-	RHIView* View = new D3DShaderResourceView(ParentDevice, ShaderResource);
+	FRHIView* View = new D3DShaderResourceView(ParentDevice, ShaderResource);
 	ShaderResourceViews.push_back(View);
 	return View;
 }

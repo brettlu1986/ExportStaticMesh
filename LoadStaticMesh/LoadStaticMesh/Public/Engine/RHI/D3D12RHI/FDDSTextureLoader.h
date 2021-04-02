@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------------------
-// File: DDSTextureLoader.h
+// File: FDDSTextureLoader.h
 //
 // Functions for loading a DDS texture and creating a Direct3D 11 runtime resource for it
 //

@@ -54,9 +54,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Public\Engine\RHI\D3D12RHI\D3D12ResourceManager.cpp">
-      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
-    </ClCompile>
     <ClCompile Include="Private\ApplicationMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -68,9 +65,6 @@
     </ClCompile>
     <ClCompile Include="Private\MainWindow.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Engine\Common\InputClass.cpp">
-      <Filter>Source Files\Engine\Common</Filter>
     </ClCompile>
     <ClCompile Include="Private\Engine\Common\LCamera.cpp">
       <Filter>Source Files\Engine\Common</Filter>
@@ -84,46 +78,52 @@
     <ClCompile Include="Private\Engine\Renderer\LDataComponent.cpp">
       <Filter>Source Files\Engine\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Engine\RHI\DynamicRHI.cpp">
-      <Filter>Source Files\Engine\RHI</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Engine\RHI\RHI.cpp">
-      <Filter>Source Files\Engine\RHI</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Engine\RHI\WindowsDynamicRHI.cpp">
-      <Filter>Source Files\Engine\RHI</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12Adapter.cpp">
-      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12CommandList.cpp">
-      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12CommandListAllocator.cpp">
-      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12CommandListManager.cpp">
-      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12Device.cpp">
-      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12Fence.cpp">
-      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12Resource.cpp">
-      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12RHIPublic.cpp">
-      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\DDSTextureLoader.cpp">
-      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
-    </ClCompile>
     <ClCompile Include="Private\Engine\Util\MathHelper.cpp">
       <Filter>Source Files\Engine\Util</Filter>
     </ClCompile>
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\stdafx.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\LInput.cpp">
+      <Filter>Source Files\Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\RHI\FDynamicRHI.cpp">
+      <Filter>Source Files\Engine\RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\RHI\FRHI.cpp">
+      <Filter>Source Files\Engine\RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\RHI\FWindowsDynamicRHI.cpp">
+      <Filter>Source Files\Engine\RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Adapter.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12CommandList.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12CommandListAllocator.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12CommandListManager.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Device.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Fence.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Resource.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12ResourceManager.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FDDSTextureLoader.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12RHIPublic.cpp">
       <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
   </ItemGroup>
@@ -156,9 +156,6 @@
     <ClInclude Include="Public\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Public\Engine\Common\InputClass.h">
-      <Filter>Header Files\Engine\Common</Filter>
-    </ClInclude>
     <ClInclude Include="Public\Engine\Common\LCamera.h">
       <Filter>Header Files\Engine\Common</Filter>
     </ClInclude>
@@ -171,51 +168,6 @@
     <ClInclude Include="Public\Engine\Renderer\LDataComponent.h">
       <Filter>Header Files\Engine\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\DynamicRHI.h">
-      <Filter>Header Files\Engine\RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\RHI.h">
-      <Filter>Header Files\Engine\RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\RHIDef.h">
-      <Filter>Header Files\Engine\RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\RHIResource.h">
-      <Filter>Header Files\Engine\RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12Adapter.h">
-      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12CommandList.h">
-      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12CommandListAllocator.h">
-      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12CommandListManager.h">
-      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12Device.h">
-      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12Fence.h">
-      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12Helper.h">
-      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12Resource.h">
-      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12ResourceManager.h">
-      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12RHIPrivate.h">
-      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\DDSTextureLoader.h">
-      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
-    </ClInclude>
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\d3dx12.h">
       <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
     </ClInclude>
@@ -223,6 +175,54 @@
       <Filter>Header Files\Engine\Util</Filter>
     </ClInclude>
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\stdafx.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\LInput.h">
+      <Filter>Header Files\Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\FDynamicRHI.h">
+      <Filter>Header Files\Engine\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\FRHI.h">
+      <Filter>Header Files\Engine\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\FRHIDef.h">
+      <Filter>Header Files\Engine\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\FRHIResource.h">
+      <Filter>Header Files\Engine\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Adapter.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12CommandList.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12CommandListAllocator.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12CommandListManager.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Device.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Fence.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Helper.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Resource.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FDDSTextureLoader.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12ResourceManager.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12RHIPrivate.h">
       <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
     </ClInclude>
   </ItemGroup>

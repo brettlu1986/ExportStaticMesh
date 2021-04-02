@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
-#include "DynamicRHI.h"
+#include "FDynamicRHI.h"
 
 using namespace Microsoft::WRL;
 
@@ -30,14 +30,14 @@ struct D3D12AdapterDesc
 };
 
 class D3D12DynamicRHI; 
-class D3D12Fence;
-class D3D12Device;
+class FD3D12Fence;
+class FD3D12Device;
 
-class D3D12Adapter
+class FD3D12Adapter
 {
 public:
-	D3D12Adapter(D3D12AdapterDesc& DescIn);
-	virtual ~D3D12Adapter() { }
+	FD3D12Adapter(D3D12AdapterDesc& DescIn);
+	virtual ~FD3D12Adapter() { }
 
 	void ShutDown();
 
@@ -47,8 +47,8 @@ public:
 	IDXGIAdapter1* GetAdapter() const { return DxgiAdapter.Get(); }
 
 	ID3D12Device* GetD3DDevice() const { return D3DDevice.Get(); }
-	D3D12Device* GetDevice() const { return Device;}
-	D3D12Fence* GetFence() const {return Fence;}
+	FD3D12Device* GetDevice() const { return Device;}
+	FD3D12Fence* GetFence() const {return Fence;}
 
 	ID3D12RootSignature* GetRootSignature() const {
 		return RootSignature.Get();
@@ -59,11 +59,11 @@ public:
 	}
 
 
-	void SetViewPort(const RHIViewPort& InViewPort);
-	void SetScissorRect(const RHIScissorRect& InRect);
+	void SetViewPort(const FRHIViewPort& InViewPort);
+	void SetScissorRect(const FRHIScissorRect& InRect);
 
-	void CreateSwapChain(const RHISwapObjectInfo& SwapInfo);
-	void CreatePso(const RHIPiplineStateInitializer& PsoInitializer);
+	void CreateSwapChain(const FRHISwapObjectInfo& SwapInfo);
+	void CreatePso(const FRHIPiplineStateInitializer& PsoInitializer);
 
 	ID3D12PipelineState* GetDefaultPiplineState() 
 	{
@@ -91,8 +91,8 @@ private:
 	D3D12AdapterDesc Desc;
 	D3D12DynamicRHI* OwningRHI;
 
-	D3D12Fence* Fence;
-	D3D12Device* Device;
+	FD3D12Fence* Fence;
+	FD3D12Device* Device;
 	ComPtr<ID3D12Device> D3DDevice;
 	ComPtr<IDXGIFactory4> DxgiFactory;
 	ComPtr<IDXGIAdapter1> DxgiAdapter;

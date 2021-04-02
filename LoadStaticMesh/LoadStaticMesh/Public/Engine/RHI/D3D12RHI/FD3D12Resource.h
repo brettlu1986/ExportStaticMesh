@@ -1,30 +1,30 @@
 #pragma once
 
-#include "RHIResource.h"
-#include "D3D12Device.h"
+#include "FRHIResource.h"
+#include "FD3D12Device.h"
 #include "d3dx12.h"
 
 using namespace Microsoft::WRL;
 
-class D3DResource : public RHIResource
+class FD3DResource : public FRHIResource
 {
 public: 
-	D3DResource();
-	D3DResource(D3D12Device* InDevice);
-	virtual ~D3DResource();
+	FD3DResource();
+	FD3DResource(FD3D12Device* InDevice);
+	virtual ~FD3DResource();
 
 	virtual void Destroy() = 0;
 	virtual void Initialize() = 0;
 	
 protected:
-	D3D12Device* ParentDevice;
+	FD3D12Device* ParentDevice;
 };
 
-class D3DRenderTarget : public D3DResource
+class D3DRenderTarget : public FD3DResource
 {
 public: 
 	D3DRenderTarget();
-	D3DRenderTarget(D3D12Device* InDevice);
+	D3DRenderTarget(FD3D12Device* InDevice);
 	virtual ~D3DRenderTarget();
 
 	virtual void Destroy() override;
@@ -51,11 +51,11 @@ private:
 };
 
 
-class D3DConstantBuffer :public D3DResource
+class D3DConstantBuffer :public FD3DResource
 {
 public:
 	D3DConstantBuffer();
-	D3DConstantBuffer(D3D12Device* InDevice);
+	D3DConstantBuffer(FD3D12Device* InDevice);
 	virtual ~D3DConstantBuffer();
 
 	virtual void Destroy() override;
@@ -86,11 +86,11 @@ private:
 };
 
 
-class D3DDepthStencilBuffer :public D3DResource
+class D3DDepthStencilBuffer :public FD3DResource
 {
 public:
 	D3DDepthStencilBuffer();
-	D3DDepthStencilBuffer(D3D12Device* InDevice);
+	D3DDepthStencilBuffer(FD3D12Device* InDevice);
 	virtual ~D3DDepthStencilBuffer();
 
 	virtual void Destroy() override;
@@ -108,11 +108,11 @@ private:
 	ComPtr<ID3D12Resource> DepthStencilBuffer;
 };
 
-class D3DVertexBuffer :public D3DResource
+class D3DVertexBuffer :public FD3DResource
 {
 public:
 	D3DVertexBuffer();
-	D3DVertexBuffer(D3D12Device* InDevice, const void* InitData, UINT StrideInByte, UINT ByteSize);
+	D3DVertexBuffer(FD3D12Device* InDevice, const void* InitData, UINT StrideInByte, UINT ByteSize);
 	virtual ~D3DVertexBuffer();
 
 	virtual void Destroy() override;
@@ -138,11 +138,11 @@ private:
 	UINT ByteSize;
 };
 
-class D3DIndexBuffer :public D3DResource
+class D3DIndexBuffer :public FD3DResource
 {
 public:
 	D3DIndexBuffer();
-	D3DIndexBuffer(D3D12Device* InDevice, const void* InitData, UINT ByteSize,UINT IndicesCount, bool bUseHalfInt32);
+	D3DIndexBuffer(FD3D12Device* InDevice, const void* InitData, UINT ByteSize,UINT IndicesCount, bool bUseHalfInt32);
 	virtual ~D3DIndexBuffer();
 
 	virtual void Destroy() override;
@@ -175,11 +175,11 @@ private:
 };
 
 
-class D3DShaderResource :public D3DResource
+class D3DShaderResource :public FD3DResource
 {
 public:
 	D3DShaderResource();
-	D3DShaderResource(D3D12Device* InDevice, std::wstring TextureName);
+	D3DShaderResource(FD3D12Device* InDevice, std::wstring TextureName);
 	virtual ~D3DShaderResource();
 
 	virtual void Destroy() override;
@@ -205,20 +205,20 @@ private:
 
 
 /// ////////////
-class D3DView : public RHIView
+class D3DView : public FRHIView
 {
 public:
 	D3DView();
-	D3DView(D3D12Device* InDevice, UINT64 InLocation, UINT InBytes, UINT InSizeBytes);
+	D3DView(FD3D12Device* InDevice, UINT64 InLocation, UINT InBytes, UINT InSizeBytes);
 	virtual ~D3DView();
 protected:
-	D3D12Device* ParentDevice;
+	FD3D12Device* ParentDevice;
 };
 
 class D3DConstantBufferView : public D3DView
 {
 public:
-	D3DConstantBufferView(D3D12Device* InDevice, UINT64 InLocation, UINT InBytes, UINT InSizeBytes);
+	D3DConstantBufferView(FD3D12Device* InDevice, UINT64 InLocation, UINT InBytes, UINT InSizeBytes);
 	virtual ~D3DConstantBufferView();
 
 };
@@ -226,14 +226,14 @@ public:
 class D3DDepthStencilView : public D3DView
 {
 public:
-	D3DDepthStencilView(D3D12Device* InDevice, ID3D12Resource* DepthStencilBuffer);
+	D3DDepthStencilView(FD3D12Device* InDevice, ID3D12Resource* DepthStencilBuffer);
 	virtual ~D3DDepthStencilView();
 };
 
 class D3DVertexBufferView : public D3DView
 {
 public:
-	D3DVertexBufferView(D3D12Device* InDevice, D3DVertexBuffer* InVertexBuffer);
+	D3DVertexBufferView(FD3D12Device* InDevice, D3DVertexBuffer* InVertexBuffer);
 	virtual ~D3DVertexBufferView();
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const
@@ -250,7 +250,7 @@ private:
 class D3DIndexBufferView : public D3DView
 {
 public:
-	D3DIndexBufferView(D3D12Device* InDevice, D3DIndexBuffer* InIndexBuffer);
+	D3DIndexBufferView(FD3D12Device* InDevice, D3DIndexBuffer* InIndexBuffer);
 	virtual ~D3DIndexBufferView();
 
 	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const
@@ -272,7 +272,7 @@ private:
 class D3DShaderResourceView : public D3DView
 {
 public:
-	D3DShaderResourceView(D3D12Device* InDevice, D3DShaderResource* InShaderResource);
+	D3DShaderResourceView(FD3D12Device* InDevice, D3DShaderResource* InShaderResource);
 	virtual ~D3DShaderResourceView();
 
 	virtual void Clear() override;

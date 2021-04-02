@@ -2,10 +2,10 @@
 
 #include "stdafx.h"
 
-class GenericFence
+class FGenericFence
 {
 public: 
-	GenericFence(const std::string& Name)
+	FGenericFence(const std::string& Name)
 	:FenceName(Name)
 	{}
 
@@ -18,15 +18,15 @@ protected:
 	std::string FenceName;
 };
 
-class RHIResource
+class FRHIResource
 {
 public:
-	RHIResource() { InitData = nullptr; };
-	RHIResource(const std::string& InResourceName, void* InData)
+	FRHIResource() { InitData = nullptr; };
+	FRHIResource(const std::string& InResourceName, void* InData)
 	:ResourceName(InResourceName)
 	,InitData(InData)
 	{}
-	virtual ~RHIResource() {};
+	virtual ~FRHIResource() {};
 
 protected:
 	void* InitData;
@@ -34,21 +34,21 @@ protected:
 };
 
 
-class RHIView
+class FRHIView
 {
 public:
-	RHIView()
+	FRHIView()
 	:Location(0)
 	,StrideInBytes(0)
 	,SizeInBytes(0)
 	{  };
-	RHIView(UINT64 InLocation, UINT InBytes, UINT InSizeBytes)
+	FRHIView(UINT64 InLocation, UINT InBytes, UINT InSizeBytes)
 	:Location(InLocation)
 	, StrideInBytes(InBytes)
 	, SizeInBytes(InSizeBytes)
 	{
 	}
-	virtual ~RHIView() {};
+	virtual ~FRHIView() {};
 
 	virtual void Clear() {};
 

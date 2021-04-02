@@ -3,11 +3,11 @@
 
 using namespace Microsoft::WRL;
 
-class D3D12CommandListAllocator
+class FD3D12CommandListAllocator
 {
 public:
-	D3D12CommandListAllocator(ID3D12Device* InDevice, UINT InAllocatorIndex);
-	~D3D12CommandListAllocator();
+	FD3D12CommandListAllocator(ID3D12Device* InDevice, UINT InAllocatorIndex);
+	~FD3D12CommandListAllocator();
 
 	inline void Reset() { CommandAllocator->Reset(); }
 

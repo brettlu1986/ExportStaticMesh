@@ -8,7 +8,7 @@ FRenderComponent::FRenderComponent()
 {
 }
 
-void FRenderComponent::Render(RHICommandList& CommandList)
+void FRenderComponent::Render(FRHICommandList& CommandList)
 {
 	GDynamicRHI->RHIDrawWithVertexAndIndexBufferView(CommandList, RHIVertexBufferView, RHIIndexBufferView);
 }

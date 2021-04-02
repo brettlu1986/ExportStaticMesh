@@ -4,11 +4,11 @@
 
 class ApplicationMain;
 
-class InputClass
+class LInput
 {
 public: 
-	InputClass();
-	~InputClass();
+	LInput();
+	~LInput();
 
 	void Initialize(ApplicationMain* application);
 	bool Update();
