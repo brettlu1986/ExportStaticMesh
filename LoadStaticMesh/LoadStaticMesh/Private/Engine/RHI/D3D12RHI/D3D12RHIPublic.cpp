@@ -19,7 +19,7 @@ bool D3D12DynamicRHIModule::IsSupported()
 	return ChosenAdapter != nullptr;
 }
 
-DynamicRHI* D3D12DynamicRHIModule::CreateRHI()
+FDynamicRHI* D3D12DynamicRHIModule::CreateRHI()
 {
 	GD3D12RHI = new D3D12DynamicRHI(ChosenAdapter);
 	return GD3D12RHI;

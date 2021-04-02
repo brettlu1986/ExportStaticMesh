@@ -1,8 +1,8 @@
 
-#include "RHI.h"
-#include "DynamicRHI.h"
+#include "FRHI.h"
+#include "FDynamicRHI.h"
 
-DynamicRHI* GDynamicRHI = nullptr;
+FDynamicRHI* GDynamicRHI = nullptr;
 
 void RHIInit()
 {

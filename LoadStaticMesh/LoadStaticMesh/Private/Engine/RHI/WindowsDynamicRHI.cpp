@@ -1,5 +1,5 @@
 
-#include "RHI.h"
+#include "FRHI.h"
 #include "D3D12RHIPrivate.h"
 
 EDynamicModuleType DynamicModuleType = EDynamicModuleType::MODULE_D3D12;
@@ -24,9 +24,9 @@ static IDynamicRHIModule* LoadDynamicRHIModule()
 	return DynamicRHIModule;
 }
 
-DynamicRHI* PlatformCreateDynamicRHI()
+FDynamicRHI* PlatformCreateDynamicRHI()
 {
-	DynamicRHI* DyRHI = nullptr;
+	FDynamicRHI* DyRHI = nullptr;
 
 	IDynamicRHIModule* DynamicRHIModule = LoadDynamicRHIModule();
 	if(DynamicRHIModule)

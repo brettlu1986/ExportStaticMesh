@@ -1,5 +1,5 @@
 #include "FRenderComponent.h"
-#include "RHI.h"
+#include "FRHI.h"
 
 FRenderComponent::FRenderComponent()
 :RHIVertexBufferView(nullptr)

@@ -1,7 +1,7 @@
 
 #include "MainWindow.h"
 #include "ApplicationMain.h"
-#include "InputClass.h"
+#include "LInput.h"
 #include "Logic.h"
 #include <windowsx.h>
 

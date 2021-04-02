@@ -10,7 +10,7 @@
 #include "d3dx12.h"
 #include "DDSTextureLoader.h"
 
-#include "RHI.h"
+#include "FRHI.h"
 
 using namespace Microsoft::WRL;
 using namespace DirectX;

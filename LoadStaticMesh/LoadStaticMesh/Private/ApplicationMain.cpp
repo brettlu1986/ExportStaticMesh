@@ -2,7 +2,7 @@
 #include "ApplicationMain.h"
 #include "LogicLoadModel.h"
 #include "MainWindow.h"
-#include "InputClass.h"
+#include "LInput.h"
 
 ApplicationMain::ApplicationMain()
 	:hMainInstance(nullptr)
@@ -27,7 +27,7 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance, UINT Width, UINT Height, s
 	CurrentLogic = new LogicLoadModel();
 	CurrentLogic->Initialize(this, Width, Height);
 
-	Input = new InputClass();
+	Input = new LInput();
 	Input->Initialize(this);
 	
 	return true;
