@@ -66,12 +66,6 @@
     <ClCompile Include="Private\Engine\Common\LCamera.cpp">
       <Filter>Source Files\Engine\Common</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Engine\Renderer\FRenderComponent.cpp">
-      <Filter>Source Files\Engine\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Engine\Renderer\LDataComponent.cpp">
-      <Filter>Source Files\Engine\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Private\Engine\Util\MathHelper.cpp">
       <Filter>Source Files\Engine\Util</Filter>
     </ClCompile>
@@ -120,8 +114,29 @@
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12RHIPublic.cpp">
       <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\FIndexBuffer.cpp">
+      <Filter>Source Files\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\FRenderer.cpp">
+      <Filter>Source Files\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\FScene.cpp">
+      <Filter>Source Files\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\FTexture.cpp">
+      <Filter>Source Files\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\FVertexBuffer.cpp">
+      <Filter>Source Files\Engine\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="Private\Engine\Renderer\FMesh.cpp">
       <Filter>Source Files\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\FSceneRenderer.cpp">
+      <Filter>Source Files\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\LAssetDataLoader.cpp">
+      <Filter>Source Files\Engine\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -149,12 +164,6 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\LCamera.h">
       <Filter>Header Files\Engine\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\Renderer\FRenderComponent.h">
-      <Filter>Header Files\Engine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\Renderer\LDataComponent.h">
-      <Filter>Header Files\Engine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\d3dx12.h">
       <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
@@ -213,11 +222,35 @@
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12RHIPrivate.h">
       <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
     </ClInclude>
+    <ClInclude Include="Public\LogicStaticModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\FVertexBuffer.h">
+      <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\FTexture.h">
+      <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\FIndexBuffer.h">
+      <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\FRenderer.h">
+      <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\FScene.h">
+      <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\FDefine.h">
+      <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\LAssetDataLoader.h">
+      <Filter>Header Files\Engine\Common</Filter>
+    </ClInclude>
     <ClInclude Include="Public\Engine\Renderer\FMesh.h">
       <Filter>Header Files\Engine\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Public\LogicStaticModel.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Public\Engine\Renderer\FSceneRenderer.h">
+      <Filter>Header Files\Engine\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

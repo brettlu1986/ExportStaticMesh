@@ -2,6 +2,7 @@
 
 #include "FRHIDef.h"
 #include "FRHIResource.h"
+#include "FDefine.h"
 
 struct FRHIViewPort
 {
@@ -107,7 +108,7 @@ public:
 	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) = 0;
 	virtual void RHICreateDepthStencilBuffer(UINT Width, UINT Height) = 0;
 	virtual FRHIView* RHICreateVertexBufferView(const void* InitData, UINT StrideInByte, UINT DataSize) = 0;
-	virtual FRHIView* RHICreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, bool bUseHalfInt32) = 0;
+	virtual FRHIView* RHICreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, E_INDEX_TYPE IndexType) = 0;
 	virtual FRHIView* RHICreateShaderResourceView(std::wstring TextureName) = 0;
 	virtual FRHICommandList& RHIGetCommandList(UINT Index) = 0;
 	virtual void RHIExcuteCommandList(FRHICommandList& CommandList) = 0;

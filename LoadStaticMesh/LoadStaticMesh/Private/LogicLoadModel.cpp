@@ -12,10 +12,11 @@
 #include "FD3D12Helper.h"
 #include "FRHI.h"
 
+#include "LAssetDataLoader.h"
+
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
-static const wstring TexFileName = L"Resource/T_Chair_M.dds";
 static const FRHIColor ClearColor = { 0.690196097f, 0.768627524f, 0.870588303f, 1.000000000f };
 
 LogicStaticModel* LogicStaticModel::ThisLogic = nullptr;
@@ -66,7 +67,9 @@ void LogicStaticModel::Initialize(ApplicationMain* Application, UINT Width, UINT
 void LogicStaticModel::OnInit()
 {
 	InitCamera();
-	InitModel();
+	InitModelScene();
+
+	//InitModel();
 	CreateRenderThread();
 }
 
@@ -93,20 +96,18 @@ void LogicStaticModel::CreateRenderThread()
 	ResumeThread(ThreadParam.ThisThread);
 }
 
-
 void LogicStaticModel::Update()
 {
 	DWORD Ret = WaitForSingleObject(RenderEnd, INFINITE);
 	if (Ret - WAIT_OBJECT_0 == 0)
 	{
 		//update matrix
-		XMMATRIX WorldViewProj = ModelGeo.DataComponent->GetModelMatrix() * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
+		XMMATRIX WorldViewProj = Mesh.GetModelMatrix() * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
 		//Update the constant buffer with the latest WorldViewProj matrix.
 		XMStoreFloat4x4(&ObjectConstant.WorldViewProj, XMMatrixTranspose(WorldViewProj));
 		GDynamicRHI->RHIUpdateConstantBuffer(&ObjectConstant, sizeof(ObjectConstant));
 		SetEvent(RenderBegin);
 	}
-	
 }
 
 void LogicStaticModel::RenderThreadInit()
@@ -115,19 +116,15 @@ void LogicStaticModel::RenderThreadInit()
 	RHIInit();
 	FRHIViewPort ViewPort = FRHIViewPort(static_cast<float>(WndWidth), static_cast<float>(WndHeight));
 	GDynamicRHI->RHICreateViewPort(ViewPort);
-
 	FRHISwapObjectInfo SwapObj = FRHISwapObjectInfo(WndWidth, WndHeight, FrameCount, MainApplication->GetHwnd());
 	GDynamicRHI->RHICreateSwapObject(SwapObj);
-
 	// load shader object
 	UINT8* pVs = nullptr;
 	UINT VsLen = 0;
 	UINT8* pPs = nullptr;
 	UINT PsLen = 0;
-
 	GDynamicRHI->RHIReadShaderDataFromFile(GetAssetFullPath(L"shader_vs.cso"), &pVs, &VsLen);
 	GDynamicRHI->RHIReadShaderDataFromFile(GetAssetFullPath(L"shader_ps.cso"), &pPs, &PsLen);
-
 	FRHIInputElement RHIInputElementDescs[] =
 	{
 		{ "POSITION", 0, ERHI_DATA_FORMAT::FORMAT_R32G32B32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -145,27 +142,12 @@ void LogicStaticModel::RenderThreadInit()
 	};
 	GDynamicRHI->RHICreatePiplineStateObject(RHIPsoInitializer);
 	GDynamicRHI->RHICreateRenderTarget(FrameCount);
-
-	//
 	UINT BufferSize = (sizeof(ObjectConstants) + 255) & ~255;
 	GDynamicRHI->RHICreateConstantBuffer(BufferSize, &ObjectConstant, sizeof(ObjectConstant));
-	//
 	GDynamicRHI->RHICreateDepthStencilBuffer(WndWidth, WndHeight);
 
-	//create model vertex buffer view
-	std::vector<Vertex_PositionTex0> TriangleVertices;
-	ModelGeo.DataComponent->GetPositionTex0Input(TriangleVertices);
-	const UINT VertexBufferSize = static_cast<UINT>(TriangleVertices.size() * sizeof(Vertex_PositionTex0));
-	const UINT StrideInByte = sizeof(Vertex_PositionTex0);
-	ModelGeo.RenderComponent->RHIVertexBufferView = GDynamicRHI->RHICreateVertexBufferView(TriangleVertices.data(), StrideInByte, VertexBufferSize);
-
-	//create model index buffer view
-	ModelGeo.RenderComponent->RHIIndexBufferView = GDynamicRHI->RHICreateIndexBufferView(ModelGeo.DataComponent->IndicesData, ModelGeo.DataComponent->IndiceSize,
-		ModelGeo.DataComponent->IndicesCount, ModelGeo.DataComponent->IsUseHalfInt32());
-
-	//create model shader resource view
-	ModelGeo.RenderComponent->RHIShaderResourceView = GDynamicRHI->RHICreateShaderResourceView(TexFileName);
-
+	Renderer.BeginRenderFrame(&Scene);
+	
 	//first flush
 	FRHICommandList& CommandList = GDynamicRHI->RHIGetCommandList(0);
 	GDynamicRHI->RHIExcuteCommandList(CommandList);
@@ -186,12 +168,11 @@ void LogicStaticModel::RenderThreadRun()
 	GDynamicRHI->RHIClearRenderTargetAndDepthStencilView(CommandList, FrameIndex, ClearColor);
 	GDynamicRHI->RHISetGraphicRootDescripterTable(CommandList);
 
-	ModelGeo.RenderComponent->Render(CommandList);
+	Renderer.Render(CommandList, &Scene);
 
 	GDynamicRHI->RHITransitionToState(CommandList, FrameIndex, ETransitionState::STATE_PRESENT);
 	GDynamicRHI->RHIExcuteCommandList(CommandList);
 	GDynamicRHI->RHISwapObjectPresent();
-
 	GDynamicRHI->RHISignalCurrentFence();
 	FrameIndex = (FrameIndex + 1) % FrameCount;
 }
@@ -235,7 +216,7 @@ void LogicStaticModel::Destroy()
 	GDynamicRHI->RHISignalCurrentFence();
 
 	RHIExit();
-	ModelGeo.Destroy();
+	//ModelGeo.Destroy();
 	ThisLogic = nullptr;
 #if defined(_DEBUG)
 	{
@@ -250,20 +231,29 @@ void LogicStaticModel::Destroy()
 
 void LogicStaticModel::InitCamera()
 {
+	LAssetDataLoader::LoadCameraDataFromFile(L"camera.bin", MyCamera);
 	MyCamera.Init();
+
 	// The window resized, so update the aspect ratio and recompute the projection matrix.
 	MyCamera.OnResize(static_cast<float>(WndWidth), static_cast<float>(WndHeight));
 	XMMATRIX P = MyCamera.GetProjectionMatrix();
 	XMStoreFloat4x4(&MtProj, P);
-
 }
 
-void LogicStaticModel::InitModel()
+void LogicStaticModel::InitModelScene()
 {
-	ModelGeo.Init();
-	ModelGeo.DataComponent->SetModelLocation(MyCamera.GetViewTargetLocation());
-
+	LAssetDataLoader::LoadMeshVertexDataFromFile(L"mesh.bin", Mesh);
+	Mesh.SetTextureName(L"Resource/T_Chair_M.dds");
+	Mesh.SetModelLocation(MyCamera.GetViewTargetLocation());
+	Scene.AddMeshToScene(&Mesh);
 }
+
+//void LogicStaticModel::InitModel()
+//{
+//	ModelGeo.Init();
+//	ModelGeo.DataComponent->SetModelLocation(MyCamera.GetViewTargetLocation());
+//
+//}
 
 void LogicStaticModel::OnMouseDown(WPARAM btnState, int x, int y)
 {

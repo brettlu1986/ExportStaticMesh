@@ -5,7 +5,6 @@
 #include "FD3D12Adapter.h"
 #include "FD3D12Fence.h"
 
-
 using namespace Microsoft::WRL;
 
 
@@ -45,7 +44,9 @@ public:
 
 	virtual void RHICreateDepthStencilBuffer(UINT Width, UINT Height) override;
 	virtual FRHIView* RHICreateVertexBufferView(const void* InitData, UINT StrideInByte, UINT DataSize) override;
-	virtual FRHIView* RHICreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, bool bUseHalfInt32) override;
+	virtual FRHIView* RHICreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, E_INDEX_TYPE IndexType) override;
+	
+	
 	virtual FRHIView* RHICreateShaderResourceView(std::wstring TextureName);
 	virtual FRHICommandList& RHIGetCommandList(UINT Index) ;
 	virtual void RHIExcuteCommandList(FRHICommandList& CommandList);

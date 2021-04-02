@@ -1,19 +1,9 @@
 #pragma once
 
 #include "stdafx.h"
+#include "FDefine.h"
 
 using namespace DirectX;
-
-#pragma pack(push)
-#pragma pack(4)
-struct CameraData {
-	XMFLOAT3 Location;
-	XMFLOAT3 Target;
-	XMFLOAT3 Rotator; // {Pitch, Yaw , Roll}
-	float Fov;
-	float Aspect;
-};
-#pragma pack(pop)
 
 class LCamera
 {
@@ -33,11 +23,15 @@ public:
 		return CameraDatas.Target;
 	}
 
+	FCameraData& GetCameraData()
+	{
+		return CameraDatas;
+	}
 private:
 
-	void ReadCameraDataFromFile(LPCWSTR FileName );
+	//void ReadCameraDataFromFile(LPCWSTR FileName );
 
-	CameraData CameraDatas;
+	FCameraData CameraDatas;
 	//use for reset
 	XMFLOAT3 InitialPosition;
 	XMFLOAT3 Position;

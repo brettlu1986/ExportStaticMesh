@@ -2,6 +2,7 @@
 
 #include "FD3D12ResourceManager.h"
 #include "FD3D12Resource.h"
+#include "FDefine.h"
 
 FD3D12ResourceManager::FD3D12ResourceManager(FD3D12Device* InParent)
 :ParentDevice(InParent)
@@ -132,9 +133,9 @@ FRHIView* FD3D12ResourceManager::CreateVertexBufferView(const void* InitData, UI
 	return View;
 }
 
-FRHIView* FD3D12ResourceManager::CreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, bool bUseHalfInt32)
+FRHIView* FD3D12ResourceManager::CreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, E_INDEX_TYPE IndexType)
 {
-	FD3DIndexBuffer* IndexBuffer = new FD3DIndexBuffer(ParentDevice, InitData, DataSize, IndicesCount, bUseHalfInt32);
+	FD3DIndexBuffer* IndexBuffer = new FD3DIndexBuffer(ParentDevice, InitData, DataSize, IndicesCount, IndexType);
 	IndexBuffer->Initialize();
 	FRHIView* View = new FD3DIndexBufferView(ParentDevice, IndexBuffer);
 	IndexBufferViews.push_back(View);

@@ -2,9 +2,13 @@
 
 #include "LogicStaticModel.h"
 #include "LCamera.h"
-#include "FMesh.h"
+//#include "FTempMesh.h"
 #include "MathHelper.h"
 #include "ApplicationMain.h"
+
+#include "FScene.h"
+#include "FMesh.h"
+#include "FSceneRenderer.h"
 
 using namespace DirectX;
 
@@ -45,6 +49,7 @@ private:
 	static LogicStaticModel* ThisLogic;
 
 	void InitCamera();
+	void InitModelScene();
 	void InitModel();
 	void CreateRenderThread();
 	void RenderThreadInit();
@@ -58,7 +63,7 @@ private:
 	ObjectConstants ObjectConstant;
 	UINT FrameIndex;
 
-	FMesh ModelGeo;
+	//FTempMesh ModelGeo;
 	LCamera MyCamera;
 
 	XMFLOAT4X4 MtProj;
@@ -74,5 +79,9 @@ private:
 	UINT WndWidth;
 	UINT WndHeight;
 	ApplicationMain* MainApplication;
+
+	FScene Scene;
+	FMesh Mesh;
+	FSceneRenderer Renderer;
 	
 };

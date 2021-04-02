@@ -3,6 +3,7 @@
 #include "FRHIResource.h"
 #include "FD3D12Device.h"
 #include "d3dx12.h"
+#include "FDefine.h"
 
 using namespace Microsoft::WRL;
 
@@ -142,7 +143,7 @@ class FD3DIndexBuffer :public FD3DResource
 {
 public:
 	FD3DIndexBuffer();
-	FD3DIndexBuffer(FD3D12Device* InDevice, const void* InitData, UINT ByteSize,UINT IndicesCount, bool bUseHalfInt32);
+	FD3DIndexBuffer(FD3D12Device* InDevice, const void* InitData, UINT ByteSize,UINT IndicesCount, E_INDEX_TYPE IndexType );
 	virtual ~FD3DIndexBuffer();
 
 	virtual void Destroy() override;
@@ -157,8 +158,8 @@ public:
 		return IndicesCount;
 	}
 
-	bool UseHalfInt32() const {
-		return bUseHalfInt32;
+	E_INDEX_TYPE GetIndexType() const {
+		return IndexType;
 	}
 
 	ID3D12Resource* GetD3DIndexBuffer()
@@ -169,7 +170,7 @@ private:
 	ComPtr<ID3D12Resource> IndexBuffer;
 	ComPtr<ID3D12Resource> IndexBufferUpload;
 
-	bool bUseHalfInt32;
+	E_INDEX_TYPE IndexType;
 	UINT ByteSize;
 	UINT IndicesCount;
 };

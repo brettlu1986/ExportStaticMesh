@@ -4,6 +4,7 @@
 #include "FD3D12Helper.h"
 #include "FD3D12Device.h"
 #include "FD3D12ResourceManager.h"
+#include "FDefine.h"
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
@@ -185,9 +186,9 @@ FRHIView* FD3D12DynamicRHI::RHICreateVertexBufferView(const void* InitData, UINT
 	return GetResourceManager()->CreateVertexBufferView(InitData, StrideInByte, DataSize);
 }
 
-FRHIView* FD3D12DynamicRHI::RHICreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, bool bUseHalfInt32)
+FRHIView* FD3D12DynamicRHI::RHICreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, E_INDEX_TYPE IndexType)
 {
-	return GetResourceManager()->CreateIndexBufferView(InitData, DataSize, IndicesCount, bUseHalfInt32);
+	return GetResourceManager()->CreateIndexBufferView(InitData, DataSize, IndicesCount, IndexType);
 }
 
 FRHIView* FD3D12DynamicRHI::RHICreateShaderResourceView(std::wstring TextureName)

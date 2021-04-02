@@ -3,6 +3,7 @@
 #pragma once
 
 #include "stdafx.h"
+#include "FDefine.h"
 
 class FD3D12Device;
 class FD3DRenderTarget;
@@ -26,7 +27,7 @@ public:
 	void UpdateConstantBufferData(void* pUpdateData, UINT DataSize);
 	void CreateDepthStencilBuffer(UINT Width, UINT Height);
 	FRHIView* CreateVertexBufferView(const void* InitData, UINT StrideInByte, UINT DataSize);
-	FRHIView* CreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, bool bUseHalfInt32);
+	FRHIView* CreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, E_INDEX_TYPE IndexType);
 	FRHIView* CreateShaderResourceView(std::wstring TextureName);
 
 	FD3DRenderTarget* GetRenderTarget() const {

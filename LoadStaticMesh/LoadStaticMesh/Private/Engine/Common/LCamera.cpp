@@ -8,7 +8,7 @@
 using namespace DirectX;
 using namespace std;
 
-static const wstring CameraBinName = L"camera.bin";
+//static const wstring CameraBinName = L"camera.bin";
 
 LCamera::LCamera()
 	:Position(0, 0, 0)
@@ -20,7 +20,7 @@ LCamera::LCamera()
 	,UpDirection(0, 0, 1)
 	,Fov(XM_PI/2)
 	,AspectRatio(1.777f)
-	,CameraDatas(CameraData())
+	,CameraDatas(FCameraData())
 	,Radius(1.f)
 	,Alpha(0.f)
 	,Theta(0.f)
@@ -35,7 +35,7 @@ LCamera::~LCamera()
 
 void LCamera::Init()
 {
-	ReadCameraDataFromFile(CameraBinName.c_str());
+	//ReadCameraDataFromFile(CameraBinName.c_str());
 
 	InitialPosition = CameraDatas.Location;
 	Position = InitialPosition;
@@ -99,25 +99,25 @@ XMMATRIX LCamera::GetProjectionMatrix(float NearPlane /*= 1.0f*/, float FarPlane
 	return XMMatrixPerspectiveFovLH(Fov, AspectRatio, NearPlane, FarPlane);
 }
 
-void LCamera::ReadCameraDataFromFile(LPCWSTR FileName)
-{
-	std::wstring FName = GetSaveDirectory() + FileName;
-	ifstream Rf(FName, ios::out | ios::binary);
-	if (!Rf) {
-		cout << "Cannot open file!" << endl;
-		return;
-	}
-
-	char* CameraBuffer = new char[sizeof(CameraData)];
-	memset(CameraBuffer, '\0', sizeof(CameraData));
-	Rf.read(CameraBuffer, sizeof(CameraData));
-	CameraDatas = *(CameraData*)(CameraBuffer);
-
-	delete[] CameraBuffer;
-	Rf.close();
-	if (!Rf.good()) {
-		cout << "Error occurred at reading time!" << endl;
-		return;
-	}
-}
+//void LCamera::ReadCameraDataFromFile(LPCWSTR FileName)
+//{
+//	std::wstring FName = GetSaveDirectory() + FileName;
+//	ifstream Rf(FName, ios::out | ios::binary);
+//	if (!Rf) {
+//		cout << "Cannot open file!" << endl;
+//		return;
+//	}
+//
+//	char* CameraBuffer = new char[sizeof(CameraData)];
+//	memset(CameraBuffer, '\0', sizeof(CameraData));
+//	Rf.read(CameraBuffer, sizeof(CameraData));
+//	CameraDatas = *(CameraData*)(CameraBuffer);
+//
+//	delete[] CameraBuffer;
+//	Rf.close();
+//	if (!Rf.good()) {
+//		cout << "Error occurred at reading time!" << endl;
+//		return;
+//	}
+//}
 

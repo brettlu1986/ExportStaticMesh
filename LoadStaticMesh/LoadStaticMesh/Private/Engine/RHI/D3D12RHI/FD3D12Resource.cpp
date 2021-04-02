@@ -213,9 +213,9 @@ FD3DIndexBuffer::FD3DIndexBuffer()
 	ResourceName = "IndexBuffer";
 }
 
-FD3DIndexBuffer::FD3DIndexBuffer(FD3D12Device* InDevice, const void* InitData, UINT ByteSize, UINT IndicesCount, bool bUseHalfInt32)
+FD3DIndexBuffer::FD3DIndexBuffer(FD3D12Device* InDevice, const void* InitData, UINT ByteSize, UINT IndicesCount, E_INDEX_TYPE IndexType)
 :FD3DResource(InDevice)
-, bUseHalfInt32(bUseHalfInt32)
+, IndexType(IndexType)
 , ByteSize(ByteSize)
 , IndicesCount(IndicesCount)
 {
@@ -364,7 +364,7 @@ FD3DIndexBufferView::FD3DIndexBufferView(FD3D12Device* InDevice, FD3DIndexBuffer
 	IndexBuffer = InIndexBuffer;
 
 	IndexBufferView.BufferLocation = IndexBuffer->GetD3DIndexBuffer()->GetGPUVirtualAddress();
-	IndexBufferView.Format = IndexBuffer->UseHalfInt32() ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+	IndexBufferView.Format = IndexBuffer->GetIndexType() == E_INDEX_TYPE::TYPE_UINT_16 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
 	IndexBufferView.SizeInBytes = IndexBuffer->GetDataSize();
 }
 
