@@ -3,7 +3,7 @@
 #include "stdafx.h"
 
 class LInput;
-class Logic;
+class LogicStaticModel;
 class MainWindow;
 
 class ApplicationMain
@@ -17,7 +17,7 @@ public:
 	void Destroy();
 
 	const HINSTANCE& GetHInstace() const { return hMainInstance; }
-	Logic* GetGraphicRender() const { return CurrentLogic; }
+	LogicStaticModel* GetGraphicRender() const { return CurrentLogic; }
 	LInput* GetInput() const { return Input; }
 	MainWindow* GetWindow() const { return Window; }
 
@@ -26,6 +26,6 @@ private:
 	 
 	HINSTANCE hMainInstance;
 	MainWindow* Window;
-	Logic* CurrentLogic;
+	LogicStaticModel* CurrentLogic;
 	LInput* Input;
 };

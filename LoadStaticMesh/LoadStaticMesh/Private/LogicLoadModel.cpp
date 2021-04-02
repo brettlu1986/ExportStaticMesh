@@ -1,7 +1,7 @@
 
 
 #include "stdafx.h"
-#include "LogicLoadModel.h"
+#include "LogicStaticModel.h"
 #include <dxgidebug.h>
 #include <d3dcompiler.h>
 #include <DirectXColors.h>
@@ -9,7 +9,7 @@
 #include "ApplicationMain.h"
 #include "d3dx12.h"
 #include "FDDSTextureLoader.h"
-
+#include "FD3D12Helper.h"
 #include "FRHI.h"
 
 using namespace Microsoft::WRL;
@@ -18,40 +18,65 @@ using namespace DirectX;
 static const wstring TexFileName = L"Resource/T_Chair_M.dds";
 static const FRHIColor ClearColor = { 0.690196097f, 0.768627524f, 0.870588303f, 1.000000000f };
 
-LogicLoadModel* LogicLoadModel::ThisLogic = nullptr;
+LogicStaticModel* LogicStaticModel::ThisLogic = nullptr;
 
-LogicLoadModel::LogicLoadModel()
+LogicStaticModel::LogicStaticModel()
 	: FrameIndex(0)
 	, bDestroy(false)
 	, ObjectConstant({})
 	,ThreadParam(ThreadParameter())
+	, WndWidth(0)
+	, WndHeight(0)
+	, AspectRatio(0.f)
+	, MainApplication(nullptr)
 {
 	MtProj = MathHelper::Identity4x4();
 	RenderBegin = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	RenderEnd = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	LastMousePoint = {0 , 0};
 	ThisLogic = this;
+	
 }
 
-LogicLoadModel::~LogicLoadModel()
+LogicStaticModel::~LogicStaticModel()
 {
 
 }
 
-void LogicLoadModel::OnInit()
+std::wstring LogicStaticModel::GetAssetFullPath(LPCWSTR AssetName)
+{
+	return AssetsPath + AssetName;
+}
+
+void LogicStaticModel::Initialize(ApplicationMain* Application, UINT Width, UINT Height)
+{
+	MainApplication = Application;
+	WndWidth = Width;
+	WndHeight = Height;
+	AspectRatio = static_cast<float>(Width) / static_cast<float>(Height);
+
+	WCHAR AssetsPathChar[512];
+	GetAssetsPath(AssetsPathChar, _countof(AssetsPathChar));
+	AssetsPath = AssetsPathChar;
+
+	OnInit();
+}
+
+
+void LogicStaticModel::OnInit()
 {
 	InitCamera();
 	InitModel();
 	CreateRenderThread();
 }
 
-void LogicLoadModel::CreateRenderThread()
+void LogicStaticModel::CreateRenderThread()
 {
 	struct ThreadWrapper
 	{
 		static unsigned int WINAPI Thunk(void* LParameter)
 		{
-			LogicLoadModel::Get()->Render(LParameter);
+			LogicStaticModel::Get()->Render(LParameter);
 			return 0;
 		}
 	};
@@ -69,7 +94,7 @@ void LogicLoadModel::CreateRenderThread()
 }
 
 
-void LogicLoadModel::Update()
+void LogicStaticModel::Update()
 {
 	DWORD Ret = WaitForSingleObject(RenderEnd, INFINITE);
 	if (Ret - WAIT_OBJECT_0 == 0)
@@ -84,7 +109,7 @@ void LogicLoadModel::Update()
 	
 }
 
-void LogicLoadModel::RenderThreadInit()
+void LogicStaticModel::RenderThreadInit()
 {
 	//create adapter , create device, create command queue, create command manager, create command allocator/list
 	RHIInit();
@@ -147,7 +172,7 @@ void LogicLoadModel::RenderThreadInit()
 	GDynamicRHI->RHISignalCurrentFence();
 }
 
-void LogicLoadModel::RenderThreadRun()
+void LogicStaticModel::RenderThreadRun()
 {
 	if (!GDynamicRHI->RHIIsFenceComplete())
 		return ;
@@ -171,7 +196,7 @@ void LogicLoadModel::RenderThreadRun()
 	FrameIndex = (FrameIndex + 1) % FrameCount;
 }
 
-bool LogicLoadModel::Render(void* Param)
+bool LogicStaticModel::Render(void* Param)
 {
 	try
 	{
@@ -203,7 +228,7 @@ bool LogicLoadModel::Render(void* Param)
 	return true;
 }
 
-void LogicLoadModel::Destroy()
+void LogicStaticModel::Destroy()
 {	
 	bDestroy = true;
 	//wait gpu to excute finish
@@ -223,7 +248,7 @@ void LogicLoadModel::Destroy()
 #endif
 }
 
-void LogicLoadModel::InitCamera()
+void LogicStaticModel::InitCamera()
 {
 	MyCamera.Init();
 	// The window resized, so update the aspect ratio and recompute the projection matrix.
@@ -233,26 +258,26 @@ void LogicLoadModel::InitCamera()
 
 }
 
-void LogicLoadModel::InitModel()
+void LogicStaticModel::InitModel()
 {
 	ModelGeo.Init();
 	ModelGeo.DataComponent->SetModelLocation(MyCamera.GetViewTargetLocation());
 
 }
 
-void LogicLoadModel::OnMouseDown(WPARAM btnState, int x, int y)
+void LogicStaticModel::OnMouseDown(WPARAM btnState, int x, int y)
 {
 	LastMousePoint.x = x; 
 	LastMousePoint.y = y;
 	SetCapture(MainApplication->GetHwnd());
 }
 
-void LogicLoadModel::OnMouseUp(WPARAM btnState, int x, int y)
+void LogicStaticModel::OnMouseUp(WPARAM btnState, int x, int y)
 {
 	ReleaseCapture();
 }
 
-void LogicLoadModel::OnMouseMove(WPARAM btnState, int x, int y)
+void LogicStaticModel::OnMouseMove(WPARAM btnState, int x, int y)
 {
 	if((btnState & MK_LBUTTON) != 0 ) 
 	{

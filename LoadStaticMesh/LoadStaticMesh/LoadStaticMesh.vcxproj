@@ -167,7 +167,6 @@
     <ClCompile Include="Private\Engine\RHI\FRHI.cpp" />
     <ClCompile Include="Private\Engine\RHI\FWindowsDynamicRHI.cpp" />
     <ClCompile Include="Private\Engine\Util\MathHelper.cpp" />
-    <ClCompile Include="Private\Logic.cpp" />
     <ClCompile Include="Private\LogicLoadModel.cpp" />
     <ClCompile Include="Private\MainWindow.cpp" />
   </ItemGroup>
@@ -251,8 +250,7 @@
     <ClInclude Include="Public\Engine\RHI\FRHIDef.h" />
     <ClInclude Include="Public\Engine\RHI\FRHIResource.h" />
     <ClInclude Include="Public\Engine\Util\MathHelper.h" />
-    <ClInclude Include="Public\Logic.h" />
-    <ClInclude Include="Public\LogicLoadModel.h" />
+    <ClInclude Include="Public\LogicStaticModel.h" />
     <ClInclude Include="Public\MainWindow.h" />
     <ClInclude Include="Public\stdafx.h" />
   </ItemGroup>

@@ -1,6 +1,6 @@
 
 #include "ApplicationMain.h"
-#include "LogicLoadModel.h"
+#include "LogicStaticModel.h"
 #include "MainWindow.h"
 #include "LInput.h"
 
@@ -24,7 +24,7 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance, UINT Width, UINT Height, s
 	Window = new MainWindow();
 	Window->Initialize(this, Width, Height, Name);
 
-	CurrentLogic = new LogicLoadModel();
+	CurrentLogic = new LogicStaticModel();
 	CurrentLogic->Initialize(this, Width, Height);
 
 	Input = new LInput();

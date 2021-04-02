@@ -57,9 +57,6 @@
     <ClCompile Include="Private\ApplicationMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Logic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Private\LogicLoadModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -144,12 +141,6 @@
     <ClInclude Include="Public\ApplicationMain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Public\Logic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\LogicLoadModel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Public\MainWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -224,6 +215,9 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\Renderer\FMesh.h">
       <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\LogicStaticModel.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
