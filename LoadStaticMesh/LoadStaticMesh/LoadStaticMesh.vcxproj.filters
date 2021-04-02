@@ -13,115 +13,118 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\D3D12RHI">
-      <UniqueIdentifier>{01994b3b-8018-4fa4-baa4-a429f016ed01}</UniqueIdentifier>
+    <Filter Include="Header Files\Engine">
+      <UniqueIdentifier>{dbd25e67-1357-449f-a3f6-4293f8d66388}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Main">
-      <UniqueIdentifier>{9911bbf3-e263-468f-9014-553b6fefa52d}</UniqueIdentifier>
+    <Filter Include="Header Files\Engine\Common">
+      <UniqueIdentifier>{9a00497b-c018-4a94-9a83-833dc2a7a057}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\RHI">
-      <UniqueIdentifier>{c94106e2-3fdb-4282-8998-491f063cf617}</UniqueIdentifier>
+    <Filter Include="Header Files\Engine\Renderer">
+      <UniqueIdentifier>{5c637acc-075e-4b4c-9036-1ac5a8542d2b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Util">
-      <UniqueIdentifier>{f601fd15-fe3e-4617-a12c-f94e41953f61}</UniqueIdentifier>
+    <Filter Include="Header Files\Engine\RHI">
+      <UniqueIdentifier>{38367417-24a2-4dcc-a473-ee2f1647ae4c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\D3D12RHI">
-      <UniqueIdentifier>{0e9ad7f7-ad8f-4e78-8760-0d21962e802f}</UniqueIdentifier>
+    <Filter Include="Header Files\Engine\RHI\D3D12RHI">
+      <UniqueIdentifier>{5cb9d254-0c3d-43cc-98bf-acd163b62b13}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Main">
-      <UniqueIdentifier>{551f98c8-6e06-41d0-9c28-bd539b299cd0}</UniqueIdentifier>
+    <Filter Include="Header Files\Engine\Util">
+      <UniqueIdentifier>{7753bf11-e800-4c02-a06a-bdb43fa9a7a1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Util">
-      <UniqueIdentifier>{08896c1e-cafb-4131-ad35-a26081b53c07}</UniqueIdentifier>
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{65f7521e-24c4-450e-806e-24634e6827f1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\RHI">
-      <UniqueIdentifier>{d55cad2b-05f6-4626-85ec-1d3e0ce2a175}</UniqueIdentifier>
+    <Filter Include="Source Files\Engine\Common">
+      <UniqueIdentifier>{f958afc8-57df-4827-b517-651dc317ce50}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\RHI\Windows">
-      <UniqueIdentifier>{4eb575d5-bf9d-4579-a669-1471b2a0e3d0}</UniqueIdentifier>
+    <Filter Include="Source Files\Engine\Renderer">
+      <UniqueIdentifier>{5c22ee7c-daba-4aca-b049-8cf9a8ba99c0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Main\Model">
-      <UniqueIdentifier>{d11b8cb6-cc01-4871-abb8-383e10a2187d}</UniqueIdentifier>
+    <Filter Include="Source Files\Engine\RHI">
+      <UniqueIdentifier>{6ac5292a-caa7-416e-bb20-1517804a9603}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Main\Model">
-      <UniqueIdentifier>{84e3b1fc-8acf-454c-b7e4-01ac5ab01b7e}</UniqueIdentifier>
+    <Filter Include="Source Files\Engine\RHI\D3D12RHI">
+      <UniqueIdentifier>{50832bbc-f5bb-47c2-b60e-1976fdc610ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Util">
+      <UniqueIdentifier>{d15bc1b9-e4c4-441f-a324-152e9c8b4309}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Private\RHI\DynamicRHI.cpp">
-      <Filter>Source Files\RHI</Filter>
+    <ClCompile Include="Public\Engine\RHI\D3D12RHI\D3D12ResourceManager.cpp">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Private\RHI\RHI.cpp">
-      <Filter>Source Files\RHI</Filter>
+    <ClCompile Include="Private\ApplicationMain.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Util\MathHelper.cpp">
-      <Filter>Source Files\Util</Filter>
+    <ClCompile Include="Private\Logic.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Main\ApplicationMain.cpp">
-      <Filter>Source Files\Main</Filter>
+    <ClCompile Include="Private\LogicLoadModel.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Main\GraphicRender.cpp">
-      <Filter>Source Files\Main</Filter>
+    <ClCompile Include="Private\MainWindow.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Main\InputClass.cpp">
-      <Filter>Source Files\Main</Filter>
+    <ClCompile Include="Private\Engine\Common\InputClass.cpp">
+      <Filter>Source Files\Engine\Common</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Main\MainWindow.cpp">
-      <Filter>Source Files\Main</Filter>
+    <ClCompile Include="Private\Engine\Common\LCamera.cpp">
+      <Filter>Source Files\Engine\Common</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Main\stdafx.cpp">
-      <Filter>Source Files\Main</Filter>
+    <ClCompile Include="Private\Engine\Renderer\AModel.cpp">
+      <Filter>Source Files\Engine\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Private\RHI\WindowsDynamicRHI.cpp">
-      <Filter>Source Files\RHI\Windows</Filter>
+    <ClCompile Include="Private\Engine\Renderer\FRenderComponent.cpp">
+      <Filter>Source Files\Engine\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Private\D3D12RHI\D3D12Adapter.cpp">
-      <Filter>Source Files\D3D12RHI</Filter>
+    <ClCompile Include="Private\Engine\Renderer\LDataComponent.cpp">
+      <Filter>Source Files\Engine\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Private\D3D12RHI\D3D12Fence.cpp">
-      <Filter>Source Files\D3D12RHI</Filter>
+    <ClCompile Include="Private\Engine\RHI\DynamicRHI.cpp">
+      <Filter>Source Files\Engine\RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Private\D3D12RHI\D3D12RHIPublic.cpp">
-      <Filter>Source Files\D3D12RHI</Filter>
+    <ClCompile Include="Private\Engine\RHI\RHI.cpp">
+      <Filter>Source Files\Engine\RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Private\D3D12RHI\DDSTextureLoader.cpp">
-      <Filter>Source Files\D3D12RHI</Filter>
+    <ClCompile Include="Private\Engine\RHI\WindowsDynamicRHI.cpp">
+      <Filter>Source Files\Engine\RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Private\D3D12RHI\D3D12Device.cpp">
-      <Filter>Source Files\D3D12RHI</Filter>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12Adapter.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Private\D3D12RHI\D3D12CommandListManager.cpp">
-      <Filter>Source Files\D3D12RHI</Filter>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12CommandList.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Private\D3D12RHI\D3D12CommandList.cpp">
-      <Filter>Source Files\D3D12RHI</Filter>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12CommandListAllocator.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Private\D3D12RHI\D3D12CommandListAllocator.cpp">
-      <Filter>Source Files\D3D12RHI</Filter>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12CommandListManager.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Private\D3D12RHI\D3D12Resource.cpp">
-      <Filter>Source Files\D3D12RHI</Filter>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12Device.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Public\D3D12RHI\D3D12ResourceManager.cpp">
-      <Filter>Source Files\D3D12RHI</Filter>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12Fence.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Main\LCamera.cpp">
-      <Filter>Source Files\Main</Filter>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12Resource.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Main\AModel.cpp">
-      <Filter>Source Files\Main\Model</Filter>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12RHIPublic.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Private\D3D12RHI\LDataComponent.cpp">
-      <Filter>Source Files\Main\Model</Filter>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\DDSTextureLoader.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Private\D3D12RHI\FRenderComponent.cpp">
-      <Filter>Source Files\Main\Model</Filter>
+    <ClCompile Include="Private\Engine\Util\MathHelper.cpp">
+      <Filter>Source Files\Engine\Util</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Main\LogicLoadModel.cpp">
-      <Filter>Source Files\Main</Filter>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\stdafx.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -130,92 +133,97 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Public\RHI\DynamicRHI.h">
-      <Filter>Header Files\RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\RHI\RHI.h">
-      <Filter>Header Files\RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Util\MathHelper.h">
-      <Filter>Header Files\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Main\ApplicationMain.h">
-      <Filter>Header Files\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Main\d3dx12.h">
-      <Filter>Header Files\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Main\InputClass.h">
-      <Filter>Header Files\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Main\MainWindow.h">
-      <Filter>Header Files\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Main\stdafx.h">
-      <Filter>Header Files\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\D3D12RHI\D3D12RHIPrivate.h">
-      <Filter>Header Files\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\D3D12RHI\D3D12Adapter.h">
-      <Filter>Header Files\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\RHI\D3D12Fence.h">
-      <Filter>Header Files\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\RHI\RHIDef.h">
-      <Filter>Header Files\RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\RHI\RHIResource.h">
-      <Filter>Header Files\RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\D3D12RHI\D3D12Helper.h">
-      <Filter>Header Files\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\D3D12RHI\DDSTextureLoader.h">
-      <Filter>Header Files\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\D3D12RHI\D3D12Device.h">
-      <Filter>Header Files\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\D3D12RHI\D3D12CommandListManager.h">
-      <Filter>Header Files\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\D3D12RHI\D3D12CommandList.h">
-      <Filter>Header Files\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\D3D12RHI\D3D12CommandListAllocator.h">
-      <Filter>Header Files\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\D3D12RHI\D3D12Resource.h">
-      <Filter>Header Files\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\D3D12RHI\D3D12ResourceManager.h">
-      <Filter>Header Files\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Main\LCamera.h">
-      <Filter>Header Files\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Main\AModel.h">
-      <Filter>Header Files\Main\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Main\FRenderComponent.h">
-      <Filter>Header Files\Main\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Main\LDataComponent.h">
-      <Filter>Header Files\Main\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Main\Logic.h">
-      <Filter>Header Files\Main</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Main\LogicLoadModel.h">
-      <Filter>Header Files\Main</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <FxCompile Include="Resource\shader_vs.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="Resource\shader_ps.hlsl" />
+    <FxCompile Include="Resource\shader_ps.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Public\ApplicationMain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Logic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\LogicLoadModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\MainWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\InputClass.h">
+      <Filter>Header Files\Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\LCamera.h">
+      <Filter>Header Files\Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\AModel.h">
+      <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\FRenderComponent.h">
+      <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\LDataComponent.h">
+      <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\DynamicRHI.h">
+      <Filter>Header Files\Engine\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\RHI.h">
+      <Filter>Header Files\Engine\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\RHIDef.h">
+      <Filter>Header Files\Engine\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\RHIResource.h">
+      <Filter>Header Files\Engine\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12Adapter.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12CommandList.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12CommandListAllocator.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12CommandListManager.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12Device.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12Fence.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12Helper.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12Resource.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12ResourceManager.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12RHIPrivate.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\DDSTextureLoader.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\d3dx12.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Util\MathHelper.h">
+      <Filter>Header Files\Engine\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\stdafx.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

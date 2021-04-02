@@ -72,17 +72,20 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)\Public\Main;$(ProjectDir)\Public\Util;$(ProjectDir)\Public\RHI;$(ProjectDir)\Public\D3D12RHI;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath);$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -143,30 +146,30 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Private\D3D12RHI\D3D12Adapter.cpp" />
-    <ClCompile Include="Private\D3D12RHI\D3D12CommandList.cpp" />
-    <ClCompile Include="Private\D3D12RHI\D3D12CommandListAllocator.cpp" />
-    <ClCompile Include="Private\D3D12RHI\D3D12CommandListManager.cpp" />
-    <ClCompile Include="Private\D3D12RHI\D3D12Device.cpp" />
-    <ClCompile Include="Private\D3D12RHI\D3D12Fence.cpp" />
-    <ClCompile Include="Private\D3D12RHI\D3D12Resource.cpp" />
-    <ClCompile Include="Private\D3D12RHI\D3D12RHIPublic.cpp" />
-    <ClCompile Include="Private\D3D12RHI\DDSTextureLoader.cpp" />
-    <ClCompile Include="Private\D3D12RHI\FRenderComponent.cpp" />
-    <ClCompile Include="Private\D3D12RHI\LDataComponent.cpp" />
-    <ClCompile Include="Private\Main\ApplicationMain.cpp" />
-    <ClCompile Include="Private\Main\LCamera.cpp" />
-    <ClCompile Include="Private\Main\GraphicRender.cpp" />
-    <ClCompile Include="Private\Main\LogicLoadModel.cpp" />
-    <ClCompile Include="Private\Main\InputClass.cpp" />
-    <ClCompile Include="Private\Main\MainWindow.cpp" />
-    <ClCompile Include="Private\Main\AModel.cpp" />
-    <ClCompile Include="Private\Main\stdafx.cpp" />
-    <ClCompile Include="Private\RHI\DynamicRHI.cpp" />
-    <ClCompile Include="Private\RHI\RHI.cpp" />
-    <ClCompile Include="Private\RHI\WindowsDynamicRHI.cpp" />
-    <ClCompile Include="Private\Util\MathHelper.cpp" />
-    <ClCompile Include="Public\D3D12RHI\D3D12ResourceManager.cpp" />
+    <ClCompile Include="Private\ApplicationMain.cpp" />
+    <ClCompile Include="Private\Engine\Common\InputClass.cpp" />
+    <ClCompile Include="Private\Engine\Common\LCamera.cpp" />
+    <ClCompile Include="Private\Engine\Renderer\AModel.cpp" />
+    <ClCompile Include="Private\Engine\Renderer\FRenderComponent.cpp" />
+    <ClCompile Include="Private\Engine\Renderer\LDataComponent.cpp" />
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12Adapter.cpp" />
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12CommandList.cpp" />
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12CommandListAllocator.cpp" />
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12CommandListManager.cpp" />
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12Device.cpp" />
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12Fence.cpp" />
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12Resource.cpp" />
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\D3D12RHIPublic.cpp" />
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\DDSTextureLoader.cpp" />
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\stdafx.cpp" />
+    <ClCompile Include="Private\Engine\RHI\DynamicRHI.cpp" />
+    <ClCompile Include="Private\Engine\RHI\RHI.cpp" />
+    <ClCompile Include="Private\Engine\RHI\WindowsDynamicRHI.cpp" />
+    <ClCompile Include="Private\Engine\Util\MathHelper.cpp" />
+    <ClCompile Include="Private\Logic.cpp" />
+    <ClCompile Include="Private\LogicLoadModel.cpp" />
+    <ClCompile Include="Private\MainWindow.cpp" />
+    <ClCompile Include="Public\Engine\RHI\D3D12RHI\D3D12ResourceManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds" />
@@ -224,33 +227,34 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Public\D3D12RHI\D3D12Adapter.h" />
-    <ClInclude Include="Public\D3D12RHI\D3D12CommandList.h" />
-    <ClInclude Include="Public\D3D12RHI\D3D12CommandListAllocator.h" />
-    <ClInclude Include="Public\D3D12RHI\D3D12CommandListManager.h" />
-    <ClInclude Include="Public\D3D12RHI\D3D12Device.h" />
-    <ClInclude Include="Public\D3D12RHI\D3D12Resource.h" />
-    <ClInclude Include="Public\D3D12RHI\D3D12ResourceManager.h" />
-    <ClInclude Include="Public\D3D12RHI\D3D12RHIPrivate.h" />
-    <ClInclude Include="Public\D3D12RHI\D3D12Helper.h" />
-    <ClInclude Include="Public\D3D12RHI\DDSTextureLoader.h" />
-    <ClInclude Include="Public\Main\ApplicationMain.h" />
-    <ClInclude Include="Public\Main\FRenderComponent.h" />
-    <ClInclude Include="Public\Main\LCamera.h" />
-    <ClInclude Include="Public\Main\d3dx12.h" />
-    <ClInclude Include="Public\Main\Logic.h" />
-    <ClInclude Include="Public\Main\LogicLoadModel.h" />
-    <ClInclude Include="Public\Main\InputClass.h" />
-    <ClInclude Include="Public\Main\LDataComponent.h" />
-    <ClInclude Include="Public\Main\MainWindow.h" />
-    <ClInclude Include="Public\Main\AModel.h" />
-    <ClInclude Include="Public\Main\stdafx.h" />
-    <ClInclude Include="Public\RHI\D3D12Fence.h" />
-    <ClInclude Include="Public\RHI\DynamicRHI.h" />
-    <ClInclude Include="Public\RHI\RHI.h" />
-    <ClInclude Include="Public\RHI\RHIDef.h" />
-    <ClInclude Include="Public\RHI\RHIResource.h" />
-    <ClInclude Include="Public\Util\MathHelper.h" />
+    <ClInclude Include="Public\ApplicationMain.h" />
+    <ClInclude Include="Public\Engine\Common\InputClass.h" />
+    <ClInclude Include="Public\Engine\Common\LCamera.h" />
+    <ClInclude Include="Public\Engine\Renderer\AModel.h" />
+    <ClInclude Include="Public\Engine\Renderer\FRenderComponent.h" />
+    <ClInclude Include="Public\Engine\Renderer\LDataComponent.h" />
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12Adapter.h" />
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12CommandList.h" />
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12CommandListAllocator.h" />
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12CommandListManager.h" />
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12Device.h" />
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12Fence.h" />
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12Helper.h" />
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12Resource.h" />
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12ResourceManager.h" />
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\D3D12RHIPrivate.h" />
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\d3dx12.h" />
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\DDSTextureLoader.h" />
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\stdafx.h" />
+    <ClInclude Include="Public\Engine\RHI\DynamicRHI.h" />
+    <ClInclude Include="Public\Engine\RHI\RHI.h" />
+    <ClInclude Include="Public\Engine\RHI\RHIDef.h" />
+    <ClInclude Include="Public\Engine\RHI\RHIResource.h" />
+    <ClInclude Include="Public\Engine\Util\MathHelper.h" />
+    <ClInclude Include="Public\Logic.h" />
+    <ClInclude Include="Public\LogicLoadModel.h" />
+    <ClInclude Include="Public\MainWindow.h" />
+    <ClInclude Include="Public\stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
