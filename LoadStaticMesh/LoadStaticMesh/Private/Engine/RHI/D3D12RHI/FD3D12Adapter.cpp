@@ -5,7 +5,7 @@
 #include "FD3D12Helper.h"
 #include "d3dx12.h"
 
-FD3D12Adapter::FD3D12Adapter(D3D12AdapterDesc& DescIn)
+FD3D12Adapter::FD3D12Adapter(FD3D12AdapterDesc& DescIn)
 :OwningRHI(nullptr)
 ,Desc(DescIn)
 ,Device(nullptr)
@@ -41,7 +41,7 @@ void FD3D12Adapter::ShutDown()
 	D3DDevice.Reset();
 }
 
-void FD3D12Adapter::Initialize(D3D12DynamicRHI* RHI)
+void FD3D12Adapter::Initialize(FD3D12DynamicRHI* RHI)
 {
 	OwningRHI = RHI;
 	InitializeDevices();

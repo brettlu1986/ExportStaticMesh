@@ -1,8 +1,8 @@
-#include "AModel.h"
+#include "FMesh.h"
 #include "LDataComponent.h"
 #include "FRenderComponent.h"
 
-AModel::AModel()
+FMesh::FMesh()
 :DataComponent(nullptr)
 ,RenderComponent(nullptr)
 {
@@ -10,17 +10,17 @@ AModel::AModel()
 	RenderComponent = new FRenderComponent();
 }
 
-AModel::~AModel()
+FMesh::~FMesh()
 {
 }
 
-void AModel::Init()
+void FMesh::Init()
 {
 	DataComponent->Init();
 	RenderComponent->Init();
 }
 
-void AModel::Destroy()
+void FMesh::Destroy()
 {
 	DataComponent->Destroy();
 	RenderComponent->Destroy();

@@ -149,7 +149,7 @@
     <ClCompile Include="Private\ApplicationMain.cpp" />
     <ClCompile Include="Private\Engine\Common\LInput.cpp" />
     <ClCompile Include="Private\Engine\Common\LCamera.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\AModel.cpp" />
+    <ClCompile Include="Private\Engine\Renderer\FMesh.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FRenderComponent.cpp" />
     <ClCompile Include="Private\Engine\Renderer\LDataComponent.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Adapter.cpp" />
@@ -230,7 +230,7 @@
     <ClInclude Include="Public\ApplicationMain.h" />
     <ClInclude Include="Public\Engine\Common\LInput.h" />
     <ClInclude Include="Public\Engine\Common\LCamera.h" />
-    <ClInclude Include="Public\Engine\Renderer\AModel.h" />
+    <ClInclude Include="Public\Engine\Renderer\FMesh.h" />
     <ClInclude Include="Public\Engine\Renderer\FRenderComponent.h" />
     <ClInclude Include="Public\Engine\Renderer\LDataComponent.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Adapter.h" />

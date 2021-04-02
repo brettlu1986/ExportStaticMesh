@@ -8,9 +8,9 @@
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
-D3D12DynamicRHI* GD3D12RHI = nullptr;
+FD3D12DynamicRHI* GD3D12RHI = nullptr;
 
-bool D3D12DynamicRHIModule::IsSupported()
+bool FD3D12DynamicRHIModule::IsSupported()
 {
 	if(ChosenAdapter == nullptr)
 	{
@@ -19,13 +19,13 @@ bool D3D12DynamicRHIModule::IsSupported()
 	return ChosenAdapter != nullptr;
 }
 
-FDynamicRHI* D3D12DynamicRHIModule::CreateRHI()
+FDynamicRHI* FD3D12DynamicRHIModule::CreateRHI()
 {
-	GD3D12RHI = new D3D12DynamicRHI(ChosenAdapter);
+	GD3D12RHI = new FD3D12DynamicRHI(ChosenAdapter);
 	return GD3D12RHI;
 }
 
-void D3D12DynamicRHIModule::FindAdapter()
+void FD3D12DynamicRHIModule::FindAdapter()
 {
 #if defined(_DEBUG)
 	// Enable the debug layer (requires the Graphics Tools "optional feature").
@@ -97,18 +97,18 @@ void D3D12DynamicRHIModule::FindAdapter()
 			}
 		}
 	}
-	D3D12AdapterDesc CurrentAdapter(Desc, Index, MaxSupportedFeatureLevel, pDevice->GetNodeCount());
+	FD3D12AdapterDesc CurrentAdapter(Desc, Index, MaxSupportedFeatureLevel, pDevice->GetNodeCount());
 	ChosenAdapter = new FD3D12Adapter(CurrentAdapter);
 	pDevice->Release();
 }
 
 /////////////////////////// dynamic RHI implement
-D3D12DynamicRHI::D3D12DynamicRHI(FD3D12Adapter* ChosenAdapterIn)
+FD3D12DynamicRHI::FD3D12DynamicRHI(FD3D12Adapter* ChosenAdapterIn)
 {
 	ChosenAdapter = ChosenAdapterIn;
 }
 
-void D3D12DynamicRHI::Init() 
+void FD3D12DynamicRHI::Init() 
 {
 	if(ChosenAdapter)
 	{
@@ -116,7 +116,7 @@ void D3D12DynamicRHI::Init()
 	}
 }
 
-void D3D12DynamicRHI::ShutDown()
+void FD3D12DynamicRHI::ShutDown()
 {
 	if(ChosenAdapter)
 	{
@@ -126,135 +126,135 @@ void D3D12DynamicRHI::ShutDown()
 }
 
 
-FGenericFence* D3D12DynamicRHI::RHICreateFence(const std::string& Name) 
+FGenericFence* FD3D12DynamicRHI::RHICreateFence(const std::string& Name) 
 {
 	return new FD3D12Fence(Name, ChosenAdapter);
 }
 
 
-void D3D12DynamicRHI::RHICreateViewPort(FRHIViewPort& ViewPort)
+void FD3D12DynamicRHI::RHICreateViewPort(FRHIViewPort& ViewPort)
 {
 	ChosenAdapter->SetViewPort(ViewPort);
 	FRHIScissorRect Rect = FRHIScissorRect(0, 0, static_cast<LONG>(ViewPort.Width), static_cast<LONG>(ViewPort.Height));
 	ChosenAdapter->SetScissorRect(Rect);
 }
 
-void D3D12DynamicRHI::RHICreateSwapObject(FRHISwapObjectInfo& SwapInfo) 
+void FD3D12DynamicRHI::RHICreateSwapObject(FRHISwapObjectInfo& SwapInfo) 
 {
 	ChosenAdapter->CreateSwapChain(SwapInfo);
 }
 
-void D3D12DynamicRHI::RHICreatePiplineStateObject(FRHIPiplineStateInitializer& Initializer) 
+void FD3D12DynamicRHI::RHICreatePiplineStateObject(FRHIPiplineStateInitializer& Initializer) 
 {
 	ChosenAdapter->CreatePso(Initializer);
 }
 
-void D3D12DynamicRHI::RHIReadShaderDataFromFile(std::wstring FileName, byte** Data, UINT* Size)
+void FD3D12DynamicRHI::RHIReadShaderDataFromFile(std::wstring FileName, byte** Data, UINT* Size)
 {
 	ThrowIfFailed(ReadDataFromFile(FileName.c_str(), Data, Size));
 }
 
-FD3D12ResourceManager* D3D12DynamicRHI::GetResourceManager()
+FD3D12ResourceManager* FD3D12DynamicRHI::GetResourceManager()
 {
 	FD3D12Device* Device = ChosenAdapter->GetDevice();
 	return Device->GetResourceManager();
 }
 
-void D3D12DynamicRHI::RHICreateRenderTarget(UINT TargetCount)
+void FD3D12DynamicRHI::RHICreateRenderTarget(UINT TargetCount)
 {
 	GetResourceManager()->CreateRenderTarget(TargetCount);
 }
 
-void D3D12DynamicRHI::RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
+void FD3D12DynamicRHI::RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
 {
 	GetResourceManager()->CreateConstantBuffer(BufferSize, pDataFrom, DataSize);
 }
 
-void D3D12DynamicRHI::RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize)
+void FD3D12DynamicRHI::RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize)
 {
 	GetResourceManager()->UpdateConstantBufferData(pUpdateData, DataSize);
 }
 
-void D3D12DynamicRHI::RHICreateDepthStencilBuffer(UINT Width, UINT Height) 
+void FD3D12DynamicRHI::RHICreateDepthStencilBuffer(UINT Width, UINT Height) 
 {
 	GetResourceManager()->CreateDepthStencilBuffer(Width, Height);
 }
 
-FRHIView* D3D12DynamicRHI::RHICreateVertexBufferView(const void* InitData, UINT StrideInByte, UINT DataSize)
+FRHIView* FD3D12DynamicRHI::RHICreateVertexBufferView(const void* InitData, UINT StrideInByte, UINT DataSize)
 {
 	return GetResourceManager()->CreateVertexBufferView(InitData, StrideInByte, DataSize);
 }
 
-FRHIView* D3D12DynamicRHI::RHICreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, bool bUseHalfInt32)
+FRHIView* FD3D12DynamicRHI::RHICreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, bool bUseHalfInt32)
 {
 	return GetResourceManager()->CreateIndexBufferView(InitData, DataSize, IndicesCount, bUseHalfInt32);
 }
 
-FRHIView* D3D12DynamicRHI::RHICreateShaderResourceView(std::wstring TextureName)
+FRHIView* FD3D12DynamicRHI::RHICreateShaderResourceView(std::wstring TextureName)
 {
 	return GetResourceManager()->CreateShaderResourceView(TextureName);
 }
 
-FRHICommandList& D3D12DynamicRHI::RHIGetCommandList(UINT Index)
+FRHICommandList& FD3D12DynamicRHI::RHIGetCommandList(UINT Index)
 {
 	return ChosenAdapter->GetDevice()->GetCommandListManager()->GetCommandList(Index);
 }
 
-void D3D12DynamicRHI::RHIExcuteCommandList(FRHICommandList& CommandList)
+void FD3D12DynamicRHI::RHIExcuteCommandList(FRHICommandList& CommandList)
 {
 	CommandList.Close();
 	CommandList.Excute();
 }
 
-void D3D12DynamicRHI::RHICloseCommandList(FRHICommandList& CommandList)
+void FD3D12DynamicRHI::RHICloseCommandList(FRHICommandList& CommandList)
 {
 	CommandList.Close();
 }
 
-void D3D12DynamicRHI::RHISignalCurrentFence()
+void FD3D12DynamicRHI::RHISignalCurrentFence()
 {
 	FD3D12Fence* Fence = ChosenAdapter->GetFence();
 	Fence->SignalCurrentFence();
 }
 
-bool D3D12DynamicRHI::RHIIsFenceComplete()
+bool FD3D12DynamicRHI::RHIIsFenceComplete()
 {
 	FD3D12Fence* Fence = ChosenAdapter->GetFence();
 	return Fence->IsFenceComplete();
 }
 
-void D3D12DynamicRHI::RHIResetCommandList(FRHICommandList& CommandList)
+void FD3D12DynamicRHI::RHIResetCommandList(FRHICommandList& CommandList)
 {
 	CommandList.Reset();
 }
 
-void D3D12DynamicRHI::RHISetCurrentViewPortAndScissorRect(FRHICommandList& CommandList)
+void FD3D12DynamicRHI::RHISetCurrentViewPortAndScissorRect(FRHICommandList& CommandList)
 {
 	CommandList.SetViewPort();
 	CommandList.SetScissorRect();
 }
 
-void D3D12DynamicRHI::RHITransitionToState(FRHICommandList& CommandList, UINT TargetFrame, ETransitionState State)
+void FD3D12DynamicRHI::RHITransitionToState(FRHICommandList& CommandList, UINT TargetFrame, ETransitionState State)
 {
 	CommandList.TransitionToState(TargetFrame, State);
 }
 
-void D3D12DynamicRHI::RHIClearRenderTargetAndDepthStencilView(FRHICommandList& CommandList, UINT TargetFrame, FRHIColor ClearColor)
+void FD3D12DynamicRHI::RHIClearRenderTargetAndDepthStencilView(FRHICommandList& CommandList, UINT TargetFrame, FRHIColor ClearColor)
 {
 	CommandList.ClearRenderTargetAndDepthStencilView(TargetFrame, ClearColor);
 }
 
- void D3D12DynamicRHI::RHISetGraphicRootDescripterTable(FRHICommandList& CommandList)
+ void FD3D12DynamicRHI::RHISetGraphicRootDescripterTable(FRHICommandList& CommandList)
  {
 	 CommandList.SetGraphicRootDescripterTable();
  }
 
- void D3D12DynamicRHI::RHIDrawWithVertexAndIndexBufferView(FRHICommandList& CommandList, FRHIView* VertexBufferView, FRHIView* IndexBufferView)
+ void FD3D12DynamicRHI::RHIDrawWithVertexAndIndexBufferView(FRHICommandList& CommandList, FRHIView* VertexBufferView, FRHIView* IndexBufferView)
  {
 	 CommandList.DrawWithVertexAndIndexBufferView(VertexBufferView, IndexBufferView);
  }
 
- void D3D12DynamicRHI::RHISwapObjectPresent()
+ void FD3D12DynamicRHI::RHISwapObjectPresent()
  {
 	 IDXGISwapChain* SwapChain = ChosenAdapter->GetSwapChain();
 	 SwapChain->Present(1, 0);

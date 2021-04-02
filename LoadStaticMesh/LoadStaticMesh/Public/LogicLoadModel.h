@@ -2,7 +2,7 @@
 
 #include "Logic.h"
 #include "LCamera.h"
-#include "AModel.h"
+#include "FMesh.h"
 #include "MathHelper.h"
 
 using namespace DirectX;
@@ -53,7 +53,7 @@ private:
 	ObjectConstants ObjectConstant;
 	UINT FrameIndex;
 
-	AModel ModelGeo;
+	FMesh ModelGeo;
 	LCamera MyCamera;
 	
 	XMFLOAT4X4 MtProj; 

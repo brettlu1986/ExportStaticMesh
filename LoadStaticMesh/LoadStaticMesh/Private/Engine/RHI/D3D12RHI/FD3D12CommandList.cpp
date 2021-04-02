@@ -75,7 +75,7 @@ void FD3D12CommandList::SetGraphicRootDescripterTable()
 {
 	FD3D12Adapter* Adapter = ParentDevice->GetParentAdapter();
 	FD3D12ResourceManager* SourceManager = ParentDevice->GetResourceManager();
-	D3DConstantBuffer* ConstantBuffer = SourceManager->GetConstantBuffer();
+	FD3DConstantBuffer* ConstantBuffer = SourceManager->GetConstantBuffer();
 	CommandList->SetGraphicsRootSignature(Adapter->GetRootSignature());
 	CommandList->SetPipelineState(Adapter->GetDefaultPiplineState());
 
@@ -91,8 +91,8 @@ void FD3D12CommandList::SetGraphicRootDescripterTable()
 
 void FD3D12CommandList::DrawWithVertexAndIndexBufferView(FRHIView* VertexBufferView, FRHIView* IndexBufferView)
 {
-	D3DVertexBufferView* VBufferView = (D3DVertexBufferView*)VertexBufferView;
-	D3DIndexBufferView* IBufferView = (D3DIndexBufferView*)IndexBufferView;
+	FD3DVertexBufferView* VBufferView = (FD3DVertexBufferView*)VertexBufferView;
+	FD3DIndexBufferView* IBufferView = (FD3DIndexBufferView*)IndexBufferView;
 	CommandList->IASetVertexBuffers(0, 1, &(VBufferView->GetVertexBufferView()));
 	CommandList->IASetIndexBuffer(&(IBufferView->GetIndexBufferView()));
 	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

@@ -5,9 +5,9 @@
 
 using namespace Microsoft::WRL;
 
-struct D3D12AdapterDesc
+struct FD3D12AdapterDesc
 {
-	D3D12AdapterDesc()
+	FD3D12AdapterDesc()
 		:AdapterIndex(-1)
 		,MaxSupportedFeatureLevel((D3D_FEATURE_LEVEL)0)
 		,NumDeviceNodes(0)
@@ -15,7 +15,7 @@ struct D3D12AdapterDesc
 	{
 	}
 
-	D3D12AdapterDesc(DXGI_ADAPTER_DESC1& DescIn, INT32 InAdapterIndex, D3D_FEATURE_LEVEL InMaxSupportedFeatureLevel, UINT NumNodes)
+	FD3D12AdapterDesc(DXGI_ADAPTER_DESC1& DescIn, INT32 InAdapterIndex, D3D_FEATURE_LEVEL InMaxSupportedFeatureLevel, UINT NumNodes)
 		: AdapterIndex(InAdapterIndex)
 		, MaxSupportedFeatureLevel(InMaxSupportedFeatureLevel)
 		, Desc(DescIn)
@@ -29,21 +29,21 @@ struct D3D12AdapterDesc
 	UINT NumDeviceNodes;
 };
 
-class D3D12DynamicRHI; 
+class FD3D12DynamicRHI; 
 class FD3D12Fence;
 class FD3D12Device;
 
 class FD3D12Adapter
 {
 public:
-	FD3D12Adapter(D3D12AdapterDesc& DescIn);
+	FD3D12Adapter(FD3D12AdapterDesc& DescIn);
 	virtual ~FD3D12Adapter() { }
 
 	void ShutDown();
 
-	void Initialize(D3D12DynamicRHI* RHI);
+	void Initialize(FD3D12DynamicRHI* RHI);
 
-	D3D12DynamicRHI* GetOwningRHI() const { return OwningRHI; }
+	FD3D12DynamicRHI* GetOwningRHI() const { return OwningRHI; }
 	IDXGIAdapter1* GetAdapter() const { return DxgiAdapter.Get(); }
 
 	ID3D12Device* GetD3DDevice() const { return D3DDevice.Get(); }
@@ -88,8 +88,8 @@ private:
 	void CreateSignature();
 	void CreateSampler();
 
-	D3D12AdapterDesc Desc;
-	D3D12DynamicRHI* OwningRHI;
+	FD3D12AdapterDesc Desc;
+	FD3D12DynamicRHI* OwningRHI;
 
 	FD3D12Fence* Fence;
 	FD3D12Device* Device;

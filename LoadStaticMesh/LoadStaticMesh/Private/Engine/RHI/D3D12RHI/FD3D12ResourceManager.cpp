@@ -68,7 +68,7 @@ void FD3D12ResourceManager::CreateRenderTarget(UINT TargetCount)
 {
 	if(!RenderTarget)
 	{
-		RenderTarget = new D3DRenderTarget(ParentDevice);
+		RenderTarget = new FD3DRenderTarget(ParentDevice);
 		RenderTarget->Initialize();
 		RenderTarget->SetRenderTargetCount(TargetCount);
 	}
@@ -78,7 +78,7 @@ void FD3D12ResourceManager::CreateConstantBuffer(UINT BufferSize, void* pDataFro
 {
 	if(!ConstantBuffer)
 	{
-		ConstantBuffer = new D3DConstantBuffer(ParentDevice);
+		ConstantBuffer = new FD3DConstantBuffer(ParentDevice);
 		ConstantBuffer->Initialize();
 		ConstantBuffer->SetConstantBufferInfo(BufferSize, pDataFrom, DataSize);
 	}
@@ -98,7 +98,7 @@ void FD3D12ResourceManager::CreateDepthStencilBuffer(UINT Width, UINT Height)
 {
 	if(!DepthStencilBuffer)
 	{
-		DepthStencilBuffer = new D3DDepthStencilBuffer(ParentDevice);
+		DepthStencilBuffer = new FD3DDepthStencilBuffer(ParentDevice);
 		DepthStencilBuffer->Initialize();
 		DepthStencilBuffer->SetDepthStencilSize(Width, Height);
 	}
@@ -109,8 +109,8 @@ void FD3D12ResourceManager::CreateConstantBufferView()
 {
 	if(ConstantBuffer)
 	{
-		ID3D12Resource* D3dConstantBuffer = ConstantBuffer->GetD3DConstantBuffer();
-		ConstantBufferView = new D3DConstantBufferView(ParentDevice, D3dConstantBuffer->GetGPUVirtualAddress(), 0, ConstantBuffer->GetBufferSize());
+		ID3D12Resource* FD3DConstantBuffer = ConstantBuffer->GetD3DConstantBuffer();
+		ConstantBufferView = new FD3DConstantBufferView(ParentDevice, FD3DConstantBuffer->GetGPUVirtualAddress(), 0, ConstantBuffer->GetBufferSize());
 	}
 }
 
@@ -118,34 +118,34 @@ void FD3D12ResourceManager::CreateDepthStencilView()
 {
 	if (DepthStencilBuffer)
 	{
-		ID3D12Resource* D3dDepthStencilBuffer = DepthStencilBuffer->GetD3DDepthStencilBuffer();
-		DepthStencilView = new D3DDepthStencilView(ParentDevice, D3dDepthStencilBuffer);
+		ID3D12Resource* FD3DDepthStencilBuffer = DepthStencilBuffer->GetD3DDepthStencilBuffer();
+		DepthStencilView = new FD3DDepthStencilView(ParentDevice, FD3DDepthStencilBuffer);
 	}
 }
 
 FRHIView* FD3D12ResourceManager::CreateVertexBufferView(const void* InitData, UINT StrideInByte, UINT DataSize)
 {
-	D3DVertexBuffer* VertexBuffer = new D3DVertexBuffer(ParentDevice, InitData, StrideInByte, DataSize);
+	FD3DVertexBuffer* VertexBuffer = new FD3DVertexBuffer(ParentDevice, InitData, StrideInByte, DataSize);
 	VertexBuffer->Initialize();
-	FRHIView* View = new D3DVertexBufferView(ParentDevice, VertexBuffer);
+	FRHIView* View = new FD3DVertexBufferView(ParentDevice, VertexBuffer);
 	VertexBufferViews.push_back(View);
 	return View;
 }
 
 FRHIView* FD3D12ResourceManager::CreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, bool bUseHalfInt32)
 {
-	D3DIndexBuffer* IndexBuffer = new D3DIndexBuffer(ParentDevice, InitData, DataSize, IndicesCount, bUseHalfInt32);
+	FD3DIndexBuffer* IndexBuffer = new FD3DIndexBuffer(ParentDevice, InitData, DataSize, IndicesCount, bUseHalfInt32);
 	IndexBuffer->Initialize();
-	FRHIView* View = new D3DIndexBufferView(ParentDevice, IndexBuffer);
+	FRHIView* View = new FD3DIndexBufferView(ParentDevice, IndexBuffer);
 	IndexBufferViews.push_back(View);
 	return View;
 }
 
 FRHIView* FD3D12ResourceManager::CreateShaderResourceView(std::wstring TextureName)
 {
-	D3DShaderResource* ShaderResource = new D3DShaderResource(ParentDevice, TextureName);
+	FD3DShaderResource* ShaderResource = new FD3DShaderResource(ParentDevice, TextureName);
 	ShaderResource->Initialize();
-	FRHIView* View = new D3DShaderResourceView(ParentDevice, ShaderResource);
+	FRHIView* View = new FD3DShaderResourceView(ParentDevice, ShaderResource);
 	ShaderResourceViews.push_back(View);
 	return View;
 }

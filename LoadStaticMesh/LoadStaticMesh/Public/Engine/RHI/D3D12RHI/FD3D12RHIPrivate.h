@@ -9,11 +9,11 @@
 using namespace Microsoft::WRL;
 
 
-class D3D12DynamicRHIModule : public IDynamicRHIModule
+class FD3D12DynamicRHIModule : public IDynamicRHIModule
 {
 public:
-	D3D12DynamicRHIModule() {}
-	~D3D12DynamicRHIModule() {}
+	FD3D12DynamicRHIModule() {}
+	~FD3D12DynamicRHIModule() {}
 
 	virtual bool IsSupported() override;
 	virtual FDynamicRHI* CreateRHI() override;
@@ -25,10 +25,10 @@ private:
 };
 
 class FD3D12ResourceManager;
-class D3D12DynamicRHI : public FDynamicRHI
+class FD3D12DynamicRHI : public FDynamicRHI
 {
 public:
-	D3D12DynamicRHI(FD3D12Adapter* ChosenAdapterIn);
+	FD3D12DynamicRHI(FD3D12Adapter* ChosenAdapterIn);
 
 	virtual void Init() override;
 	virtual void ShutDown() override;

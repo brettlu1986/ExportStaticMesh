@@ -5,13 +5,13 @@
 #include "stdafx.h"
 
 class FD3D12Device;
-class D3DRenderTarget;
-class D3DConstantBuffer;
-class D3DConstantBufferView;
-class D3DDepthStencilBuffer;
-class D3DDepthStencilView;
+class FD3DRenderTarget;
+class FD3DConstantBuffer;
+class FD3DConstantBufferView;
+class FD3DDepthStencilBuffer;
+class FD3DDepthStencilView;
 class FRHIView;
-class D3DShaderResource;
+class FD3DShaderResource;
 
 class FD3D12ResourceManager
 {
@@ -29,11 +29,11 @@ public:
 	FRHIView* CreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, bool bUseHalfInt32);
 	FRHIView* CreateShaderResourceView(std::wstring TextureName);
 
-	D3DRenderTarget* GetRenderTarget() const {
+	FD3DRenderTarget* GetRenderTarget() const {
 		return RenderTarget;
 	}
 
-	D3DConstantBuffer* GetConstantBuffer() const 
+	FD3DConstantBuffer* GetConstantBuffer() const 
 	{
 		return ConstantBuffer;
 	}
@@ -43,12 +43,12 @@ private:
 
 	FD3D12Device* ParentDevice;
 
-	D3DRenderTarget* RenderTarget;
-	D3DConstantBuffer* ConstantBuffer;
-	D3DConstantBufferView* ConstantBufferView;
+	FD3DRenderTarget* RenderTarget;
+	FD3DConstantBuffer* ConstantBuffer;
+	FD3DConstantBufferView* ConstantBufferView;
 
-	D3DDepthStencilBuffer* DepthStencilBuffer;
-	D3DDepthStencilView* DepthStencilView;
+	FD3DDepthStencilBuffer* DepthStencilBuffer;
+	FD3DDepthStencilView* DepthStencilView;
 
 	std::vector<FRHIView*> VertexBufferViews;
 	std::vector<FRHIView*> IndexBufferViews;

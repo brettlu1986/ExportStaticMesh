@@ -18,36 +18,36 @@ FD3DResource::~FD3DResource()
 {
 }
 
-D3DRenderTarget::D3DRenderTarget()
+FD3DRenderTarget::FD3DRenderTarget()
 :TargetCount(0)
 {
 	ResourceName = "RenderTarget";
 }
 
-D3DRenderTarget::D3DRenderTarget(FD3D12Device* InDevice)
+FD3DRenderTarget::FD3DRenderTarget(FD3D12Device* InDevice)
 :FD3DResource(InDevice)
 ,TargetCount(0)
 {
 	ResourceName = "RenderTarget";
 }
 
-D3DRenderTarget::~D3DRenderTarget()
+FD3DRenderTarget::~FD3DRenderTarget()
 {
 
 }
 
-void D3DRenderTarget::Initialize()
+void FD3DRenderTarget::Initialize()
 {
 	RtvDescriptorSize = ParentDevice->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 }
 
-CD3DX12_CPU_DESCRIPTOR_HANDLE D3DRenderTarget::GetRtvHandle(UINT TargetIndex)
+CD3DX12_CPU_DESCRIPTOR_HANDLE FD3DRenderTarget::GetRtvHandle(UINT TargetIndex)
 {
 	ComPtr<ID3D12DescriptorHeap> RtvHeap = ParentDevice->GetParentAdapter()->RtvHeap;
 	return CD3DX12_CPU_DESCRIPTOR_HANDLE(RtvHeap->GetCPUDescriptorHandleForHeapStart(), TargetIndex, RtvDescriptorSize);
 }
 
-void D3DRenderTarget::SetRenderTargetCount(UINT Count)
+void FD3DRenderTarget::SetRenderTargetCount(UINT Count)
 {
 	TargetCount = Count;
 	ComPtr<ID3D12DescriptorHeap> RtvHeap = ParentDevice->GetParentAdapter()->RtvHeap;
@@ -64,7 +64,7 @@ void D3DRenderTarget::SetRenderTargetCount(UINT Count)
 	}
 }
 
-void D3DRenderTarget::Destroy()
+void FD3DRenderTarget::Destroy()
 {
 	for(size_t i = 0; i < RenderTargets.size(); ++i)
 	{
@@ -74,35 +74,35 @@ void D3DRenderTarget::Destroy()
 }
 
 
-D3DConstantBuffer::D3DConstantBuffer()
+FD3DConstantBuffer::FD3DConstantBuffer()
 {
 	ResourceName = "ConstantBuffer";
 }
 
-D3DConstantBuffer::D3DConstantBuffer(FD3D12Device* InDevice)
+FD3DConstantBuffer::FD3DConstantBuffer(FD3D12Device* InDevice)
 	:FD3DResource(InDevice)
 	,pCbvDataBegin(nullptr)
 {	
 	ResourceName = "ConstantBuffer";
 }
 
-D3DConstantBuffer::~D3DConstantBuffer()
+FD3DConstantBuffer::~FD3DConstantBuffer()
 {
 
 }
 
-void D3DConstantBuffer::Destroy() 
+void FD3DConstantBuffer::Destroy() 
 {
 	ConstantBuffer->Unmap(0, nullptr);
 	ConstantBuffer.Reset();
 }
 
-void D3DConstantBuffer::Initialize() 
+void FD3DConstantBuffer::Initialize() 
 {
 	CbvSrvUavDescriptorSize = ParentDevice->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
-void D3DConstantBuffer::SetConstantBufferInfo(UINT InBufferSize, void* pDataFrom, UINT DataSize)
+void FD3DConstantBuffer::SetConstantBufferInfo(UINT InBufferSize, void* pDataFrom, UINT DataSize)
 {
 	BufferSize = InBufferSize;
 	const CD3DX12_HEAP_PROPERTIES ConstantProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
@@ -120,39 +120,39 @@ void D3DConstantBuffer::SetConstantBufferInfo(UINT InBufferSize, void* pDataFrom
 	NAME_D3D12_OBJECT(ConstantBuffer);
 }
 
-void D3DConstantBuffer::UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSize)
+void FD3DConstantBuffer::UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSize)
 {
 	memcpy(pCbvDataBegin, pDataUpdate, DataSize);
 }
 
 // dsv buffer
-D3DDepthStencilBuffer::D3DDepthStencilBuffer()
+FD3DDepthStencilBuffer::FD3DDepthStencilBuffer()
 {
 	ResourceName = "DepthStencilBuffer";
 }
 
-D3DDepthStencilBuffer::D3DDepthStencilBuffer(FD3D12Device* InDevice)
+FD3DDepthStencilBuffer::FD3DDepthStencilBuffer(FD3D12Device* InDevice)
 	:FD3DResource(InDevice)
 {
 	ResourceName = "DepthStencilBuffer";
 }
 
-D3DDepthStencilBuffer::~D3DDepthStencilBuffer()
+FD3DDepthStencilBuffer::~FD3DDepthStencilBuffer()
 {
 
 }
 
-void D3DDepthStencilBuffer::Destroy()
+void FD3DDepthStencilBuffer::Destroy()
 {
 	DepthStencilBuffer.Reset();
 }
 
-void D3DDepthStencilBuffer::Initialize()
+void FD3DDepthStencilBuffer::Initialize()
 {
 	DsvDescriptorSize = ParentDevice->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 }
 
-void D3DDepthStencilBuffer::SetDepthStencilSize(UINT Width, UINT Height)
+void FD3DDepthStencilBuffer::SetDepthStencilSize(UINT Width, UINT Height)
 {
 	D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
 	depthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
@@ -173,12 +173,12 @@ void D3DDepthStencilBuffer::SetDepthStencilSize(UINT Width, UINT Height)
 }
 
 
-D3DVertexBuffer::D3DVertexBuffer()
+FD3DVertexBuffer::FD3DVertexBuffer()
 {
 	ResourceName = "VertexBuffer";
 }
 
-D3DVertexBuffer::D3DVertexBuffer(FD3D12Device* InDevice, const void* InitData,UINT StrideInByte, UINT ByteSize)
+FD3DVertexBuffer::FD3DVertexBuffer(FD3D12Device* InDevice, const void* InitData,UINT StrideInByte, UINT ByteSize)
 	:FD3DResource(InDevice)
 	,StrideInByte(StrideInByte)
 	,ByteSize(ByteSize)
@@ -191,29 +191,29 @@ D3DVertexBuffer::D3DVertexBuffer(FD3D12Device* InDevice, const void* InitData,UI
 	NAME_D3D12_OBJECT(VertexUploadBuffer);
 }
 
-D3DVertexBuffer::~D3DVertexBuffer()
+FD3DVertexBuffer::~FD3DVertexBuffer()
 {
 	
 }
 
-void D3DVertexBuffer::Destroy()
+void FD3DVertexBuffer::Destroy()
 {
 	VertexBuffer.Reset();
 	VertexUploadBuffer.Reset();
 }
 
-void D3DVertexBuffer::Initialize() 
+void FD3DVertexBuffer::Initialize() 
 {
 	
 }
 
 
-D3DIndexBuffer::D3DIndexBuffer()
+FD3DIndexBuffer::FD3DIndexBuffer()
 {
 	ResourceName = "IndexBuffer";
 }
 
-D3DIndexBuffer::D3DIndexBuffer(FD3D12Device* InDevice, const void* InitData, UINT ByteSize, UINT IndicesCount, bool bUseHalfInt32)
+FD3DIndexBuffer::FD3DIndexBuffer(FD3D12Device* InDevice, const void* InitData, UINT ByteSize, UINT IndicesCount, bool bUseHalfInt32)
 :FD3DResource(InDevice)
 , bUseHalfInt32(bUseHalfInt32)
 , ByteSize(ByteSize)
@@ -226,29 +226,29 @@ D3DIndexBuffer::D3DIndexBuffer(FD3D12Device* InDevice, const void* InitData, UIN
 	NAME_D3D12_OBJECT(IndexBufferUpload);
 }
 
-D3DIndexBuffer::~D3DIndexBuffer()
+FD3DIndexBuffer::~FD3DIndexBuffer()
 {
 
 }
 
-void D3DIndexBuffer::Destroy() 
+void FD3DIndexBuffer::Destroy() 
 {
 	IndexBuffer.Reset();
 	IndexBufferUpload.Reset();
 }
 
-void D3DIndexBuffer::Initialize()
+void FD3DIndexBuffer::Initialize()
 {
 
 }
 
 
-D3DShaderResource::D3DShaderResource()
+FD3DShaderResource::FD3DShaderResource()
 {
 	ResourceName = "ShaderResource";
 }
 
-D3DShaderResource::D3DShaderResource(FD3D12Device* InDevice, std::wstring TextureName)
+FD3DShaderResource::FD3DShaderResource(FD3D12Device* InDevice, std::wstring TextureName)
 :FD3DResource(InDevice)
 {
 	ResourceName = "ShaderResource";
@@ -258,18 +258,18 @@ D3DShaderResource::D3DShaderResource(FD3D12Device* InDevice, std::wstring Textur
 	NAME_D3D12_OBJECT(TextureResourceUpload);
 }
 
-D3DShaderResource::~D3DShaderResource()
+FD3DShaderResource::~FD3DShaderResource()
 {
 
 }
 
-void D3DShaderResource::Destroy()
+void FD3DShaderResource::Destroy()
 {
 	TextureResource.Reset();
 	TextureResourceUpload.Reset();
 }
 
-void D3DShaderResource::Initialize()
+void FD3DShaderResource::Initialize()
 {
 	CbvSrvUavDescriptorSize = ParentDevice->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
@@ -280,26 +280,26 @@ void D3DShaderResource::Initialize()
 
 
 
-D3DView::D3DView()
+FD3DView::FD3DView()
 :FRHIView()
 ,ParentDevice(nullptr)
 {
 }
 
-D3DView::D3DView(FD3D12Device* InDevice, UINT64 InLocation, UINT InBytes, UINT InSizeBytes)
+FD3DView::FD3DView(FD3D12Device* InDevice, UINT64 InLocation, UINT InBytes, UINT InSizeBytes)
 : FRHIView(InLocation, InBytes, InSizeBytes)
 , ParentDevice(InDevice)
 {
 }
 
-D3DView::~D3DView()
+FD3DView::~FD3DView()
 {
 
 }
 
 
-D3DConstantBufferView::D3DConstantBufferView(FD3D12Device* InDevice, UINT64 InLocation, UINT InBytes, UINT InSizeBytes)
-:D3DView(InDevice, InLocation, InBytes, InSizeBytes)
+FD3DConstantBufferView::FD3DConstantBufferView(FD3D12Device* InDevice, UINT64 InLocation, UINT InBytes, UINT InSizeBytes)
+:FD3DView(InDevice, InLocation, InBytes, InSizeBytes)
 {
 	ComPtr<ID3D12DescriptorHeap> CbvSrvHeap = ParentDevice->GetParentAdapter()->CbvSrvHeap;
 	D3D12_CONSTANT_BUFFER_VIEW_DESC CbvDesc = {};
@@ -308,13 +308,13 @@ D3DConstantBufferView::D3DConstantBufferView(FD3D12Device* InDevice, UINT64 InLo
 	ParentDevice->GetDevice()->CreateConstantBufferView(&CbvDesc, CbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
-D3DConstantBufferView::~D3DConstantBufferView()
+FD3DConstantBufferView::~FD3DConstantBufferView()
 {
 	
 }
 
 
-D3DDepthStencilView::D3DDepthStencilView(FD3D12Device* InDevice, ID3D12Resource* DepthStencilBuffer)
+FD3DDepthStencilView::FD3DDepthStencilView(FD3D12Device* InDevice, ID3D12Resource* DepthStencilBuffer)
 {
 	ParentDevice = InDevice;
 
@@ -327,13 +327,13 @@ D3DDepthStencilView::D3DDepthStencilView(FD3D12Device* InDevice, ID3D12Resource*
 	ParentDevice->GetDevice()->CreateDepthStencilView(DepthStencilBuffer, &depthStencilDesc, DsvHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
-D3DDepthStencilView::~D3DDepthStencilView()
+FD3DDepthStencilView::~FD3DDepthStencilView()
 {
 
 }
 
 
-D3DVertexBufferView::D3DVertexBufferView(FD3D12Device* InDevice, D3DVertexBuffer* InVertexBuffer)
+FD3DVertexBufferView::FD3DVertexBufferView(FD3D12Device* InDevice, FD3DVertexBuffer* InVertexBuffer)
 {
 	ParentDevice = InDevice;
 	VertexBuffer = InVertexBuffer;
@@ -342,12 +342,12 @@ D3DVertexBufferView::D3DVertexBufferView(FD3D12Device* InDevice, D3DVertexBuffer
 	VertexBufferView.SizeInBytes = VertexBuffer->GetByteSize();
 }
 
-D3DVertexBufferView::~D3DVertexBufferView()
+FD3DVertexBufferView::~FD3DVertexBufferView()
 {
 
 }
 
-void D3DVertexBufferView::Clear()
+void FD3DVertexBufferView::Clear()
 {
 	if (VertexBuffer)
 	{
@@ -358,7 +358,7 @@ void D3DVertexBufferView::Clear()
 }
 
 
-D3DIndexBufferView::D3DIndexBufferView(FD3D12Device* InDevice, D3DIndexBuffer* InIndexBuffer)
+FD3DIndexBufferView::FD3DIndexBufferView(FD3D12Device* InDevice, FD3DIndexBuffer* InIndexBuffer)
 {
 	ParentDevice = InDevice;
 	IndexBuffer = InIndexBuffer;
@@ -368,12 +368,12 @@ D3DIndexBufferView::D3DIndexBufferView(FD3D12Device* InDevice, D3DIndexBuffer* I
 	IndexBufferView.SizeInBytes = IndexBuffer->GetDataSize();
 }
 
-D3DIndexBufferView::~D3DIndexBufferView()
+FD3DIndexBufferView::~FD3DIndexBufferView()
 {
 
 }
 
-void D3DIndexBufferView::Clear()
+void FD3DIndexBufferView::Clear()
 {
 	if (IndexBuffer)
 	{
@@ -383,7 +383,7 @@ void D3DIndexBufferView::Clear()
 	}
 }
 
-D3DShaderResourceView::D3DShaderResourceView(FD3D12Device* InDevice, D3DShaderResource* InShaderResource)
+FD3DShaderResourceView::FD3DShaderResourceView(FD3D12Device* InDevice, FD3DShaderResource* InShaderResource)
 {
 	ParentDevice = InDevice;
 	ShaderResource = InShaderResource;
@@ -400,12 +400,12 @@ D3DShaderResourceView::D3DShaderResourceView(FD3D12Device* InDevice, D3DShaderRe
 	ParentDevice->GetDevice()->CreateShaderResourceView(ShaderResource->GetD3DShaderResource(), &srvDesc, CbvSrvHandle);
 }
 
-D3DShaderResourceView::~D3DShaderResourceView()
+FD3DShaderResourceView::~FD3DShaderResourceView()
 {
 
 }
 
-void D3DShaderResourceView::Clear()
+void FD3DShaderResourceView::Clear()
 {
 	if (ShaderResource)
 	{

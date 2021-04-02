@@ -3,11 +3,11 @@
 #include "LDataComponent.h"
 #include "FRenderComponent.h"
 
-class AModel
+class FMesh
 {
 public:
-	AModel();
-	~AModel();
+	FMesh();
+	~FMesh();
 
 	void Init();
 	void Destroy();
