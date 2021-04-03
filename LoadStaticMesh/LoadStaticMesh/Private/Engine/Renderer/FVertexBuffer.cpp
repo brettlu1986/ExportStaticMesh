@@ -2,8 +2,17 @@
 #include "FVertexBuffer.h"
 
 FVertexBuffer::FVertexBuffer()
-	:VertexCount(0)
-	, VertexDataSize(0)
+:FRenderResource(E_RESOURCE_TYPE::TYPE_VERTEX_BUFFER)
+,VertexCount(0)
+,VertexDataSize(0)
+{
+
+}
+
+FVertexBuffer::FVertexBuffer(E_RESOURCE_TYPE Type)
+:FRenderResource(Type)
+,VertexCount(0)
+,VertexDataSize(0)
 {
 
 }
@@ -26,3 +35,14 @@ void FVertexBuffer::Init(const char* DataSource, UINT DataSize, UINT DataCount)
 FVertexBuffer::~FVertexBuffer()
 {
 }
+
+void FVertexBuffer::Destroy()
+{
+
+}
+
+void FVertexBuffer::Initialize()
+{
+
+}
+

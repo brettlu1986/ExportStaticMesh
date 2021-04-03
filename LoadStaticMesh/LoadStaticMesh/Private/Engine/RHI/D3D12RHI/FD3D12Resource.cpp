@@ -173,76 +173,6 @@ void FD3DDepthStencilBuffer::SetDepthStencilSize(UINT Width, UINT Height)
 }
 
 
-FD3DVertexBuffer::FD3DVertexBuffer()
-{
-	ResourceName = "VertexBuffer";
-}
-
-FD3DVertexBuffer::FD3DVertexBuffer(FD3D12Device* InDevice, const void* InitData,UINT StrideInByte, UINT ByteSize)
-	:FD3DResource(InDevice)
-	,StrideInByte(StrideInByte)
-	,ByteSize(ByteSize)
-{
-	ResourceName = "VertexBuffer";
-	
-	ID3D12GraphicsCommandList* CommandList = ParentDevice->GetCommandListManager()->GetDefaultCommandList();
-	CreateBuffer(ParentDevice->GetDevice(), CommandList, InitData, ByteSize, VertexBuffer, VertexUploadBuffer);
-	NAME_D3D12_OBJECT(VertexBuffer);
-	NAME_D3D12_OBJECT(VertexUploadBuffer);
-}
-
-FD3DVertexBuffer::~FD3DVertexBuffer()
-{
-	
-}
-
-void FD3DVertexBuffer::Destroy()
-{
-	VertexBuffer.Reset();
-	VertexUploadBuffer.Reset();
-}
-
-void FD3DVertexBuffer::Initialize() 
-{
-	
-}
-
-
-FD3DIndexBuffer::FD3DIndexBuffer()
-{
-	ResourceName = "IndexBuffer";
-}
-
-FD3DIndexBuffer::FD3DIndexBuffer(FD3D12Device* InDevice, const void* InitData, UINT ByteSize, UINT IndicesCount, E_INDEX_TYPE IndexType)
-:FD3DResource(InDevice)
-, IndexType(IndexType)
-, ByteSize(ByteSize)
-, IndicesCount(IndicesCount)
-{
-	ResourceName = "IndexBuffer";
-	ID3D12GraphicsCommandList* CommandList = ParentDevice->GetCommandListManager()->GetDefaultCommandList();
-	CreateBuffer(ParentDevice->GetDevice(), CommandList, InitData, ByteSize, IndexBuffer, IndexBufferUpload);
-	NAME_D3D12_OBJECT(IndexBuffer);
-	NAME_D3D12_OBJECT(IndexBufferUpload);
-}
-
-FD3DIndexBuffer::~FD3DIndexBuffer()
-{
-
-}
-
-void FD3DIndexBuffer::Destroy() 
-{
-	IndexBuffer.Reset();
-	IndexBufferUpload.Reset();
-}
-
-void FD3DIndexBuffer::Initialize()
-{
-
-}
-
-
 FD3DShaderResource::FD3DShaderResource()
 {
 	ResourceName = "ShaderResource";
@@ -333,56 +263,6 @@ FD3DDepthStencilView::~FD3DDepthStencilView()
 }
 
 
-FD3DVertexBufferView::FD3DVertexBufferView(FD3D12Device* InDevice, FD3DVertexBuffer* InVertexBuffer)
-{
-	ParentDevice = InDevice;
-	VertexBuffer = InVertexBuffer;
-	VertexBufferView.BufferLocation = VertexBuffer->GetD3DVertexBuffer()->GetGPUVirtualAddress();
-	VertexBufferView.StrideInBytes = VertexBuffer->GetStrideInByte();
-	VertexBufferView.SizeInBytes = VertexBuffer->GetByteSize();
-}
-
-FD3DVertexBufferView::~FD3DVertexBufferView()
-{
-
-}
-
-void FD3DVertexBufferView::Clear()
-{
-	if (VertexBuffer)
-	{
-		VertexBuffer->Destroy();
-		delete VertexBuffer;
-		VertexBuffer = nullptr;
-	}
-}
-
-
-FD3DIndexBufferView::FD3DIndexBufferView(FD3D12Device* InDevice, FD3DIndexBuffer* InIndexBuffer)
-{
-	ParentDevice = InDevice;
-	IndexBuffer = InIndexBuffer;
-
-	IndexBufferView.BufferLocation = IndexBuffer->GetD3DIndexBuffer()->GetGPUVirtualAddress();
-	IndexBufferView.Format = IndexBuffer->GetIndexType() == E_INDEX_TYPE::TYPE_UINT_16 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
-	IndexBufferView.SizeInBytes = IndexBuffer->GetDataSize();
-}
-
-FD3DIndexBufferView::~FD3DIndexBufferView()
-{
-
-}
-
-void FD3DIndexBufferView::Clear()
-{
-	if (IndexBuffer)
-	{
-		IndexBuffer->Destroy();
-		delete IndexBuffer;
-		IndexBuffer = nullptr;
-	}
-}
-
 FD3DShaderResourceView::FD3DShaderResourceView(FD3D12Device* InDevice, FD3DShaderResource* InShaderResource)
 {
 	ParentDevice = InDevice;
@@ -414,3 +294,87 @@ void FD3DShaderResourceView::Clear()
 		ShaderResource = nullptr;
 	}
 }
+
+
+
+/// ///////////////////////////////////
+#include "FRenderResource.h"
+
+FD3D12IndexBuffer::FD3D12IndexBuffer()
+:FIndexBuffer(E_RESOURCE_TYPE::TYPE_INDEX_BUFFER)
+{
+
+}
+
+FD3D12IndexBuffer::~FD3D12IndexBuffer()
+{
+	IndexBuffer.Reset();
+	IndexBufferUpload.Reset();
+}
+
+void FD3D12IndexBuffer::Destroy()
+{
+	IndexBuffer.Reset(); 
+	IndexBufferUpload.Reset();
+}
+
+void FD3D12IndexBuffer::InitGPUIndexBuffer(FD3D12Adapter* Adapter)
+{
+	ID3D12GraphicsCommandList* CommandList = Adapter->GetDevice()->GetCommandListManager()->GetDefaultCommandList();
+	CreateBuffer(Adapter->GetD3DDevice(), CommandList, GetIndicesData(), GetIndicesDataSize(), IndexBuffer, IndexBufferUpload);
+	NAME_D3D12_OBJECT(IndexBuffer);
+	NAME_D3D12_OBJECT(IndexBufferUpload);
+
+	IndexBufferView.BufferLocation = IndexBuffer->GetGPUVirtualAddress();
+	IndexBufferView.Format = GetIndicesType() == E_INDEX_TYPE::TYPE_UINT_16 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+	IndexBufferView.SizeInBytes = GetIndicesDataSize();
+}
+
+void FD3D12IndexBuffer::Initialize()
+{
+
+}
+
+
+
+/// //////////////////////////////////
+FD3D12VertexBuffer::FD3D12VertexBuffer()
+:FVertexBuffer(E_RESOURCE_TYPE::TYPE_VERTEX_BUFFER)
+,VertexBufferView(D3D12_VERTEX_BUFFER_VIEW())
+{
+
+}
+
+FD3D12VertexBuffer::~FD3D12VertexBuffer()
+{
+	VertexBuffer.Reset();
+	VertexUploadBuffer.Reset();
+}
+
+void FD3D12VertexBuffer::Destroy()
+{
+	VertexBuffer.Reset();
+	VertexUploadBuffer.Reset();
+}
+
+void FD3D12VertexBuffer::Initialize()
+{
+
+}
+
+void FD3D12VertexBuffer::InitGPUVertexBufferView(FD3D12Adapter* Adapter)
+{
+	ID3D12GraphicsCommandList* CommandList = Adapter->GetDevice()->GetCommandListManager()->GetDefaultCommandList();
+	std::vector<FVertex_PositionTex0> TriangleVertices;
+	GetPositionTex0Input(TriangleVertices);
+	const UINT VertexBufferSize = static_cast<UINT>(TriangleVertices.size() * sizeof(FVertex_PositionTex0));
+	const UINT StrideInByte = sizeof(FVertex_PositionTex0);
+	CreateBuffer(Adapter->GetD3DDevice(), CommandList, TriangleVertices.data(), VertexBufferSize, VertexBuffer, VertexUploadBuffer);
+	NAME_D3D12_OBJECT(VertexBuffer);
+	NAME_D3D12_OBJECT(VertexUploadBuffer);
+
+	VertexBufferView.BufferLocation = VertexBuffer->GetGPUVirtualAddress();
+	VertexBufferView.StrideInBytes = StrideInByte;
+	VertexBufferView.SizeInBytes = VertexBufferSize;
+}
+

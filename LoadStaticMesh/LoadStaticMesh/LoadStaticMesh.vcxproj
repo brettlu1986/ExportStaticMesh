@@ -151,6 +151,7 @@
     <ClCompile Include="Private\Engine\Common\LCamera.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FIndexBuffer.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FMesh.cpp" />
+    <ClCompile Include="Private\Engine\Renderer\FRenderResource.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FSceneRenderer.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FRenderer.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FScene.cpp" />
@@ -238,6 +239,7 @@
     <ClInclude Include="Public\Engine\Renderer\FIndexBuffer.h" />
     <ClInclude Include="Public\Engine\Renderer\FMesh.h" />
     <ClInclude Include="Public\Engine\Renderer\FRenderer.h" />
+    <ClInclude Include="Public\Engine\Renderer\FRenderResource.h" />
     <ClInclude Include="Public\Engine\Renderer\FScene.h" />
     <ClInclude Include="Public\Engine\Renderer\FTexture.h" />
     <ClInclude Include="Public\Engine\Renderer\FVertexBuffer.h" />

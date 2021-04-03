@@ -89,16 +89,6 @@ void FD3D12CommandList::SetGraphicRootDescripterTable()
 	CommandList->SetGraphicsRootDescriptorTable(2, Adapter->SamplerHeap->GetGPUDescriptorHandleForHeapStart());
 }
 
-void FD3D12CommandList::DrawWithVertexAndIndexBufferView(FRHIView* VertexBufferView, FRHIView* IndexBufferView)
-{
-	FD3DVertexBufferView* VBufferView = (FD3DVertexBufferView*)VertexBufferView;
-	FD3DIndexBufferView* IBufferView = (FD3DIndexBufferView*)IndexBufferView;
-	CommandList->IASetVertexBuffers(0, 1, &(VBufferView->GetVertexBufferView()));
-	CommandList->IASetIndexBuffer(&(IBufferView->GetIndexBufferView()));
-	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	CommandList->DrawIndexedInstanced(IBufferView->GetIndicesCount(), 1, 0, 0, 0);
-}
-
 void FD3D12CommandList::Clear()
 {
 	if(CurrentCommandAllocator)

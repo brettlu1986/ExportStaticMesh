@@ -5,11 +5,12 @@
 #include "FD3D12Device.h"
 #include "FD3D12ResourceManager.h"
 #include "FDefine.h"
+#include "FD3D12Resource.h"
+
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
-FD3D12DynamicRHI* GD3D12RHI = nullptr;
 
 bool FD3D12DynamicRHIModule::IsSupported()
 {
@@ -22,8 +23,7 @@ bool FD3D12DynamicRHIModule::IsSupported()
 
 FDynamicRHI* FD3D12DynamicRHIModule::CreateRHI()
 {
-	GD3D12RHI = new FD3D12DynamicRHI(ChosenAdapter);
-	return GD3D12RHI;
+	return new FD3D12DynamicRHI(ChosenAdapter);
 }
 
 void FD3D12DynamicRHIModule::FindAdapter()
@@ -181,15 +181,6 @@ void FD3D12DynamicRHI::RHICreateDepthStencilBuffer(UINT Width, UINT Height)
 	GetResourceManager()->CreateDepthStencilBuffer(Width, Height);
 }
 
-FRHIView* FD3D12DynamicRHI::RHICreateVertexBufferView(const void* InitData, UINT StrideInByte, UINT DataSize)
-{
-	return GetResourceManager()->CreateVertexBufferView(InitData, StrideInByte, DataSize);
-}
-
-FRHIView* FD3D12DynamicRHI::RHICreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, E_INDEX_TYPE IndexType)
-{
-	return GetResourceManager()->CreateIndexBufferView(InitData, DataSize, IndicesCount, IndexType);
-}
 
 FRHIView* FD3D12DynamicRHI::RHICreateShaderResourceView(std::wstring TextureName)
 {
@@ -250,13 +241,41 @@ void FD3D12DynamicRHI::RHIClearRenderTargetAndDepthStencilView(FRHICommandList& 
 	 CommandList.SetGraphicRootDescripterTable();
  }
 
- void FD3D12DynamicRHI::RHIDrawWithVertexAndIndexBufferView(FRHICommandList& CommandList, FRHIView* VertexBufferView, FRHIView* IndexBufferView)
- {
-	 CommandList.DrawWithVertexAndIndexBufferView(VertexBufferView, IndexBufferView);
- }
 
  void FD3D12DynamicRHI::RHISwapObjectPresent()
  {
 	 IDXGISwapChain* SwapChain = ChosenAdapter->GetSwapChain();
 	 SwapChain->Present(1, 0);
  }
+
+
+ /// /////////////////
+ FIndexBuffer* FD3D12DynamicRHI::RHICreateIndexBuffer()
+ {
+	return new FD3D12IndexBuffer();
+ }
+
+ FVertexBuffer* FD3D12DynamicRHI::RHICreateVertexBuffer()
+ {
+	return new FD3D12VertexBuffer();
+ }
+
+void FD3D12DynamicRHI::RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer)
+{
+	FD3D12IndexBuffer* D3DIndexBuffer = static_cast<FD3D12IndexBuffer*>(IndexBuffer);
+	FD3D12VertexBuffer* D3DVertexBuffer = static_cast<FD3D12VertexBuffer*>(VertexBuffer);
+	D3DIndexBuffer->InitGPUIndexBuffer(ChosenAdapter);
+	D3DVertexBuffer->InitGPUVertexBufferView(ChosenAdapter);
+}
+
+void FD3D12DynamicRHI::RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer)
+{
+	FD3D12IndexBuffer* D3DIndexBuffer = static_cast<FD3D12IndexBuffer*>(IndexBuffer);
+	FD3D12VertexBuffer* D3DVertexBuffer = static_cast<FD3D12VertexBuffer*>(VertexBuffer);
+
+	ID3D12GraphicsCommandList* CommandList = ChosenAdapter->GetDevice()->GetCommandListManager()->GetDefaultCommandList();
+	CommandList->IASetVertexBuffers(0, 1, &(D3DVertexBuffer->GetVertexBufferView()));
+	CommandList->IASetIndexBuffer(&(D3DIndexBuffer->GetIndexBufferView()));
+	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	CommandList->DrawIndexedInstanced(D3DIndexBuffer->GetIndicesCount(), 1, 0, 0, 0);
+}

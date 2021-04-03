@@ -124,24 +124,6 @@ void FD3D12ResourceManager::CreateDepthStencilView()
 	}
 }
 
-FRHIView* FD3D12ResourceManager::CreateVertexBufferView(const void* InitData, UINT StrideInByte, UINT DataSize)
-{
-	FD3DVertexBuffer* VertexBuffer = new FD3DVertexBuffer(ParentDevice, InitData, StrideInByte, DataSize);
-	VertexBuffer->Initialize();
-	FRHIView* View = new FD3DVertexBufferView(ParentDevice, VertexBuffer);
-	VertexBufferViews.push_back(View);
-	return View;
-}
-
-FRHIView* FD3D12ResourceManager::CreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, E_INDEX_TYPE IndexType)
-{
-	FD3DIndexBuffer* IndexBuffer = new FD3DIndexBuffer(ParentDevice, InitData, DataSize, IndicesCount, IndexType);
-	IndexBuffer->Initialize();
-	FRHIView* View = new FD3DIndexBufferView(ParentDevice, IndexBuffer);
-	IndexBufferViews.push_back(View);
-	return View;
-}
-
 FRHIView* FD3D12ResourceManager::CreateShaderResourceView(std::wstring TextureName)
 {
 	FD3DShaderResource* ShaderResource = new FD3DShaderResource(ParentDevice, TextureName);

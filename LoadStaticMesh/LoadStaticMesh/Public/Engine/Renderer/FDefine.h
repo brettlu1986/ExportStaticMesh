@@ -10,6 +10,15 @@ enum class E_INDEX_TYPE : UINT8
 	TYPE_UINT_32,
 };
 
+enum class E_RESOURCE_TYPE : UINT8
+{
+	TYPE_UNKNOWN = 0,
+	TYPE_INDEX_BUFFER,
+	TYPE_VERTEX_BUFFER,
+	TYPE_TEXTURE,
+};
+
+
 typedef struct FVertexData
 {
 	XMFLOAT3 Position;

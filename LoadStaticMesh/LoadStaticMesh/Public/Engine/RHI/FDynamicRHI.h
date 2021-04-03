@@ -4,6 +4,11 @@
 #include "FRHIResource.h"
 #include "FDefine.h"
 
+#include "FVertexBuffer.h"
+#include "FIndexBuffer.h"
+
+
+
 struct FRHIViewPort
 {
 public:
@@ -107,8 +112,6 @@ public:
 	virtual void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize) = 0;
 	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) = 0;
 	virtual void RHICreateDepthStencilBuffer(UINT Width, UINT Height) = 0;
-	virtual FRHIView* RHICreateVertexBufferView(const void* InitData, UINT StrideInByte, UINT DataSize) = 0;
-	virtual FRHIView* RHICreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, E_INDEX_TYPE IndexType) = 0;
 	virtual FRHIView* RHICreateShaderResourceView(std::wstring TextureName) = 0;
 	virtual FRHICommandList& RHIGetCommandList(UINT Index) = 0;
 	virtual void RHIExcuteCommandList(FRHICommandList& CommandList) = 0;
@@ -121,9 +124,15 @@ public:
 	virtual void RHIClearRenderTargetAndDepthStencilView(FRHICommandList& CommandList, UINT TargetFrame, FRHIColor ClearColor) = 0;
 
 	virtual void RHISetGraphicRootDescripterTable(FRHICommandList& CommandList) = 0;
-	virtual void RHIDrawWithVertexAndIndexBufferView(FRHICommandList& CommandList, FRHIView* VertexBufferView, FRHIView* IndexBufferView) = 0;
 	virtual void RHISwapObjectPresent() = 0;
+
+
+	virtual FIndexBuffer* RHICreateIndexBuffer() = 0;
+	virtual FVertexBuffer* RHICreateVertexBuffer() = 0;
+	virtual void RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) = 0;
+	virtual void RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) = 0;
 };
+
 
 extern FDynamicRHI* GDynamicRHI;
 extern EDynamicModuleType DynamicModuleType;
@@ -138,3 +147,24 @@ public:
 	virtual FDynamicRHI* CreateRHI() = 0;
 
 };
+
+
+FORCEINLINE FIndexBuffer* CreateIndexBuffer()
+{
+	return GDynamicRHI->RHICreateIndexBuffer();
+}
+
+FORCEINLINE FVertexBuffer* CreateVertexBuffer()
+{
+	return GDynamicRHI->RHICreateVertexBuffer();
+}
+
+FORCEINLINE void InitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer)
+{
+	return GDynamicRHI->RHIInitMeshGPUResource(IndexBuffer, VertexBuffer);
+}
+
+FORCEINLINE void DrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer)
+{
+	return GDynamicRHI->RHIDrawMesh(IndexBuffer, VertexBuffer);
+}

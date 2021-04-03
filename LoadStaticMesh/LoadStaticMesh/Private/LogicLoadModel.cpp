@@ -67,8 +67,7 @@ void LogicStaticModel::Initialize(ApplicationMain* Application, UINT Width, UINT
 void LogicStaticModel::OnInit()
 {
 	InitCamera();
-	InitModelScene();
-
+	
 	//InitModel();
 	CreateRenderThread();
 }
@@ -145,6 +144,8 @@ void LogicStaticModel::RenderThreadInit()
 	UINT BufferSize = (sizeof(ObjectConstants) + 255) & ~255;
 	GDynamicRHI->RHICreateConstantBuffer(BufferSize, &ObjectConstant, sizeof(ObjectConstant));
 	GDynamicRHI->RHICreateDepthStencilBuffer(WndWidth, WndHeight);
+
+	InitModelScene();
 
 	Renderer.BeginRenderFrame(&Scene);
 	
@@ -242,7 +243,7 @@ void LogicStaticModel::InitCamera()
 
 void LogicStaticModel::InitModelScene()
 {
-	LAssetDataLoader::LoadMeshVertexDataFromFile(L"mesh.bin", Mesh);
+	Mesh.InitData(L"mesh.bin");
 	Mesh.SetTextureName(L"Resource/T_Chair_M.dds");
 	Mesh.SetModelLocation(MyCamera.GetViewTargetLocation());
 	Scene.AddMeshToScene(&Mesh);

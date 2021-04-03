@@ -1,12 +1,14 @@
 #include "FMesh.h"
 #include "FRHI.h"
 #include "FDefine.h"
+#include "LAssetDataLoader.h"
 
 FMesh::FMesh()
-:VertexBuffer(FVertexBuffer())
-,IndexBuffer(FIndexBuffer())
+:VertexBuffer(nullptr)
+,IndexBuffer(nullptr)
+,ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
 {
-
+	
 }
 
 FMesh::~FMesh()
@@ -27,26 +29,23 @@ XMMATRIX FMesh::GetModelMatrix()
 	return XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
 }
 
+void FMesh::InitData(LPCWSTR FileName)
+{	
+	VertexBuffer = CreateVertexBuffer();
+	IndexBuffer = CreateIndexBuffer();
+	LAssetDataLoader::LoadMeshVertexDataFromFile(FileName, *IndexBuffer, *VertexBuffer);
+}
+
 void FMesh::InitRenderResource()
 {
-	//create model vertex buffer view
-	std::vector<FVertex_PositionTex0> TriangleVertices;
-	VertexBuffer.GetPositionTex0Input(TriangleVertices);
-	const UINT VertexBufferSize = static_cast<UINT>(TriangleVertices.size() * sizeof(FVertex_PositionTex0));
-	const UINT StrideInByte = sizeof(FVertex_PositionTex0);
-	RHIVertexBufferView = GDynamicRHI->RHICreateVertexBufferView(TriangleVertices.data(), StrideInByte, VertexBufferSize);
-
-	//create model index buffer view
-	RHIIndexBufferView = GDynamicRHI->RHICreateIndexBufferView(IndexBuffer.GetIndicesData(), IndexBuffer.GetIndicesDataSize(),
-		IndexBuffer.GetIndicesCount(), IndexBuffer.GetIndicesType());
-
+	InitMeshGPUResource(IndexBuffer, VertexBuffer);
 	//create model shader resource view
 	RHIShaderResourceView = GDynamicRHI->RHICreateShaderResourceView(TexName);
 }
 
 void FMesh::Render(FRHICommandList& CommandList)
 {	
-	GDynamicRHI->RHIDrawWithVertexAndIndexBufferView(CommandList, RHIVertexBufferView, RHIIndexBufferView);
+	DrawMesh(IndexBuffer, VertexBuffer);
 }
 
 void FMesh::EndRender()

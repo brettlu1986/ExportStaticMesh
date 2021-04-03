@@ -39,7 +39,6 @@ public:
 	virtual void ClearRenderTargetAndDepthStencilView(UINT TargetFrame, FRHIColor Color) = 0;
 
 	virtual void SetGraphicRootDescripterTable() = 0;
-	virtual void DrawWithVertexAndIndexBufferView(FRHIView* VertexBufferView, FRHIView* IndexBufferView) = 0;
 
 protected:
 	UINT CommandListIndex;

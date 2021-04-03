@@ -43,8 +43,6 @@ public:
 	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) ;
 
 	virtual void RHICreateDepthStencilBuffer(UINT Width, UINT Height) override;
-	virtual FRHIView* RHICreateVertexBufferView(const void* InitData, UINT StrideInByte, UINT DataSize) override;
-	virtual FRHIView* RHICreateIndexBufferView(const void* InitData, UINT DataSize, UINT IndicesCount, E_INDEX_TYPE IndexType) override;
 	
 	
 	virtual FRHIView* RHICreateShaderResourceView(std::wstring TextureName);
@@ -59,8 +57,13 @@ public:
 	virtual void RHIClearRenderTargetAndDepthStencilView(FRHICommandList& CommandList, UINT TargetFrame, FRHIColor ClearColor);
 
 	virtual void RHISetGraphicRootDescripterTable(FRHICommandList& CommandList);
-	virtual void RHIDrawWithVertexAndIndexBufferView(FRHICommandList& CommandList, FRHIView* VertexBufferView, FRHIView* IndexBufferView);
 	virtual void RHISwapObjectPresent();
+
+
+	virtual FIndexBuffer* RHICreateIndexBuffer() ;
+	virtual FVertexBuffer* RHICreateVertexBuffer();
+	virtual void RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) ;
+	virtual void RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer);
 
 private: 
 	FD3D12ResourceManager* GetResourceManager();

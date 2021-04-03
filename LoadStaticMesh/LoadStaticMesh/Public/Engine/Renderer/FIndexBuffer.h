@@ -2,13 +2,18 @@
 #include "stdafx.h"
 
 #include "FDefine.h"
+#include "FRenderResource.h"
 
-class FIndexBuffer
+class FIndexBuffer : public FRenderResource
 {
 public:
 	FIndexBuffer();
+	FIndexBuffer(E_RESOURCE_TYPE Type);
 	FIndexBuffer(UINT InCount, UINT InByteSize, E_INDEX_TYPE InType, void* InData);
-	~FIndexBuffer();
+	virtual ~FIndexBuffer();
+
+	virtual void Destroy() override;
+	virtual void Initialize() override;
 
 	void Init(UINT InCount, UINT InByteSize, E_INDEX_TYPE InType, void* InData);
 

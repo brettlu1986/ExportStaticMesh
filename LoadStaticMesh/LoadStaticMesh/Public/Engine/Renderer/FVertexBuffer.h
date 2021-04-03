@@ -2,13 +2,18 @@
 
 #include "stdafx.h"
 #include "FDefine.h"
+#include "FRenderResource.h"
 
-class FVertexBuffer
+class FVertexBuffer : public FRenderResource
 {
 public:
 	FVertexBuffer();
+	FVertexBuffer(E_RESOURCE_TYPE Type);
 	FVertexBuffer(const char* DataSource, UINT DataSize, UINT DataCount);
-	~FVertexBuffer();
+	virtual ~FVertexBuffer();
+
+	virtual void Destroy() override;
+	virtual void Initialize() override;
 
 	UINT GetVertexCount()
 	{

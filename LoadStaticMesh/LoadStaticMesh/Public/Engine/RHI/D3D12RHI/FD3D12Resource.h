@@ -109,73 +109,6 @@ private:
 	ComPtr<ID3D12Resource> DepthStencilBuffer;
 };
 
-class FD3DVertexBuffer :public FD3DResource
-{
-public:
-	FD3DVertexBuffer();
-	FD3DVertexBuffer(FD3D12Device* InDevice, const void* InitData, UINT StrideInByte, UINT ByteSize);
-	virtual ~FD3DVertexBuffer();
-
-	virtual void Destroy() override;
-	virtual void Initialize() override;
-
-	UINT GetStrideInByte() const {
-		return StrideInByte;
-	}
-
-	UINT GetByteSize() const {
-		return ByteSize;
-	}
-
-	ID3D12Resource* GetD3DVertexBuffer()
-	{
-		return VertexBuffer.Get();
-	}
-private: 
-	ComPtr<ID3D12Resource> VertexBuffer;
-	ComPtr<ID3D12Resource> VertexUploadBuffer;
-
-	UINT StrideInByte;
-	UINT ByteSize;
-};
-
-class FD3DIndexBuffer :public FD3DResource
-{
-public:
-	FD3DIndexBuffer();
-	FD3DIndexBuffer(FD3D12Device* InDevice, const void* InitData, UINT ByteSize,UINT IndicesCount, E_INDEX_TYPE IndexType );
-	virtual ~FD3DIndexBuffer();
-
-	virtual void Destroy() override;
-	virtual void Initialize() override;
-
-	UINT GetDataSize() const {
-		return ByteSize;
-	}
-
-	UINT GetIndicesCount() const 
-	{
-		return IndicesCount;
-	}
-
-	E_INDEX_TYPE GetIndexType() const {
-		return IndexType;
-	}
-
-	ID3D12Resource* GetD3DIndexBuffer()
-	{
-		return IndexBuffer.Get();
-	}
-private:
-	ComPtr<ID3D12Resource> IndexBuffer;
-	ComPtr<ID3D12Resource> IndexBufferUpload;
-
-	E_INDEX_TYPE IndexType;
-	UINT ByteSize;
-	UINT IndicesCount;
-};
-
-
 class FD3DShaderResource :public FD3DResource
 {
 public:
@@ -231,44 +164,6 @@ public:
 	virtual ~FD3DDepthStencilView();
 };
 
-class FD3DVertexBufferView : public FD3DView
-{
-public:
-	FD3DVertexBufferView(FD3D12Device* InDevice, FD3DVertexBuffer* InVertexBuffer);
-	virtual ~FD3DVertexBufferView();
-
-	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const
-	{
-		return VertexBufferView;
-	}
-
-	virtual void Clear() override;
-private: 
-	D3D12_VERTEX_BUFFER_VIEW VertexBufferView;
-	FD3DVertexBuffer* VertexBuffer;
-};
-
-class FD3DIndexBufferView : public FD3DView
-{
-public:
-	FD3DIndexBufferView(FD3D12Device* InDevice, FD3DIndexBuffer* InIndexBuffer);
-	virtual ~FD3DIndexBufferView();
-
-	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const
-	{
-		return IndexBufferView;
-	}
-
-	UINT GetIndicesCount()
-	{
-		return IndexBuffer->GetIndicesCount();
-	}
-	virtual void Clear() override;
-private:
-	D3D12_INDEX_BUFFER_VIEW IndexBufferView;
-	FD3DIndexBuffer* IndexBuffer;
-};
-
 
 class FD3DShaderResourceView : public FD3DView
 {
@@ -280,3 +175,59 @@ public:
 private:
 	FD3DShaderResource* ShaderResource;
 };
+
+
+////////////////
+#include "FIndexBuffer.h"
+#include "FVertexBuffer.h"
+#include "FRenderResource.h"
+#include "FD3D12Adapter.h"
+
+class FD3D12IndexBuffer : public FIndexBuffer
+{
+public: 
+	FD3D12IndexBuffer();
+	virtual ~FD3D12IndexBuffer();
+
+	virtual void Destroy() override;
+	virtual void Initialize() override;
+	void InitGPUIndexBuffer(FD3D12Adapter* Adapter);
+
+	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const
+	{
+		return IndexBufferView;
+	}
+
+private: 
+	ComPtr<ID3D12Resource> IndexBuffer;
+	ComPtr<ID3D12Resource> IndexBufferUpload;
+
+	D3D12_INDEX_BUFFER_VIEW IndexBufferView;
+};
+
+
+
+
+class FD3D12VertexBuffer : public FVertexBuffer
+{
+public:
+	FD3D12VertexBuffer();
+	virtual ~FD3D12VertexBuffer();
+
+	virtual void Destroy() override;
+	virtual void Initialize() override;
+	
+	void InitGPUVertexBufferView(FD3D12Adapter* Adapter);
+
+	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView()
+	{
+		return VertexBufferView;
+	}
+private: 
+
+	ComPtr<ID3D12Resource> VertexBuffer;
+	ComPtr<ID3D12Resource> VertexUploadBuffer;
+
+	D3D12_VERTEX_BUFFER_VIEW VertexBufferView;
+};
+

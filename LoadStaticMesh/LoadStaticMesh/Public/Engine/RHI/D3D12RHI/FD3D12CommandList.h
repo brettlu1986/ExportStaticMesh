@@ -26,7 +26,6 @@ public:
 	virtual void TransitionToState(UINT TargetFrame, ETransitionState State) override;
 	virtual void ClearRenderTargetAndDepthStencilView(UINT TargetFrame, FRHIColor Color) override;
 	virtual void SetGraphicRootDescripterTable() override;
-	virtual void DrawWithVertexAndIndexBufferView(FRHIView* VertexBufferView, FRHIView* IndexBufferView) override;
 
 private: 
 	

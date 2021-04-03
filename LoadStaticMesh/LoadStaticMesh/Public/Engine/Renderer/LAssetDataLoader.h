@@ -8,7 +8,7 @@ class LAssetDataLoader
 {
 public:
 
-	static void LoadMeshVertexDataFromFile(LPCWSTR FileName, FMesh& Mesh);
+	static void LoadMeshVertexDataFromFile(LPCWSTR FileName, FIndexBuffer& IndexBuffer, FVertexBuffer& VertexBuffer);
 
 	static void LoadCameraDataFromFile(LPCWSTR FileName, LCamera& Camera);
 };

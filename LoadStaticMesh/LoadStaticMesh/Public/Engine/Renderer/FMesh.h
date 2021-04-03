@@ -11,19 +11,10 @@ public:
 	FMesh();
 	~FMesh();
 	
+	void InitData(LPCWSTR FileName);
 	void InitRenderResource();
 	void Render(FRHICommandList& CommandList);
 	void EndRender();
-
-	FVertexBuffer& GetVertexBuffer() 
-	{
-		return VertexBuffer;
-	}
-
-	FIndexBuffer& GetIndexBuffer()
-	{
-		return IndexBuffer;
-	}
 
 	void SetModelLocation(XMFLOAT3 Location);
 	XMMATRIX GetModelMatrix();
@@ -31,12 +22,10 @@ public:
 	void SetTextureName(std::wstring Name) {  TexName = Name; }
 private:
 	std::wstring TexName;
-	FVertexBuffer VertexBuffer; 
-	FIndexBuffer IndexBuffer;
 
-	FRHIView* RHIVertexBufferView;
-	FRHIView* RHIIndexBufferView;
 	FRHIView* RHIShaderResourceView;
 	XMFLOAT3 ModelLocation;
 
+	FVertexBuffer* VertexBuffer;
+	FIndexBuffer* IndexBuffer;
 };

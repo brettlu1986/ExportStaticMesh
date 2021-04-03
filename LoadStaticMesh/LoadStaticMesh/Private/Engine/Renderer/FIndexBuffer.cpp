@@ -2,10 +2,21 @@
 #include "FIndexBuffer.h"
 
 FIndexBuffer::FIndexBuffer()
-:IndicesCount(0)
+: FRenderResource(E_RESOURCE_TYPE::TYPE_INDEX_BUFFER)
+, IndicesCount(0)
 , IndicesByteSize(0)
 , IndicesType(E_INDEX_TYPE::TYPE_UINT_16)
 , IndicesData(nullptr)
+{
+
+}
+
+FIndexBuffer::FIndexBuffer(E_RESOURCE_TYPE Type)
+:FRenderResource(Type)
+,IndicesCount(0)
+,IndicesByteSize(0)
+,IndicesData(nullptr)
+,IndicesType(E_INDEX_TYPE::TYPE_UINT_16)
 {
 
 }
@@ -30,4 +41,14 @@ FIndexBuffer::~FIndexBuffer()
 {
 	delete[] IndicesData;
 	IndicesData = nullptr;
+}
+
+void FIndexBuffer::Destroy()
+{
+
+}
+
+void FIndexBuffer::Initialize()
+{
+
 }
