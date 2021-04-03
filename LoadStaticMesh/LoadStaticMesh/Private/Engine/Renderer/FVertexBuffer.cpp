@@ -25,5 +25,4 @@ void FVertexBuffer::Init(const char* DataSource, UINT DataSize, UINT DataCount)
 
 FVertexBuffer::~FVertexBuffer()
 {
-
 }

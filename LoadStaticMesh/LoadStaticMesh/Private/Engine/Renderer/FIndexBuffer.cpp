@@ -15,7 +15,10 @@ void FIndexBuffer::Init(UINT InCount, UINT InByteSize, E_INDEX_TYPE InType, void
 	IndicesCount = InCount;
 	IndicesByteSize = InByteSize;
 	IndicesType = InType;
-	IndicesData = InData;
+
+	IndicesData = (void*)(new char[IndicesByteSize]);
+	memset(IndicesData, 0, IndicesByteSize);
+	memcpy(IndicesData, InData, IndicesByteSize);
 }
 
 FIndexBuffer::FIndexBuffer(UINT InCount, UINT InByteSize, E_INDEX_TYPE IndexType, void* InData)
@@ -25,5 +28,6 @@ FIndexBuffer::FIndexBuffer(UINT InCount, UINT InByteSize, E_INDEX_TYPE IndexType
 
 FIndexBuffer::~FIndexBuffer()
 {
-
+	delete[] IndicesData;
+	IndicesData = nullptr;
 }

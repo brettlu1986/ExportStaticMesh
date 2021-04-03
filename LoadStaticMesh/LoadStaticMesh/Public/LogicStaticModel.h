@@ -50,7 +50,7 @@ private:
 
 	void InitCamera();
 	void InitModelScene();
-	void InitModel();
+	//void InitModel();
 	void CreateRenderThread();
 	void RenderThreadInit();
 	void RenderThreadRun();
