@@ -35,8 +35,6 @@ public:
 	virtual void Excute() = 0;
 	virtual void SetViewPort() = 0;
 	virtual void SetScissorRect() = 0;
-	virtual void TransitionToState(UINT TargetFrame, ETransitionState State) = 0;
-	virtual void ClearRenderTargetAndDepthStencilView(UINT TargetFrame, FRHIColor Color) = 0;
 
 	virtual void SetGraphicRootDescripterTable() = 0;
 

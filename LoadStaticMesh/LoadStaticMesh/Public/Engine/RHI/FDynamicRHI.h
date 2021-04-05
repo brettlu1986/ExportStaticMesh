@@ -108,10 +108,8 @@ public:
 	virtual void RHICreateSwapObject(FRHISwapObjectInfo& SwapInfo) = 0;
 	virtual void RHICreatePiplineStateObject(FRHIPiplineStateInitializer& Initializer) = 0;
 	virtual void RHIReadShaderDataFromFile(std::wstring FileName, byte** Data, UINT* Size) = 0;
-	virtual void RHICreateRenderTarget(UINT TargetCount) = 0;
 	virtual void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize) = 0;
 	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) = 0;
-	virtual void RHICreateDepthStencilBuffer(UINT Width, UINT Height) = 0;
 	virtual FRHIView* RHICreateShaderResourceView(std::wstring TextureName) = 0;
 	virtual FRHICommandList& RHIGetCommandList(UINT Index) = 0;
 	virtual void RHIExcuteCommandList(FRHICommandList& CommandList) = 0;
@@ -120,11 +118,14 @@ public:
 	virtual bool RHIIsFenceComplete() = 0;
 	virtual void RHIResetCommandList(FRHICommandList& CommandList) = 0;
 	virtual void RHISetCurrentViewPortAndScissorRect(FRHICommandList& CommandList) = 0;
-	virtual void RHITransitionToState(FRHICommandList& CommandList, UINT TargetFrame, ETransitionState State) = 0;
-	virtual void RHIClearRenderTargetAndDepthStencilView(FRHICommandList& CommandList, UINT TargetFrame, FRHIColor ClearColor) = 0;
 
 	virtual void RHISetGraphicRootDescripterTable(FRHICommandList& CommandList) = 0;
 	virtual void RHISwapObjectPresent() = 0;
+
+
+	virtual void RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color) = 0;
+	virtual void RHICreateRenderTarget(UINT Width, UINT Height) = 0;
+	virtual void RHIRenderEnd(UINT TargetFrame) = 0;
 
 
 	virtual FIndexBuffer* RHICreateIndexBuffer() = 0;
@@ -148,6 +149,20 @@ public:
 
 };
 
+FORCEINLINE void InitRenderBegin(UINT TargetFrame, FRHIColor Color)
+{
+	return GDynamicRHI->RHIInitRenderBegin(TargetFrame, Color);
+}
+
+FORCEINLINE void CreateRenderTarget(UINT Width, UINT Height)
+{
+	GDynamicRHI->RHICreateRenderTarget(Width, Height);
+}
+
+FORCEINLINE void RenderEnd(UINT TargetFrame)
+{
+	GDynamicRHI->RHIRenderEnd(TargetFrame);
+}
 
 FORCEINLINE FIndexBuffer* CreateIndexBuffer()
 {

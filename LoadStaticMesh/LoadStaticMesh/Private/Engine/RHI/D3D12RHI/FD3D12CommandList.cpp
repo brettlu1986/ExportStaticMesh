@@ -37,39 +37,6 @@ void FD3D12CommandList::SetScissorRect()
 	CommandList->RSSetScissorRects(1, &(ParentDevice->GetParentAdapter()->ScissorRect));
 }
 
-void FD3D12CommandList::TransitionToState(UINT TargetFrame, ETransitionState State)
-{
-	FD3D12ResourceManager* SourceManager = ParentDevice->GetResourceManager();
-	switch (State)
-	{
-	case ETransitionState::STATE_RENDER:
-	{
-		const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(SourceManager->GetRenderTarget()->GetRenderTarget(TargetFrame), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-		CommandList->ResourceBarrier(1, &Rb1);
-	}
-	break;
-	case ETransitionState::STATE_PRESENT:
-	{
-		const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(SourceManager->GetRenderTarget()->GetRenderTarget(TargetFrame), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-		CommandList->ResourceBarrier(1, &Rb2);
-	}
-	break;
-	default:
-		break;
-	}
-}
-
-void FD3D12CommandList::ClearRenderTargetAndDepthStencilView(UINT TargetFrame, FRHIColor Color)
-{
-	FD3D12Adapter* Adapter = ParentDevice->GetParentAdapter();
-	FD3D12ResourceManager* SourceManager = ParentDevice->GetResourceManager();
-	CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(Adapter->RtvHeap->GetCPUDescriptorHandleForHeapStart(), TargetFrame, SourceManager->GetRenderTarget()->GetRtvDescriptorSize());
-	float ClearColor[4] = { Color.R, Color.G, Color.B, Color.A };
-	CommandList->ClearRenderTargetView(RtvHandle, ClearColor, 0, nullptr);
-	CommandList->ClearDepthStencilView(Adapter->DsvHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH , 1.0f, 0, 0, nullptr);
-	D3D12_CPU_DESCRIPTOR_HANDLE DsvHandle = Adapter->DsvHeap->GetCPUDescriptorHandleForHeapStart();
-	CommandList->OMSetRenderTargets(1, &RtvHandle, true, &DsvHandle);
-}
 
 void FD3D12CommandList::SetGraphicRootDescripterTable()
 {

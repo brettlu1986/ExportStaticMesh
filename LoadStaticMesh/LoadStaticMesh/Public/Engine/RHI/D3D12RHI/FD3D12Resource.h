@@ -21,36 +21,6 @@ protected:
 	FD3D12Device* ParentDevice;
 };
 
-class FD3DRenderTarget : public FD3DResource
-{
-public: 
-	FD3DRenderTarget();
-	FD3DRenderTarget(FD3D12Device* InDevice);
-	virtual ~FD3DRenderTarget();
-
-	virtual void Destroy() override;
-	virtual void Initialize() override;
-
-	void SetRenderTargetCount(UINT Count);
-
-	ID3D12Resource* GetRenderTarget(UINT TargetIndex)
-	{
-		return RenderTargets[TargetIndex].Get();
-	}
-
-	UINT GetRtvDescriptorSize() const
-	{
-		return RtvDescriptorSize;
-	}
-	CD3DX12_CPU_DESCRIPTOR_HANDLE GetRtvHandle(UINT TargetIndex);
-	
-private:
-	std::vector<ComPtr<ID3D12Resource>> RenderTargets;
-
-	UINT RtvDescriptorSize;
-	UINT TargetCount;
-};
-
 
 class FD3DConstantBuffer :public FD3DResource
 {
@@ -87,27 +57,6 @@ private:
 };
 
 
-class FD3DDepthStencilBuffer :public FD3DResource
-{
-public:
-	FD3DDepthStencilBuffer();
-	FD3DDepthStencilBuffer(FD3D12Device* InDevice);
-	virtual ~FD3DDepthStencilBuffer();
-
-	virtual void Destroy() override;
-	virtual void Initialize() override;
-
-	void SetDepthStencilSize(UINT Width, UINT Height);
-
-	ID3D12Resource* GetD3DDepthStencilBuffer() const
-	{
-		return DepthStencilBuffer.Get();
-	}
-private:
-
-	UINT DsvDescriptorSize;
-	ComPtr<ID3D12Resource> DepthStencilBuffer;
-};
 
 class FD3DShaderResource :public FD3DResource
 {
@@ -157,12 +106,6 @@ public:
 
 };
 
-class FD3DDepthStencilView : public FD3DView
-{
-public:
-	FD3DDepthStencilView(FD3D12Device* InDevice, ID3D12Resource* DepthStencilBuffer);
-	virtual ~FD3DDepthStencilView();
-};
 
 
 class FD3DShaderResourceView : public FD3DView

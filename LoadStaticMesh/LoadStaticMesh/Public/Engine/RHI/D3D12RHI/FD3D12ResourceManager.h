@@ -6,11 +6,8 @@
 #include "FDefine.h"
 
 class FD3D12Device;
-class FD3DRenderTarget;
 class FD3DConstantBuffer;
 class FD3DConstantBufferView;
-class FD3DDepthStencilBuffer;
-class FD3DDepthStencilView;
 class FRHIView;
 class FD3DShaderResource;
 
@@ -22,15 +19,10 @@ public:
 	void Initialize();
 	void Clear();
 
-	void CreateRenderTarget(UINT TargetCount);
 	void CreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize);
 	void UpdateConstantBufferData(void* pUpdateData, UINT DataSize);
-	void CreateDepthStencilBuffer(UINT Width, UINT Height);
 	FRHIView* CreateShaderResourceView(std::wstring TextureName);
 
-	FD3DRenderTarget* GetRenderTarget() const {
-		return RenderTarget;
-	}
 
 	FD3DConstantBuffer* GetConstantBuffer() const 
 	{
@@ -38,18 +30,11 @@ public:
 	}
 private:
 	void CreateConstantBufferView();
-	void CreateDepthStencilView();
 
 	FD3D12Device* ParentDevice;
 
-	FD3DRenderTarget* RenderTarget;
 	FD3DConstantBuffer* ConstantBuffer;
 	FD3DConstantBufferView* ConstantBufferView;
 
-	FD3DDepthStencilBuffer* DepthStencilBuffer;
-	FD3DDepthStencilView* DepthStencilView;
-
-	std::vector<FRHIView*> VertexBufferViews;
-	std::vector<FRHIView*> IndexBufferViews;
 	std::vector<FRHIView*> ShaderResourceViews;
 };

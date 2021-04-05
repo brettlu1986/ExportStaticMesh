@@ -23,8 +23,6 @@ public:
 	virtual void Excute() override;
 	virtual void SetViewPort() override;
 	virtual void SetScissorRect() override;
-	virtual void TransitionToState(UINT TargetFrame, ETransitionState State) override;
-	virtual void ClearRenderTargetAndDepthStencilView(UINT TargetFrame, FRHIColor Color) override;
 	virtual void SetGraphicRootDescripterTable() override;
 
 private: 

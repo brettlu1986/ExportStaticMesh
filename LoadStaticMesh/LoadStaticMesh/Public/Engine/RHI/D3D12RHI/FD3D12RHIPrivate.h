@@ -38,11 +38,9 @@ public:
 	virtual void RHICreateSwapObject(FRHISwapObjectInfo& SwapInfo) override;
 	virtual void RHICreatePiplineStateObject(FRHIPiplineStateInitializer& Initializer) override;
 	virtual void RHIReadShaderDataFromFile(std::wstring FileName, byte** Data, UINT* Size) override;
-	virtual void RHICreateRenderTarget(UINT TargetCount) override;
 	virtual void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize) override;
 	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) ;
 
-	virtual void RHICreateDepthStencilBuffer(UINT Width, UINT Height) override;
 	
 	
 	virtual FRHIView* RHICreateShaderResourceView(std::wstring TextureName);
@@ -53,12 +51,14 @@ public:
 	virtual bool RHIIsFenceComplete() ;
 	virtual void RHIResetCommandList(FRHICommandList& CommandList);
 	virtual void RHISetCurrentViewPortAndScissorRect(FRHICommandList& CommandList);
-	virtual void RHITransitionToState(FRHICommandList& CommandList, UINT TargetFrame, ETransitionState State);
-	virtual void RHIClearRenderTargetAndDepthStencilView(FRHICommandList& CommandList, UINT TargetFrame, FRHIColor ClearColor);
 
 	virtual void RHISetGraphicRootDescripterTable(FRHICommandList& CommandList);
 	virtual void RHISwapObjectPresent();
 
+
+	virtual void RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color);
+	virtual void RHICreateRenderTarget(UINT Width, UINT Height);
+	virtual void RHIRenderEnd(UINT TargetFrame);
 
 	virtual FIndexBuffer* RHICreateIndexBuffer() ;
 	virtual FVertexBuffer* RHICreateVertexBuffer();

@@ -70,7 +70,7 @@ private:
 	POINT LastMousePoint;
 
 	HANDLE RenderBegin;
-	HANDLE RenderEnd;
+	HANDLE RenderEndHandle;
 
 	std::wstring AssetsPath;
 	

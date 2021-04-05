@@ -18,60 +18,6 @@ FD3DResource::~FD3DResource()
 {
 }
 
-FD3DRenderTarget::FD3DRenderTarget()
-:TargetCount(0)
-{
-	ResourceName = "RenderTarget";
-}
-
-FD3DRenderTarget::FD3DRenderTarget(FD3D12Device* InDevice)
-:FD3DResource(InDevice)
-,TargetCount(0)
-{
-	ResourceName = "RenderTarget";
-}
-
-FD3DRenderTarget::~FD3DRenderTarget()
-{
-
-}
-
-void FD3DRenderTarget::Initialize()
-{
-	RtvDescriptorSize = ParentDevice->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-}
-
-CD3DX12_CPU_DESCRIPTOR_HANDLE FD3DRenderTarget::GetRtvHandle(UINT TargetIndex)
-{
-	ComPtr<ID3D12DescriptorHeap> RtvHeap = ParentDevice->GetParentAdapter()->RtvHeap;
-	return CD3DX12_CPU_DESCRIPTOR_HANDLE(RtvHeap->GetCPUDescriptorHandleForHeapStart(), TargetIndex, RtvDescriptorSize);
-}
-
-void FD3DRenderTarget::SetRenderTargetCount(UINT Count)
-{
-	TargetCount = Count;
-	ComPtr<ID3D12DescriptorHeap> RtvHeap = ParentDevice->GetParentAdapter()->RtvHeap;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart());
-	IDXGISwapChain* SwapChain = ParentDevice->GetParentAdapter()->GetSwapChain();
-	// Create a RTV for each frame.
-	for (UINT n = 0; n < Count; n++)
-	{
-		ComPtr<ID3D12Resource> Target;
-		ThrowIfFailed(SwapChain->GetBuffer(n, IID_PPV_ARGS(&Target)));
-		ParentDevice->GetDevice()->CreateRenderTargetView(Target.Get(), nullptr, RtvHandle);
-		RenderTargets.push_back(Target);
-		RtvHandle.Offset(1, RtvDescriptorSize);
-	}
-}
-
-void FD3DRenderTarget::Destroy()
-{
-	for(size_t i = 0; i < RenderTargets.size(); ++i)
-	{
-		RenderTargets[i].Reset();
-	}
-	RenderTargets.clear();
-}
 
 
 FD3DConstantBuffer::FD3DConstantBuffer()
@@ -124,54 +70,6 @@ void FD3DConstantBuffer::UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSi
 {
 	memcpy(pCbvDataBegin, pDataUpdate, DataSize);
 }
-
-// dsv buffer
-FD3DDepthStencilBuffer::FD3DDepthStencilBuffer()
-{
-	ResourceName = "DepthStencilBuffer";
-}
-
-FD3DDepthStencilBuffer::FD3DDepthStencilBuffer(FD3D12Device* InDevice)
-	:FD3DResource(InDevice)
-{
-	ResourceName = "DepthStencilBuffer";
-}
-
-FD3DDepthStencilBuffer::~FD3DDepthStencilBuffer()
-{
-
-}
-
-void FD3DDepthStencilBuffer::Destroy()
-{
-	DepthStencilBuffer.Reset();
-}
-
-void FD3DDepthStencilBuffer::Initialize()
-{
-	DsvDescriptorSize = ParentDevice->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-}
-
-void FD3DDepthStencilBuffer::SetDepthStencilSize(UINT Width, UINT Height)
-{
-	D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
-	depthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
-	depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
-	depthOptimizedClearValue.DepthStencil.Stencil = 0;
-
-	CD3DX12_HEAP_PROPERTIES ProDefault = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-	CD3DX12_RESOURCE_DESC ResDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, Width, Height, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
-	ThrowIfFailed(ParentDevice->GetDevice()->CreateCommittedResource(
-		&ProDefault,
-		D3D12_HEAP_FLAG_NONE,
-		&ResDesc,
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		&depthOptimizedClearValue,
-		IID_PPV_ARGS(&DepthStencilBuffer)
-	));
-	NAME_D3D12_OBJECT(DepthStencilBuffer);
-}
-
 
 FD3DShaderResource::FD3DShaderResource()
 {
@@ -241,25 +139,6 @@ FD3DConstantBufferView::FD3DConstantBufferView(FD3D12Device* InDevice, UINT64 In
 FD3DConstantBufferView::~FD3DConstantBufferView()
 {
 	
-}
-
-
-FD3DDepthStencilView::FD3DDepthStencilView(FD3D12Device* InDevice, ID3D12Resource* DepthStencilBuffer)
-{
-	ParentDevice = InDevice;
-
-	ComPtr<ID3D12DescriptorHeap> DsvHeap = ParentDevice->GetParentAdapter()->DsvHeap;
-	// Create the depth/stencil buffer and view.
-	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
-	depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-	depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
-	ParentDevice->GetDevice()->CreateDepthStencilView(DepthStencilBuffer, &depthStencilDesc, DsvHeap->GetCPUDescriptorHandleForHeapStart());
-}
-
-FD3DDepthStencilView::~FD3DDepthStencilView()
-{
-
 }
 
 

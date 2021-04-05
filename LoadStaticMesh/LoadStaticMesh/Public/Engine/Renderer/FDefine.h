@@ -43,3 +43,5 @@ struct FVertex_PositionTex0
 	XMFLOAT3 Position;
 	XMFLOAT2 Tex0;
 };
+
+const UINT RENDER_TARGET_COUNT = 3;

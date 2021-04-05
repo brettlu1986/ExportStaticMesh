@@ -62,6 +62,10 @@ public:
 	void SetViewPort(const FRHIViewPort& InViewPort);
 	void SetScissorRect(const FRHIScissorRect& InRect);
 
+	void CreateRenderTarget(UINT Width, UINT Height);
+	void InitRenderBegin(UINT TargetFrame, FRHIColor Color);
+	void RenderEnd(UINT TargetFrame);
+
 	void CreateSwapChain(const FRHISwapObjectInfo& SwapInfo);
 	void CreatePso(const FRHIPiplineStateInitializer& PsoInitializer);
 
@@ -100,4 +104,9 @@ private:
 
 	ComPtr<ID3D12RootSignature> RootSignature;
 	std::vector<ComPtr<ID3D12PipelineState>> PiplelineStateCache;
+
+	UINT RtvDescriptorSize;
+	UINT DsvDescriptorSize;
+	ComPtr<ID3D12Resource> RenderTargets[RENDER_TARGET_COUNT];
+	ComPtr<ID3D12Resource> DepthStencilBuffer;
 };

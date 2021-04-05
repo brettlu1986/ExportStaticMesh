@@ -33,7 +33,7 @@ LogicStaticModel::LogicStaticModel()
 {
 	MtProj = MathHelper::Identity4x4();
 	RenderBegin = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-	RenderEnd = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	RenderEndHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	LastMousePoint = {0 , 0};
 	ThisLogic = this;
 	
@@ -97,7 +97,7 @@ void LogicStaticModel::CreateRenderThread()
 
 void LogicStaticModel::Update()
 {
-	DWORD Ret = WaitForSingleObject(RenderEnd, INFINITE);
+	DWORD Ret = WaitForSingleObject(RenderEndHandle, INFINITE);
 	if (Ret - WAIT_OBJECT_0 == 0)
 	{
 		//update matrix
@@ -140,10 +140,10 @@ void LogicStaticModel::RenderThreadInit()
 		1
 	};
 	GDynamicRHI->RHICreatePiplineStateObject(RHIPsoInitializer);
-	GDynamicRHI->RHICreateRenderTarget(FrameCount);
+
+	GDynamicRHI->RHICreateRenderTarget(WndWidth, WndHeight);
 	UINT BufferSize = (sizeof(ObjectConstants) + 255) & ~255;
 	GDynamicRHI->RHICreateConstantBuffer(BufferSize, &ObjectConstant, sizeof(ObjectConstant));
-	GDynamicRHI->RHICreateDepthStencilBuffer(WndWidth, WndHeight);
 
 	InitModelScene();
 
@@ -164,14 +164,13 @@ void LogicStaticModel::RenderThreadRun()
 	GDynamicRHI->RHIResetCommandList(CommandList);
 	GDynamicRHI->RHISetCurrentViewPortAndScissorRect(CommandList);
 
-	GDynamicRHI->RHITransitionToState(CommandList, FrameIndex, ETransitionState::STATE_RENDER);
-
-	GDynamicRHI->RHIClearRenderTargetAndDepthStencilView(CommandList, FrameIndex, ClearColor);
+	InitRenderBegin(FrameIndex, ClearColor);
+	
 	GDynamicRHI->RHISetGraphicRootDescripterTable(CommandList);
 
 	Renderer.Render(CommandList, &Scene);
+	RenderEnd(FrameIndex);
 
-	GDynamicRHI->RHITransitionToState(CommandList, FrameIndex, ETransitionState::STATE_PRESENT);
 	GDynamicRHI->RHIExcuteCommandList(CommandList);
 	GDynamicRHI->RHISwapObjectPresent();
 	GDynamicRHI->RHISignalCurrentFence();
@@ -183,7 +182,7 @@ bool LogicStaticModel::Render(void* Param)
 	try
 	{
 		RenderThreadInit();
-		SetEvent(RenderEnd);
+		SetEvent(RenderEndHandle);
 		DWORD Ret = 0;
 		while (!bDestroy)
 		{
@@ -193,7 +192,7 @@ bool LogicStaticModel::Render(void* Param)
 				RenderThreadRun();
 			}
 
-			SetEvent(RenderEnd);
+			SetEvent(RenderEndHandle);
 		}
 	}
 	catch (HrException& e)

@@ -161,10 +161,7 @@ FD3D12ResourceManager* FD3D12DynamicRHI::GetResourceManager()
 	return Device->GetResourceManager();
 }
 
-void FD3D12DynamicRHI::RHICreateRenderTarget(UINT TargetCount)
-{
-	GetResourceManager()->CreateRenderTarget(TargetCount);
-}
+
 
 void FD3D12DynamicRHI::RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
 {
@@ -174,11 +171,6 @@ void FD3D12DynamicRHI::RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom,
 void FD3D12DynamicRHI::RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize)
 {
 	GetResourceManager()->UpdateConstantBufferData(pUpdateData, DataSize);
-}
-
-void FD3D12DynamicRHI::RHICreateDepthStencilBuffer(UINT Width, UINT Height) 
-{
-	GetResourceManager()->CreateDepthStencilBuffer(Width, Height);
 }
 
 
@@ -226,15 +218,6 @@ void FD3D12DynamicRHI::RHISetCurrentViewPortAndScissorRect(FRHICommandList& Comm
 	CommandList.SetScissorRect();
 }
 
-void FD3D12DynamicRHI::RHITransitionToState(FRHICommandList& CommandList, UINT TargetFrame, ETransitionState State)
-{
-	CommandList.TransitionToState(TargetFrame, State);
-}
-
-void FD3D12DynamicRHI::RHIClearRenderTargetAndDepthStencilView(FRHICommandList& CommandList, UINT TargetFrame, FRHIColor ClearColor)
-{
-	CommandList.ClearRenderTargetAndDepthStencilView(TargetFrame, ClearColor);
-}
 
  void FD3D12DynamicRHI::RHISetGraphicRootDescripterTable(FRHICommandList& CommandList)
  {
@@ -250,6 +233,22 @@ void FD3D12DynamicRHI::RHIClearRenderTargetAndDepthStencilView(FRHICommandList& 
 
 
  /// /////////////////
+
+ void FD3D12DynamicRHI::RHICreateRenderTarget(UINT Width, UINT Height)
+ {
+	 ChosenAdapter->CreateRenderTarget(Width, Height);
+ }
+
+ void FD3D12DynamicRHI::RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color)
+ {
+	 ChosenAdapter->InitRenderBegin(TargetFrame, Color);
+ }
+
+ void FD3D12DynamicRHI::RHIRenderEnd(UINT TargetFrame)
+ {
+	 ChosenAdapter->RenderEnd(TargetFrame);
+ }
+
  FIndexBuffer* FD3D12DynamicRHI::RHICreateIndexBuffer()
  {
 	return new FD3D12IndexBuffer();
