@@ -2,7 +2,6 @@
 
 #include "FVertexBuffer.h"
 #include "FIndexBuffer.h"
-#include "FRHIResource.h"
 #include "FRHIDef.h"
 #include "FRenderResource.h"
 

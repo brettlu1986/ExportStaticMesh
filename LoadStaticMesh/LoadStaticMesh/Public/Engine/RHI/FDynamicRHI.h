@@ -9,8 +9,6 @@
 #include "FTexture.h"
 #include "FShader.h"
 
-
-
 struct FRHIViewPort
 {
 public:

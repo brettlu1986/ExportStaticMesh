@@ -1,6 +1,5 @@
 #pragma once
 
-#include "FRHIResource.h"
 #include "d3dx12.h"
 #include "FDefine.h"
 #include "FIndexBuffer.h"

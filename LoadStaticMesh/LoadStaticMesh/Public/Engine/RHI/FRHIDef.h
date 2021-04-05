@@ -1,6 +1,5 @@
 #pragma once
 #include "stdafx.h"
-#include "FRHIResource.h"
 
 typedef enum class EDynamicModuleType : UINT8
 {
