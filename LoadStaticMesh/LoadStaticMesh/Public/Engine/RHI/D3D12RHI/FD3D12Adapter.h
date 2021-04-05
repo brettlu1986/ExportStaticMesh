@@ -32,6 +32,7 @@ struct FD3D12AdapterDesc
 class FD3D12DynamicRHI; 
 class FD3D12Fence;
 class FD3D12Device;
+class FD3DConstantBuffer;
 
 class FD3D12Adapter
 {
@@ -58,6 +59,12 @@ public:
 		return SwapChain.Get();
 	}
 
+	void CreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize);
+	void UpdateConstantBufferData(void* pUpdateData, UINT DataSize);
+	FD3DConstantBuffer* GetConstantBuffer() const
+	{
+		return ConstantBuffer;
+	}
 
 	void SetViewPort(const FRHIViewPort& InViewPort);
 	void SetScissorRect(const FRHIScissorRect& InRect);
@@ -85,6 +92,7 @@ public:
 private:
 	void InitializeDevices();
 	void CreateDescriptorHeaps();
+	void CreateConstantBufferView();
 
 	void CreateDescripterHeap(UINT NumDescripters, D3D12_DESCRIPTOR_HEAP_TYPE Type,
 		D3D12_DESCRIPTOR_HEAP_FLAGS, UINT NodeMask, REFIID riid, _COM_Outptr_  void** ppvHeap);
@@ -109,4 +117,6 @@ private:
 	UINT DsvDescriptorSize;
 	ComPtr<ID3D12Resource> RenderTargets[RENDER_TARGET_COUNT];
 	ComPtr<ID3D12Resource> DepthStencilBuffer;
+
+	FD3DConstantBuffer* ConstantBuffer;
 };

@@ -3,6 +3,7 @@
 #include "FD3D12Device.h"
 #include "FD3D12Fence.h"
 #include "FD3D12Helper.h"
+#include "FD3D12Resource.h"
 #include "d3dx12.h"
 
 FD3D12Adapter::FD3D12Adapter(FD3D12AdapterDesc& DescIn)
@@ -32,6 +33,7 @@ void FD3D12Adapter::ShutDown()
 	DsvHeap.Reset();
 	CbvSrvHeap.Reset();
 	SamplerHeap.Reset();
+	DepthStencilBuffer.Reset();
 	SwapChain.Reset();
 	RootSignature.Reset();
 	for (size_t i = 0; i < PiplelineStateCache.size(); ++i)
@@ -41,6 +43,12 @@ void FD3D12Adapter::ShutDown()
 	for (size_t i = 0; i < RENDER_TARGET_COUNT; ++i)
 	{
 		RenderTargets[i].Reset();
+	}
+	if (ConstantBuffer)
+	{
+		ConstantBuffer->Destroy();
+		delete ConstantBuffer;
+		ConstantBuffer = nullptr;
 	}
 	D3DDevice.Reset();
 }
@@ -273,6 +281,32 @@ void FD3D12Adapter::CreatePso(const FRHIPiplineStateInitializer& PsoInitializer)
 	
 }
 
+void FD3D12Adapter::CreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
+{
+	if (!ConstantBuffer)
+	{
+		ConstantBuffer = new FD3DConstantBuffer();
+		ConstantBuffer->Initialize();
+		ConstantBuffer->SetConstantBufferInfo(this, BufferSize, pDataFrom, DataSize);
+	}
+	CreateConstantBufferView();
+}
+
+void FD3D12Adapter::CreateConstantBufferView()
+{
+	D3D12_CONSTANT_BUFFER_VIEW_DESC CbvDesc = {};
+	CbvDesc.BufferLocation = ConstantBuffer->GetD3DConstantBuffer()->GetGPUVirtualAddress();
+	CbvDesc.SizeInBytes = ConstantBuffer->GetBufferSize();
+	GetD3DDevice()->CreateConstantBufferView(&CbvDesc, CbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
+}
+
+void FD3D12Adapter::UpdateConstantBufferData(void* pUpdateData, UINT DataSize)
+{
+	if (ConstantBuffer)
+	{
+		ConstantBuffer->UpdateConstantBufferInfo(pUpdateData, DataSize);
+	}
+}
 
 void FD3D12Adapter::CreateRenderTarget(UINT Width, UINT Height)
 {
@@ -324,7 +358,6 @@ void FD3D12Adapter::InitRenderBegin(UINT TargetFrame, FRHIColor Color)
 	CommandList->ClearDepthStencilView(DsvHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	D3D12_CPU_DESCRIPTOR_HANDLE DsvHandle = DsvHeap->GetCPUDescriptorHandleForHeapStart();
 	CommandList->OMSetRenderTargets(1, &RtvHandle, true, &DsvHandle);
-
 }
 
 void FD3D12Adapter::RenderEnd(UINT TargetFrame)

@@ -20,56 +20,6 @@ FD3DResource::~FD3DResource()
 
 
 
-FD3DConstantBuffer::FD3DConstantBuffer()
-{
-	ResourceName = "ConstantBuffer";
-}
-
-FD3DConstantBuffer::FD3DConstantBuffer(FD3D12Device* InDevice)
-	:FD3DResource(InDevice)
-	,pCbvDataBegin(nullptr)
-{	
-	ResourceName = "ConstantBuffer";
-}
-
-FD3DConstantBuffer::~FD3DConstantBuffer()
-{
-
-}
-
-void FD3DConstantBuffer::Destroy() 
-{
-	ConstantBuffer->Unmap(0, nullptr);
-	ConstantBuffer.Reset();
-}
-
-void FD3DConstantBuffer::Initialize() 
-{
-	CbvSrvUavDescriptorSize = ParentDevice->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-}
-
-void FD3DConstantBuffer::SetConstantBufferInfo(UINT InBufferSize, void* pDataFrom, UINT DataSize)
-{
-	BufferSize = InBufferSize;
-	const CD3DX12_HEAP_PROPERTIES ConstantProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-	const CD3DX12_RESOURCE_DESC ConstantDesc = CD3DX12_RESOURCE_DESC::Buffer(BufferSize);
-
-	ThrowIfFailed(ParentDevice->GetDevice()->CreateCommittedResource(
-		&ConstantProp,
-		D3D12_HEAP_FLAG_NONE,
-		&ConstantDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&ConstantBuffer)));
-	ThrowIfFailed(ConstantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&pCbvDataBegin)));
-	memcpy(pCbvDataBegin, pDataFrom, DataSize);
-	NAME_D3D12_OBJECT(ConstantBuffer);
-}
-
-void FD3DConstantBuffer::UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSize)
-{
-	memcpy(pCbvDataBegin, pDataUpdate, DataSize);
-}
 
 FD3DShaderResource::FD3DShaderResource()
 {
@@ -124,23 +74,6 @@ FD3DView::~FD3DView()
 {
 
 }
-
-
-FD3DConstantBufferView::FD3DConstantBufferView(FD3D12Device* InDevice, UINT64 InLocation, UINT InBytes, UINT InSizeBytes)
-:FD3DView(InDevice, InLocation, InBytes, InSizeBytes)
-{
-	ComPtr<ID3D12DescriptorHeap> CbvSrvHeap = ParentDevice->GetParentAdapter()->CbvSrvHeap;
-	D3D12_CONSTANT_BUFFER_VIEW_DESC CbvDesc = {};
-	CbvDesc.BufferLocation = InLocation;
-	CbvDesc.SizeInBytes = InSizeBytes;
-	ParentDevice->GetDevice()->CreateConstantBufferView(&CbvDesc, CbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
-}
-
-FD3DConstantBufferView::~FD3DConstantBufferView()
-{
-	
-}
-
 
 FD3DShaderResourceView::FD3DShaderResourceView(FD3D12Device* InDevice, FD3DShaderResource* InShaderResource)
 {
@@ -255,5 +188,54 @@ void FD3D12VertexBuffer::InitGPUVertexBufferView(FD3D12Adapter* Adapter)
 	VertexBufferView.BufferLocation = VertexBuffer->GetGPUVirtualAddress();
 	VertexBufferView.StrideInBytes = StrideInByte;
 	VertexBufferView.SizeInBytes = VertexBufferSize;
+}
+
+/// ////////////////////////////////////
+
+#include "FD3D12Adapter.h"
+
+FD3DConstantBuffer::FD3DConstantBuffer()
+	:FRenderResource(E_RESOURCE_TYPE::TYPE_CONSTANT_BUFFER)
+	, pCbvDataBegin(nullptr)
+{
+}
+
+FD3DConstantBuffer::~FD3DConstantBuffer()
+{
+
+}
+
+void FD3DConstantBuffer::Destroy()
+{
+	ConstantBuffer->Unmap(0, nullptr);
+	ConstantBuffer.Reset();
+}
+
+void FD3DConstantBuffer::Initialize()
+{
+}
+
+void FD3DConstantBuffer::SetConstantBufferInfo(FD3D12Adapter* Adapter, UINT InBufferSize, void* pDataFrom, UINT DataSize)
+{
+	CbvSrvUavDescriptorSize = Adapter->GetD3DDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	BufferSize = InBufferSize;
+	const CD3DX12_HEAP_PROPERTIES ConstantProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	const CD3DX12_RESOURCE_DESC ConstantDesc = CD3DX12_RESOURCE_DESC::Buffer(BufferSize);
+
+	ThrowIfFailed(Adapter->GetD3DDevice()->CreateCommittedResource(
+		&ConstantProp,
+		D3D12_HEAP_FLAG_NONE,
+		&ConstantDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&ConstantBuffer)));
+	ThrowIfFailed(ConstantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&pCbvDataBegin)));
+	memcpy(pCbvDataBegin, pDataFrom, DataSize);
+	NAME_D3D12_OBJECT(ConstantBuffer);
+}
+
+void FD3DConstantBuffer::UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSize)
+{
+	memcpy(pCbvDataBegin, pDataUpdate, DataSize);
 }
 

@@ -41,8 +41,7 @@ void FD3D12CommandList::SetScissorRect()
 void FD3D12CommandList::SetGraphicRootDescripterTable()
 {
 	FD3D12Adapter* Adapter = ParentDevice->GetParentAdapter();
-	FD3D12ResourceManager* SourceManager = ParentDevice->GetResourceManager();
-	FD3DConstantBuffer* ConstantBuffer = SourceManager->GetConstantBuffer();
+	FD3DConstantBuffer* ConstantBuffer = Adapter->GetConstantBuffer();
 	CommandList->SetGraphicsRootSignature(Adapter->GetRootSignature());
 	CommandList->SetPipelineState(Adapter->GetDefaultPiplineState());
 

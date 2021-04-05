@@ -108,8 +108,6 @@ public:
 	virtual void RHICreateSwapObject(FRHISwapObjectInfo& SwapInfo) = 0;
 	virtual void RHICreatePiplineStateObject(FRHIPiplineStateInitializer& Initializer) = 0;
 	virtual void RHIReadShaderDataFromFile(std::wstring FileName, byte** Data, UINT* Size) = 0;
-	virtual void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize) = 0;
-	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) = 0;
 	virtual FRHIView* RHICreateShaderResourceView(std::wstring TextureName) = 0;
 	virtual FRHICommandList& RHIGetCommandList(UINT Index) = 0;
 	virtual void RHIExcuteCommandList(FRHICommandList& CommandList) = 0;
@@ -122,6 +120,9 @@ public:
 	virtual void RHISetGraphicRootDescripterTable(FRHICommandList& CommandList) = 0;
 	virtual void RHISwapObjectPresent() = 0;
 
+	/// /////////////////////
+	virtual void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize) = 0;
+	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) = 0;
 
 	virtual void RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color) = 0;
 	virtual void RHICreateRenderTarget(UINT Width, UINT Height) = 0;
@@ -148,6 +149,16 @@ public:
 	virtual FDynamicRHI* CreateRHI() = 0;
 
 };
+
+FORCEINLINE void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
+{
+	return GDynamicRHI->RHICreateConstantBuffer(BufferSize, pDataFrom, DataSize);
+}
+
+FORCEINLINE void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize)
+{
+	return GDynamicRHI->RHIUpdateConstantBuffer(pUpdateData, DataSize);
+}
 
 FORCEINLINE void InitRenderBegin(UINT TargetFrame, FRHIColor Color)
 {

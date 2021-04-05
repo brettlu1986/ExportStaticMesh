@@ -163,15 +163,6 @@ FD3D12ResourceManager* FD3D12DynamicRHI::GetResourceManager()
 
 
 
-void FD3D12DynamicRHI::RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
-{
-	GetResourceManager()->CreateConstantBuffer(BufferSize, pDataFrom, DataSize);
-}
-
-void FD3D12DynamicRHI::RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize)
-{
-	GetResourceManager()->UpdateConstantBufferData(pUpdateData, DataSize);
-}
 
 
 FRHIView* FD3D12DynamicRHI::RHICreateShaderResourceView(std::wstring TextureName)
@@ -233,6 +224,17 @@ void FD3D12DynamicRHI::RHISetCurrentViewPortAndScissorRect(FRHICommandList& Comm
 
 
  /// /////////////////
+
+
+ void FD3D12DynamicRHI::RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
+ {
+	 ChosenAdapter->CreateConstantBuffer(BufferSize, pDataFrom, DataSize);
+ }
+
+ void FD3D12DynamicRHI::RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize)
+ {
+	 ChosenAdapter->UpdateConstantBufferData(pUpdateData, DataSize);
+ }
 
  void FD3D12DynamicRHI::RHICreateRenderTarget(UINT Width, UINT Height)
  {

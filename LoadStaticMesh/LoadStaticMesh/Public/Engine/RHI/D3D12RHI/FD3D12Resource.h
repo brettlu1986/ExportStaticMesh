@@ -22,39 +22,7 @@ protected:
 };
 
 
-class FD3DConstantBuffer :public FD3DResource
-{
-public:
-	FD3DConstantBuffer();
-	FD3DConstantBuffer(FD3D12Device* InDevice);
-	virtual ~FD3DConstantBuffer();
 
-	virtual void Destroy() override;
-	virtual void Initialize() override;
-
-	void SetConstantBufferInfo(UINT BufferSize, void* pDataFrom, UINT DataSize);
-	void UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSize);
-	ID3D12Resource* GetD3DConstantBuffer() const
-	{
-		return ConstantBuffer.Get();
-	}
-
-	UINT GetBufferSize() const
-	{
-		return BufferSize;
-	}
-
-	UINT GetCbvSrvUavDescriptorSize() const 
-	{
-		return CbvSrvUavDescriptorSize;
-	}
-private: 
-	UINT BufferSize;
-
-	UINT8* pCbvDataBegin;
-	UINT CbvSrvUavDescriptorSize;
-	ComPtr<ID3D12Resource> ConstantBuffer;
-};
 
 
 
@@ -96,14 +64,6 @@ public:
 	virtual ~FD3DView();
 protected:
 	FD3D12Device* ParentDevice;
-};
-
-class FD3DConstantBufferView : public FD3DView
-{
-public:
-	FD3DConstantBufferView(FD3D12Device* InDevice, UINT64 InLocation, UINT InBytes, UINT InSizeBytes);
-	virtual ~FD3DConstantBufferView();
-
 };
 
 
@@ -148,9 +108,6 @@ private:
 	D3D12_INDEX_BUFFER_VIEW IndexBufferView;
 };
 
-
-
-
 class FD3D12VertexBuffer : public FVertexBuffer
 {
 public:
@@ -174,3 +131,39 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW VertexBufferView;
 };
 
+
+class FD3D12Adapter;
+class FD3DConstantBuffer :public FRenderResource
+{
+public:
+	FD3DConstantBuffer();
+	virtual ~FD3DConstantBuffer();
+
+	virtual void Destroy() override;
+	virtual void Initialize() override;
+
+	void SetConstantBufferInfo(FD3D12Adapter* Adapter, UINT BufferSize, void* pDataFrom, UINT DataSize);
+	void UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSize);
+	ID3D12Resource* GetD3DConstantBuffer() const
+	{
+		return ConstantBuffer.Get();
+	}
+
+	UINT GetBufferSize() const
+	{
+		return BufferSize;
+	}
+
+	UINT GetCbvSrvUavDescriptorSize()
+	{
+		return CbvSrvUavDescriptorSize;
+	}
+
+
+private:
+	UINT BufferSize;
+
+	UINT8* pCbvDataBegin;
+	UINT CbvSrvUavDescriptorSize;
+	ComPtr<ID3D12Resource> ConstantBuffer;
+};
