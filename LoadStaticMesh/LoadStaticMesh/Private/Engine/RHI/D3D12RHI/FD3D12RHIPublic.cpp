@@ -2,7 +2,6 @@
 #include "stdafx.h"
 #include "FD3D12RHIPrivate.h"
 #include "FD3D12Helper.h"
-#include "FD3D12Device.h"
 #include "FDefine.h"
 #include "FD3D12Resource.h"
 
@@ -157,7 +156,7 @@ void FD3D12DynamicRHI::RHIReadShaderDataFromFile(std::wstring FileName, byte** D
 
 FRHICommandList& FD3D12DynamicRHI::RHIGetCommandList(UINT Index)
 {
-	return ChosenAdapter->GetDevice()->GetCommandListManager()->GetCommandList(Index);
+	return ChosenAdapter->GetCommandListManager()->GetCommandList(Index);
 }
 
 void FD3D12DynamicRHI::RHIExcuteCommandList(FRHICommandList& CommandList)
@@ -266,7 +265,7 @@ void FD3D12DynamicRHI::RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* Ver
 	FD3D12IndexBuffer* D3DIndexBuffer = static_cast<FD3D12IndexBuffer*>(IndexBuffer);
 	FD3D12VertexBuffer* D3DVertexBuffer = static_cast<FD3D12VertexBuffer*>(VertexBuffer);
 
-	ID3D12GraphicsCommandList* CommandList = ChosenAdapter->GetDevice()->GetCommandListManager()->GetDefaultCommandList();
+	ID3D12GraphicsCommandList* CommandList = ChosenAdapter->GetCommandListManager()->GetDefaultCommandList();
 	CommandList->IASetVertexBuffers(0, 1, &(D3DVertexBuffer->GetVertexBufferView()));
 	CommandList->IASetIndexBuffer(&(D3DIndexBuffer->GetIndexBufferView()));
 	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

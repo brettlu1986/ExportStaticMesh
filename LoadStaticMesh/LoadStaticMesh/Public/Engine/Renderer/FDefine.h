@@ -46,3 +46,4 @@ struct FVertex_PositionTex0
 };
 
 const UINT RENDER_TARGET_COUNT = 3;
+const UINT COMMAND_LIST_NUM = 1;

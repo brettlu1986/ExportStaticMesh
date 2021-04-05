@@ -2,7 +2,6 @@
 #include "stdafx.h"
 #include "FD3D12Fence.h"
 #include "FD3D12Adapter.h"
-#include "FD3D12Device.h"
 #include "FD3D12Helper.h"
 
 FD3D12Fence::FD3D12Fence(const std::string& Name, FD3D12Adapter* InParent)
@@ -40,8 +39,7 @@ void FD3D12Fence::Initialize()
 
 void FD3D12Fence::SignalCurrentFence()
 {
-	FD3D12Device* Device = ParentAdapter->GetDevice();
-	ID3D12CommandQueue* CommandQueue = Device->GetD3DCommandQueue();
+	ID3D12CommandQueue* CommandQueue = ParentAdapter->GetD3DCommandQueue();
 
 	UINT64 FenceNum = FenceValue;
 	LastSignalFenceValue = FenceNum;

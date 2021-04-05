@@ -1,27 +1,21 @@
 
 #include "FD3D12Adapter.h"
-#include "FD3D12Device.h"
 #include "FD3D12Fence.h"
 #include "FD3D12Helper.h"
 #include "FD3D12Resource.h"
 #include "d3dx12.h"
+#include "FDefine.h"
 
 FD3D12Adapter::FD3D12Adapter(FD3D12AdapterDesc& DescIn)
 :OwningRHI(nullptr)
 ,Desc(DescIn)
-,Device(nullptr)
 ,Fence(nullptr)
+,CommandListManager(nullptr)
 {
 }
 
 void FD3D12Adapter::ShutDown()
 {
-	if(Device)
-	{
-		Device->ShutDown();
-		delete Device;
-		Device = nullptr;
-	}
 
 	if(Fence)
 	{
@@ -49,6 +43,12 @@ void FD3D12Adapter::ShutDown()
 		ConstantBuffer->Destroy();
 		delete ConstantBuffer;
 		ConstantBuffer = nullptr;
+	}
+
+	if (CommandListManager)
+	{
+		CommandListManager->Clear();
+		CommandListManager = nullptr;
 	}
 	D3DDevice.Reset();
 }
@@ -92,9 +92,11 @@ void FD3D12Adapter::InitializeDevices()
 				IID_PPV_ARGS(&D3DDevice)));
 		}
 		NAME_D3D12_OBJECT(D3DDevice);
+
+		CommandListManager = new FD3D12CommandListManager(this);
+		CommandListManager->Initialize();
+		CommandListManager->CreateCommandLists(COMMAND_LIST_NUM);
 		
-		Device = new FD3D12Device(this);
-		Device->Initialize();
 
 		Fence = new FD3D12Fence("GPUFence", this);
 		Fence->Initialize();
@@ -179,7 +181,7 @@ void FD3D12Adapter::CreateSwapChain(const FRHISwapObjectInfo& SwapInfo)
 	Sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	ThrowIfFailed(DxgiFactory->CreateSwapChain(
-		Device->GetD3DCommandQueue(),
+		GetD3DCommandQueue(),
 		&Sd,
 		&SwapChain));
 
@@ -348,7 +350,7 @@ void FD3D12Adapter::CreateRenderTarget(UINT Width, UINT Height)
 void FD3D12Adapter::InitRenderBegin(UINT TargetFrame, FRHIColor Color)
 {
 	const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[TargetFrame].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	ID3D12GraphicsCommandList* CommandList = GetDevice()->GetCommandListManager()->GetDefaultCommandList();
+	ID3D12GraphicsCommandList* CommandList = GetCommandListManager()->GetDefaultCommandList();
 	CommandList->ResourceBarrier(1, &Rb1);
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart(), TargetFrame, RtvDescriptorSize);
@@ -362,7 +364,7 @@ void FD3D12Adapter::InitRenderBegin(UINT TargetFrame, FRHIColor Color)
 
 void FD3D12Adapter::RenderEnd(UINT TargetFrame)
 {
-	ID3D12GraphicsCommandList* CommandList = GetDevice()->GetCommandListManager()->GetDefaultCommandList();
+	ID3D12GraphicsCommandList* CommandList = GetCommandListManager()->GetDefaultCommandList();
 	const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[TargetFrame].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	CommandList->ResourceBarrier(1, &Rb2);
 }

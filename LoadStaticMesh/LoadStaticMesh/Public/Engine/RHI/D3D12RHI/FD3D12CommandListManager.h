@@ -4,11 +4,11 @@
 #include "FD3D12CommandList.h"
 using namespace Microsoft::WRL;
 
-class FD3D12Device;
+class FD3D12Adapter;
 class FD3D12CommandListManager
 {
 public:
-	FD3D12CommandListManager(FD3D12Device* InParent);
+	FD3D12CommandListManager(FD3D12Adapter* InAdapter);
 	virtual ~FD3D12CommandListManager();
 	void Initialize();
 	void Clear();
@@ -25,7 +25,7 @@ public:
 private:
 
 	ComPtr<ID3D12CommandQueue> CommandQueue;
-	FD3D12Device* ParentDevice;
+	FD3D12Adapter* ParentAdapter;
 	std::vector<FD3D12CommandList*> ComandLists;
 
 };

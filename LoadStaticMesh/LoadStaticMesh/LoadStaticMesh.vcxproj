@@ -161,7 +161,6 @@
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Adapter.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12CommandList.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12CommandListManager.cpp" />
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Device.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Fence.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Resource.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12RHIPublic.cpp" />
@@ -246,7 +245,6 @@
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Adapter.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12CommandList.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12CommandListManager.h" />
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Device.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Fence.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Helper.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Resource.h" />

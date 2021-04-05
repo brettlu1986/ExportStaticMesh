@@ -1,10 +1,10 @@
 #include "FD3D12CommandListManager.h"
-#include "FD3D12Device.h"
 #include "FD3D12CommandList.h"
 #include "FD3D12Helper.h"
+#include "FD3D12Adapter.h"
 
-FD3D12CommandListManager::FD3D12CommandListManager(FD3D12Device* InParent)
-:ParentDevice(InParent)
+FD3D12CommandListManager::FD3D12CommandListManager(FD3D12Adapter* InParent)
+:ParentAdapter(InParent)
 {
 
 }
@@ -27,8 +27,7 @@ void FD3D12CommandListManager::Clear()
 
 void FD3D12CommandListManager::Initialize()
 {
-	FD3D12Adapter* Adapter = ParentDevice->GetParentAdapter();
-	ID3D12Device* D3DDevice = Adapter->GetD3DDevice();
+	ID3D12Device* D3DDevice = ParentAdapter->GetD3DDevice();
 
 	D3D12_COMMAND_QUEUE_DESC QueueDesc = {};
 	QueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
@@ -44,7 +43,7 @@ void FD3D12CommandListManager::CreateCommandLists(UINT NumCommandLists)
 	{
 		for (UINT i = 0; i < NumCommandLists; ++i)
 		{
-			FD3D12CommandList* List = new FD3D12CommandList(ParentDevice, i);
+			FD3D12CommandList* List = new FD3D12CommandList(ParentAdapter, i);
 			ComandLists.push_back(List);
 		}
 	}
