@@ -23,7 +23,6 @@ private:
 	void FindAdapter();
 };
 
-class FD3D12ResourceManager;
 class FD3D12DynamicRHI : public FDynamicRHI
 {
 public:
@@ -39,10 +38,8 @@ public:
 	virtual void RHICreatePiplineStateObject(FRHIPiplineStateInitializer& Initializer) override;
 	virtual void RHIReadShaderDataFromFile(std::wstring FileName, byte** Data, UINT* Size) override;
 	
-
 	
 	
-	virtual FRHIView* RHICreateShaderResourceView(std::wstring TextureName);
 	virtual FRHICommandList& RHIGetCommandList(UINT Index) ;
 	virtual void RHIExcuteCommandList(FRHICommandList& CommandList);
 	virtual void RHICloseCommandList(FRHICommandList& CommandList);
@@ -64,11 +61,11 @@ public:
 
 	virtual FIndexBuffer* RHICreateIndexBuffer() ;
 	virtual FVertexBuffer* RHICreateVertexBuffer();
-	virtual void RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) ;
-	virtual void RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer);
+	virtual FTexture* RHICreateTexture();
+	virtual void RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture) ;
+	virtual void RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* TextureRes);
 
 private: 
-	FD3D12ResourceManager* GetResourceManager();
 	FD3D12Adapter* ChosenAdapter = nullptr;
 
 };

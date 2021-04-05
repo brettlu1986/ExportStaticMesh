@@ -2,7 +2,6 @@
 #include "FD3D12Device.h"
 #include "FD3D12Helper.h"
 #include "FD3D12CommandListManager.h"
-#include "FD3D12ResourceManager.h"
 
 #define COMMAND_LIST_NUM 1 // pre/ render/ post
 
@@ -14,7 +13,6 @@ FD3D12Device::FD3D12Device()
 FD3D12Device::FD3D12Device(FD3D12Adapter* InAdapter)
 :ParentAdapter(InAdapter)
 ,CommandListManager(nullptr)
-,ResourceManager(nullptr)
 {
 
 }
@@ -32,11 +30,6 @@ void FD3D12Device::ShutDown()
 		CommandListManager = nullptr;
 	}
 
-	if (ResourceManager)
-	{
-		ResourceManager->Clear();
-		ResourceManager = nullptr;
-	}
 }
 
 ID3D12Device* FD3D12Device::GetDevice()
@@ -49,7 +42,4 @@ void FD3D12Device::Initialize()
 	CommandListManager = new FD3D12CommandListManager(this);
 	CommandListManager->Initialize();
 	CommandListManager->CreateCommandLists(COMMAND_LIST_NUM);
-
-	ResourceManager = new FD3D12ResourceManager(this);
-	ResourceManager->Initialize();
 }

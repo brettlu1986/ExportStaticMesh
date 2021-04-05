@@ -167,7 +167,6 @@
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Resource.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12RHIPublic.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FDDSTextureLoader.cpp" />
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12ResourceManager.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\stdafx.cpp" />
     <ClCompile Include="Private\Engine\RHI\FDynamicRHI.cpp" />
     <ClCompile Include="Private\Engine\RHI\FRHI.cpp" />
@@ -253,7 +252,6 @@
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Fence.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Helper.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Resource.h" />
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12ResourceManager.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12RHIPrivate.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\d3dx12.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FDDSTextureLoader.h" />

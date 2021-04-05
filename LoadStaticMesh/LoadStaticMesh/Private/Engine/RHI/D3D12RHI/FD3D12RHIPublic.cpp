@@ -3,7 +3,6 @@
 #include "FD3D12RHIPrivate.h"
 #include "FD3D12Helper.h"
 #include "FD3D12Device.h"
-#include "FD3D12ResourceManager.h"
 #include "FDefine.h"
 #include "FD3D12Resource.h"
 
@@ -155,20 +154,6 @@ void FD3D12DynamicRHI::RHIReadShaderDataFromFile(std::wstring FileName, byte** D
 	ThrowIfFailed(ReadDataFromFile(FileName.c_str(), Data, Size));
 }
 
-FD3D12ResourceManager* FD3D12DynamicRHI::GetResourceManager()
-{
-	FD3D12Device* Device = ChosenAdapter->GetDevice();
-	return Device->GetResourceManager();
-}
-
-
-
-
-
-FRHIView* FD3D12DynamicRHI::RHICreateShaderResourceView(std::wstring TextureName)
-{
-	return GetResourceManager()->CreateShaderResourceView(TextureName);
-}
 
 FRHICommandList& FD3D12DynamicRHI::RHIGetCommandList(UINT Index)
 {
@@ -261,15 +246,22 @@ void FD3D12DynamicRHI::RHISetCurrentViewPortAndScissorRect(FRHICommandList& Comm
 	return new FD3D12VertexBuffer();
  }
 
-void FD3D12DynamicRHI::RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer)
+ FTexture* FD3D12DynamicRHI::RHICreateTexture()
+ {
+	return new FD3D12Texture();
+ }
+
+void FD3D12DynamicRHI::RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture)
 {
 	FD3D12IndexBuffer* D3DIndexBuffer = static_cast<FD3D12IndexBuffer*>(IndexBuffer);
 	FD3D12VertexBuffer* D3DVertexBuffer = static_cast<FD3D12VertexBuffer*>(VertexBuffer);
-	D3DIndexBuffer->InitGPUIndexBuffer(ChosenAdapter);
+	FD3D12Texture* D3DTexture = static_cast<FD3D12Texture*>(Texture);
+	D3DIndexBuffer->InitGPUIndexBufferView(ChosenAdapter);
 	D3DVertexBuffer->InitGPUVertexBufferView(ChosenAdapter);
+	D3DTexture->InitGPUTextureView(ChosenAdapter);
 }
 
-void FD3D12DynamicRHI::RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer)
+void FD3D12DynamicRHI::RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* TextureRes)
 {
 	FD3D12IndexBuffer* D3DIndexBuffer = static_cast<FD3D12IndexBuffer*>(IndexBuffer);
 	FD3D12VertexBuffer* D3DVertexBuffer = static_cast<FD3D12VertexBuffer*>(VertexBuffer);

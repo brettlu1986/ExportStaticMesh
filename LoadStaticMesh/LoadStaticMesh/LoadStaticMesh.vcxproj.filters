@@ -105,9 +105,6 @@
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Resource.cpp">
       <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12ResourceManager.cpp">
-      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
-    </ClCompile>
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FDDSTextureLoader.cpp">
       <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
@@ -217,9 +214,6 @@
       <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
     </ClInclude>
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FDDSTextureLoader.h">
-      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12ResourceManager.h">
       <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
     </ClInclude>
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12RHIPrivate.h">

@@ -2,115 +2,8 @@
 #include "FD3D12Resource.h"
 #include "FD3D12Helper.h"
 #include "FDDSTextureLoader.h"
-
-FD3DResource::FD3DResource()
-:ParentDevice(nullptr)
-{
-
-}
-
-FD3DResource::FD3DResource(FD3D12Device* InDevice)
-:ParentDevice(InDevice)
-{
-}
-
-FD3DResource::~FD3DResource()
-{
-}
-
-
-
-
-FD3DShaderResource::FD3DShaderResource()
-{
-	ResourceName = "ShaderResource";
-}
-
-FD3DShaderResource::FD3DShaderResource(FD3D12Device* InDevice, std::wstring TextureName)
-:FD3DResource(InDevice)
-{
-	ResourceName = "ShaderResource";
-	ID3D12GraphicsCommandList* CommandList = ParentDevice->GetCommandListManager()->GetDefaultCommandList();
-	DirectX::CreateDDSTextureFromFile12(ParentDevice->GetDevice(), CommandList, TextureName.c_str(), TextureResource, TextureResourceUpload);
-	NAME_D3D12_OBJECT(TextureResource);
-	NAME_D3D12_OBJECT(TextureResourceUpload);
-}
-
-FD3DShaderResource::~FD3DShaderResource()
-{
-
-}
-
-void FD3DShaderResource::Destroy()
-{
-	TextureResource.Reset();
-	TextureResourceUpload.Reset();
-}
-
-void FD3DShaderResource::Initialize()
-{
-	CbvSrvUavDescriptorSize = ParentDevice->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-}
-
-
-
-
-
-
-
-FD3DView::FD3DView()
-:FRHIView()
-,ParentDevice(nullptr)
-{
-}
-
-FD3DView::FD3DView(FD3D12Device* InDevice, UINT64 InLocation, UINT InBytes, UINT InSizeBytes)
-: FRHIView(InLocation, InBytes, InSizeBytes)
-, ParentDevice(InDevice)
-{
-}
-
-FD3DView::~FD3DView()
-{
-
-}
-
-FD3DShaderResourceView::FD3DShaderResourceView(FD3D12Device* InDevice, FD3DShaderResource* InShaderResource)
-{
-	ParentDevice = InDevice;
-	ShaderResource = InShaderResource;
-
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.Format = ShaderResource->GetD3DShaderResource()->GetDesc().Format;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = ShaderResource->GetD3DShaderResource()->GetDesc().MipLevels;
-
-	UINT CbvSrvUavDescriptorSize = ShaderResource->GetSrvDescripterSize();
-	ComPtr<ID3D12DescriptorHeap> CbvSrvHeap = ParentDevice->GetParentAdapter()->CbvSrvHeap;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE CbvSrvHandle(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart(), 1, CbvSrvUavDescriptorSize);
-	ParentDevice->GetDevice()->CreateShaderResourceView(ShaderResource->GetD3DShaderResource(), &srvDesc, CbvSrvHandle);
-}
-
-FD3DShaderResourceView::~FD3DShaderResourceView()
-{
-
-}
-
-void FD3DShaderResourceView::Clear()
-{
-	if (ShaderResource)
-	{
-		ShaderResource->Destroy();
-		delete ShaderResource;
-		ShaderResource = nullptr;
-	}
-}
-
-
-
-/// ///////////////////////////////////
 #include "FRenderResource.h"
+#include "FD3D12Adapter.h"
 
 FD3D12IndexBuffer::FD3D12IndexBuffer()
 :FIndexBuffer(E_RESOURCE_TYPE::TYPE_INDEX_BUFFER)
@@ -130,7 +23,7 @@ void FD3D12IndexBuffer::Destroy()
 	IndexBufferUpload.Reset();
 }
 
-void FD3D12IndexBuffer::InitGPUIndexBuffer(FD3D12Adapter* Adapter)
+void FD3D12IndexBuffer::InitGPUIndexBufferView(FD3D12Adapter* Adapter)
 {
 	ID3D12GraphicsCommandList* CommandList = Adapter->GetDevice()->GetCommandListManager()->GetDefaultCommandList();
 	CreateBuffer(Adapter->GetD3DDevice(), CommandList, GetIndicesData(), GetIndicesDataSize(), IndexBuffer, IndexBufferUpload);
@@ -159,8 +52,7 @@ FD3D12VertexBuffer::FD3D12VertexBuffer()
 
 FD3D12VertexBuffer::~FD3D12VertexBuffer()
 {
-	VertexBuffer.Reset();
-	VertexUploadBuffer.Reset();
+	Destroy();
 }
 
 void FD3D12VertexBuffer::Destroy()
@@ -190,9 +82,51 @@ void FD3D12VertexBuffer::InitGPUVertexBufferView(FD3D12Adapter* Adapter)
 	VertexBufferView.SizeInBytes = VertexBufferSize;
 }
 
+/////////////////////////
+
+FD3D12Texture::FD3D12Texture()
+{
+
+}
+
+FD3D12Texture::~FD3D12Texture()
+{
+	Destroy();
+}
+
+void FD3D12Texture::Destroy()
+{
+	TextureResource.Reset();
+	TextureResourceUpload.Reset();
+}
+
+void FD3D12Texture::Initialize()
+{
+
+}
+
+void FD3D12Texture::InitGPUTextureView(FD3D12Adapter* Adapter)
+{
+	ID3D12GraphicsCommandList* CommandList = Adapter->GetDevice()->GetCommandListManager()->GetDefaultCommandList();
+	DirectX::CreateDDSTextureFromFile12(Adapter->GetD3DDevice(), CommandList, GetTextureName().c_str(), TextureResource, TextureResourceUpload);
+	NAME_D3D12_OBJECT(TextureResource);
+	NAME_D3D12_OBJECT(TextureResourceUpload);
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Format = TextureResource->GetDesc().Format;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = TextureResource->GetDesc().MipLevels;
+
+	UINT CbvSrvUavDescriptorSize = Adapter->GetD3DDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	ComPtr<ID3D12DescriptorHeap> CbvSrvHeap = Adapter->CbvSrvHeap;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE CbvSrvHandle(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart(), 1, CbvSrvUavDescriptorSize);
+	Adapter->GetD3DDevice()->CreateShaderResourceView(TextureResource.Get(), &srvDesc, CbvSrvHandle);
+}
+
 /// ////////////////////////////////////
 
-#include "FD3D12Adapter.h"
+
 
 FD3DConstantBuffer::FD3DConstantBuffer()
 	:FRenderResource(E_RESOURCE_TYPE::TYPE_CONSTANT_BUFFER)
@@ -202,7 +136,7 @@ FD3DConstantBuffer::FD3DConstantBuffer()
 
 FD3DConstantBuffer::~FD3DConstantBuffer()
 {
-
+	Destroy();
 }
 
 void FD3DConstantBuffer::Destroy()

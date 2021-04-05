@@ -5,13 +5,14 @@
 #include "FRHIResource.h"
 #include "FRHIDef.h"
 
+class FTexture;
 class FMesh
 {
 public:
 	FMesh();
 	~FMesh();
 	
-	void InitData(LPCWSTR FileName);
+	void InitData(LPCWSTR FileName, std::wstring TextureName);
 	void InitRenderResource();
 	void Render(FRHICommandList& CommandList);
 	void EndRender();
@@ -19,13 +20,9 @@ public:
 	void SetModelLocation(XMFLOAT3 Location);
 	XMMATRIX GetModelMatrix();
 
-	void SetTextureName(std::wstring Name) {  TexName = Name; }
 private:
-	std::wstring TexName;
-
-	FRHIView* RHIShaderResourceView;
 	XMFLOAT3 ModelLocation;
-
 	FVertexBuffer* VertexBuffer;
 	FIndexBuffer* IndexBuffer;
+	FTexture* TextureRes;
 };

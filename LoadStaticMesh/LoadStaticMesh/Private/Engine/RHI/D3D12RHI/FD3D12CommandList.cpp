@@ -3,7 +3,6 @@
 #include "FD3D12Device.h"
 #include "FD3D12CommandListAllocator.h"
 #include "FD3D12Helper.h"
-#include "FD3D12ResourceManager.h"
 #include "FD3D12Resource.h"
 
 FD3D12CommandList::FD3D12CommandList(FD3D12Device* ParentDevice, FD3D12CommandListAllocator* CommandAllocator, UINT InCommandListIndex)

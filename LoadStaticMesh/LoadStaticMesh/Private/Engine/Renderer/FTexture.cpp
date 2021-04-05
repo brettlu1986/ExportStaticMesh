@@ -10,3 +10,12 @@ FTexture::~FTexture()
 {
 
 }
+
+void FTexture::Initialize()
+{
+}
+
+void FTexture::Destroy()
+{
+
+}

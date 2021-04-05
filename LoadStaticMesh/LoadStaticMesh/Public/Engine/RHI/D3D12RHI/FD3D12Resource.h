@@ -4,87 +4,13 @@
 #include "FD3D12Device.h"
 #include "d3dx12.h"
 #include "FDefine.h"
-
-using namespace Microsoft::WRL;
-
-class FD3DResource : public FRHIResource
-{
-public: 
-	FD3DResource();
-	FD3DResource(FD3D12Device* InDevice);
-	virtual ~FD3DResource();
-
-	virtual void Destroy() = 0;
-	virtual void Initialize() = 0;
-	
-protected:
-	FD3D12Device* ParentDevice;
-};
-
-
-
-
-
-
-class FD3DShaderResource :public FD3DResource
-{
-public:
-	FD3DShaderResource();
-	FD3DShaderResource(FD3D12Device* InDevice, std::wstring TextureName);
-	virtual ~FD3DShaderResource();
-
-	virtual void Destroy() override;
-	virtual void Initialize() override;
-	
-	ID3D12Resource* GetD3DShaderResource()
-	{
-		return TextureResource.Get();
-	}
-
-	UINT GetSrvDescripterSize() const
-	{
-		return CbvSrvUavDescriptorSize;
-	}
-private:
-	ComPtr<ID3D12Resource> TextureResource;
-	ComPtr<ID3D12Resource> TextureResourceUpload;
-	UINT CbvSrvUavDescriptorSize;
-};
-
-
-
-
-
-/// ////////////
-class FD3DView : public FRHIView
-{
-public:
-	FD3DView();
-	FD3DView(FD3D12Device* InDevice, UINT64 InLocation, UINT InBytes, UINT InSizeBytes);
-	virtual ~FD3DView();
-protected:
-	FD3D12Device* ParentDevice;
-};
-
-
-
-class FD3DShaderResourceView : public FD3DView
-{
-public:
-	FD3DShaderResourceView(FD3D12Device* InDevice, FD3DShaderResource* InShaderResource);
-	virtual ~FD3DShaderResourceView();
-
-	virtual void Clear() override;
-private:
-	FD3DShaderResource* ShaderResource;
-};
-
-
-////////////////
 #include "FIndexBuffer.h"
 #include "FVertexBuffer.h"
+#include "FTexture.h"
 #include "FRenderResource.h"
 #include "FD3D12Adapter.h"
+
+using namespace Microsoft::WRL;
 
 class FD3D12IndexBuffer : public FIndexBuffer
 {
@@ -94,7 +20,7 @@ public:
 
 	virtual void Destroy() override;
 	virtual void Initialize() override;
-	void InitGPUIndexBuffer(FD3D12Adapter* Adapter);
+	void InitGPUIndexBufferView(FD3D12Adapter* Adapter);
 
 	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const
 	{
@@ -129,6 +55,24 @@ private:
 	ComPtr<ID3D12Resource> VertexUploadBuffer;
 
 	D3D12_VERTEX_BUFFER_VIEW VertexBufferView;
+};
+
+class FTexture;
+class FD3D12Texture : public FTexture
+{
+public:
+	FD3D12Texture();
+	virtual ~FD3D12Texture();
+
+	virtual void Destroy() override;
+	virtual void Initialize() override;
+
+	void InitGPUTextureView(FD3D12Adapter* Adapter);
+private:
+
+	ComPtr<ID3D12Resource> TextureResource;
+	ComPtr<ID3D12Resource> TextureResourceUpload;
+
 };
 
 

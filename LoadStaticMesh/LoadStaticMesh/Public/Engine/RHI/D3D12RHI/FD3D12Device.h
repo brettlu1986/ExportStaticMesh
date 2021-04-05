@@ -1,7 +1,6 @@
 #pragma once
 #include "FD3D12Adapter.h"
 #include "FD3D12CommandListManager.h"
-#include "FD3D12ResourceManager.h"
 
 class FD3D12Device
 {
@@ -21,10 +20,6 @@ public:
 		return CommandListManager;
 	}
 
-	FD3D12ResourceManager* GetResourceManager() const 
-	{
-		return ResourceManager;
-	}
 
 	ID3D12CommandQueue* GetD3DCommandQueue() const 
 	{
@@ -37,5 +32,4 @@ private:
 
 	FD3D12Adapter* ParentAdapter;
 	FD3D12CommandListManager* CommandListManager;
-	FD3D12ResourceManager* ResourceManager;
 };

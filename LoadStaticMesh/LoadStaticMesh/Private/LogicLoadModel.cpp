@@ -242,18 +242,11 @@ void LogicStaticModel::InitCamera()
 
 void LogicStaticModel::InitModelScene()
 {
-	Mesh.InitData(L"mesh.bin");
-	Mesh.SetTextureName(L"Resource/T_Chair_M.dds");
+	Mesh.InitData(L"mesh.bin", L"Resource/T_Chair_M.dds");
 	Mesh.SetModelLocation(MyCamera.GetViewTargetLocation());
 	Scene.AddMeshToScene(&Mesh);
 }
 
-//void LogicStaticModel::InitModel()
-//{
-//	ModelGeo.Init();
-//	ModelGeo.DataComponent->SetModelLocation(MyCamera.GetViewTargetLocation());
-//
-//}
 
 void LogicStaticModel::OnMouseDown(WPARAM btnState, int x, int y)
 {

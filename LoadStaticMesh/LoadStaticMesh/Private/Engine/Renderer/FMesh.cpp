@@ -13,7 +13,23 @@ FMesh::FMesh()
 
 FMesh::~FMesh()
 {
+	if(VertexBuffer)
+	{
+		delete VertexBuffer;
+		VertexBuffer = nullptr;
+	}
 
+	if (IndexBuffer)
+	{
+		delete IndexBuffer;
+		IndexBuffer = nullptr;
+	}
+
+	if (TextureRes)
+	{
+		delete TextureRes;
+		TextureRes = nullptr;
+	}
 }
 
 void FMesh::SetModelLocation(XMFLOAT3 Location)
@@ -29,23 +45,23 @@ XMMATRIX FMesh::GetModelMatrix()
 	return XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
 }
 
-void FMesh::InitData(LPCWSTR FileName)
+void FMesh::InitData(LPCWSTR FileName, std::wstring TextureName)
 {	
 	VertexBuffer = CreateVertexBuffer();
 	IndexBuffer = CreateIndexBuffer();
+	TextureRes = CreateTexture();
+	TextureRes->SetTextureName(TextureName);
 	LAssetDataLoader::LoadMeshVertexDataFromFile(FileName, *IndexBuffer, *VertexBuffer);
 }
 
 void FMesh::InitRenderResource()
 {
-	InitMeshGPUResource(IndexBuffer, VertexBuffer);
-	//create model shader resource view
-	RHIShaderResourceView = GDynamicRHI->RHICreateShaderResourceView(TexName);
+	InitMeshGPUResource(IndexBuffer, VertexBuffer, TextureRes);
 }
 
 void FMesh::Render(FRHICommandList& CommandList)
 {	
-	DrawMesh(IndexBuffer, VertexBuffer);
+	DrawMesh(IndexBuffer, VertexBuffer, TextureRes);
 }
 
 void FMesh::EndRender()
