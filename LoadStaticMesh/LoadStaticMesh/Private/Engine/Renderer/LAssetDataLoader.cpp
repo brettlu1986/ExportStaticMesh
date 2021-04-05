@@ -6,18 +6,48 @@
 
 using namespace std;
 
-inline std::wstring GetSaveDirectory()
+inline void GetAssetsPath(_Out_writes_(PathSize) WCHAR* Path, UINT PathSize)
 {
-	WCHAR CurPath[512];
-	GetCurrentDirectory(_countof(CurPath), CurPath);
-	std::wstring Path = CurPath;
-	return Path + L"\\Save\\";
+	if (Path == nullptr)
+	{
+		throw std::exception();
+	}
+
+	DWORD size = GetModuleFileName(nullptr, Path, PathSize);
+	if (size == 0 || size == PathSize)
+	{
+		// Method failed or path was truncated.
+		throw std::exception();
+	}
+
+	WCHAR* LastSlash = wcsrchr(Path, L'\\');
+	if (LastSlash)
+	{
+		*(LastSlash + 1) = L'\0';
+	}
+}
+
+inline std::string GetSaveDirectory()
+{
+	char CurPath[512];
+	GetCurrentDirectoryA(_countof(CurPath), CurPath);
+	std::string Path = CurPath;
+	return Path + "\\Save\\";
+}
+
+std::wstring LAssetDataLoader::GetAssetFullPath(LPCWSTR AssetName)
+{
+	std::wstring AssetsPath;
+	WCHAR AssetsPathChar[512];
+	GetAssetsPath(AssetsPathChar, _countof(AssetsPathChar));
+	AssetsPath = AssetsPathChar;
+	return AssetsPath + AssetName;
 }
 
 
-void LAssetDataLoader::LoadMeshVertexDataFromFile(LPCWSTR FileName, FIndexBuffer& IndexBuffer, FVertexBuffer& VertexBuffer)
+void LAssetDataLoader::LoadMeshVertexDataFromFile(std::string FileName, FIndexBuffer& IndexBuffer, FVertexBuffer& VertexBuffer)
 {
-	std::wstring FName = GetSaveDirectory() + FileName;
+	std::string FName = GetSaveDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;
@@ -62,10 +92,10 @@ void LAssetDataLoader::LoadMeshVertexDataFromFile(LPCWSTR FileName, FIndexBuffer
 	}
 }
 
-void LAssetDataLoader::LoadCameraDataFromFile(LPCWSTR FileName, LCamera& Camera)
+void LAssetDataLoader::LoadCameraDataFromFile(std::string FileName, LCamera& Camera)
 {
 	FCameraData& CameraDatas = Camera.GetCameraData();
-	std::wstring FName = GetSaveDirectory() + FileName;
+	std::string FName = GetSaveDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;

@@ -76,15 +76,16 @@ public:
 	}
 
 	/// ////
+	void InitWindow(UINT Width, UINT Height, void* Windwow);
 
 	void SetViewPort(const FRHIViewPort& InViewPort);
 	void SetScissorRect(const FRHIScissorRect& InRect);
 
-	void CreateRenderTarget(UINT Width, UINT Height);
+	void CreateRenderTargets();
 	void InitRenderBegin(UINT TargetFrame, FRHIColor Color);
 	void RenderEnd(UINT TargetFrame);
 
-	void CreateSwapChain(const FRHISwapObjectInfo& SwapInfo);
+	void CreateSwapChain();
 	void CreatePso(const FRHIPiplineStateInitializer& PsoInitializer);
 
 	ID3D12PipelineState* GetDefaultPiplineState() 
@@ -110,6 +111,10 @@ private:
 	
 	void CreateSignature();
 	void CreateSampler();
+
+	UINT WndWidth;
+	UINT WndHeight;
+	HWND Window;
 
 	FD3D12AdapterDesc Desc;
 	FD3D12DynamicRHI* OwningRHI;

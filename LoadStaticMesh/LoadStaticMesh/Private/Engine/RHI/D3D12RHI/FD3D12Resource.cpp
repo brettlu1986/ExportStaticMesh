@@ -4,6 +4,7 @@
 #include "FDDSTextureLoader.h"
 #include "FRenderResource.h"
 #include "FD3D12Adapter.h"
+#include <stdlib.h>
 
 FD3D12IndexBuffer::FD3D12IndexBuffer()
 :FIndexBuffer(E_RESOURCE_TYPE::TYPE_INDEX_BUFFER)
@@ -52,7 +53,6 @@ FD3D12VertexBuffer::FD3D12VertexBuffer()
 
 FD3D12VertexBuffer::~FD3D12VertexBuffer()
 {
-	Destroy();
 }
 
 void FD3D12VertexBuffer::Destroy()
@@ -85,19 +85,26 @@ void FD3D12VertexBuffer::InitGPUVertexBufferView(FD3D12Adapter* Adapter)
 /////////////////////////
 
 FD3D12Texture::FD3D12Texture()
+	:FTexture(E_RESOURCE_TYPE::TYPE_TEXTURE)
 {
 
 }
 
 FD3D12Texture::~FD3D12Texture()
 {
-	Destroy();
 }
 
 void FD3D12Texture::Destroy()
 {
-	TextureResource.Reset();
-	TextureResourceUpload.Reset();
+	if(TextureResource)
+	{
+		TextureResource.Reset();
+	}
+	if(TextureResourceUpload)
+	{
+		TextureResourceUpload.Reset();
+	}
+	
 }
 
 void FD3D12Texture::Initialize()
@@ -108,7 +115,15 @@ void FD3D12Texture::Initialize()
 void FD3D12Texture::InitGPUTextureView(FD3D12Adapter* Adapter)
 {
 	ID3D12GraphicsCommandList* CommandList = Adapter->GetCommandListManager()->GetDefaultCommandList();
-	DirectX::CreateDDSTextureFromFile12(Adapter->GetD3DDevice(), CommandList, GetTextureName().c_str(), TextureResource, TextureResourceUpload);
+
+	size_t Len = strlen(GetTextureName().c_str()) + 1;
+	size_t Converted = 0;
+	wchar_t* WStr = new wchar_t((UINT)(Len * sizeof(wchar_t)));
+	mbstowcs_s(&Converted, WStr, Len, GetTextureName().c_str(), _TRUNCATE);
+
+	//mbstowcs(Name, GetTextureName().c_str(), StrSize);
+
+	DirectX::CreateDDSTextureFromFile12(Adapter->GetD3DDevice(), CommandList, WStr, TextureResource, TextureResourceUpload);
 	NAME_D3D12_OBJECT(TextureResource);
 	NAME_D3D12_OBJECT(TextureResourceUpload);
 
@@ -136,7 +151,6 @@ FD3DConstantBuffer::FD3DConstantBuffer()
 
 FD3DConstantBuffer::~FD3DConstantBuffer()
 {
-	Destroy();
 }
 
 void FD3DConstantBuffer::Destroy()

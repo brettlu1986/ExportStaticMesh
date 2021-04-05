@@ -4,15 +4,20 @@
 #include "FIndexBuffer.h"
 #include "FRHIResource.h"
 #include "FRHIDef.h"
+#include "FRenderResource.h"
 
 class FTexture;
-class FMesh
+class FMesh : public FRenderResource
 {
 public:
 	FMesh();
-	~FMesh();
-	
-	void InitData(LPCWSTR FileName, std::wstring TextureName);
+	FMesh(std::string FileName, std::string TextureName);
+	virtual ~FMesh();
+
+	virtual void Destroy();
+	virtual void Initialize();
+
+	void InitData();
 	void InitRenderResource();
 	void Render(FRHICommandList& CommandList);
 	void EndRender();
@@ -21,6 +26,8 @@ public:
 	XMMATRIX GetModelMatrix();
 
 private:
+	std::string MeshFileName;
+	std::string MeshTextureName;
 	XMFLOAT3 ModelLocation;
 	FVertexBuffer* VertexBuffer;
 	FIndexBuffer* IndexBuffer;

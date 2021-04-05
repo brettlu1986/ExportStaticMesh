@@ -42,6 +42,7 @@ void ApplicationMain::Run()
 		{
 			Input->Update();
 			CurrentLogic->Update();
+			CurrentLogic->Render();
 		}
 	}
 }

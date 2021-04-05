@@ -7,6 +7,7 @@
 #include "FVertexBuffer.h"
 #include "FIndexBuffer.h"
 #include "FTexture.h"
+#include "FShader.h"
 
 
 
@@ -38,21 +39,6 @@ public:
 	LONG Bottom;
 };
 
-struct FRHISwapObjectInfo
-{
-	FRHISwapObjectInfo(UINT InWidth, UINT InHeight, UINT InObjectCount, void* InWindow)
-	:Width(InWidth)
-	,Height(InHeight)
-	,ObjectCount(InObjectCount)
-	,WindowHandle(InWindow)
-	{
-	}
-	
-	UINT Width;
-	UINT Height;
-	UINT ObjectCount;
-	void* WindowHandle;
-};
 
 typedef enum class ERHI_DATA_FORMAT
 {
@@ -104,9 +90,7 @@ public:
 	{
 		return new FGenericFence(Name);
 	}
-
-	virtual void RHICreateViewPort(FRHIViewPort& ViewPort) = 0;
-	virtual void RHICreateSwapObject(FRHISwapObjectInfo& SwapInfo) = 0;
+	
 	virtual void RHICreatePiplineStateObject(FRHIPiplineStateInitializer& Initializer) = 0;
 	virtual void RHIReadShaderDataFromFile(std::wstring FileName, byte** Data, UINT* Size) = 0;
 	virtual FRHICommandList& RHIGetCommandList(UINT Index) = 0;
@@ -121,11 +105,14 @@ public:
 	virtual void RHISwapObjectPresent() = 0;
 
 	/// /////////////////////
+	virtual void RHIInitWindow(UINT Width , UINT Height, void* Window) = 0;
+
 	virtual void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize) = 0;
 	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) = 0;
+	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) = 0;
+	virtual void RHICreatePiplineStateObject(FShader* Vs, FShader* Ps) = 0;
 
 	virtual void RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color) = 0;
-	virtual void RHICreateRenderTarget(UINT Width, UINT Height) = 0;
 	virtual void RHIRenderEnd(UINT TargetFrame) = 0;
 
 
@@ -151,6 +138,11 @@ public:
 
 };
 
+FORCEINLINE void RHIInitWindow(UINT Width, UINT Height, void* Window)
+{
+	GDynamicRHI->RHIInitWindow(Width, Height, Window);
+}
+
 FORCEINLINE void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
 {
 	return GDynamicRHI->RHICreateConstantBuffer(BufferSize, pDataFrom, DataSize);
@@ -161,14 +153,19 @@ FORCEINLINE void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize)
 	return GDynamicRHI->RHIUpdateConstantBuffer(pUpdateData, DataSize);
 }
 
+FORCEINLINE  FShader* CreateShader(LPCWSTR ShaderFile)
+{
+	return GDynamicRHI->RHICreateShader(ShaderFile);
+}
+
+FORCEINLINE  void CreatePiplineStateObject(FShader* Vs, FShader* Ps) 
+{
+	GDynamicRHI->RHICreatePiplineStateObject(Vs, Ps);
+}
+
 FORCEINLINE void InitRenderBegin(UINT TargetFrame, FRHIColor Color)
 {
 	return GDynamicRHI->RHIInitRenderBegin(TargetFrame, Color);
-}
-
-FORCEINLINE void CreateRenderTarget(UINT Width, UINT Height)
-{
-	GDynamicRHI->RHICreateRenderTarget(Width, Height);
 }
 
 FORCEINLINE void RenderEnd(UINT TargetFrame)

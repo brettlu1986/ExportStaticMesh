@@ -8,20 +8,21 @@ class FTexture : public FRenderResource
 {
 public:
 	FTexture();
+	FTexture(E_RESOURCE_TYPE Type);
 	virtual ~FTexture();
 
 	virtual void Destroy() override;
 	virtual void Initialize() override;
 
-	std::wstring& GetTextureName()
+	std::string& GetTextureName()
 	{
 		return TextureName;
 	}
 
-	void SetTextureName(const std::wstring& Name)
+	void SetTextureName(const std::string& Name)
 	{
 		TextureName = Name;
 	}
 private:
-	std::wstring TextureName;
+	std::string TextureName;
 };

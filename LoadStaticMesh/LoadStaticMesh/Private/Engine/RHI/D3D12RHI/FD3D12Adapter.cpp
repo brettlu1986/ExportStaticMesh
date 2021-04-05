@@ -41,7 +41,6 @@ void FD3D12Adapter::ShutDown()
 	if (ConstantBuffer)
 	{
 		ConstantBuffer->Destroy();
-		delete ConstantBuffer;
 		ConstantBuffer = nullptr;
 	}
 
@@ -148,6 +147,13 @@ void FD3D12Adapter::CreateDescripterHeap(UINT NumDescripters, D3D12_DESCRIPTOR_H
 	ThrowIfFailed(GetD3DDevice()->CreateDescriptorHeap(&Desc, riid, ppvHeap));
 }
 
+void FD3D12Adapter::InitWindow(UINT Width, UINT Height, void* InWindwow)
+{
+	WndWidth = Width;
+	WndHeight = Height;
+	Window = (HWND)InWindwow;
+}
+
 void FD3D12Adapter::SetViewPort(const FRHIViewPort& InViewPort)
 {
 	ViewPort = CD3DX12_VIEWPORT(0.0f, 0.0f, InViewPort.Width, InViewPort.Height);
@@ -158,14 +164,14 @@ void FD3D12Adapter::SetScissorRect(const FRHIScissorRect& InRect)
 	ScissorRect = CD3DX12_RECT(InRect.Left, InRect.Top, InRect.Right, InRect.Bottom);
 }
 
-void FD3D12Adapter::CreateSwapChain(const FRHISwapObjectInfo& SwapInfo)
+void FD3D12Adapter::CreateSwapChain()
 {	
 	SwapChain.Reset();
 
 	// Describe and create the swap chain.
 	DXGI_SWAP_CHAIN_DESC Sd;
-	Sd.BufferDesc.Width = SwapInfo.Width;
-	Sd.BufferDesc.Height = SwapInfo.Height;
+	Sd.BufferDesc.Width = WndWidth;
+	Sd.BufferDesc.Height = WndHeight;
 	Sd.BufferDesc.RefreshRate.Numerator = 60;
 	Sd.BufferDesc.RefreshRate.Denominator = 1;
 	Sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -174,8 +180,8 @@ void FD3D12Adapter::CreateSwapChain(const FRHISwapObjectInfo& SwapInfo)
 	Sd.SampleDesc.Count = 1;
 	Sd.SampleDesc.Quality = 0;
 	Sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	Sd.BufferCount = SwapInfo.ObjectCount;
-	Sd.OutputWindow = (HWND)SwapInfo.WindowHandle;
+	Sd.BufferCount = RENDER_TARGET_COUNT;
+	Sd.OutputWindow = (HWND)Window;
 	Sd.Windowed = true;
 	Sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	Sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
@@ -186,7 +192,7 @@ void FD3D12Adapter::CreateSwapChain(const FRHISwapObjectInfo& SwapInfo)
 		&SwapChain));
 
 	//rtv
-	CreateDescripterHeap(SwapInfo.ObjectCount, D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
+	CreateDescripterHeap(RENDER_TARGET_COUNT, D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
 		D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 0, IID_PPV_ARGS(&RtvHeap));
 	NAME_D3D12_OBJECT(RtvHeap);
 }
@@ -310,7 +316,7 @@ void FD3D12Adapter::UpdateConstantBufferData(void* pUpdateData, UINT DataSize)
 	}
 }
 
-void FD3D12Adapter::CreateRenderTarget(UINT Width, UINT Height)
+void FD3D12Adapter::CreateRenderTargets()
 {
 	CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart());
 	IDXGISwapChain* SwapChain = GetSwapChain();
@@ -328,7 +334,7 @@ void FD3D12Adapter::CreateRenderTarget(UINT Width, UINT Height)
 	depthOptimizedClearValue.DepthStencil.Stencil = 0;
 
 	CD3DX12_HEAP_PROPERTIES ProDefault = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-	CD3DX12_RESOURCE_DESC ResDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, Width, Height, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+	CD3DX12_RESOURCE_DESC ResDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, WndWidth, WndHeight, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
 	ThrowIfFailed(GetD3DDevice()->CreateCommittedResource(
 		&ProDefault,
 		D3D12_HEAP_FLAG_NONE,

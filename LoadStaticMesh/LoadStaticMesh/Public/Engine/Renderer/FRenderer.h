@@ -8,7 +8,7 @@ public:
 	FRenderer();
 	virtual ~FRenderer();
 
-	virtual void BeginRenderFrame(FScene* Scene) = 0;
+	virtual void RenderInit(FScene* Scene) = 0;
 	virtual void EndRenderFram(FScene* Scene) = 0;
 	virtual void Render(FRHICommandList& CommandList, FScene* Scene) = 0;
 };

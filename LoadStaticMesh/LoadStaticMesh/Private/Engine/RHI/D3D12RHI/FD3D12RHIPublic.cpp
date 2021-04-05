@@ -4,6 +4,7 @@
 #include "FD3D12Helper.h"
 #include "FDefine.h"
 #include "FD3D12Resource.h"
+#include "LAssetDataLoader.h"
 
 
 using namespace Microsoft::WRL;
@@ -131,17 +132,6 @@ FGenericFence* FD3D12DynamicRHI::RHICreateFence(const std::string& Name)
 }
 
 
-void FD3D12DynamicRHI::RHICreateViewPort(FRHIViewPort& ViewPort)
-{
-	ChosenAdapter->SetViewPort(ViewPort);
-	FRHIScissorRect Rect = FRHIScissorRect(0, 0, static_cast<LONG>(ViewPort.Width), static_cast<LONG>(ViewPort.Height));
-	ChosenAdapter->SetScissorRect(Rect);
-}
-
-void FD3D12DynamicRHI::RHICreateSwapObject(FRHISwapObjectInfo& SwapInfo) 
-{
-	ChosenAdapter->CreateSwapChain(SwapInfo);
-}
 
 void FD3D12DynamicRHI::RHICreatePiplineStateObject(FRHIPiplineStateInitializer& Initializer) 
 {
@@ -209,6 +199,15 @@ void FD3D12DynamicRHI::RHISetCurrentViewPortAndScissorRect(FRHICommandList& Comm
 
  /// /////////////////
 
+ void FD3D12DynamicRHI::RHIInitWindow(UINT Width, UINT Height, void* Window) 
+ {
+	 ChosenAdapter->InitWindow(Width, Height, Window);
+	 ChosenAdapter->SetViewPort(FRHIViewPort(static_cast<float>(Width), static_cast<float>(Height)));
+	 FRHIScissorRect Rect = FRHIScissorRect(0, 0, static_cast<LONG>(Width), static_cast<LONG>(Height));
+	 ChosenAdapter->SetScissorRect(Rect);
+	 ChosenAdapter->CreateSwapChain();
+	 ChosenAdapter->CreateRenderTargets();
+ }
 
  void FD3D12DynamicRHI::RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
  {
@@ -220,9 +219,32 @@ void FD3D12DynamicRHI::RHISetCurrentViewPortAndScissorRect(FRHICommandList& Comm
 	 ChosenAdapter->UpdateConstantBufferData(pUpdateData, DataSize);
  }
 
- void FD3D12DynamicRHI::RHICreateRenderTarget(UINT Width, UINT Height)
+ FShader* FD3D12DynamicRHI::RHICreateShader(LPCWSTR  ShaderFile)
  {
-	 ChosenAdapter->CreateRenderTarget(Width, Height);
+	 UINT8* ShaderData = nullptr;
+	 UINT ShaderLen = 0;
+	 ThrowIfFailed(ReadDataFromFile(LAssetDataLoader::GetAssetFullPath(ShaderFile).c_str(), &ShaderData, &ShaderLen));
+	 return new FShader(ShaderData, ShaderLen);
+ }
+
+ void FD3D12DynamicRHI::RHICreatePiplineStateObject(FShader* Vs, FShader* Ps)
+ {
+	 FRHIInputElement RHIInputElementDescs[] =
+	 {
+		 { "POSITION", 0, ERHI_DATA_FORMAT::FORMAT_R32G32B32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		 { "TEXCOORD", 0, ERHI_DATA_FORMAT::FORMAT_R32G32_FLOAT, 0, 12, ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+	 };
+
+	 FRHIPiplineStateInitializer RHIPsoInitializer = {
+		RHIInputElementDescs,
+		_countof(RHIInputElementDescs),
+		Vs->GetShaderByteCode(),
+		Vs->GetDataLength(),
+		Ps->GetShaderByteCode(),
+		Ps->GetDataLength(),
+		1
+	 };
+	 ChosenAdapter->CreatePso(RHIPsoInitializer);
  }
 
  void FD3D12DynamicRHI::RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color)

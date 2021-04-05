@@ -12,6 +12,14 @@ FScene::~FScene()
 
 }
 
+void FScene::Destroy()
+{
+	for (size_t i = 0; i < Meshes.size(); ++i)
+	{
+		Meshes[i]->Destroy();
+	}
+}
+
 void FScene::AddMeshToScene(FMesh* Mesh)
 {
 	Meshes.push_back(Mesh);

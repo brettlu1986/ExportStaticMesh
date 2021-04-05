@@ -33,8 +33,7 @@ public:
 
 	virtual FGenericFence* RHICreateFence(const std::string& Name) override;
 
-	virtual void RHICreateViewPort(FRHIViewPort& ViewPort) override;
-	virtual void RHICreateSwapObject(FRHISwapObjectInfo& SwapInfo) override;
+	
 	virtual void RHICreatePiplineStateObject(FRHIPiplineStateInitializer& Initializer) override;
 	virtual void RHIReadShaderDataFromFile(std::wstring FileName, byte** Data, UINT* Size) override;
 	
@@ -52,18 +51,21 @@ public:
 	virtual void RHISwapObjectPresent();
 
 	/// ////////////////////////////////
-	virtual void RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color);
-	virtual void RHICreateRenderTarget(UINT Width, UINT Height);
-	virtual void RHIRenderEnd(UINT TargetFrame);
+	virtual void RHIInitWindow(UINT Width, UINT Height, void* Window) override;
+
+	virtual void RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color) override;
+	virtual void RHIRenderEnd(UINT TargetFrame) override;
 
 	virtual void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize) override;
-	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize);
+	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) override;
+	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) override;
+	virtual void RHICreatePiplineStateObject(FShader* Vs, FShader* Ps) override;
 
-	virtual FIndexBuffer* RHICreateIndexBuffer() ;
-	virtual FVertexBuffer* RHICreateVertexBuffer();
-	virtual FTexture* RHICreateTexture();
-	virtual void RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture) ;
-	virtual void RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* TextureRes);
+	virtual FIndexBuffer* RHICreateIndexBuffer() override;
+	virtual FVertexBuffer* RHICreateVertexBuffer() override;
+	virtual FTexture* RHICreateTexture() override;
+	virtual void RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture) override;
+	virtual void RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* TextureRes) override;
 
 private: 
 	FD3D12Adapter* ChosenAdapter = nullptr;

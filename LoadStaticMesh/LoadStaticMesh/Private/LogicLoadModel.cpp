@@ -25,7 +25,7 @@ LogicStaticModel::LogicStaticModel()
 	: FrameIndex(0)
 	, bDestroy(false)
 	, ObjectConstant({})
-	,ThreadParam(ThreadParameter())
+	//,ThreadParam(ThreadParameter())
 	, WndWidth(0)
 	, WndHeight(0)
 	, AspectRatio(0.f)
@@ -44,22 +44,12 @@ LogicStaticModel::~LogicStaticModel()
 
 }
 
-std::wstring LogicStaticModel::GetAssetFullPath(LPCWSTR AssetName)
-{
-	return AssetsPath + AssetName;
-}
-
 void LogicStaticModel::Initialize(ApplicationMain* Application, UINT Width, UINT Height)
 {
 	MainApplication = Application;
 	WndWidth = Width;
 	WndHeight = Height;
 	AspectRatio = static_cast<float>(Width) / static_cast<float>(Height);
-
-	WCHAR AssetsPathChar[512];
-	GetAssetsPath(AssetsPathChar, _countof(AssetsPathChar));
-	AssetsPath = AssetsPathChar;
-
 	OnInit();
 }
 
@@ -67,87 +57,58 @@ void LogicStaticModel::Initialize(ApplicationMain* Application, UINT Width, UINT
 void LogicStaticModel::OnInit()
 {
 	InitCamera();
+	RenderThreadInit();
 	
-	//InitModel();
-	CreateRenderThread();
+	//CreateRenderThread();
 }
 
-void LogicStaticModel::CreateRenderThread()
-{
-	struct ThreadWrapper
-	{
-		static unsigned int WINAPI Thunk(void* LParameter)
-		{
-			LogicStaticModel::Get()->Render(LParameter);
-			return 0;
-		}
-	};
-	
-	ThreadParam.ThisThread = reinterpret_cast<HANDLE>(_beginthreadex(
-		nullptr, 
-			0, 
-		ThreadWrapper::Thunk,
-		(void*)&ThreadParam, 
-		CREATE_SUSPENDED, 
-		(UINT*)&ThreadParam.ThreadId));
-	
-	ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
-	ResumeThread(ThreadParam.ThisThread);
-}
+//void LogicStaticModel::CreateRenderThread()
+//{
+//	struct ThreadWrapper
+//	{
+//		static unsigned int WINAPI Thunk(void* LParameter)
+//		{
+//			LogicStaticModel::Get()->Render(LParameter);
+//			return 0;
+//		}
+//	};
+//	
+//	ThreadParam.ThisThread = reinterpret_cast<HANDLE>(_beginthreadex(
+//		nullptr, 
+//			0, 
+//		ThreadWrapper::Thunk,
+//		(void*)&ThreadParam, 
+//		CREATE_SUSPENDED, 
+//		(UINT*)&ThreadParam.ThreadId));
+//	
+//	ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
+//	ResumeThread(ThreadParam.ThisThread);
+//}
 
 void LogicStaticModel::Update()
 {
-	DWORD Ret = WaitForSingleObject(RenderEndHandle, INFINITE);
-	if (Ret - WAIT_OBJECT_0 == 0)
-	{
+	//DWORD Ret = WaitForSingleObject(RenderEndHandle, INFINITE);
+	//if (Ret - WAIT_OBJECT_0 == 0)
+	//{
 		//update matrix
 		XMMATRIX WorldViewProj = Mesh.GetModelMatrix() * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
 		//Update the constant buffer with the latest WorldViewProj matrix.
 		XMStoreFloat4x4(&ObjectConstant.WorldViewProj, XMMatrixTranspose(WorldViewProj));
 		GDynamicRHI->RHIUpdateConstantBuffer(&ObjectConstant, sizeof(ObjectConstant));
-		SetEvent(RenderBegin);
-	}
+	//	SetEvent(RenderBegin);
+	//}
 }
 
 void LogicStaticModel::RenderThreadInit()
 {
-	//create adapter , create device, create command queue, create command manager, create command allocator/list
+	InitModelScene();
 	RHIInit();
-	FRHIViewPort ViewPort = FRHIViewPort(static_cast<float>(WndWidth), static_cast<float>(WndHeight));
-	GDynamicRHI->RHICreateViewPort(ViewPort);
-	FRHISwapObjectInfo SwapObj = FRHISwapObjectInfo(WndWidth, WndHeight, FrameCount, MainApplication->GetHwnd());
-	GDynamicRHI->RHICreateSwapObject(SwapObj);
-	// load shader object
-	UINT8* pVs = nullptr;
-	UINT VsLen = 0;
-	UINT8* pPs = nullptr;
-	UINT PsLen = 0;
-	GDynamicRHI->RHIReadShaderDataFromFile(GetAssetFullPath(L"shader_vs.cso"), &pVs, &VsLen);
-	GDynamicRHI->RHIReadShaderDataFromFile(GetAssetFullPath(L"shader_ps.cso"), &pPs, &PsLen);
-	FRHIInputElement RHIInputElementDescs[] =
-	{
-		{ "POSITION", 0, ERHI_DATA_FORMAT::FORMAT_R32G32B32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, ERHI_DATA_FORMAT::FORMAT_R32G32_FLOAT, 0, 12, ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-	};
+	RHIInitWindow(WndWidth, WndHeight, MainApplication->GetHwnd());
 
-	FRHIPiplineStateInitializer RHIPsoInitializer = {
-		RHIInputElementDescs,
-		_countof(RHIInputElementDescs),
-		pVs,
-		VsLen,
-		pPs,
-		PsLen,
-		1
-	};
-	GDynamicRHI->RHICreatePiplineStateObject(RHIPsoInitializer);
+	Renderer.RenderInit(&Scene);
 
-	GDynamicRHI->RHICreateRenderTarget(WndWidth, WndHeight);
 	UINT BufferSize = (sizeof(ObjectConstants) + 255) & ~255;
 	GDynamicRHI->RHICreateConstantBuffer(BufferSize, &ObjectConstant, sizeof(ObjectConstant));
-
-	InitModelScene();
-
-	Renderer.BeginRenderFrame(&Scene);
 	
 	//first flush
 	FRHICommandList& CommandList = GDynamicRHI->RHIGetCommandList(0);
@@ -177,42 +138,48 @@ void LogicStaticModel::RenderThreadRun()
 	FrameIndex = (FrameIndex + 1) % FrameCount;
 }
 
-bool LogicStaticModel::Render(void* Param)
+bool LogicStaticModel::Render()
 {
-	try
-	{
-		RenderThreadInit();
-		SetEvent(RenderEndHandle);
-		DWORD Ret = 0;
-		while (!bDestroy)
-		{
-			Ret = WaitForSingleObject(RenderBegin, INFINITE);
-			if (Ret - WAIT_OBJECT_0 == 0)
-			{
-				RenderThreadRun();
-			}
-
-			SetEvent(RenderEndHandle);
-		}
-	}
-	catch (HrException& e)
-	{
-		if (e.Error() == DXGI_ERROR_DEVICE_REMOVED || e.Error() == DXGI_ERROR_DEVICE_RESET)
-		{
-			RHIExit();
-		}
-		else
-		{
-			throw;
-		}
-	}
+	RenderThreadRun();
 	return true;
 }
+//bool LogicStaticModel::Render(void* Param)
+//{
+//	try
+//	{
+//		RenderThreadInit();
+//		SetEvent(RenderEndHandle);
+//		DWORD Ret = 0;
+//		while (!bDestroy)
+//		{
+//			Ret = WaitForSingleObject(RenderBegin, INFINITE);
+//			if (Ret - WAIT_OBJECT_0 == 0)
+//			{
+//				RenderThreadRun();
+//			}
+//
+//			SetEvent(RenderEndHandle);
+//		}
+//	}
+//	catch (HrException& e)
+//	{
+//		if (e.Error() == DXGI_ERROR_DEVICE_REMOVED || e.Error() == DXGI_ERROR_DEVICE_RESET)
+//		{
+//			RHIExit();
+//		}
+//		else
+//		{
+//			throw;
+//		}
+//	}
+//	return true;
+//}
 
 void LogicStaticModel::Destroy()
 {	
 	bDestroy = true;
 	//wait gpu to excute finish
+	Scene.Destroy();
 	GDynamicRHI->RHISignalCurrentFence();
 
 	RHIExit();
@@ -231,7 +198,7 @@ void LogicStaticModel::Destroy()
 
 void LogicStaticModel::InitCamera()
 {
-	LAssetDataLoader::LoadCameraDataFromFile(L"camera.bin", MyCamera);
+	LAssetDataLoader::LoadCameraDataFromFile("camera.bin", MyCamera);
 	MyCamera.Init();
 
 	// The window resized, so update the aspect ratio and recompute the projection matrix.
@@ -242,12 +209,12 @@ void LogicStaticModel::InitCamera()
 
 void LogicStaticModel::InitModelScene()
 {
-	Mesh.InitData(L"mesh.bin", L"Resource/T_Chair_M.dds");
+	Mesh = FMesh("mesh.bin", "Resource/T_Chair_M.dds");
 	Mesh.SetModelLocation(MyCamera.GetViewTargetLocation());
 	Scene.AddMeshToScene(&Mesh);
 }
 
-
+//mouse event
 void LogicStaticModel::OnMouseDown(WPARAM btnState, int x, int y)
 {
 	LastMousePoint.x = x; 

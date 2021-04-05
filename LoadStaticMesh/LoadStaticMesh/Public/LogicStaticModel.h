@@ -23,9 +23,10 @@ public:
 	void Initialize(ApplicationMain* Application, UINT Width, UINT Height);
 
 	void OnInit();
-	bool Render(void* Param);
+	//bool Render(void* Param);
 	void Update();
 	void Destroy();
+	bool Render();
 
 	void OnMouseDown(WPARAM btnState, int x, int y);
 	void OnMouseUp(WPARAM btnState, int x, int y);
@@ -33,25 +34,22 @@ public:
 
 private:
 
-	std::wstring GetAssetFullPath(LPCWSTR AssetName);
-
 	struct ObjectConstants
 	{
 		XMFLOAT4X4 WorldViewProj = MathHelper::Identity4x4();
 	};
 
-	struct ThreadParameter
+	/*struct ThreadParameter
 	{
 		UINT  ThreadId;
 		HANDLE ThisThread;
 	};
-	ThreadParameter ThreadParam;
+	ThreadParameter ThreadParam;*/
 	static LogicStaticModel* ThisLogic;
 
 	void InitCamera();
 	void InitModelScene();
-	//void InitModel();
-	void CreateRenderThread();
+	//void CreateRenderThread();
 	void RenderThreadInit();
 	void RenderThreadRun();
 
@@ -71,9 +69,6 @@ private:
 
 	HANDLE RenderBegin;
 	HANDLE RenderEndHandle;
-
-	std::wstring AssetsPath;
-	
 	float AspectRatio;
 
 	UINT WndWidth;

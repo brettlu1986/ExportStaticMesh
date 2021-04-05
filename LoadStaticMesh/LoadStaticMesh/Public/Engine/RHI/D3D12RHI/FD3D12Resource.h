@@ -8,6 +8,7 @@
 #include "FTexture.h"
 #include "FRenderResource.h"
 #include "FD3D12Adapter.h"
+#include "FTexture.h"
 
 using namespace Microsoft::WRL;
 
@@ -56,7 +57,6 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW VertexBufferView;
 };
 
-class FTexture;
 class FD3D12Texture : public FTexture
 {
 public:
@@ -73,7 +73,6 @@ private:
 	ComPtr<ID3D12Resource> TextureResourceUpload;
 
 };
-
 
 class FD3D12Adapter;
 class FD3DConstantBuffer :public FRenderResource
@@ -101,7 +100,6 @@ public:
 	{
 		return CbvSrvUavDescriptorSize;
 	}
-
 
 private:
 	UINT BufferSize;

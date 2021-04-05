@@ -15,6 +15,7 @@ public:
 	void InitRenderResource();
 	void Render(FRHICommandList& CommandList);
 	void EndRender();
+	void Destroy();
 private: 
 	std::vector<FMesh*> Meshes;
 };

@@ -132,6 +132,9 @@
     <ClCompile Include="Private\Engine\Renderer\FRenderResource.cpp">
       <Filter>Source Files\Engine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\FShader.cpp">
+      <Filter>Source Files\Engine\Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds">
@@ -238,6 +241,9 @@
       <Filter>Header Files\Engine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Public\Engine\Renderer\FRenderResource.h">
+      <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\FShader.h">
       <Filter>Header Files\Engine\Renderer</Filter>
     </ClInclude>
   </ItemGroup>

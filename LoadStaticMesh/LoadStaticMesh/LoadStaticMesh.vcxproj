@@ -155,6 +155,7 @@
     <ClCompile Include="Private\Engine\Renderer\FSceneRenderer.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FRenderer.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FScene.cpp" />
+    <ClCompile Include="Private\Engine\Renderer\FShader.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FTexture.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FVertexBuffer.cpp" />
     <ClCompile Include="Private\Engine\Renderer\LAssetDataLoader.cpp" />
@@ -238,6 +239,7 @@
     <ClInclude Include="Public\Engine\Renderer\FRenderer.h" />
     <ClInclude Include="Public\Engine\Renderer\FRenderResource.h" />
     <ClInclude Include="Public\Engine\Renderer\FScene.h" />
+    <ClInclude Include="Public\Engine\Renderer\FShader.h" />
     <ClInclude Include="Public\Engine\Renderer\FTexture.h" />
     <ClInclude Include="Public\Engine\Renderer\FVertexBuffer.h" />
     <ClInclude Include="Public\Engine\Renderer\LAssetDataLoader.h" />
