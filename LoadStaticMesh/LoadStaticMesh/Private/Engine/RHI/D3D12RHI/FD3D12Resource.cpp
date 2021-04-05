@@ -14,14 +14,20 @@ FD3D12IndexBuffer::FD3D12IndexBuffer()
 
 FD3D12IndexBuffer::~FD3D12IndexBuffer()
 {
-	IndexBuffer.Reset();
-	IndexBufferUpload.Reset();
+	Destroy();
 }
 
 void FD3D12IndexBuffer::Destroy()
 {
-	IndexBuffer.Reset(); 
-	IndexBufferUpload.Reset();
+	if(IndexBuffer)
+	{
+		IndexBuffer.Reset();
+	}
+	
+	if(IndexBufferUpload)
+	{
+		IndexBufferUpload.Reset();
+	}
 }
 
 void FD3D12IndexBuffer::InitGPUIndexBufferView(FD3D12Adapter* Adapter)
@@ -53,12 +59,21 @@ FD3D12VertexBuffer::FD3D12VertexBuffer()
 
 FD3D12VertexBuffer::~FD3D12VertexBuffer()
 {
+	Destroy();
 }
 
 void FD3D12VertexBuffer::Destroy()
 {
-	VertexBuffer.Reset();
-	VertexUploadBuffer.Reset();
+	if(VertexBuffer)
+	{
+		VertexBuffer.Reset();
+	}
+	
+	if(VertexUploadBuffer)
+	{
+		VertexUploadBuffer.Reset();
+	}
+	
 }
 
 void FD3D12VertexBuffer::Initialize()
@@ -118,14 +133,14 @@ void FD3D12Texture::InitGPUTextureView(FD3D12Adapter* Adapter)
 
 	size_t Len = strlen(GetTextureName().c_str()) + 1;
 	size_t Converted = 0;
-	wchar_t* WStr = new wchar_t((UINT)(Len * sizeof(wchar_t)));
+	wchar_t* WStr = new wchar_t[(UINT)(Len * sizeof(wchar_t))];
+	memset(WStr, 0, Len * sizeof(wchar_t));
 	mbstowcs_s(&Converted, WStr, Len, GetTextureName().c_str(), _TRUNCATE);
-
-	//mbstowcs(Name, GetTextureName().c_str(), StrSize);
 
 	DirectX::CreateDDSTextureFromFile12(Adapter->GetD3DDevice(), CommandList, WStr, TextureResource, TextureResourceUpload);
 	NAME_D3D12_OBJECT(TextureResource);
 	NAME_D3D12_OBJECT(TextureResourceUpload);
+	delete [] WStr;
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -155,8 +170,11 @@ FD3DConstantBuffer::~FD3DConstantBuffer()
 
 void FD3DConstantBuffer::Destroy()
 {
-	ConstantBuffer->Unmap(0, nullptr);
-	ConstantBuffer.Reset();
+	if(ConstantBuffer)
+	{
+		ConstantBuffer->Unmap(0, nullptr);
+		ConstantBuffer.Reset();
+	}
 }
 
 void FD3DConstantBuffer::Initialize()

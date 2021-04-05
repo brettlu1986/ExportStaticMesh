@@ -163,9 +163,8 @@ void LogicStaticModel::Destroy()
 {	
 	bDestroy = true;
 	//wait gpu to excute finish
-	Scene.Destroy();
-
 	RHIExit();
+	Scene.Destroy();
 	//ModelGeo.Destroy();
 	ThisLogic = nullptr;
 #if defined(_DEBUG)

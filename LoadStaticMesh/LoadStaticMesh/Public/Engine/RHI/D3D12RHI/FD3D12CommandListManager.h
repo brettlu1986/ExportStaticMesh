@@ -19,7 +19,7 @@ public:
 		return *(ComandLists[Index]);
 	}
 	ID3D12GraphicsCommandList* GetDefaultCommandList() {
-		return ComandLists[0]->GetD3DCommandList();
+		return GetCommandList(0).GetD3DCommandList();
 	}
 	ID3D12CommandQueue* GetD3DCommandQueue() const { return CommandQueue.Get(); }
 private:

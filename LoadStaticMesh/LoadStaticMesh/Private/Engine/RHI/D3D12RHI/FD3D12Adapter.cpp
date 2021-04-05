@@ -31,7 +31,8 @@ void FD3D12Adapter::ShutDown()
 	}
 	for (size_t i = 0; i < RENDER_TARGET_COUNT; ++i)
 	{
-		RenderTargets[i].Reset();
+		if(RenderTargets)
+			RenderTargets[i].Reset();
 	}
 	if (ConstantBuffer)
 	{

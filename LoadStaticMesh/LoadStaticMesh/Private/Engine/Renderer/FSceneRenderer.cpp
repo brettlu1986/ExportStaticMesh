@@ -10,13 +10,6 @@ FSceneRenderer::FSceneRenderer()
 
 }
 
-FSceneRenderer::FSceneRenderer(UINT InWidth, UINT InHeight)
-	:Width(InWidth)
-	,Height(InHeight)
-{
-
-}
-
 FSceneRenderer::~FSceneRenderer()
 {
 
@@ -29,6 +22,8 @@ void FSceneRenderer::RenderInit(FScene* Scene)
 	FShader* Ps = CreateShader(L"shader_ps.cso");
 	CreatePiplineStateObject(Vs, Ps);
 
+	delete Vs;
+	delete Ps;
 	Scene->InitRenderResource();
 }
 
