@@ -16,16 +16,16 @@ public:
 
 	FD3D12CommandList& GetCommandList(UINT Index)
 	{
-		return ComandLists[Index];
+		return *(ComandLists[Index]);
 	}
 	ID3D12GraphicsCommandList* GetDefaultCommandList() {
-		return ComandLists[0].GetD3DCommandList();
+		return ComandLists[0]->GetD3DCommandList();
 	}
 	ID3D12CommandQueue* GetD3DCommandQueue() const { return CommandQueue.Get(); }
 private:
 
 	ComPtr<ID3D12CommandQueue> CommandQueue;
 	FD3D12Device* ParentDevice;
-	std::vector<FD3D12CommandList> ComandLists;
+	std::vector<FD3D12CommandList*> ComandLists;
 
 };

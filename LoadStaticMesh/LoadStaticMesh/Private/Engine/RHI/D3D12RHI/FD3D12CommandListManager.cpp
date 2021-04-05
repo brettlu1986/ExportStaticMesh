@@ -1,6 +1,5 @@
 #include "FD3D12CommandListManager.h"
 #include "FD3D12Device.h"
-#include "FD3D12CommandListAllocator.h"
 #include "FD3D12CommandList.h"
 #include "FD3D12Helper.h"
 
@@ -19,7 +18,7 @@ void FD3D12CommandListManager::Clear()
 {
 	for (size_t i = 0; i < ComandLists.size(); ++i)
 	{
-		ComandLists[i].Clear();
+		ComandLists[i]->Clear();
 	}
 	ComandLists.clear();
 
@@ -45,8 +44,7 @@ void FD3D12CommandListManager::CreateCommandLists(UINT NumCommandLists)
 	{
 		for (UINT i = 0; i < NumCommandLists; ++i)
 		{
-			FD3D12CommandListAllocator* TempAlocator = new FD3D12CommandListAllocator(ParentDevice->GetDevice(), i);
-			FD3D12CommandList List(ParentDevice, TempAlocator, i);
+			FD3D12CommandList* List = new FD3D12CommandList(ParentDevice, i);
 			ComandLists.push_back(List);
 		}
 	}

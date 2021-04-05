@@ -160,7 +160,6 @@
     <ClCompile Include="Private\Engine\Renderer\LAssetDataLoader.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Adapter.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12CommandList.cpp" />
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12CommandListAllocator.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12CommandListManager.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Device.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Fence.cpp" />
@@ -246,7 +245,6 @@
     <ClInclude Include="Public\Engine\Renderer\FSceneRenderer.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Adapter.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12CommandList.h" />
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12CommandListAllocator.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12CommandListManager.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Device.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Fence.h" />
