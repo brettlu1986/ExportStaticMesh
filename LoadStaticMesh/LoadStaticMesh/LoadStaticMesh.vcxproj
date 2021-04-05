@@ -255,7 +255,6 @@
     <ClInclude Include="Public\Engine\RHI\FDynamicRHI.h" />
     <ClInclude Include="Public\Engine\RHI\FRHI.h" />
     <ClInclude Include="Public\Engine\RHI\FRHIDef.h" />
-    <ClInclude Include="Public\Engine\RHI\FRHIResource.h" />
     <ClInclude Include="Public\Engine\Util\MathHelper.h" />
     <ClInclude Include="Public\LogicStaticModel.h" />
     <ClInclude Include="Public\MainWindow.h" />

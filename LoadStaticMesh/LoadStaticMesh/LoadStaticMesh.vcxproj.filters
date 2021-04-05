@@ -180,9 +180,6 @@
     <ClInclude Include="Public\Engine\RHI\FRHIDef.h">
       <Filter>Header Files\Engine\RHI</Filter>
     </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\FRHIResource.h">
-      <Filter>Header Files\Engine\RHI</Filter>
-    </ClInclude>
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Adapter.h">
       <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
     </ClInclude>

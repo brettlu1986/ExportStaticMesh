@@ -3,7 +3,6 @@
 #include "LInput.h"
 
 LInput::LInput()
-	:MainApplication(nullptr)
 {
 
 }
@@ -13,10 +12,8 @@ LInput::~LInput()
 
 }
 
-
-void LInput::Initialize(ApplicationMain* Application)
+void LInput::Initialize()
 {
-	MainApplication = Application;
 }
 
 bool LInput::Update()
@@ -27,5 +24,4 @@ bool LInput::Update()
 
 void LInput::Destroy()
 {
-	MainApplication = nullptr;
 }

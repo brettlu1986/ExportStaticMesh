@@ -28,7 +28,7 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance, UINT Width, UINT Height, s
 	CurrentLogic->Initialize(this, Width, Height);
 
 	Input = new LInput();
-	Input->Initialize(this);
+	Input->Initialize();
 	
 	return true;
 }

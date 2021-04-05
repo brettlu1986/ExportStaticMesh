@@ -1,7 +1,6 @@
 #pragma once
 
 #include "FRHIDef.h"
-#include "FRHIResource.h"
 #include "FDefine.h"
 
 #include "FVertexBuffer.h"

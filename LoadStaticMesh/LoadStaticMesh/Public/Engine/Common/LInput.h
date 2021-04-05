@@ -10,16 +10,11 @@ public:
 	LInput();
 	~LInput();
 
-	void Initialize(ApplicationMain* application);
+	void Initialize();
 	bool Update();
 	void Destroy();
 
 	void OnKeyDown(UINT8 /*key*/) {}
 	void OnKeyUp(UINT8 /*key*/) {}
 
-	
-
-private:
-
-	ApplicationMain* MainApplication;
 };
