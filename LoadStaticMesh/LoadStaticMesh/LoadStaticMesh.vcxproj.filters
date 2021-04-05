@@ -93,9 +93,6 @@
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12CommandListManager.cpp">
       <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Fence.cpp">
-      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
-    </ClCompile>
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Resource.cpp">
       <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
@@ -193,9 +190,6 @@
       <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
     </ClInclude>
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12CommandListManager.h">
-      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Fence.h">
       <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
     </ClInclude>
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Helper.h">

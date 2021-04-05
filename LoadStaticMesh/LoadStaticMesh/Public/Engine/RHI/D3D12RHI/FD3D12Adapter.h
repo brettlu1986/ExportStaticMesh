@@ -31,7 +31,6 @@ struct FD3D12AdapterDesc
 };
 
 class FD3D12DynamicRHI; 
-class FD3D12Fence;
 class FD3DConstantBuffer;
 
 class FD3D12Adapter
@@ -48,7 +47,6 @@ public:
 	IDXGIAdapter1* GetAdapter() const { return DxgiAdapter.Get(); }
 
 	ID3D12Device* GetD3DDevice() const { return D3DDevice.Get(); }
-	FD3D12Fence* GetFence() const {return Fence;}
 
 	ID3D12RootSignature* GetRootSignature() const {
 		return RootSignature.Get();
@@ -64,8 +62,6 @@ public:
 	{
 		return ConstantBuffer;
 	}
-	/// ////
-
 	FD3D12CommandListManager* GetCommandListManager() const {
 		return CommandListManager;
 	}
@@ -75,7 +71,6 @@ public:
 		return GetCommandListManager()->GetD3DCommandQueue();
 	}
 
-	/// ////
 	void InitWindow(UINT Width, UINT Height, void* Windwow);
 
 	void SetViewPort(const FRHIViewPort& InViewPort);
@@ -87,6 +82,9 @@ public:
 
 	void CreateSwapChain();
 	void CreatePso(const FRHIPiplineStateInitializer& PsoInitializer);
+
+	void SetFenceValue(UINT64 Value) { FenceValue  = Value;}
+	void WaitForPreviousFrame();
 
 	ID3D12PipelineState* GetDefaultPiplineState() 
 	{
@@ -119,7 +117,6 @@ private:
 	FD3D12AdapterDesc Desc;
 	FD3D12DynamicRHI* OwningRHI;
 
-	FD3D12Fence* Fence;
 	ComPtr<ID3D12Device> D3DDevice;
 	ComPtr<IDXGIFactory4> DxgiFactory;
 	ComPtr<IDXGIAdapter1> DxgiAdapter;
@@ -134,8 +131,8 @@ private:
 	ComPtr<ID3D12Resource> DepthStencilBuffer;
 
 	FD3DConstantBuffer* ConstantBuffer;
-	/// ////
-
 	FD3D12CommandListManager* CommandListManager;
-	/// ////
+	ComPtr<ID3D12Fence> GpuFence;
+	HANDLE FenceEvent;
+	UINT64 FenceValue;
 };

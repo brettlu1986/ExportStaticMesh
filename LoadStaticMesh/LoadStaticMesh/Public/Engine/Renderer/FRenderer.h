@@ -10,5 +10,5 @@ public:
 
 	virtual void RenderInit(FScene* Scene) = 0;
 	virtual void EndRenderFram(FScene* Scene) = 0;
-	virtual void Render(FRHICommandList& CommandList, FScene* Scene) = 0;
+	virtual void Render(FScene* Scene) = 0;
 };

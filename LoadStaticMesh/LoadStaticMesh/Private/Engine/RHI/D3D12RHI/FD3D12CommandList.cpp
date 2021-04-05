@@ -21,40 +21,6 @@ FD3D12CommandList::~FD3D12CommandList()
 {
 }
 
-void FD3D12CommandList::Excute()
-{
-	ID3D12CommandQueue* CommandQueue = ParentAdapter->GetD3DCommandQueue();
-	ID3D12CommandList* CmdsLists[] = { CommandList.Get() };
-	CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
-}
-
-void FD3D12CommandList::SetViewPort()
-{
-	CommandList->RSSetViewports(1, &(ParentAdapter->ViewPort));
-}
-
-void FD3D12CommandList::SetScissorRect()
-{
-	CommandList->RSSetScissorRects(1, &(ParentAdapter->ScissorRect));
-}
-
-
-void FD3D12CommandList::SetGraphicRootDescripterTable()
-{
-	FD3DConstantBuffer* ConstantBuffer = ParentAdapter->GetConstantBuffer();
-	CommandList->SetGraphicsRootSignature(ParentAdapter->GetRootSignature());
-	CommandList->SetPipelineState(ParentAdapter->GetDefaultPiplineState());
-
-	ID3D12DescriptorHeap* ppHeaps[] = { ParentAdapter->CbvSrvHeap.Get(), ParentAdapter->SamplerHeap.Get() };
-	CommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-
-	CommandList->SetGraphicsRootDescriptorTable(0, ParentAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
-	CD3DX12_GPU_DESCRIPTOR_HANDLE tex(ParentAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
-	tex.Offset(1, ConstantBuffer->GetCbvSrvUavDescriptorSize());
-	CommandList->SetGraphicsRootDescriptorTable(1, tex);
-	CommandList->SetGraphicsRootDescriptorTable(2, ParentAdapter->SamplerHeap->GetGPUDescriptorHandleForHeapStart());
-}
-
 void FD3D12CommandList::Clear()
 {
 	CommandAllocator.Reset();

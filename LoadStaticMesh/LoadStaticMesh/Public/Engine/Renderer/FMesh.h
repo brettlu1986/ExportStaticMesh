@@ -19,7 +19,7 @@ public:
 
 	void InitData();
 	void InitRenderResource();
-	void Render(FRHICommandList& CommandList);
+	void Render();
 	void EndRender();
 
 	void SetModelLocation(XMFLOAT3 Location);

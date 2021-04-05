@@ -111,30 +111,14 @@ void LogicStaticModel::RenderThreadInit()
 	GDynamicRHI->RHICreateConstantBuffer(BufferSize, &ObjectConstant, sizeof(ObjectConstant));
 	
 	//first flush
-	FRHICommandList& CommandList = GDynamicRHI->RHIGetCommandList(0);
-	GDynamicRHI->RHIExcuteCommandList(CommandList);
-	GDynamicRHI->RHISignalCurrentFence();
+	FirstPresent();
 }
 
 void LogicStaticModel::RenderThreadRun()
 {
-	if (!GDynamicRHI->RHIIsFenceComplete())
-		return ;
-
-	FRHICommandList& CommandList = GDynamicRHI->RHIGetCommandList(0);
-	GDynamicRHI->RHIResetCommandList(CommandList);
-	GDynamicRHI->RHISetCurrentViewPortAndScissorRect(CommandList);
-
 	InitRenderBegin(FrameIndex, ClearColor);
-	
-	GDynamicRHI->RHISetGraphicRootDescripterTable(CommandList);
-
-	Renderer.Render(CommandList, &Scene);
+	Renderer.Render(&Scene);
 	RenderEnd(FrameIndex);
-
-	GDynamicRHI->RHIExcuteCommandList(CommandList);
-	GDynamicRHI->RHISwapObjectPresent();
-	GDynamicRHI->RHISignalCurrentFence();
 	FrameIndex = (FrameIndex + 1) % FrameCount;
 }
 
@@ -180,7 +164,6 @@ void LogicStaticModel::Destroy()
 	bDestroy = true;
 	//wait gpu to excute finish
 	Scene.Destroy();
-	GDynamicRHI->RHISignalCurrentFence();
 
 	RHIExit();
 	//ModelGeo.Destroy();

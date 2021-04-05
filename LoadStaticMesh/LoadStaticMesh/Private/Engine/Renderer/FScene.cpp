@@ -33,11 +33,11 @@ void FScene::InitRenderResource()
 	}
 }
 
-void FScene::Render(FRHICommandList& CommandList)
+void FScene::Render()
 {
 	for (size_t i = 0; i < Meshes.size(); ++i)
 	{
-		Meshes[i]->Render(CommandList);
+		Meshes[i]->Render();
 	}
 }
 

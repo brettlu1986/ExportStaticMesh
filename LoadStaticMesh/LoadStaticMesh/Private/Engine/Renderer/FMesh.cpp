@@ -86,9 +86,9 @@ void FMesh::InitRenderResource()
 	InitMeshGPUResource(IndexBuffer, VertexBuffer, TextureRes);
 }
 
-void FMesh::Render(FRHICommandList& CommandList)
+void FMesh::Render()
 {	
-	DrawMesh(IndexBuffer, VertexBuffer, TextureRes);
+	DrawMesh(IndexBuffer, VertexBuffer);
 }
 
 void FMesh::EndRender()

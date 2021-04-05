@@ -1,6 +1,5 @@
 
 #include "FD3D12Adapter.h"
-#include "FD3D12Fence.h"
 #include "FD3D12Helper.h"
 #include "FD3D12Resource.h"
 #include "d3dx12.h"
@@ -9,20 +8,16 @@
 FD3D12Adapter::FD3D12Adapter(FD3D12AdapterDesc& DescIn)
 :OwningRHI(nullptr)
 ,Desc(DescIn)
-,Fence(nullptr)
 ,CommandListManager(nullptr)
+, FenceValue(0)
 {
 }
 
 void FD3D12Adapter::ShutDown()
 {
-
-	if(Fence)
-	{
-		Fence->ShutDown();
-		delete Fence;
-		Fence = nullptr;
-	}
+	WaitForPreviousFrame();
+	CloseHandle(FenceEvent);
+	GpuFence.Reset();
 	RtvHeap.Reset();
 	DsvHeap.Reset();
 	CbvSrvHeap.Reset();
@@ -96,9 +91,10 @@ void FD3D12Adapter::InitializeDevices()
 		CommandListManager->Initialize();
 		CommandListManager->CreateCommandLists(COMMAND_LIST_NUM);
 		
+		ThrowIfFailed(GetD3DDevice()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&GpuFence)));
+		NAME_D3D12_OBJECT(GpuFence);
+		FenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
-		Fence = new FD3D12Fence("GPUFence", this);
-		Fence->Initialize();
 	}
 }
 
@@ -373,4 +369,16 @@ void FD3D12Adapter::RenderEnd(UINT TargetFrame)
 	ID3D12GraphicsCommandList* CommandList = GetCommandListManager()->GetDefaultCommandList();
 	const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[TargetFrame].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	CommandList->ResourceBarrier(1, &Rb2);
+}
+
+void FD3D12Adapter::WaitForPreviousFrame()
+{
+	const UINT64 Value = FenceValue;
+	ThrowIfFailed(GetD3DCommandQueue()->Signal(GpuFence.Get(), Value));
+	FenceValue ++;
+	if(GpuFence->GetCompletedValue() < Value)
+	{
+		ThrowIfFailed(GpuFence->SetEventOnCompletion(Value, FenceEvent));
+		WaitForSingleObject(FenceEvent, INFINITE);
+	}
 }

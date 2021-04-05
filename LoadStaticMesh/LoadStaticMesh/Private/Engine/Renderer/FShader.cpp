@@ -14,6 +14,7 @@ FShader::FShader(UINT8* InData, UINT InLength)
 	pData = new UINT8[InLength];
 	memset(pData, 0, InLength);
 	memcpy(pData, InData, InLength);
+	DataLength = InLength;
 }
 
 FShader::~FShader()

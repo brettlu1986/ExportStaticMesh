@@ -23,22 +23,4 @@ struct FRHIColor
 	float A;
 };
 
-class FRHICommandList
-{
-public:
-	FRHICommandList() { CommandListIndex = 0;};
-	virtual ~FRHICommandList() {};
-
-	virtual void Clear() = 0;
-	virtual void Close() = 0;
-	virtual void Reset() = 0;
-	virtual void Excute() = 0;
-	virtual void SetViewPort() = 0;
-	virtual void SetScissorRect() = 0;
-
-	virtual void SetGraphicRootDescripterTable() = 0;
-
-protected:
-	UINT CommandListIndex;
-};
 

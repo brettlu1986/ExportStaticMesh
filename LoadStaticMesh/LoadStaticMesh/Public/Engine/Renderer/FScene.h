@@ -13,7 +13,7 @@ public:
 	void AddMeshToScene(FMesh* Mesh);
 
 	void InitRenderResource();
-	void Render(FRHICommandList& CommandList);
+	void Render();
 	void EndRender();
 	void Destroy();
 private: 

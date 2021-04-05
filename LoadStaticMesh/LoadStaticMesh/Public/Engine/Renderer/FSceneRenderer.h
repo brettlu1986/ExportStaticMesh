@@ -15,7 +15,7 @@ public:
 
 	virtual void RenderInit(FScene* Scene) override;
 	virtual void EndRenderFram(FScene* Scene) override;
-	virtual void Render(FRHICommandList& CommandList, FScene* Scene) override;
+	virtual void Render(FScene* Scene) override;
 
 private:
 	UINT Width;

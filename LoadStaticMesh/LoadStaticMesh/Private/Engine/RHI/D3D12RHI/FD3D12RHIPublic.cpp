@@ -125,78 +125,6 @@ void FD3D12DynamicRHI::ShutDown()
 	}
 }
 
-
-FGenericFence* FD3D12DynamicRHI::RHICreateFence(const std::string& Name) 
-{
-	return new FD3D12Fence(Name, ChosenAdapter);
-}
-
-
-
-void FD3D12DynamicRHI::RHICreatePiplineStateObject(FRHIPiplineStateInitializer& Initializer) 
-{
-	ChosenAdapter->CreatePso(Initializer);
-}
-
-void FD3D12DynamicRHI::RHIReadShaderDataFromFile(std::wstring FileName, byte** Data, UINT* Size)
-{
-	ThrowIfFailed(ReadDataFromFile(FileName.c_str(), Data, Size));
-}
-
-
-FRHICommandList& FD3D12DynamicRHI::RHIGetCommandList(UINT Index)
-{
-	return ChosenAdapter->GetCommandListManager()->GetCommandList(Index);
-}
-
-void FD3D12DynamicRHI::RHIExcuteCommandList(FRHICommandList& CommandList)
-{
-	CommandList.Close();
-	CommandList.Excute();
-}
-
-void FD3D12DynamicRHI::RHICloseCommandList(FRHICommandList& CommandList)
-{
-	CommandList.Close();
-}
-
-void FD3D12DynamicRHI::RHISignalCurrentFence()
-{
-	FD3D12Fence* Fence = ChosenAdapter->GetFence();
-	Fence->SignalCurrentFence();
-}
-
-bool FD3D12DynamicRHI::RHIIsFenceComplete()
-{
-	FD3D12Fence* Fence = ChosenAdapter->GetFence();
-	return Fence->IsFenceComplete();
-}
-
-void FD3D12DynamicRHI::RHIResetCommandList(FRHICommandList& CommandList)
-{
-	CommandList.Reset();
-}
-
-void FD3D12DynamicRHI::RHISetCurrentViewPortAndScissorRect(FRHICommandList& CommandList)
-{
-	CommandList.SetViewPort();
-	CommandList.SetScissorRect();
-}
-
-
- void FD3D12DynamicRHI::RHISetGraphicRootDescripterTable(FRHICommandList& CommandList)
- {
-	 CommandList.SetGraphicRootDescripterTable();
- }
-
-
- void FD3D12DynamicRHI::RHISwapObjectPresent()
- {
-	 IDXGISwapChain* SwapChain = ChosenAdapter->GetSwapChain();
-	 SwapChain->Present(1, 0);
- }
-
-
  /// /////////////////
 
  void FD3D12DynamicRHI::RHIInitWindow(UINT Width, UINT Height, void* Window) 
@@ -249,12 +177,41 @@ void FD3D12DynamicRHI::RHISetCurrentViewPortAndScissorRect(FRHICommandList& Comm
 
  void FD3D12DynamicRHI::RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color)
  {
+	 FD3D12CommandList CommandList = ChosenAdapter->GetCommandListManager()->GetCommandList(0);
+	 CommandList.Reset();
+	 ID3D12GraphicsCommandList* DefaultCommandList = ChosenAdapter->GetCommandListManager()->GetDefaultCommandList();
+	 DefaultCommandList->RSSetViewports(1, &(ChosenAdapter->ViewPort));
+	 DefaultCommandList->RSSetScissorRects(1, &(ChosenAdapter->ScissorRect));
+
 	 ChosenAdapter->InitRenderBegin(TargetFrame, Color);
+
+	 FD3DConstantBuffer* ConstantBuffer = ChosenAdapter->GetConstantBuffer();
+	 DefaultCommandList->SetGraphicsRootSignature(ChosenAdapter->GetRootSignature());
+	 DefaultCommandList->SetPipelineState(ChosenAdapter->GetDefaultPiplineState());
+
+	 ID3D12DescriptorHeap* ppHeaps[] = { ChosenAdapter->CbvSrvHeap.Get(), ChosenAdapter->SamplerHeap.Get() };
+	 DefaultCommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+
+	 DefaultCommandList->SetGraphicsRootDescriptorTable(0, ChosenAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
+	 CD3DX12_GPU_DESCRIPTOR_HANDLE tex(ChosenAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
+	 tex.Offset(1, ConstantBuffer->GetCbvSrvUavDescriptorSize());
+	 DefaultCommandList->SetGraphicsRootDescriptorTable(1, tex);
+	 DefaultCommandList->SetGraphicsRootDescriptorTable(2, ChosenAdapter->SamplerHeap->GetGPUDescriptorHandleForHeapStart());
+	
  }
 
  void FD3D12DynamicRHI::RHIRenderEnd(UINT TargetFrame)
  {
 	 ChosenAdapter->RenderEnd(TargetFrame);
+
+	 ID3D12GraphicsCommandList* DefaultCommandList = ChosenAdapter->GetCommandListManager()->GetDefaultCommandList();
+	 DefaultCommandList->Close();
+	 ID3D12CommandQueue* CommandQueue = ChosenAdapter->GetD3DCommandQueue();
+	 ID3D12CommandList* CmdsLists[] = { DefaultCommandList };
+	 CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
+	 IDXGISwapChain* SwapChain = ChosenAdapter->GetSwapChain();
+	 SwapChain->Present(1, 0);
+	 ChosenAdapter->WaitForPreviousFrame();
  }
 
  FIndexBuffer* FD3D12DynamicRHI::RHICreateIndexBuffer()
@@ -282,7 +239,7 @@ void FD3D12DynamicRHI::RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertex
 	D3DTexture->InitGPUTextureView(ChosenAdapter);
 }
 
-void FD3D12DynamicRHI::RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* TextureRes)
+void FD3D12DynamicRHI::RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer)
 {
 	FD3D12IndexBuffer* D3DIndexBuffer = static_cast<FD3D12IndexBuffer*>(IndexBuffer);
 	FD3D12VertexBuffer* D3DVertexBuffer = static_cast<FD3D12VertexBuffer*>(VertexBuffer);
@@ -293,3 +250,15 @@ void FD3D12DynamicRHI::RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* Ver
 	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CommandList->DrawIndexedInstanced(D3DIndexBuffer->GetIndicesCount(), 1, 0, 0, 0);
 }
+
+ void FD3D12DynamicRHI::RHIPresent()
+ {
+	 //first flush
+	 ID3D12GraphicsCommandList* CommandList = ChosenAdapter->GetCommandListManager()->GetDefaultCommandList();
+	 CommandList->Close();
+	 ID3D12CommandQueue* CommandQueue = ChosenAdapter->GetD3DCommandQueue();
+	 ID3D12CommandList* CmdsLists[] = { CommandList };
+	 CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
+	 ChosenAdapter->SetFenceValue(1);
+	 ChosenAdapter->WaitForPreviousFrame();
+ }

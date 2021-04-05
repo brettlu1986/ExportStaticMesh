@@ -5,7 +5,7 @@
 using namespace Microsoft::WRL;
 
 class FD3D12Adapter;
-class FD3D12CommandList : public FRHICommandList
+class FD3D12CommandList 
 {
 public:
 	FD3D12CommandList(FD3D12Adapter* InAdapter, UINT InCommandListIndex);
@@ -16,16 +16,13 @@ public:
 		return CommandList.Get();
 	}
 
-	virtual void Clear() override;
-	virtual void Close() override;
-	virtual void Reset() override;
-	virtual void Excute() override;
-	virtual void SetViewPort() override;
-	virtual void SetScissorRect() override;
-	virtual void SetGraphicRootDescripterTable() override;
+	void Clear() ;
+	void Close() ;
+	void Reset() ;
 
 private: 
 	FD3D12Adapter* ParentAdapter;
+	UINT CommandListIndex;
 
 	ComPtr<ID3D12GraphicsCommandList> CommandList;
 	ComPtr<ID3D12CommandAllocator> CommandAllocator;
