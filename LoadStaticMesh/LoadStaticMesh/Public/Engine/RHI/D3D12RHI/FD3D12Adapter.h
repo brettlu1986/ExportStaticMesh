@@ -77,8 +77,8 @@ public:
 	void SetScissorRect(const FRHIScissorRect& InRect);
 
 	void CreateRenderTargets();
-	void InitRenderBegin(UINT TargetFrame, FRHIColor Color);
-	void RenderEnd(UINT TargetFrame);
+	void InitRenderBegin(ID3D12GraphicsCommandList* CommandList, UINT TargetFrame, FRHIColor Color);
+	void RenderEnd(ID3D12GraphicsCommandList* CommandList, UINT TargetFrame);
 
 	void CreateSwapChain();
 	void CreatePso(const FRHIPiplineStateInitializer& PsoInitializer);

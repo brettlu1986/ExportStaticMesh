@@ -16,6 +16,11 @@ public:
 		return CommandList.Get();
 	}
 
+	ComPtr<ID3D12GraphicsCommandList> GetD3DCommandList2()
+	{
+		return CommandList;
+	}
+
 	void Clear() ;
 	void Close() ;
 	void Reset() ;

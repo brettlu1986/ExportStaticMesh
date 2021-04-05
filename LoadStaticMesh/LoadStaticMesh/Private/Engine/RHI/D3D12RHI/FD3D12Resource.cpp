@@ -32,7 +32,7 @@ void FD3D12IndexBuffer::Destroy()
 
 void FD3D12IndexBuffer::InitGPUIndexBufferView(FD3D12Adapter* Adapter)
 {
-	ID3D12GraphicsCommandList* CommandList = Adapter->GetCommandListManager()->GetDefaultCommandList();
+	ID3D12GraphicsCommandList* CommandList = Adapter->GetCommandListManager()->GetDefaultInitCommandList();
 	CreateBuffer(Adapter->GetD3DDevice(), CommandList, GetIndicesData(), GetIndicesDataSize(), IndexBuffer, IndexBufferUpload);
 	NAME_D3D12_OBJECT(IndexBuffer);
 	NAME_D3D12_OBJECT(IndexBufferUpload);
@@ -83,7 +83,7 @@ void FD3D12VertexBuffer::Initialize()
 
 void FD3D12VertexBuffer::InitGPUVertexBufferView(FD3D12Adapter* Adapter)
 {
-	ID3D12GraphicsCommandList* CommandList = Adapter->GetCommandListManager()->GetDefaultCommandList();
+	ID3D12GraphicsCommandList* CommandList = Adapter->GetCommandListManager()->GetDefaultInitCommandList();
 	std::vector<FVertex_PositionTex0> TriangleVertices;
 	GetPositionTex0Input(TriangleVertices);
 	const UINT VertexBufferSize = static_cast<UINT>(TriangleVertices.size() * sizeof(FVertex_PositionTex0));
@@ -129,7 +129,7 @@ void FD3D12Texture::Initialize()
 
 void FD3D12Texture::InitGPUTextureView(FD3D12Adapter* Adapter)
 {
-	ID3D12GraphicsCommandList* CommandList = Adapter->GetCommandListManager()->GetDefaultCommandList();
+	ID3D12GraphicsCommandList* CommandList = Adapter->GetCommandListManager()->GetDefaultInitCommandList();
 
 	size_t Len = strlen(GetTextureName().c_str()) + 1;
 	size_t Converted = 0;

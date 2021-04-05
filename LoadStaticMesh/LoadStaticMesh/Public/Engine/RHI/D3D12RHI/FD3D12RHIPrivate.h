@@ -3,6 +3,7 @@
 #include "FRHI.h"
 #include "stdafx.h"
 #include "FD3D12Adapter.h"
+#include "FD3D12CommandList.h"
 
 using namespace Microsoft::WRL;
 
@@ -40,7 +41,7 @@ public:
 	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) override;
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) override;
 	virtual void RHICreatePiplineStateObject(FShader* Vs, FShader* Ps) override;
-	virtual void RHIPresent() override;
+	virtual void RHIFirstPresent() override;
 
 	virtual FIndexBuffer* RHICreateIndexBuffer() override;
 	virtual FVertexBuffer* RHICreateVertexBuffer() override;
@@ -51,4 +52,7 @@ public:
 private: 
 	FD3D12Adapter* ChosenAdapter = nullptr;
 
+	ComPtr<ID3D12GraphicsCommandList> CurrentCommandList;
+	ComPtr<ID3D12CommandAllocator> CurrentAllocator;
+	bool bShutDown;
 };

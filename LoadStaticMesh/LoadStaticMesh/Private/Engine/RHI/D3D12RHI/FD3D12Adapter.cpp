@@ -350,10 +350,9 @@ void FD3D12Adapter::CreateRenderTargets()
 	GetD3DDevice()->CreateDepthStencilView(DepthStencilBuffer.Get(), &depthStencilDesc, DsvHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
-void FD3D12Adapter::InitRenderBegin(UINT TargetFrame, FRHIColor Color)
+void FD3D12Adapter::InitRenderBegin(ID3D12GraphicsCommandList* CommandList, UINT TargetFrame, FRHIColor Color)
 {
 	const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[TargetFrame].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	ID3D12GraphicsCommandList* CommandList = GetCommandListManager()->GetDefaultCommandList();
 	CommandList->ResourceBarrier(1, &Rb1);
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart(), TargetFrame, RtvDescriptorSize);
@@ -365,9 +364,8 @@ void FD3D12Adapter::InitRenderBegin(UINT TargetFrame, FRHIColor Color)
 	CommandList->OMSetRenderTargets(1, &RtvHandle, true, &DsvHandle);
 }
 
-void FD3D12Adapter::RenderEnd(UINT TargetFrame)
+void FD3D12Adapter::RenderEnd(ID3D12GraphicsCommandList* CommandList, UINT TargetFrame)
 {
-	ID3D12GraphicsCommandList* CommandList = GetCommandListManager()->GetDefaultCommandList();
 	const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[TargetFrame].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	CommandList->ResourceBarrier(1, &Rb2);
 }

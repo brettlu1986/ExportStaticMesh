@@ -93,7 +93,7 @@ public:
 
 	virtual void RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color) = 0;
 	virtual void RHIRenderEnd(UINT TargetFrame) = 0;
-	virtual void RHIPresent()= 0;
+	virtual void RHIFirstPresent()= 0;
 
 	virtual FIndexBuffer* RHICreateIndexBuffer() = 0;
 	virtual FVertexBuffer* RHICreateVertexBuffer() = 0;
@@ -179,5 +179,5 @@ FORCEINLINE void DrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer
 
 FORCEINLINE void FirstPresent()
 {
-	return GDynamicRHI->RHIPresent();
+	return GDynamicRHI->RHIFirstPresent();
 }
