@@ -23,7 +23,6 @@ public:
 	void Initialize(ApplicationMain* Application, UINT Width, UINT Height);
 
 	void OnInit();
-	//bool Render(void* Param);
 	void Update();
 	void Destroy();
 	bool Render();
@@ -39,19 +38,11 @@ private:
 		XMFLOAT4X4 WorldViewProj = MathHelper::Identity4x4();
 	};
 
-	/*struct ThreadParameter
-	{
-		UINT  ThreadId;
-		HANDLE ThisThread;
-	};
-	ThreadParameter ThreadParam;*/
 	static LogicStaticModel* ThisLogic;
 
 	void InitCamera();
 	void InitModelScene();
-	//void CreateRenderThread();
-	void RenderThreadInit();
-	void RenderThreadRun();
+	void RenderInit();
 
 private:
 	static const UINT FrameCount = 3;
@@ -61,7 +52,6 @@ private:
 	ObjectConstants ObjectConstant;
 	UINT FrameIndex;
 
-	//FTempMesh ModelGeo;
 	LCamera MyCamera;
 
 	XMFLOAT4X4 MtProj;

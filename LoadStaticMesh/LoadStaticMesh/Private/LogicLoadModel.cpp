@@ -25,7 +25,6 @@ LogicStaticModel::LogicStaticModel()
 	: FrameIndex(0)
 	, bDestroy(false)
 	, ObjectConstant({})
-	//,ThreadParam(ThreadParameter())
 	, WndWidth(0)
 	, WndHeight(0)
 	, AspectRatio(0.f)
@@ -57,49 +56,20 @@ void LogicStaticModel::Initialize(ApplicationMain* Application, UINT Width, UINT
 void LogicStaticModel::OnInit()
 {
 	InitCamera();
-	RenderThreadInit();
-	
-	//CreateRenderThread();
+	RenderInit();
 }
 
-//void LogicStaticModel::CreateRenderThread()
-//{
-//	struct ThreadWrapper
-//	{
-//		static unsigned int WINAPI Thunk(void* LParameter)
-//		{
-//			LogicStaticModel::Get()->Render(LParameter);
-//			return 0;
-//		}
-//	};
-//	
-//	ThreadParam.ThisThread = reinterpret_cast<HANDLE>(_beginthreadex(
-//		nullptr, 
-//			0, 
-//		ThreadWrapper::Thunk,
-//		(void*)&ThreadParam, 
-//		CREATE_SUSPENDED, 
-//		(UINT*)&ThreadParam.ThreadId));
-//	
-//	ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
-//	ResumeThread(ThreadParam.ThisThread);
-//}
 
 void LogicStaticModel::Update()
 {
-	//DWORD Ret = WaitForSingleObject(RenderEndHandle, INFINITE);
-	//if (Ret - WAIT_OBJECT_0 == 0)
-	//{
-		//update matrix
-		XMMATRIX WorldViewProj = Mesh.GetModelMatrix() * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
-		//Update the constant buffer with the latest WorldViewProj matrix.
-		XMStoreFloat4x4(&ObjectConstant.WorldViewProj, XMMatrixTranspose(WorldViewProj));
-		GDynamicRHI->RHIUpdateConstantBuffer(&ObjectConstant, sizeof(ObjectConstant));
-	//	SetEvent(RenderBegin);
-	//}
+	//update matrix
+	XMMATRIX WorldViewProj = Mesh.GetModelMatrix() * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
+	//Update the constant buffer with the latest WorldViewProj matrix.
+	XMStoreFloat4x4(&ObjectConstant.WorldViewProj, XMMatrixTranspose(WorldViewProj));
+	GDynamicRHI->RHIUpdateConstantBuffer(&ObjectConstant, sizeof(ObjectConstant));
 }
 
-void LogicStaticModel::RenderThreadInit()
+void LogicStaticModel::RenderInit()
 {
 	InitModelScene();
 	RHIInit();
@@ -114,50 +84,15 @@ void LogicStaticModel::RenderThreadInit()
 	FirstPresent();
 }
 
-void LogicStaticModel::RenderThreadRun()
+
+bool LogicStaticModel::Render()
 {
 	InitRenderBegin(FrameIndex, ClearColor);
 	Renderer.Render(&Scene);
 	RenderEnd(FrameIndex);
 	FrameIndex = (FrameIndex + 1) % FrameCount;
-}
-
-bool LogicStaticModel::Render()
-{
-	RenderThreadRun();
 	return true;
 }
-//bool LogicStaticModel::Render(void* Param)
-//{
-//	try
-//	{
-//		RenderThreadInit();
-//		SetEvent(RenderEndHandle);
-//		DWORD Ret = 0;
-//		while (!bDestroy)
-//		{
-//			Ret = WaitForSingleObject(RenderBegin, INFINITE);
-//			if (Ret - WAIT_OBJECT_0 == 0)
-//			{
-//				RenderThreadRun();
-//			}
-//
-//			SetEvent(RenderEndHandle);
-//		}
-//	}
-//	catch (HrException& e)
-//	{
-//		if (e.Error() == DXGI_ERROR_DEVICE_REMOVED || e.Error() == DXGI_ERROR_DEVICE_RESET)
-//		{
-//			RHIExit();
-//		}
-//		else
-//		{
-//			throw;
-//		}
-//	}
-//	return true;
-//}
 
 void LogicStaticModel::Destroy()
 {	
