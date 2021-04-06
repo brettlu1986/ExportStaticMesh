@@ -33,6 +33,6 @@ public:
 	}
 private: 
 	static LEngine* Engine;
-	LDevice* CurrentDevice;
+	LDevice* CurrentDevice = nullptr;
 	E_DEVICE_PLATFORM CurrentPlatform;
 };

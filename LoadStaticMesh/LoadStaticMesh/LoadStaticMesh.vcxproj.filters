@@ -55,6 +55,9 @@
     <Filter Include="Source Files\Engine\Common\Windows">
       <UniqueIdentifier>{9a8752aa-e392-443a-8e80-07bd0bfeffb4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Common\Event">
+      <UniqueIdentifier>{6a3ec42a-8673-43cb-b1ec-561b6d64e8b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -263,6 +266,9 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\Windows\LDeviceWindows.h">
       <Filter>Header Files\Engine\Common\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Event\LEvent.h">
+      <Filter>Header Files\Engine\Common\Event</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
