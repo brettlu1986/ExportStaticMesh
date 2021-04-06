@@ -12,6 +12,9 @@
 #include "FD3D12Helper.h"
 #include "FRHI.h"
 
+#include "LDeviceWindows.h"
+#include "LEngine.h"
+
 #include "LAssetDataLoader.h"
 
 using namespace Microsoft::WRL;
@@ -59,9 +62,18 @@ void LogicStaticModel::OnInit()
 	RenderInit();
 }
 
+//void LogicStaticModel::UpdateInput()
+//{
+//	LDeviceWindows* Device = dynamic_cast<LDeviceWindows*>(LEngine::GetEngine()->GetPlatformDevice());
+//	LInput* Input = Device->GetInput();
+//	if(Input->IsMouseInput())
+//	{
+//	}
+//}
 
 void LogicStaticModel::Update()
 {
+	//UpdateInput();
 	//update matrix
 	XMMATRIX WorldViewProj = Mesh.GetModelMatrix() * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
 	//Update the constant buffer with the latest WorldViewProj matrix.

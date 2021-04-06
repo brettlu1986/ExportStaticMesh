@@ -32,6 +32,7 @@ public:
 	void OnMouseMove(WPARAM btnState, int x, int y);
 
 private:
+	//void UpdateInput();
 
 	struct ObjectConstants
 	{

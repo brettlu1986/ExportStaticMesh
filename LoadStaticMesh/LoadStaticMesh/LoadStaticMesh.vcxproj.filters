@@ -49,6 +49,12 @@
     <Filter Include="Source Files\Engine\Util">
       <UniqueIdentifier>{d15bc1b9-e4c4-441f-a324-152e9c8b4309}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Common\Windows">
+      <UniqueIdentifier>{4a2240f0-a349-4dd2-a904-1699c6c005a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Common\Windows">
+      <UniqueIdentifier>{9a8752aa-e392-443a-8e80-07bd0bfeffb4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -131,6 +137,15 @@
     </ClCompile>
     <ClCompile Include="Private\Engine\Renderer\FShader.cpp">
       <Filter>Source Files\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\LEngine.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\LDevice.cpp">
+      <Filter>Source Files\Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\Windows\LDeviceWindows.cpp">
+      <Filter>Source Files\Engine\Common\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -236,6 +251,18 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\Renderer\FShader.h">
       <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\LDevice.h">
+      <Filter>Header Files\Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\LEngine.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\LDefine.h">
+      <Filter>Header Files\Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Windows\LDeviceWindows.h">
+      <Filter>Header Files\Engine\Common\Windows</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

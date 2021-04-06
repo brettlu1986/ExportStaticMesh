@@ -4,7 +4,7 @@
 
 class LInput;
 class LogicStaticModel;
-class MainWindow;
+//class MainWindow;
 
 class ApplicationMain
 {
@@ -12,20 +12,20 @@ public:
 	ApplicationMain();
 	~ApplicationMain();
 
-	bool Initialize(HINSTANCE hInstance, UINT Width, UINT Height, std::wstring Name);
+	bool Initialize(HINSTANCE hInstance, UINT Width, UINT Height, std::wstring Name, std::string WndName);
 	void Run();
 	void Destroy();
 
 	const HINSTANCE& GetHInstace() const { return hMainInstance; }
 	LogicStaticModel* GetGraphicRender() const { return CurrentLogic; }
 	LInput* GetInput() const { return Input; }
-	MainWindow* GetWindow() const { return Window; }
+	//MainWindow* GetWindow() const { return Window; }
 
 	const HWND& GetHwnd();
 private:
 	 
 	HINSTANCE hMainInstance;
-	MainWindow* Window;
+	//MainWindow* Window;
 	LogicStaticModel* CurrentLogic;
 	LInput* Input;
 };
