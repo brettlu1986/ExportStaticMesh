@@ -67,5 +67,6 @@ public:
 	,Y(0)
 	{
 	}
+	
 }FInputResult;
 

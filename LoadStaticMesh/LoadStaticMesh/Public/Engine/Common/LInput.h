@@ -7,23 +7,20 @@ class LInput
 {
 public: 
 	LInput();
-	~LInput();
+	virtual~LInput();
 
-	void Initialize();
-	bool Update();
-	void Destroy();
+	virtual void Initialize();
+	virtual bool Update();
 
-	void OnKeyDown(UINT8 /*key*/) {}
-	void OnKeyUp(UINT8 /*key*/) {}
+	static void CreateInput();
+	static void Destroy();
 
-	static LRESULT CALLBACK MessageHandler(HWND Hwnd, UINT Umsg, WPARAM Wparam, LPARAM Lparam);
-
-	bool IsKeyInput()
+	bool IsKeyInput(FInputResult& Result)
 	{
 		return Result.InputType == E_INPUT_TYPE::PC_KEYBORAD;
 	}
 
-	bool IsMouseInput()
+	bool IsMouseInput(FInputResult& Result)
 	{
 		return Result.InputType == E_INPUT_TYPE::PC_MOUSE_EVENT;
 	}
@@ -33,21 +30,7 @@ public:
 		return MainInput;
 	}
 
-	const FInputResult& GetInputResult()
-	{
-		return Result;
-	}
 private:
 	static LInput* MainInput;
 
-	void UpdateInputResult(E_INPUT_TYPE InputType, E_TOUCH_TYPE TouchType, E_KEY_MAP KeyMapType, int X = 0, int Y = 0)
-	{
-		Result.InputType = InputType;
-		Result.TouchType = TouchType;
-		Result.KeyMapType = KeyMapType;
-		Result.X = X;
-		Result.Y = Y;
-	}
-
-	FInputResult Result;
 };

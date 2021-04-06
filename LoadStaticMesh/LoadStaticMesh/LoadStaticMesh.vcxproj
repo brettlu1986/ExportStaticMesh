@@ -151,6 +151,7 @@
     <ClCompile Include="Private\Engine\Common\LInput.cpp" />
     <ClCompile Include="Private\Engine\Common\LCamera.cpp" />
     <ClCompile Include="Private\Engine\Common\Windows\LDeviceWindows.cpp" />
+    <ClCompile Include="Private\Engine\Common\Windows\LInputWindows.cpp" />
     <ClCompile Include="Private\Engine\LEngine.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FIndexBuffer.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FMesh.cpp" />
@@ -239,6 +240,7 @@
     <ClInclude Include="Public\Engine\Common\LInput.h" />
     <ClInclude Include="Public\Engine\Common\LCamera.h" />
     <ClInclude Include="Public\Engine\Common\Windows\LDeviceWindows.h" />
+    <ClInclude Include="Public\Engine\Common\Windows\LInputWindows.h" />
     <ClInclude Include="Public\Engine\LEngine.h" />
     <ClInclude Include="Public\Engine\Renderer\FDefine.h" />
     <ClInclude Include="Public\Engine\Renderer\FIndexBuffer.h" />

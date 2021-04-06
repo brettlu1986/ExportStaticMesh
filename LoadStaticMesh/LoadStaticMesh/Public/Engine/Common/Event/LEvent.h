@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include <map>
+#include <functional>
 
 class IEvent
 {

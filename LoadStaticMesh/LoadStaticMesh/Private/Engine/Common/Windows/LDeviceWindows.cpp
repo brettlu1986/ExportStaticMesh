@@ -2,12 +2,14 @@
 
 #include "LDeviceWindows.h"
 #include <windowsx.h>
+#include "LInputWindows.h"
 
 LDeviceWindows::LDeviceWindows(UINT InW, UINT InH, const char* Name)
 :LDevice(InW, InH)
 ,hMainWnd(nullptr)
 {
 	CreateMainWindow(Name);
+	CreateInput();
 }
 
 LDeviceWindows::~LDeviceWindows()
@@ -55,8 +57,8 @@ void LDeviceWindows::CreateMainWindow(const char* Name)
 
 void LDeviceWindows::CreateInput()
 {
-	Input = new LInput();
-	Input->Initialize();
+	LInput::CreateInput();
+	LInput::GetInput()->Initialize();
 }
 
 LRESULT CALLBACK LDeviceWindows::WindowProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
@@ -69,8 +71,8 @@ LRESULT CALLBACK LDeviceWindows::WindowProc(HWND hWnd, UINT Message, WPARAM wPar
 			return 0;
 		}
 		default:
-		{
-			return LInput::MessageHandler(hWnd, Message, wParam, lParam);
+		{	
+			return LInputWindows::MessageHandler(hWnd, Message, wParam, lParam);
 		}
 	}
 }
@@ -91,10 +93,6 @@ bool LDeviceWindows::Run()
 
 void LDeviceWindows::Destroy()
 {
-	if(Input)
-	{
-		delete Input;
-		Input = nullptr;
-	}
+	LInput::Destroy();
 }
 

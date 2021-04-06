@@ -70,7 +70,7 @@ void MainWindow::Destroy()
 
 LRESULT CALLBACK MainWindow::WindowProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
-	switch (Message)
+	/*switch (Message)
 	{
 		case WM_LBUTTONDOWN:
 		case WM_MBUTTONDOWN:
@@ -105,5 +105,6 @@ LRESULT CALLBACK MainWindow::WindowProc(HWND hWnd, UINT Message, WPARAM wParam, 
 		}
 		return 0;
 	}
-	return ::DefWindowProc(hWnd, Message, wParam, lParam);
+	return ::DefWindowProc(hWnd, Message, wParam, lParam);*/
+	return 0;
 }

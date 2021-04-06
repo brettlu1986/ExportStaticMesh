@@ -150,6 +150,9 @@
     <ClCompile Include="Private\Engine\Common\Windows\LDeviceWindows.cpp">
       <Filter>Source Files\Engine\Common\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Engine\Common\Windows\LInputWindows.cpp">
+      <Filter>Source Files\Engine\Common\Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds">
@@ -269,6 +272,9 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\Event\LEvent.h">
       <Filter>Header Files\Engine\Common\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Windows\LInputWindows.h">
+      <Filter>Header Files\Engine\Common\Windows</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
