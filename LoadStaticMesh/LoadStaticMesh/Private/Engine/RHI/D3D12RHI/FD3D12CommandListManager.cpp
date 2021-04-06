@@ -5,7 +5,6 @@
 
 FD3D12CommandListManager::FD3D12CommandListManager(FD3D12Adapter* InParent)
 :ParentAdapter(InParent)
-,DefaultCommandList(nullptr)
 , WriteIndex(0)
 ,ReadIndex(0)
 {
@@ -19,9 +18,6 @@ FD3D12CommandListManager::~FD3D12CommandListManager()
 
 void FD3D12CommandListManager::Clear()
 {
-	DefaultCommandList->Clear();
-	delete DefaultCommandList ;
-	DefaultCommandList = nullptr;
 
 	for (size_t i = 0; i < ComandLists.size(); ++i)
 	{
@@ -45,15 +41,11 @@ void FD3D12CommandListManager::Initialize()
 
 void FD3D12CommandListManager::CreateCommandLists(UINT NumCommandLists)
 {
-	if(!DefaultCommandList)
-		DefaultCommandList = new FD3D12CommandList(ParentAdapter, 0);
-
 	if(NumCommandLists > 0)
 	{
 		for (UINT i = 0; i < NumCommandLists; ++i)
 		{
 			FD3D12CommandList* List = new FD3D12CommandList(ParentAdapter, i);
-			List->Close();
 			ComandLists.push_back(List);
 		}
 	}

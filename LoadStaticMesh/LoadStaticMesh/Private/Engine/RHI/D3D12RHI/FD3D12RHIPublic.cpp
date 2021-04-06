@@ -115,15 +115,6 @@ void FD3D12DynamicRHI::Init()
 	if(ChosenAdapter)
 	{
 		ChosenAdapter->Initialize(this);
-
-		ThrowIfFailed(ChosenAdapter->GetD3DDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&CurrentAllocator)));
-		NAME_D3D12_OBJECT(CurrentAllocator);
-
-		ChosenAdapter->GetD3DDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, CurrentAllocator.Get(),
-			nullptr, IID_PPV_ARGS(&CurrentCommandList));
-		NAME_D3D12_OBJECT(CurrentCommandList);
-		CurrentCommandList->Close();
-		
 	}
 }
 
@@ -189,13 +180,15 @@ void FD3D12DynamicRHI::ShutDown()
 
  void FD3D12DynamicRHI::RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color)
  {
-	 CurrentAllocator->Reset();
-	 CurrentCommandList->Reset(CurrentAllocator.Get(), ChosenAdapter->GetDefaultPiplineState());
+	 FD3D12CommandList CommandList = ChosenAdapter->GetCommandListManager()->GetCommandList(0);
+	 CommandList.Reset();
+
+	 ID3D12GraphicsCommandList* CurrentCommandList = ChosenAdapter->GetCommandListManager()->GetDefaultCommandList();
 
 	 CurrentCommandList->RSSetViewports(1, &(ChosenAdapter->ViewPort));
 	 CurrentCommandList->RSSetScissorRects(1, &(ChosenAdapter->ScissorRect));
 
-	 ChosenAdapter->InitRenderBegin(CurrentCommandList.Get(), TargetFrame, Color);
+	 ChosenAdapter->InitRenderBegin(CurrentCommandList, TargetFrame, Color);
 
 	 FD3DConstantBuffer* ConstantBuffer = ChosenAdapter->GetConstantBuffer();
 	 CurrentCommandList->SetGraphicsRootSignature(ChosenAdapter->GetRootSignature());
@@ -213,6 +206,7 @@ void FD3D12DynamicRHI::ShutDown()
 
  void FD3D12DynamicRHI::RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer)
  {
+	 ID3D12GraphicsCommandList* CurrentCommandList = ChosenAdapter->GetCommandListManager()->GetDefaultCommandList();
 	 FD3D12IndexBuffer* D3DIndexBuffer = static_cast<FD3D12IndexBuffer*>(IndexBuffer);
 	 FD3D12VertexBuffer* D3DVertexBuffer = static_cast<FD3D12VertexBuffer*>(VertexBuffer);
 
@@ -225,23 +219,24 @@ void FD3D12DynamicRHI::ShutDown()
 
  void FD3D12DynamicRHI::RHIRenderEnd(UINT TargetFrame)
  {
-	 ChosenAdapter->RenderEnd(CurrentCommandList.Get(), TargetFrame);
+	 ID3D12GraphicsCommandList* CurrentCommandList = ChosenAdapter->GetCommandListManager()->GetDefaultCommandList();
+	 ChosenAdapter->RenderEnd(CurrentCommandList, TargetFrame);
 
 	 CurrentCommandList->Close();
 
-	 ChosenAdapter->GetCommandListManager()->Enqueue(CurrentCommandList);
-	/* ID3D12CommandQueue* CommandQueue = ChosenAdapter->GetD3DCommandQueue();
-	 ID3D12CommandList* CmdsLists[] = { DefaultCommandList };
+	// ChosenAdapter->GetCommandListManager()->Enqueue(CurrentCommandList);
+	 ID3D12CommandQueue* CommandQueue = ChosenAdapter->GetD3DCommandQueue();
+	 ID3D12CommandList* CmdsLists[] = { CurrentCommandList };
 	 CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
 	 IDXGISwapChain* SwapChain = ChosenAdapter->GetSwapChain();
 	 SwapChain->Present(1, 0);
-	 ChosenAdapter->WaitForPreviousFrame();*/
+	 ChosenAdapter->WaitForPreviousFrame();
  }
 
  void FD3D12DynamicRHI::RHIFirstPresent()
  {
 	 //first flush, use init command list
-	 ID3D12GraphicsCommandList* CommandList = ChosenAdapter->GetCommandListManager()->GetDefaultInitCommandList();
+	 ID3D12GraphicsCommandList* CommandList = ChosenAdapter->GetCommandListManager()->GetDefaultCommandList();
 	 CommandList->Close();
 	 ID3D12CommandQueue* CommandQueue = ChosenAdapter->GetD3DCommandQueue();
 	 ID3D12CommandList* CmdsLists[] = { CommandList };
@@ -249,7 +244,7 @@ void FD3D12DynamicRHI::ShutDown()
 	 ChosenAdapter->SetFenceValue(1);
 	 ChosenAdapter->WaitForPreviousFrame();
 
-	 FD3D12CommandListManager* CommandListManager = ChosenAdapter->GetCommandListManager();
+	 /*FD3D12CommandListManager* CommandListManager = ChosenAdapter->GetCommandListManager();
 	 std::thread RenderThread = thread([CommandListManager, this]
 		 {
 			while( !(CommandListManager->IsEmpty() && this->bShutDown ))
@@ -267,7 +262,7 @@ void FD3D12DynamicRHI::ShutDown()
 			}
 		 }
 	 );
-	 RenderThread.detach();
+	 RenderThread.detach();*/
  }
 
  FIndexBuffer* FD3D12DynamicRHI::RHICreateIndexBuffer()

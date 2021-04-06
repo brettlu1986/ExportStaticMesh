@@ -31,7 +31,6 @@ public:
 	virtual void Init() override;
 	virtual void ShutDown() override;
 
-	/// ////////////////////////////////
 	virtual void RHIInitWindow(UINT Width, UINT Height, void* Window) override;
 
 	virtual void RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color) override;
@@ -51,8 +50,5 @@ public:
 
 private: 
 	FD3D12Adapter* ChosenAdapter = nullptr;
-
-	ComPtr<ID3D12GraphicsCommandList> CurrentCommandList;
-	ComPtr<ID3D12CommandAllocator> CurrentAllocator;
 	bool bShutDown;
 };

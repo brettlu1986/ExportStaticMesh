@@ -84,6 +84,7 @@ public:
 	virtual void ShutDown() = 0;
 
 	/// /////////////////////
+
 	virtual void RHIInitWindow(UINT Width , UINT Height, void* Window) = 0;
 
 	virtual void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize) = 0;

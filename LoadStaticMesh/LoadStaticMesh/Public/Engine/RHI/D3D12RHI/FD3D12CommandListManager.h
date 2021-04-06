@@ -27,10 +27,6 @@ public:
 	}
 	ID3D12CommandQueue* GetD3DCommandQueue() const { return CommandQueue.Get(); }
 
-	ID3D12GraphicsCommandList* GetDefaultInitCommandList() {
-		return DefaultCommandList->GetD3DCommandList();
-	}
-
 	inline void Enqueue(ComPtr<ID3D12GraphicsCommandList> CommandList)
 	{
 		while (IsFull()) { std::this_thread::sleep_for(500ns); }
@@ -64,8 +60,6 @@ private:
 	ComPtr<ID3D12CommandQueue> CommandQueue;
 	FD3D12Adapter* ParentAdapter;
 	std::vector<FD3D12CommandList*> ComandLists;
-
-	FD3D12CommandList* DefaultCommandList;
 
 	std::atomic<int> ReadIndex;
 	std::atomic<int> WriteIndex;
