@@ -51,5 +51,4 @@ private:
 	void RHIFirstPresent();
 
 	FD3D12Adapter* ChosenAdapter = nullptr;
-	bool bShutDown;
 };

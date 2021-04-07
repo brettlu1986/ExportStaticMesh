@@ -3,7 +3,6 @@
 
 #include <dxgidebug.h>
 #include <d3dcompiler.h>
-
 #include "FD3D12RHIPrivate.h"
 #include "FD3D12Helper.h"
 #include "FDefine.h"
@@ -12,11 +11,8 @@
 #include "LEngine.h"
 #include "LDeviceWindows.h"
 
-
 using namespace Microsoft::WRL;
 using namespace DirectX;
-
-
 
 bool FD3D12DynamicRHIModule::IsSupported()
 {
@@ -111,7 +107,6 @@ void FD3D12DynamicRHIModule::FindAdapter()
 
 /////////////////////////// dynamic RHI implement
 FD3D12DynamicRHI::FD3D12DynamicRHI(FD3D12Adapter* ChosenAdapterIn)
-:bShutDown(false)
 {
 	ChosenAdapter = ChosenAdapterIn;
 }
@@ -140,7 +135,6 @@ void FD3D12DynamicRHI::ShutDown()
 {
 	if(ChosenAdapter)
 	{
-		bShutDown = true;
 		ChosenAdapter->ShutDown();
 		ChosenAdapter = nullptr;
 	}
@@ -265,26 +259,6 @@ void FD3D12DynamicRHI::ShutDown()
 	 CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
 	 ChosenAdapter->SetFenceValue(1);
 	 ChosenAdapter->WaitForPreviousFrame();
-
-	 /*FD3D12CommandListManager* CommandListManager = ChosenAdapter->GetCommandListManager();
-	 std::thread RenderThread = thread([CommandListManager, this]
-		 {
-			while( !(CommandListManager->IsEmpty() && this->bShutDown ))
-			{
-				FD3D12CommandList* CmdList = nullptr;
-				if(CommandListManager->Dequeue(&CmdList))
-				{
-					ID3D12CommandQueue* CommandQueue = this->ChosenAdapter->GetD3DCommandQueue();
-					ID3D12CommandList* CmdsLists[] = { CmdList->GetD3DCommandList() };
-					CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
-					IDXGISwapChain* SwapChain = this->ChosenAdapter->GetSwapChain();
-					SwapChain->Present(1, 0);
-					ChosenAdapter->WaitForPreviousFrame();
-				}
-			}
-		 }
-	 );
-	 RenderThread.detach();*/
  }
 
  FIndexBuffer* FD3D12DynamicRHI::RHICreateIndexBuffer()
