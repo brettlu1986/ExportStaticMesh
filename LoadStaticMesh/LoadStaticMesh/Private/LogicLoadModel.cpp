@@ -13,7 +13,6 @@
 
 #include "LDeviceWindows.h"
 #include "LEngine.h"
-
 #include "LAssetDataLoader.h"
 
 
@@ -21,21 +20,18 @@ using namespace Microsoft::WRL;
 using namespace DirectX;
 
 static const FRHIColor ClearColor = { 0.690196097f, 0.768627524f, 0.870588303f, 1.000000000f };
-
 LogicStaticModel* LogicStaticModel::ThisLogic = nullptr;
 
 LogicStaticModel::LogicStaticModel()
 	: FrameIndex(0)
 	, bDestroy(false)
+	, bRenderDestroy(false)
 	, ObjectConstant({})
 	, WndWidth(0)
 	, WndHeight(0)
 	, AspectRatio(0.f)
-	, MainApplication(nullptr)
 {
 	MtProj = MathHelper::Identity4x4();
-	RenderBegin = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-	RenderEndHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	LastMousePoint = {0 , 0};
 	ThisLogic = this;
 	MtBuffer = new RingBuffer<ObjectConstants*>(FrameCount);
@@ -47,9 +43,8 @@ LogicStaticModel::~LogicStaticModel()
 
 }
 
-void LogicStaticModel::Initialize(ApplicationMain* Application, UINT Width, UINT Height)
+void LogicStaticModel::Initialize(UINT Width, UINT Height)
 {
-	MainApplication = Application;
 	WndWidth = Width;
 	WndHeight = Height;
 	AspectRatio = static_cast<float>(Width) / static_cast<float>(Height);
@@ -96,6 +91,7 @@ void LogicStaticModel::CreateRenderThread()
 		RenderInit();
 		while (!(MtBuffer->IsEmpty() && bDestroy))
 		{
+			
 			ObjectConstants* ConstantObj = nullptr;
 			if (MtBuffer->Dequeue(&ConstantObj))
 			{
@@ -104,11 +100,14 @@ void LogicStaticModel::CreateRenderThread()
 			}
 			Render();
 		}
+
+		Scene.Destroy();
+		RHIExit();
+		bRenderDestroy = true;
 	};
 
 	auto Exit = [this]() {
-		Scene.Destroy();
-		RHIExit();
+		
 	};
 
 	RThread.Start(Run, Exit);
@@ -168,6 +167,11 @@ void LogicStaticModel::ProcessMouseInput(FInputResult& Input)
 void LogicStaticModel::Destroy()
 {	
 	bDestroy = true;
+	while(!bRenderDestroy)
+	{
+		continue;
+	}
+
 	if(MtBuffer)
 	{
 		delete MtBuffer;

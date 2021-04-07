@@ -12,6 +12,7 @@
 #include "LRingBuffer.h"
 #include "RenderThread.h"
 
+
 using namespace DirectX;
 
 class LogicStaticModel 
@@ -22,7 +23,7 @@ public:
 
 	static LogicStaticModel* Get() { return ThisLogic; }
 
-	void Initialize(ApplicationMain* Application, UINT Width, UINT Height);
+	void Initialize( UINT Width, UINT Height);
 
 	void OnInit();
 	void Update();
@@ -45,6 +46,7 @@ private:
 	static const UINT ThreadCount = 1;
 
 	bool bDestroy;
+	bool bRenderDestroy;
 	ObjectConstants ObjectConstant;
 	UINT FrameIndex;
 
@@ -53,13 +55,10 @@ private:
 	XMFLOAT4X4 MtProj;
 	POINT LastMousePoint;
 
-	HANDLE RenderBegin;
-	HANDLE RenderEndHandle;
 	float AspectRatio;
 
 	UINT WndWidth;
 	UINT WndHeight;
-	ApplicationMain* MainApplication;
 
 	FScene Scene;
 	FMesh Mesh;
@@ -67,4 +66,6 @@ private:
 
 	RingBuffer<ObjectConstants*>* MtBuffer;
 	RenderThread RThread;
+
+	
 };

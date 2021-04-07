@@ -24,3 +24,4 @@ void RenderThread::Detach()
 {
 	Thread.detach();
 }
+
