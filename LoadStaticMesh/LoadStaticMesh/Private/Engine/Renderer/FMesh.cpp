@@ -20,7 +20,7 @@ FMesh::FMesh(std::string FileName, std::string TextureName)
 	,TextureRes(nullptr)
 	,ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
 {
-
+	
 }
 
 FMesh::~FMesh()
@@ -54,7 +54,11 @@ void FMesh::Destroy()
 
 void FMesh::Initialize()
 {
-
+	VertexBuffer = CreateVertexBuffer();
+	IndexBuffer = CreateIndexBuffer();
+	TextureRes = CreateTexture();
+	TextureRes->SetTextureName(MeshTextureName);
+	LAssetDataLoader::LoadMeshVertexDataFromFile(MeshFileName, *IndexBuffer, *VertexBuffer);
 }
 
 
@@ -71,18 +75,9 @@ XMMATRIX FMesh::GetModelMatrix()
 	return XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
 }
 
-void FMesh::InitData()
-{	
-	VertexBuffer = CreateVertexBuffer();
-	IndexBuffer = CreateIndexBuffer();
-	TextureRes = CreateTexture();
-	TextureRes->SetTextureName(MeshTextureName);
-	LAssetDataLoader::LoadMeshVertexDataFromFile(MeshFileName, *IndexBuffer, *VertexBuffer);
-}
-
 void FMesh::InitRenderResource()
 {
-	InitData();
+	Initialize();
 	InitMeshGPUResource(IndexBuffer, VertexBuffer, TextureRes);
 }
 

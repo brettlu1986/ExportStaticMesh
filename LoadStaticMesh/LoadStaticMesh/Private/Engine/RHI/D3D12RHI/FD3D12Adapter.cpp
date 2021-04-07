@@ -286,13 +286,13 @@ void FD3D12Adapter::CreatePso(const FRHIPiplineStateInitializer& PsoInitializer)
 	
 }
 
-void FD3D12Adapter::CreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
+void FD3D12Adapter::CreateConstantBuffer(UINT BufferSize, UINT DataSize)
 {
 	if (!ConstantBuffer)
 	{
 		ConstantBuffer = new FD3DConstantBuffer();
 		ConstantBuffer->Initialize();
-		ConstantBuffer->SetConstantBufferInfo(this, BufferSize, pDataFrom, DataSize);
+		ConstantBuffer->SetConstantBufferInfo(this, BufferSize, DataSize);
 	}
 	CreateConstantBufferView();
 }

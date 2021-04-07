@@ -83,14 +83,13 @@ public:
 
 	virtual void ShutDown() = 0;
 
-	virtual void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize) = 0;
+	virtual void RHICreateConstantBuffer(UINT BufferSize, UINT DataSize) = 0;
 	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) = 0;
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) = 0;
-	virtual void RHICreatePiplineStateObject(FShader* Vs, FShader* Ps) = 0;
+	virtual void RHICreatePiplineStateObject(FShader* Vs, FShader* Ps, bool bExcute = false) = 0;
 
 	virtual void RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color) = 0;
-	virtual void RHIRenderEnd(UINT TargetFrame) = 0;
-	virtual void RHIFirstPresent()= 0;
+	virtual void RHIPresentToScreen(UINT TargetFrame) = 0;
 
 	virtual FIndexBuffer* RHICreateIndexBuffer() = 0;
 	virtual FVertexBuffer* RHICreateVertexBuffer() = 0;
@@ -114,12 +113,12 @@ public:
 
 };
 
-FORCEINLINE void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
+FORCEINLINE void CreateConstantBuffer(UINT BufferSize, UINT DataSize)
 {
-	return GDynamicRHI->RHICreateConstantBuffer(BufferSize, pDataFrom, DataSize);
+	return GDynamicRHI->RHICreateConstantBuffer(BufferSize, DataSize);
 }
 
-FORCEINLINE void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize)
+FORCEINLINE void UpdateConstantBuffer(void* pUpdateData, UINT DataSize)
 {
 	return GDynamicRHI->RHIUpdateConstantBuffer(pUpdateData, DataSize);
 }
@@ -129,9 +128,9 @@ FORCEINLINE  FShader* CreateShader(LPCWSTR ShaderFile)
 	return GDynamicRHI->RHICreateShader(ShaderFile);
 }
 
-FORCEINLINE  void CreatePiplineStateObject(FShader* Vs, FShader* Ps) 
+FORCEINLINE  void CreatePiplineStateObject(FShader* Vs, FShader* Ps, bool bExcute = false)
 {
-	GDynamicRHI->RHICreatePiplineStateObject(Vs, Ps);
+	GDynamicRHI->RHICreatePiplineStateObject(Vs, Ps, bExcute);
 }
 
 FORCEINLINE void InitRenderBegin(UINT TargetFrame, FRHIColor Color)
@@ -139,9 +138,9 @@ FORCEINLINE void InitRenderBegin(UINT TargetFrame, FRHIColor Color)
 	return GDynamicRHI->RHIInitRenderBegin(TargetFrame, Color);
 }
 
-FORCEINLINE void RenderEnd(UINT TargetFrame)
+FORCEINLINE void PresentToScreen(UINT TargetFrame)
 {
-	GDynamicRHI->RHIRenderEnd(TargetFrame);
+	GDynamicRHI->RHIPresentToScreen(TargetFrame);
 }
 
 FORCEINLINE FIndexBuffer* CreateIndexBuffer()
@@ -167,9 +166,4 @@ FORCEINLINE void InitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* V
 FORCEINLINE void DrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer)
 {
 	return GDynamicRHI->RHIDrawMesh(IndexBuffer, VertexBuffer);
-}
-
-FORCEINLINE void FirstPresent()
-{
-	return GDynamicRHI->RHIFirstPresent();
 }

@@ -4,6 +4,7 @@
 #include "FDynamicRHI.h"
 #include "FRHI.h"
 #include "LAssetDataLoader.h"
+#include "FDefine.h"
 
 FSceneRenderer::FSceneRenderer()
 {
@@ -17,14 +18,18 @@ FSceneRenderer::~FSceneRenderer()
 
 void FSceneRenderer::RenderInit(FScene* Scene)
 {
-	//create adapter , create device, create command queue, create command manager, create command allocator/list
+	Scene->InitRenderResource();
+
+	UINT BufferSize = (sizeof(ObjectConstants) + 255) & ~255;
+	CreateConstantBuffer(BufferSize, sizeof(ObjectConstants));
+
+	//IMPORTANT: after create pso, will excute first init command queue in the function
 	FShader* Vs = CreateShader(L"shader_vs.cso");
 	FShader* Ps = CreateShader(L"shader_ps.cso");
-	CreatePiplineStateObject(Vs, Ps);
+	CreatePiplineStateObject(Vs, Ps, true);
 
 	delete Vs;
 	delete Ps;
-	Scene->InitRenderResource();
 }
 
 void FSceneRenderer::EndRenderFram(FScene* Scene)

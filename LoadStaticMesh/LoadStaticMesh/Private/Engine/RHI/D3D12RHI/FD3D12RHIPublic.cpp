@@ -157,9 +157,9 @@ void FD3D12DynamicRHI::ShutDown()
 }
  
 
- void FD3D12DynamicRHI::RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
+ void FD3D12DynamicRHI::RHICreateConstantBuffer(UINT BufferSize, UINT DataSize)
  {
-	 ChosenAdapter->CreateConstantBuffer(BufferSize, pDataFrom, DataSize);
+	 ChosenAdapter->CreateConstantBuffer(BufferSize, DataSize);
  }
 
  void FD3D12DynamicRHI::RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize)
@@ -175,7 +175,7 @@ void FD3D12DynamicRHI::ShutDown()
 	 return new FShader(ShaderData, ShaderLen);
  }
 
- void FD3D12DynamicRHI::RHICreatePiplineStateObject(FShader* Vs, FShader* Ps)
+ void FD3D12DynamicRHI::RHICreatePiplineStateObject(FShader* Vs, FShader* Ps, bool bExcute)
  {
 	 FRHIInputElement RHIInputElementDescs[] =
 	 {
@@ -193,6 +193,11 @@ void FD3D12DynamicRHI::ShutDown()
 		1
 	 };
 	 ChosenAdapter->CreatePso(RHIPsoInitializer);
+
+	 if(bExcute)
+	 {
+		 RHIFirstPresent();
+	 }
  }
 
  void FD3D12DynamicRHI::RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color)
@@ -234,7 +239,7 @@ void FD3D12DynamicRHI::ShutDown()
  }
 
 
- void FD3D12DynamicRHI::RHIRenderEnd(UINT TargetFrame)
+ void FD3D12DynamicRHI::RHIPresentToScreen(UINT TargetFrame)
  {
 	 ID3D12GraphicsCommandList* CurrentCommandList = ChosenAdapter->GetCommandListManager()->GetDefaultCommandList();
 	 ChosenAdapter->RenderEnd(CurrentCommandList, TargetFrame);

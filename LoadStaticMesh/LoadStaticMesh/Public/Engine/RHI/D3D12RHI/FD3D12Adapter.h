@@ -56,7 +56,7 @@ public:
 		return SwapChain.Get();
 	}
 
-	void CreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize);
+	void CreateConstantBuffer(UINT BufferSize, UINT DataSize);
 	void UpdateConstantBufferData(void* pUpdateData, UINT DataSize);
 	FD3DConstantBuffer* GetConstantBuffer() const
 	{

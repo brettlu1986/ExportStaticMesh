@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
+#include "MathHelper.h"
 
 using namespace DirectX;
 
@@ -44,6 +45,11 @@ struct FVertex_PositionTex0
 {
 	XMFLOAT3 Position;
 	XMFLOAT2 Tex0;
+};
+
+struct ObjectConstants
+{
+	XMFLOAT4X4 WorldViewProj = MathHelper::Identity4x4();
 };
 
 const UINT RENDER_TARGET_COUNT = 3;

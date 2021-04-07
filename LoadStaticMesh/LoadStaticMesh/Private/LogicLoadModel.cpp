@@ -61,6 +61,7 @@ void LogicStaticModel::Initialize(ApplicationMain* Application, UINT Width, UINT
 void LogicStaticModel::OnInit()
 {
 	InitCamera();
+	
 	RenderInit();
 }
 
@@ -70,7 +71,7 @@ void LogicStaticModel::Update()
 	XMMATRIX WorldViewProj = Mesh.GetModelMatrix() * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
 	//Update the constant buffer with the latest WorldViewProj matrix.
 	XMStoreFloat4x4(&ObjectConstant.WorldViewProj, XMMatrixTranspose(WorldViewProj));
-	GDynamicRHI->RHIUpdateConstantBuffer(&ObjectConstant, sizeof(ObjectConstant));
+	UpdateConstantBuffer(&ObjectConstant, sizeof(ObjectConstant));
 }
 
 void LogicStaticModel::ProcessInput(FInputResult Input)
@@ -102,22 +103,14 @@ void LogicStaticModel::RenderInit()
 {
 	InitModelScene();
 	RHIInit();
-
 	Renderer.RenderInit(&Scene);
-
-	UINT BufferSize = (sizeof(ObjectConstants) + 255) & ~255;
-	GDynamicRHI->RHICreateConstantBuffer(BufferSize, &ObjectConstant, sizeof(ObjectConstant));
-	
-	//first flush
-	FirstPresent();
 }
-
 
 bool LogicStaticModel::Render()
 {
 	InitRenderBegin(FrameIndex, ClearColor);
 	Renderer.Render(&Scene);
-	RenderEnd(FrameIndex);
+	PresentToScreen(FrameIndex);
 	FrameIndex = (FrameIndex + 1) % FrameCount;
 	return true;
 }

@@ -32,12 +32,6 @@ public:
 	void ProcessMouseInput(FInputResult& Input);
 
 private:
-
-	struct ObjectConstants
-	{
-		XMFLOAT4X4 WorldViewProj = MathHelper::Identity4x4();
-	};
-
 	static LogicStaticModel* ThisLogic;
 
 	void InitCamera();

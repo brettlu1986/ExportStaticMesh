@@ -181,7 +181,7 @@ void FD3DConstantBuffer::Initialize()
 {
 }
 
-void FD3DConstantBuffer::SetConstantBufferInfo(FD3D12Adapter* Adapter, UINT InBufferSize, void* pDataFrom, UINT DataSize)
+void FD3DConstantBuffer::SetConstantBufferInfo(FD3D12Adapter* Adapter, UINT InBufferSize, UINT DataSize)
 {
 	CbvSrvUavDescriptorSize = Adapter->GetD3DDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	BufferSize = InBufferSize;
@@ -196,7 +196,7 @@ void FD3DConstantBuffer::SetConstantBufferInfo(FD3D12Adapter* Adapter, UINT InBu
 		nullptr,
 		IID_PPV_ARGS(&ConstantBuffer)));
 	ThrowIfFailed(ConstantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&pCbvDataBegin)));
-	memcpy(pCbvDataBegin, pDataFrom, DataSize);
+	memset(pCbvDataBegin, 0, DataSize);
 	NAME_D3D12_OBJECT(ConstantBuffer);
 }
 

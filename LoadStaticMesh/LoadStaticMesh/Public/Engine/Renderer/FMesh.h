@@ -16,7 +16,6 @@ public:
 	virtual void Destroy();
 	virtual void Initialize();
 
-	void InitData();
 	void InitRenderResource();
 	void Render();
 	void EndRender();
