@@ -35,8 +35,6 @@ LCamera::~LCamera()
 
 void LCamera::Init()
 {
-	//ReadCameraDataFromFile(CameraBinName.c_str());
-
 	InitialPosition = CameraDatas.Location;
 	Position = InitialPosition;
 
@@ -102,25 +100,4 @@ XMMATRIX LCamera::GetProjectionMatrix(float NearPlane /*= 1.0f*/, float FarPlane
 	return XMMatrixPerspectiveFovLH(Fov, AspectRatio, NearPlane, FarPlane);
 }
 
-//void LCamera::ReadCameraDataFromFile(LPCWSTR FileName)
-//{
-//	std::wstring FName = GetSaveDirectory() + FileName;
-//	ifstream Rf(FName, ios::out | ios::binary);
-//	if (!Rf) {
-//		cout << "Cannot open file!" << endl;
-//		return;
-//	}
-//
-//	char* CameraBuffer = new char[sizeof(CameraData)];
-//	memset(CameraBuffer, '\0', sizeof(CameraData));
-//	Rf.read(CameraBuffer, sizeof(CameraData));
-//	CameraDatas = *(CameraData*)(CameraBuffer);
-//
-//	delete[] CameraBuffer;
-//	Rf.close();
-//	if (!Rf.good()) {
-//		cout << "Error occurred at reading time!" << endl;
-//		return;
-//	}
-//}
 
