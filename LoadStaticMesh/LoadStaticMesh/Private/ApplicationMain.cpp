@@ -26,7 +26,7 @@ bool ApplicationMain::Initialize(UINT Width, UINT Height, std::string WndName)
 	LEngine::InitEngine(Desc);
 
 	CurrentLogic = new LogicStaticModel();
-	CurrentLogic->Initialize(Width, Height);
+	CurrentLogic->Initialize();
 
 	return true;
 }

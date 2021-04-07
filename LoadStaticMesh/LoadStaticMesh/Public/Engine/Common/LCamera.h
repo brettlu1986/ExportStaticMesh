@@ -12,7 +12,7 @@ public:
 	~LCamera();
 
 	void Init();
-	void OnResize(float WndWidth, float WndHeight);
+	void OnResize();
 	
 	XMMATRIX GetViewMarix();
 	XMMATRIX GetProjectionMatrix(float NearPlane = 1.0f, float FarPlane = 1000.0f);

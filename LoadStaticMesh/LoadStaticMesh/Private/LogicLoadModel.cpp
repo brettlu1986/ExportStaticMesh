@@ -26,10 +26,6 @@ LogicStaticModel::LogicStaticModel()
 	: FrameIndex(0)
 	, bDestroy(false)
 	, bRenderDestroy(false)
-	, ObjectConstant({})
-	, WndWidth(0)
-	, WndHeight(0)
-	, AspectRatio(0.f)
 {
 	MtProj = MathHelper::Identity4x4();
 	LastMousePoint = {0 , 0};
@@ -43,11 +39,8 @@ LogicStaticModel::~LogicStaticModel()
 
 }
 
-void LogicStaticModel::Initialize(UINT Width, UINT Height)
+void LogicStaticModel::Initialize() 
 {
-	WndWidth = Width;
-	WndHeight = Height;
-	AspectRatio = static_cast<float>(Width) / static_cast<float>(Height);
 	EventDispatcher& EventDisp = LEngine::GetEngine()->GetEventDispacher();
 	EventDisp.RegisterEvent(new LEvent<FInputResult>(E_EVENT_KEY::EVENT_INPUT, &LogicStaticModel::ProcessInput));
 	OnInit();
@@ -59,7 +52,6 @@ void LogicStaticModel::InitCamera()
 	MyCamera.Init();
 
 	// The window resized, so update the aspect ratio and recompute the projection matrix.
-	MyCamera.OnResize(static_cast<float>(WndWidth), static_cast<float>(WndHeight));
 	XMMATRIX P = MyCamera.GetProjectionMatrix();
 	XMStoreFloat4x4(&MtProj, P);
 }

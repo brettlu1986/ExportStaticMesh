@@ -22,8 +22,7 @@ public:
 	~LogicStaticModel();
 
 	static LogicStaticModel* Get() { return ThisLogic; }
-
-	void Initialize( UINT Width, UINT Height);
+	void Initialize();
 
 	void OnInit();
 	void Update();
@@ -47,7 +46,6 @@ private:
 
 	bool bDestroy;
 	bool bRenderDestroy;
-	ObjectConstants ObjectConstant;
 	UINT FrameIndex;
 
 	LCamera MyCamera;
@@ -55,10 +53,6 @@ private:
 	XMFLOAT4X4 MtProj;
 	POINT LastMousePoint;
 
-	float AspectRatio;
-
-	UINT WndWidth;
-	UINT WndHeight;
 
 	FScene Scene;
 	FMesh Mesh;

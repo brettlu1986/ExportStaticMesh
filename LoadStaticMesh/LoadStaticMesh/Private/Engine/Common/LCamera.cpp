@@ -4,11 +4,11 @@
 #include <DirectXMath.h>
 #include <iostream>
 #include <fstream>
+#include "LEngine.h"
+#include "LDeviceWindows.h"
 
 using namespace DirectX;
 using namespace std;
-
-//static const wstring CameraBinName = L"camera.bin";
 
 LCamera::LCamera()
 	:Position(0, 0, 0)
@@ -64,12 +64,15 @@ void LCamera::Init()
 	//Theta range is [0, 2Pi]
 	if(Theta < 0.f)
 		Theta += XM_PI * 2;
+
+	OnResize();
 }
 
-void LCamera::OnResize(float WndWidth, float WndHeight)
+void LCamera::OnResize()
 {
+	LDeviceWindows* DeviceWindows = static_cast<LDeviceWindows*>(LEngine::GetEngine()->GetPlatformDevice());
 	Fov = XMConvertToRadians(CameraDatas.Fov);
-	AspectRatio = static_cast<float>(WndWidth) / WndHeight;
+	AspectRatio = static_cast<float>(DeviceWindows->GetWidth()) / DeviceWindows->GetHeight();
 }
 
 void LCamera::ChangeViewMatrixByMouseEvent(float x, float y)
