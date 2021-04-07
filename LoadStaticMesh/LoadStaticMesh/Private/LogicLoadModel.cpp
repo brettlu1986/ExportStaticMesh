@@ -15,6 +15,7 @@
 #include "LDeviceWindows.h"
 #include "LEngine.h"
 
+
 #include "LAssetDataLoader.h"
 
 using namespace Microsoft::WRL;
@@ -52,6 +53,8 @@ void LogicStaticModel::Initialize(ApplicationMain* Application, UINT Width, UINT
 	WndWidth = Width;
 	WndHeight = Height;
 	AspectRatio = static_cast<float>(Width) / static_cast<float>(Height);
+	EventDispatcher& EventDisp = LEngine::GetEngine()->GetEventDispacher();
+	EventDisp.RegisterEvent(new LEvent<FInputResult>(E_EVENT_KEY::EVENT_INPUT, &LogicStaticModel::ProcessInput));
 	OnInit();
 }
 
@@ -62,23 +65,38 @@ void LogicStaticModel::OnInit()
 	RenderInit();
 }
 
-//void LogicStaticModel::UpdateInput()
-//{
-//	LDeviceWindows* Device = dynamic_cast<LDeviceWindows*>(LEngine::GetEngine()->GetPlatformDevice());
-//	LInput* Input = Device->GetInput();
-//	if(Input->IsMouseInput())
-//	{
-//	}
-//}
-
 void LogicStaticModel::Update()
 {
-	//UpdateInput();
 	//update matrix
 	XMMATRIX WorldViewProj = Mesh.GetModelMatrix() * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
 	//Update the constant buffer with the latest WorldViewProj matrix.
 	XMStoreFloat4x4(&ObjectConstant.WorldViewProj, XMMatrixTranspose(WorldViewProj));
 	GDynamicRHI->RHIUpdateConstantBuffer(&ObjectConstant, sizeof(ObjectConstant));
+}
+
+void LogicStaticModel::ProcessInput(FInputResult Input)
+{
+	if(LInput::IsMouseInput(Input))
+	{
+		LogicStaticModel::Get()->ProcessMouseInput(Input);	
+	}
+}
+
+void LogicStaticModel::ProcessMouseInput(FInputResult& Input)
+{
+	if (Input.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_DOWN)
+	{
+		LastMousePoint.x = Input.X;
+		LastMousePoint.y = Input.Y;
+	}
+	else if(Input.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_MOVE)
+	{
+		float dx = XMConvertToRadians(0.25f * static_cast<float>(Input.X - LastMousePoint.x));
+		float dy = XMConvertToRadians(0.25f * static_cast<float>(Input.Y - LastMousePoint.y));
+		MyCamera.ChangeViewMatrixByMouseEvent(dx, dy);
+		LastMousePoint.x = Input.X;
+		LastMousePoint.y = Input.Y;
+	}
 }
 
 void LogicStaticModel::RenderInit()
@@ -143,27 +161,3 @@ void LogicStaticModel::InitModelScene()
 	Scene.AddMeshToScene(&Mesh);
 }
 
-//mouse event
-void LogicStaticModel::OnMouseDown(WPARAM btnState, int x, int y)
-{
-	LastMousePoint.x = x; 
-	LastMousePoint.y = y;
-	SetCapture(MainApplication->GetHwnd());
-}
-
-void LogicStaticModel::OnMouseUp(WPARAM btnState, int x, int y)
-{
-	ReleaseCapture();
-}
-
-void LogicStaticModel::OnMouseMove(WPARAM btnState, int x, int y)
-{
-	if((btnState & MK_LBUTTON) != 0 ) 
-	{
-		float dx = XMConvertToRadians(0.25f * static_cast<float>(x - LastMousePoint.x));
-		float dy = XMConvertToRadians(0.25f * static_cast<float>(y - LastMousePoint.y));
-		MyCamera.ChangeViewMatrixByMouseEvent(dx, dy);
-	}
-	LastMousePoint.x = x; 
-	LastMousePoint.y = y;
-}

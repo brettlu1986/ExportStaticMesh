@@ -15,12 +15,12 @@ public:
 	static void CreateInput();
 	static void Destroy();
 
-	bool IsKeyInput(FInputResult& Result)
+	static inline bool IsKeyInput(FInputResult& Result)
 	{
 		return Result.InputType == E_INPUT_TYPE::PC_KEYBORAD;
 	}
 
-	bool IsMouseInput(FInputResult& Result)
+	static inline bool IsMouseInput(FInputResult& Result)
 	{
 		return Result.InputType == E_INPUT_TYPE::PC_MOUSE_EVENT;
 	}

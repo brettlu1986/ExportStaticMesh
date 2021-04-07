@@ -1,7 +1,6 @@
 
 #include "ApplicationMain.h"
 #include "LogicStaticModel.h"
-#include "MainWindow.h"
 //#include "LInput.h"
 
 #include "LEngine.h"
@@ -9,7 +8,6 @@
 
 ApplicationMain::ApplicationMain()
 	:hMainInstance(nullptr)
-	//,Window(nullptr)
 	,CurrentLogic(nullptr)
 	//,Input(nullptr)
 {
@@ -24,9 +22,6 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance, UINT Width, UINT Height, s
 {
 	hMainInstance = hInstance; 
 
-	/*Window = new MainWindow();
-	Window->Initialize(this, Width, Height, Name);*/
-
 	LEngineDesc Desc = 
 	{
 		Width, 
@@ -38,35 +33,20 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance, UINT Width, UINT Height, s
 	CurrentLogic = new LogicStaticModel();
 	CurrentLogic->Initialize(this, Width, Height);
 
-	/*Input = new LInput();
-	Input->Initialize();*/
-	
 	return true;
 }
 
 void ApplicationMain::Run()
 {
-	//if (Window)
-	//{
-		while (LEngine::GetEngine()->Run())
-		//while(Window->Run())
-		{
-			//Input->Update();
-			CurrentLogic->Update();
-			CurrentLogic->Render();
-		}
-	//}
+	while (LEngine::GetEngine()->Run())
+	{
+		CurrentLogic->Update();
+		CurrentLogic->Render();
+	}
 }
 
 void ApplicationMain::Destroy()
 {
-	/*if (Window)
-	{
-		Window->Destroy();
-		delete Window;
-		Window = nullptr;
-	}*/
-
 	if (CurrentLogic)
 	{
 		CurrentLogic->Destroy();
@@ -74,18 +54,11 @@ void ApplicationMain::Destroy()
 		CurrentLogic = nullptr;
 	}
 
-	/*if (Input)
-	{
-		Input->Destroy();
-		delete Input;
-		Input = nullptr;
-	}*/
-
 	LEngine::GetEngine()->Destroy();
 }
 
 const HWND& ApplicationMain::GetHwnd()
 {
 	LDeviceWindows* Device = dynamic_cast<LDeviceWindows*>(LEngine::GetEngine()->GetPlatformDevice());
-	return Device->GetHwnd(); //Window->GetHwnd();
+	return Device->GetHwnd(); 
 }

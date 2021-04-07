@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 #include "LDefine.h"
-//#include "LEvent.h"
+#include "LEvent.h"
 
 typedef struct LEngineDesc
 {
@@ -33,13 +33,13 @@ public:
 		return CurrentDevice;
 	}
 
-	/*const EventDispatcher& GetEventDispather()
+	EventDispatcher& GetEventDispacher()
 	{
 		return EventDisp;
-	}*/
+	}
 private: 
 	static LEngine* Engine;
 	LDevice* CurrentDevice = nullptr;
 	E_DEVICE_PLATFORM CurrentPlatform;
-	//EventDispatcher EventDisp;
+	EventDispatcher EventDisp;
 };

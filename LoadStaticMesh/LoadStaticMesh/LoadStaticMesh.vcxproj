@@ -175,7 +175,6 @@
     <ClCompile Include="Private\Engine\RHI\FWindowsDynamicRHI.cpp" />
     <ClCompile Include="Private\Engine\Util\MathHelper.cpp" />
     <ClCompile Include="Private\LogicLoadModel.cpp" />
-    <ClCompile Include="Private\MainWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds" />
@@ -267,7 +266,6 @@
     <ClInclude Include="Public\Engine\RHI\FRHIDef.h" />
     <ClInclude Include="Public\Engine\Util\MathHelper.h" />
     <ClInclude Include="Public\LogicStaticModel.h" />
-    <ClInclude Include="Public\MainWindow.h" />
     <ClInclude Include="Public\stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

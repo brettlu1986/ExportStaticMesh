@@ -9,6 +9,7 @@
 #include "FScene.h"
 #include "FMesh.h"
 #include "FSceneRenderer.h"
+#include "LDefine.h"
 
 using namespace DirectX;
 
@@ -27,12 +28,10 @@ public:
 	void Destroy();
 	bool Render();
 
-	void OnMouseDown(WPARAM btnState, int x, int y);
-	void OnMouseUp(WPARAM btnState, int x, int y);
-	void OnMouseMove(WPARAM btnState, int x, int y);
+	static void ProcessInput(FInputResult Input);
+	void ProcessMouseInput(FInputResult& Input);
 
 private:
-	//void UpdateInput();
 
 	struct ObjectConstants
 	{

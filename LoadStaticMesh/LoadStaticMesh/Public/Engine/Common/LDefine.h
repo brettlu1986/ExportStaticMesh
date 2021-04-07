@@ -67,6 +67,16 @@ public:
 	,Y(0)
 	{
 	}
+
+	FInputResult(E_INPUT_TYPE InInput, E_TOUCH_TYPE InTouch, E_KEY_MAP InKey, int InX, int InY)
+		:InputType(InInput)
+		, TouchType(InTouch)
+		, KeyMapType(InKey)
+		, X(InX)
+		, Y(InY)
+	{
+	}
 	
 }FInputResult;
+
 

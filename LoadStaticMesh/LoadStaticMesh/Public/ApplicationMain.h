@@ -4,7 +4,6 @@
 
 class LInput;
 class LogicStaticModel;
-//class MainWindow;
 
 class ApplicationMain
 {
@@ -17,15 +16,10 @@ public:
 	void Destroy();
 
 	const HINSTANCE& GetHInstace() const { return hMainInstance; }
-	LogicStaticModel* GetGraphicRender() const { return CurrentLogic; }
-	//LInput* GetInput() const { return Input; }
-	//MainWindow* GetWindow() const { return Window; }
 
 	const HWND& GetHwnd();
 private:
 	 
 	HINSTANCE hMainInstance;
-	//MainWindow* Window;
 	LogicStaticModel* CurrentLogic;
-	//LInput* Input;
 };
