@@ -49,7 +49,13 @@ struct FVertex_PositionTex0
 
 struct ObjectConstants
 {
+public: 
+	ObjectConstants(XMFLOAT4X4 InWVP)
+	:WorldViewProj(InWVP)
+	{}
+
 	XMFLOAT4X4 WorldViewProj = MathHelper::Identity4x4();
+
 };
 
 const UINT RENDER_TARGET_COUNT = 3;

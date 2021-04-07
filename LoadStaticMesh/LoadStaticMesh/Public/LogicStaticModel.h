@@ -2,7 +2,6 @@
 
 #include "LogicStaticModel.h"
 #include "LCamera.h"
-//#include "FTempMesh.h"
 #include "MathHelper.h"
 #include "ApplicationMain.h"
 
@@ -10,6 +9,7 @@
 #include "FMesh.h"
 #include "FSceneRenderer.h"
 #include "LDefine.h"
+#include "LRingBuffer.h"
 
 using namespace DirectX;
 
@@ -37,6 +37,7 @@ private:
 	void InitCamera();
 	void InitModelScene();
 	void RenderInit();
+	void CreateRenderThread();
 
 private:
 	static const UINT FrameCount = 3;
@@ -62,5 +63,6 @@ private:
 	FScene Scene;
 	FMesh Mesh;
 	FSceneRenderer Renderer;
-	
+
+	RingBuffer<ObjectConstants*>* MtBuffer;
 };

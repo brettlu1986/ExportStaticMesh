@@ -36,7 +36,6 @@ void ApplicationMain::Run()
 	while (LEngine::GetEngine()->Run())
 	{
 		CurrentLogic->Update();
-		CurrentLogic->Render();
 	}
 }
 
