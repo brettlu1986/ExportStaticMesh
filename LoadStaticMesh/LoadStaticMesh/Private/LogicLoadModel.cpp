@@ -14,8 +14,8 @@
 #include "LDeviceWindows.h"
 #include "LEngine.h"
 
-#include <thread>
 #include "LAssetDataLoader.h"
+
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
@@ -79,36 +79,42 @@ void LogicStaticModel::OnInit()
 void LogicStaticModel::Update()
 {
 	//update matrix
-	XMMATRIX WorldViewProj = Mesh.GetModelMatrix() * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
-	//Update the constant buffer with the latest WorldViewProj matrix.
-	XMFLOAT4X4 WVP;
-	XMStoreFloat4x4(&WVP, XMMatrixTranspose(WorldViewProj));
-	MtBuffer->Enqueue(new ObjectConstants(WVP));
+	if(!bDestroy)
+	{
+		XMMATRIX WorldViewProj = Mesh.GetModelMatrix() * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
+		//Update the constant buffer with the latest WorldViewProj matrix.
+		XMFLOAT4X4 WVP;
+		XMStoreFloat4x4(&WVP, XMMatrixTranspose(WorldViewProj));
+		MtBuffer->Enqueue(new ObjectConstants(WVP));
+	}
 }
 
 // render thread
 void LogicStaticModel::CreateRenderThread()
 {
-	thread RenderThead = thread([this]
-	{
+	auto Run = [this]() {
 		RenderInit();
-		while(!(MtBuffer->IsEmpty() && bDestroy))
+		while (!(MtBuffer->IsEmpty() && bDestroy))
 		{
-			ObjectConstants* ConstantObj;
-			if(MtBuffer->Dequeue(&ConstantObj))
+			ObjectConstants* ConstantObj = nullptr;
+			if (MtBuffer->Dequeue(&ConstantObj))
 			{
 				UpdateConstantBuffer(ConstantObj, sizeof(ObjectConstants));
+				delete ConstantObj;
 			}
-			delete ConstantObj;
 			Render();
 		}
+	};
 
+	auto Exit = [this]() {
 		Scene.Destroy();
 		RHIExit();
-	}
-	);
-	RenderThead.detach();
+	};
+
+	RThread.Start(Run, Exit);
+	RThread.Detach();
 }
+
 
 void LogicStaticModel::RenderInit()
 {
@@ -132,8 +138,6 @@ bool LogicStaticModel::Render()
 	FrameIndex = (FrameIndex + 1) % FrameCount;
 	return true;
 }
-
-
 
 void LogicStaticModel::ProcessInput(FInputResult Input)
 {

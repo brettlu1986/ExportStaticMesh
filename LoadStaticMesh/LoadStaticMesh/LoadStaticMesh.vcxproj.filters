@@ -150,6 +150,9 @@
     <ClCompile Include="Private\Engine\Common\Windows\LInputWindows.cpp">
       <Filter>Source Files\Engine\Common\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="Private\RenderThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds">
@@ -272,6 +275,9 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\LRingBuffer.h">
       <Filter>Header Files\Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RenderThread.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

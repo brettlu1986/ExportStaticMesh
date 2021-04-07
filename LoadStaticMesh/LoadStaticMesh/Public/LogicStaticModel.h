@@ -10,6 +10,7 @@
 #include "FSceneRenderer.h"
 #include "LDefine.h"
 #include "LRingBuffer.h"
+#include "RenderThread.h"
 
 using namespace DirectX;
 
@@ -65,4 +66,5 @@ private:
 	FSceneRenderer Renderer;
 
 	RingBuffer<ObjectConstants*>* MtBuffer;
+	RenderThread RThread;
 };
