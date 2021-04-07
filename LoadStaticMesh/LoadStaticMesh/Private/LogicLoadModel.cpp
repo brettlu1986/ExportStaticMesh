@@ -13,6 +13,7 @@
 
 #include "LDeviceWindows.h"
 #include "LEngine.h"
+#include "LRingBuffer.h"
 
 
 #include "LAssetDataLoader.h"

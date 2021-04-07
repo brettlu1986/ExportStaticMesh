@@ -13,7 +13,7 @@ enum class E_EVENT_KEY : int
 class IEvent
 {
 public:
-	virtual const E_EVENT_KEY getKey() const = 0;
+	virtual const E_EVENT_KEY GetKey() const = 0;
 
 };
 
@@ -31,10 +31,10 @@ public:
 	~LEvent() {}
 
 	//Accessors
-	virtual const E_EVENT_KEY getKey() const override { return this->_Key; }
+	virtual const E_EVENT_KEY GetKey() const override { return this->_Key; }
 
 	//Methods
-	void trigger(_args... a) { this->_cbFunc(a...); }
+	void Trigger(_args... a) { this->_cbFunc(a...); }
 private:
 	//Event identifier
 	E_EVENT_KEY _Key;
@@ -48,7 +48,7 @@ public:
 	EventDispatcher() {}
 	~EventDispatcher()
 	{
-		for (auto el : _eventList)
+		for (auto el : EventList)
 		{
 			for (auto e : el.second)
 				delete e;
@@ -58,22 +58,22 @@ public:
 	void RegisterEvent(IEvent* event)
 	{
 		if (event)
-			_eventList[event->getKey()].push_back(event);
+			EventList[event->GetKey()].push_back(event);
 	}
 
 	template <typename ..._args>
 	void DispatchEvent(E_EVENT_KEY EventKey, _args...a)
 	{
-		auto it_eventList = _eventList.find(EventKey);
-		if (it_eventList == _eventList.end())
+		auto It_eventList = EventList.find(EventKey);
+		if (It_eventList == EventList.end())
 			return;
-		for (auto ie : it_eventList->second)
+		for (auto ie : It_eventList->second)
 		{
 			if (LEvent<_args...>* event = dynamic_cast<LEvent<_args...>*>(ie))
-				event->trigger(a...);
+				event->Trigger(a...);
 		}
 	}
 
 private:
-	std::map<E_EVENT_KEY, std::vector<IEvent*>> _eventList;
+	std::map<E_EVENT_KEY, std::vector<IEvent*>> EventList;
 };
