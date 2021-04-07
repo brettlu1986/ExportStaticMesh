@@ -1,10 +1,16 @@
 
 #include "stdafx.h"
+
+#include <dxgidebug.h>
+#include <d3dcompiler.h>
+
 #include "FD3D12RHIPrivate.h"
 #include "FD3D12Helper.h"
 #include "FDefine.h"
 #include "FD3D12Resource.h"
 #include "LAssetDataLoader.h"
+#include "LEngine.h"
+#include "LDeviceWindows.h"
 
 
 using namespace Microsoft::WRL;
@@ -115,7 +121,19 @@ void FD3D12DynamicRHI::Init()
 	if(ChosenAdapter)
 	{
 		ChosenAdapter->Initialize(this);
+		LDeviceWindows* DeviceWindows = dynamic_cast<LDeviceWindows*>(LEngine::GetEngine()->GetPlatformDevice());
+		RHIInitWindow(DeviceWindows->GetWidth(), DeviceWindows->GetHeight(), DeviceWindows->GetHwnd());
 	}
+}
+
+void FD3D12DynamicRHI::RHIInitWindow(UINT Width, UINT Height, void* Window)
+{
+	ChosenAdapter->InitWindow(Width, Height, Window);
+	ChosenAdapter->SetViewPort(FRHIViewPort(static_cast<float>(Width), static_cast<float>(Height)));
+	FRHIScissorRect Rect = FRHIScissorRect(0, 0, static_cast<LONG>(Width), static_cast<LONG>(Height));
+	ChosenAdapter->SetScissorRect(Rect);
+	ChosenAdapter->CreateSwapChain();
+	ChosenAdapter->CreateRenderTargets();
 }
 
 void FD3D12DynamicRHI::ShutDown()
@@ -126,19 +144,18 @@ void FD3D12DynamicRHI::ShutDown()
 		ChosenAdapter->ShutDown();
 		ChosenAdapter = nullptr;
 	}
+
+#if defined(_DEBUG)
+	{
+		ComPtr<IDXGIDebug1> DxgiDebug;
+		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&DxgiDebug))))
+		{
+			DxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
+		}
+	}
+#endif
 }
-
- /// /////////////////
-
- void FD3D12DynamicRHI::RHIInitWindow(UINT Width, UINT Height, void* Window) 
- {
-	 ChosenAdapter->InitWindow(Width, Height, Window);
-	 ChosenAdapter->SetViewPort(FRHIViewPort(static_cast<float>(Width), static_cast<float>(Height)));
-	 FRHIScissorRect Rect = FRHIScissorRect(0, 0, static_cast<LONG>(Width), static_cast<LONG>(Height));
-	 ChosenAdapter->SetScissorRect(Rect);
-	 ChosenAdapter->CreateSwapChain();
-	 ChosenAdapter->CreateRenderTargets();
- }
+ 
 
  void FD3D12DynamicRHI::RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
  {

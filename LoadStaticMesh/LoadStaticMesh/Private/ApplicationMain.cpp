@@ -1,15 +1,12 @@
 
 #include "ApplicationMain.h"
 #include "LogicStaticModel.h"
-//#include "LInput.h"
 
 #include "LEngine.h"
 #include "LDeviceWindows.h"
 
 ApplicationMain::ApplicationMain()
-	:hMainInstance(nullptr)
-	,CurrentLogic(nullptr)
-	//,Input(nullptr)
+	:CurrentLogic(nullptr)
 {
 }
 
@@ -18,10 +15,8 @@ ApplicationMain::~ApplicationMain()
 
 }
 
-bool ApplicationMain::Initialize(HINSTANCE hInstance, UINT Width, UINT Height, std::wstring Name, std::string WndName)
+bool ApplicationMain::Initialize(UINT Width, UINT Height, std::string WndName)
 {
-	hMainInstance = hInstance; 
-
 	LEngineDesc Desc = 
 	{
 		Width, 
@@ -57,8 +52,3 @@ void ApplicationMain::Destroy()
 	LEngine::GetEngine()->Destroy();
 }
 
-const HWND& ApplicationMain::GetHwnd()
-{
-	LDeviceWindows* Device = dynamic_cast<LDeviceWindows*>(LEngine::GetEngine()->GetPlatformDevice());
-	return Device->GetHwnd(); 
-}

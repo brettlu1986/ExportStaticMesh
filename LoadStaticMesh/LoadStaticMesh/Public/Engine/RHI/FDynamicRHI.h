@@ -83,10 +83,6 @@ public:
 
 	virtual void ShutDown() = 0;
 
-	/// /////////////////////
-
-	virtual void RHIInitWindow(UINT Width , UINT Height, void* Window) = 0;
-
 	virtual void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize) = 0;
 	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) = 0;
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) = 0;
@@ -117,11 +113,6 @@ public:
 	virtual FDynamicRHI* CreateRHI() = 0;
 
 };
-
-FORCEINLINE void RHIInitWindow(UINT Width, UINT Height, void* Window)
-{
-	GDynamicRHI->RHIInitWindow(Width, Height, Window);
-}
 
 FORCEINLINE void RHICreateConstantBuffer(UINT BufferSize, void* pDataFrom, UINT DataSize)
 {

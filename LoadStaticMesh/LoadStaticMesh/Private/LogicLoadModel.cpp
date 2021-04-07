@@ -2,8 +2,7 @@
 
 #include "stdafx.h"
 #include "LogicStaticModel.h"
-#include <dxgidebug.h>
-#include <d3dcompiler.h>
+
 #include <DirectXColors.h>
 #include <iostream>
 #include "ApplicationMain.h"
@@ -103,7 +102,6 @@ void LogicStaticModel::RenderInit()
 {
 	InitModelScene();
 	RHIInit();
-	RHIInitWindow(WndWidth, WndHeight, MainApplication->GetHwnd());
 
 	Renderer.RenderInit(&Scene);
 
@@ -128,19 +126,9 @@ void LogicStaticModel::Destroy()
 {	
 	bDestroy = true;
 	//wait gpu to excute finish
-	RHIExit();
 	Scene.Destroy();
-	//ModelGeo.Destroy();
+	RHIExit();
 	ThisLogic = nullptr;
-#if defined(_DEBUG)
-	{
-		ComPtr<IDXGIDebug1> DxgiDebug;
-		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&DxgiDebug))))
-		{
-			DxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
-		}
-	}
-#endif
 }
 
 void LogicStaticModel::InitCamera()

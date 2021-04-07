@@ -31,8 +31,6 @@ public:
 	virtual void Init() override;
 	virtual void ShutDown() override;
 
-	virtual void RHIInitWindow(UINT Width, UINT Height, void* Window) override;
-
 	virtual void RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color) override;
 	virtual void RHIRenderEnd(UINT TargetFrame) override;
 
@@ -48,7 +46,9 @@ public:
 	virtual void RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture) override;
 	virtual void RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) override;
 
-private: 
+private:
+	virtual void RHIInitWindow(UINT Width, UINT Height, void* Window);
+
 	FD3D12Adapter* ChosenAdapter = nullptr;
 	bool bShutDown;
 };

@@ -9,7 +9,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 {
 	ApplicationMain* Application = new ApplicationMain();
 
-	bool result = Application->Initialize(hInstance, 1280, 720, L"Load Mesh Sample", "Load Mesh Sample");
+	bool result = Application->Initialize(1280, 720, "Load Mesh Sample");
 	if (result)
 	{
 		Application->Run();
