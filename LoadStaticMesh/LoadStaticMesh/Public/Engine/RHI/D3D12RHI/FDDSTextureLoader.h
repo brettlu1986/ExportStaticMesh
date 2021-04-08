@@ -44,129 +44,179 @@
 #define _Use_decl_annotations_
 #endif
 
+using namespace Microsoft::WRL;
+
 namespace DirectX
 {
-    enum DDS_ALPHA_MODE
-    {
-        DDS_ALPHA_MODE_UNKNOWN       = 0,
-        DDS_ALPHA_MODE_STRAIGHT      = 1,
-        DDS_ALPHA_MODE_PREMULTIPLIED = 2,
-        DDS_ALPHA_MODE_OPAQUE        = 3,
-        DDS_ALPHA_MODE_CUSTOM        = 4,
-    };
+	enum DDS_ALPHA_MODE
+	{
+		DDS_ALPHA_MODE_UNKNOWN = 0,
+		DDS_ALPHA_MODE_STRAIGHT = 1,
+		DDS_ALPHA_MODE_PREMULTIPLIED = 2,
+		DDS_ALPHA_MODE_OPAQUE = 3,
+		DDS_ALPHA_MODE_CUSTOM = 4,
+	};
 
-    // Standard version
-    HRESULT CreateDDSTextureFromMemory( _In_ ID3D11Device* d3dDevice,
-                                        _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
-                                        _In_ size_t ddsDataSize,
-                                        _Outptr_opt_ ID3D11Resource** texture,
-                                        _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-                                        _In_ size_t maxsize = 0,
-                                        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
-                                      );
+	struct DDS_PIXELFORMAT
+	{
+		uint32_t    size;
+		uint32_t    flags;
+		uint32_t    fourCC;
+		uint32_t    RGBBitCount;
+		uint32_t    RBitMask;
+		uint32_t    GBitMask;
+		uint32_t    BBitMask;
+		uint32_t    ABitMask;
+	};
+
+	struct DDS_HEADER
+	{
+		uint32_t        size;
+		uint32_t        flags;
+		uint32_t        height;
+		uint32_t        width;
+		uint32_t        pitchOrLinearSize;
+		uint32_t        depth; // only if DDS_HEADER_FLAGS_VOLUME is set in flags
+		uint32_t        mipMapCount;
+		uint32_t        reserved1[11];
+		DDS_PIXELFORMAT ddspf;
+		uint32_t        caps;
+		uint32_t        caps2;
+		uint32_t        caps3;
+		uint32_t        caps4;
+		uint32_t        reserved2;
+	};
+
+	// Standard version
+	HRESULT CreateDDSTextureFromMemory(_In_ ID3D11Device* d3dDevice,
+		_In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
+		_In_ size_t ddsDataSize,
+		_Outptr_opt_ ID3D11Resource** texture,
+		_Outptr_opt_ ID3D11ShaderResourceView** textureView,
+		_In_ size_t maxsize = 0,
+		_Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
+	);
 
 	HRESULT CreateDDSTextureFromMemory12(_In_ ID3D12Device* device,
-		                                 _In_ ID3D12GraphicsCommandList* cmdList,
-		                                 _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
-		                                 _In_ size_t ddsDataSize,
-		                                 _Out_ Microsoft::WRL::ComPtr<ID3D12Resource>& texture,
-		                                 _Out_ Microsoft::WRL::ComPtr<ID3D12Resource>& textureUploadHeap,
-		                                 _In_ size_t maxsize = 0,
-		                                 _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
-		                                 );
+		_In_ ID3D12GraphicsCommandList* cmdList,
+		_In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
+		_In_ size_t ddsDataSize,
+		_Out_ Microsoft::WRL::ComPtr<ID3D12Resource>& texture,
+		_Out_ Microsoft::WRL::ComPtr<ID3D12Resource>& textureUploadHeap,
+		_In_ size_t maxsize = 0,
+		_Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
+	);
 
-    HRESULT CreateDDSTextureFromFile( _In_ ID3D11Device* d3dDevice,
-                                      _In_z_ const wchar_t* szFileName,
-                                      _Outptr_opt_ ID3D11Resource** texture,
-                                      _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-                                      _In_ size_t maxsize = 0,
-                                      _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
-                                    );
+	HRESULT CreateDDSTextureFromFile(_In_ ID3D11Device* d3dDevice,
+		_In_z_ const wchar_t* szFileName,
+		_Outptr_opt_ ID3D11Resource** texture,
+		_Outptr_opt_ ID3D11ShaderResourceView** textureView,
+		_In_ size_t maxsize = 0,
+		_Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
+	);
 
 	HRESULT CreateDDSTextureFromFile12(_In_ ID3D12Device* device,
-		                               _In_ ID3D12GraphicsCommandList* cmdList,
-		                               _In_z_ const wchar_t* szFileName,
-		                               _Out_ Microsoft::WRL::ComPtr<ID3D12Resource>& texture,
-		                               _Out_ Microsoft::WRL::ComPtr<ID3D12Resource>& textureUploadHeap,
-		                               _In_ size_t maxsize = 0,
-		                               _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
-		                               );
+		_In_ ID3D12GraphicsCommandList* cmdList,
+		_In_z_ const wchar_t* szFileName,
+		_Out_ Microsoft::WRL::ComPtr<ID3D12Resource>& texture,
+		_Out_ Microsoft::WRL::ComPtr<ID3D12Resource>& textureUploadHeap,
+		_In_ size_t maxsize = 0,
+		_Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
+	);
 
-    // Standard version with optional auto-gen mipmap support
-    HRESULT CreateDDSTextureFromMemory( _In_ ID3D11Device* d3dDevice,
-                                        _In_opt_ ID3D11DeviceContext* d3dContext,
-                                        _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
-                                        _In_ size_t ddsDataSize,
-                                        _Outptr_opt_ ID3D11Resource** texture,
-                                        _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-                                        _In_ size_t maxsize = 0,
-                                        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
-                                      );
+	// Standard version with optional auto-gen mipmap support
+	HRESULT CreateDDSTextureFromMemory(_In_ ID3D11Device* d3dDevice,
+		_In_opt_ ID3D11DeviceContext* d3dContext,
+		_In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
+		_In_ size_t ddsDataSize,
+		_Outptr_opt_ ID3D11Resource** texture,
+		_Outptr_opt_ ID3D11ShaderResourceView** textureView,
+		_In_ size_t maxsize = 0,
+		_Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
+	);
 
-    HRESULT CreateDDSTextureFromFile( _In_ ID3D11Device* d3dDevice,
-                                      _In_opt_ ID3D11DeviceContext* d3dContext,
-                                      _In_z_ const wchar_t* szFileName,
-                                      _Outptr_opt_ ID3D11Resource** texture,
-                                      _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-                                      _In_ size_t maxsize = 0,
-                                      _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
-                                    );
+	HRESULT CreateDDSTextureFromFile(_In_ ID3D11Device* d3dDevice,
+		_In_opt_ ID3D11DeviceContext* d3dContext,
+		_In_z_ const wchar_t* szFileName,
+		_Outptr_opt_ ID3D11Resource** texture,
+		_Outptr_opt_ ID3D11ShaderResourceView** textureView,
+		_In_ size_t maxsize = 0,
+		_Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
+	);
 
-    // Extended version
-    HRESULT CreateDDSTextureFromMemoryEx( _In_ ID3D11Device* d3dDevice,
-                                          _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
-                                          _In_ size_t ddsDataSize,
-                                          _In_ size_t maxsize,
-                                          _In_ D3D11_USAGE usage,
-                                          _In_ unsigned int bindFlags,
-                                          _In_ unsigned int cpuAccessFlags,
-                                          _In_ unsigned int miscFlags,
-                                          _In_ bool forceSRGB,
-                                          _Outptr_opt_ ID3D11Resource** texture,
-                                          _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-                                          _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
-                                      );
+	// Extended version
+	HRESULT CreateDDSTextureFromMemoryEx(_In_ ID3D11Device* d3dDevice,
+		_In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
+		_In_ size_t ddsDataSize,
+		_In_ size_t maxsize,
+		_In_ D3D11_USAGE usage,
+		_In_ unsigned int bindFlags,
+		_In_ unsigned int cpuAccessFlags,
+		_In_ unsigned int miscFlags,
+		_In_ bool forceSRGB,
+		_Outptr_opt_ ID3D11Resource** texture,
+		_Outptr_opt_ ID3D11ShaderResourceView** textureView,
+		_Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
+	);
 
-    HRESULT CreateDDSTextureFromFileEx( _In_ ID3D11Device* d3dDevice,
-                                        _In_z_ const wchar_t* szFileName,
-                                        _In_ size_t maxsize,
-                                        _In_ D3D11_USAGE usage,
-                                        _In_ unsigned int bindFlags,
-                                        _In_ unsigned int cpuAccessFlags,
-                                        _In_ unsigned int miscFlags,
-                                        _In_ bool forceSRGB,
-                                        _Outptr_opt_ ID3D11Resource** texture,
-                                        _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-                                        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
-                                    );
+	HRESULT CreateDDSTextureFromFileEx(_In_ ID3D11Device* d3dDevice,
+		_In_z_ const wchar_t* szFileName,
+		_In_ size_t maxsize,
+		_In_ D3D11_USAGE usage,
+		_In_ unsigned int bindFlags,
+		_In_ unsigned int cpuAccessFlags,
+		_In_ unsigned int miscFlags,
+		_In_ bool forceSRGB,
+		_Outptr_opt_ ID3D11Resource** texture,
+		_Outptr_opt_ ID3D11ShaderResourceView** textureView,
+		_Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
+	);
 
-    // Extended version with optional auto-gen mipmap support
-    HRESULT CreateDDSTextureFromMemoryEx( _In_ ID3D11Device* d3dDevice,
-                                          _In_opt_ ID3D11DeviceContext* d3dContext,
-                                          _In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
-                                          _In_ size_t ddsDataSize,
-                                          _In_ size_t maxsize,
-                                          _In_ D3D11_USAGE usage,
-                                          _In_ unsigned int bindFlags,
-                                          _In_ unsigned int cpuAccessFlags,
-                                          _In_ unsigned int miscFlags,
-                                          _In_ bool forceSRGB,
-                                          _Outptr_opt_ ID3D11Resource** texture,
-                                          _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-                                          _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
-                                      );
+	// Extended version with optional auto-gen mipmap support
+	HRESULT CreateDDSTextureFromMemoryEx(_In_ ID3D11Device* d3dDevice,
+		_In_opt_ ID3D11DeviceContext* d3dContext,
+		_In_reads_bytes_(ddsDataSize) const uint8_t* ddsData,
+		_In_ size_t ddsDataSize,
+		_In_ size_t maxsize,
+		_In_ D3D11_USAGE usage,
+		_In_ unsigned int bindFlags,
+		_In_ unsigned int cpuAccessFlags,
+		_In_ unsigned int miscFlags,
+		_In_ bool forceSRGB,
+		_Outptr_opt_ ID3D11Resource** texture,
+		_Outptr_opt_ ID3D11ShaderResourceView** textureView,
+		_Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
+	);
 
-    HRESULT CreateDDSTextureFromFileEx( _In_ ID3D11Device* d3dDevice,
-                                        _In_opt_ ID3D11DeviceContext* d3dContext,
-                                        _In_z_ const wchar_t* szFileName,
-                                        _In_ size_t maxsize,
-                                        _In_ D3D11_USAGE usage,
-                                        _In_ unsigned int bindFlags,
-                                        _In_ unsigned int cpuAccessFlags,
-                                        _In_ unsigned int miscFlags,
-                                        _In_ bool forceSRGB,
-                                        _Outptr_opt_ ID3D11Resource** texture,
-                                        _Outptr_opt_ ID3D11ShaderResourceView** textureView,
-                                        _Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
-                                    );
+	HRESULT CreateDDSTextureFromFileEx(_In_ ID3D11Device* d3dDevice,
+		_In_opt_ ID3D11DeviceContext* d3dContext,
+		_In_z_ const wchar_t* szFileName,
+		_In_ size_t maxsize,
+		_In_ D3D11_USAGE usage,
+		_In_ unsigned int bindFlags,
+		_In_ unsigned int cpuAccessFlags,
+		_In_ unsigned int miscFlags,
+		_In_ bool forceSRGB,
+		_Outptr_opt_ ID3D11Resource** texture,
+		_Outptr_opt_ ID3D11ShaderResourceView** textureView,
+		_Out_opt_ DDS_ALPHA_MODE* alphaMode = nullptr
+	);
+
+	HRESULT LoadTextureDataFromFile(_In_z_ const wchar_t* fileName,
+		std::unique_ptr<uint8_t[]>& ddsData,
+		DDS_HEADER** header,
+		uint8_t** bitData,
+		size_t* bitSize
+	);
+
+	HRESULT CreateTextureFromDDS12(
+		_In_ ID3D12Device* device,
+		_In_opt_ ID3D12GraphicsCommandList* cmdList,
+		_In_ const DDS_HEADER* header,
+		_In_reads_bytes_(bitSize) const uint8_t* bitData,
+		_In_ size_t bitSize,
+		_In_ size_t maxsize,
+		_In_ bool forceSRGB,
+		ComPtr<ID3D12Resource>& texture,
+		ComPtr<ID3D12Resource>& textureUploadHeap);
 }
