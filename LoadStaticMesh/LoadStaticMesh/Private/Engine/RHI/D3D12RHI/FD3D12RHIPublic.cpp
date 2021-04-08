@@ -169,7 +169,7 @@ void FD3D12DynamicRHI::ShutDown()
 	 return new FShader(ShaderData, ShaderLen);
  }
 
- void FD3D12DynamicRHI::RHICreatePiplineStateObject(FShader* Vs, FShader* Ps, bool bExcute)
+ void FD3D12DynamicRHI::RHICreatePiplineStateObject(FShader* Vs, FShader* Ps)
  {
 	 FRHIInputElement RHIInputElementDescs[] =
 	 {
@@ -188,10 +188,7 @@ void FD3D12DynamicRHI::ShutDown()
 	 };
 	 ChosenAdapter->CreatePso(RHIPsoInitializer);
 
-	 if(bExcute)
-	 {
-		 RHIFirstPresent();
-	 }
+		
  }
 
  void FD3D12DynamicRHI::RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color)
@@ -233,33 +230,30 @@ void FD3D12DynamicRHI::ShutDown()
  }
 
 
- void FD3D12DynamicRHI::RHIPresentToScreen(UINT TargetFrame)
+ void FD3D12DynamicRHI::RHIPresentToScreen(UINT TargetFrame, bool bFirstExcute)
  {
 	 ID3D12GraphicsCommandList* CurrentCommandList = ChosenAdapter->GetCommandListManager()->GetDefaultCommandList();
-	 ChosenAdapter->RenderEnd(CurrentCommandList, TargetFrame);
-
-	 CurrentCommandList->Close();
-
-	// ChosenAdapter->GetCommandListManager()->Enqueue(CurrentCommandList);
 	 ID3D12CommandQueue* CommandQueue = ChosenAdapter->GetD3DCommandQueue();
-	 ID3D12CommandList* CmdsLists[] = { CurrentCommandList };
-	 CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
-	 IDXGISwapChain* SwapChain = ChosenAdapter->GetSwapChain();
-	 SwapChain->Present(1, 0);
+	 std::vector<ID3D12CommandList*> CmdLists;
+	 if(bFirstExcute)
+	 {
+		 CurrentCommandList->Close();
+		 CmdLists.push_back(CurrentCommandList);
+		 CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
+		 ChosenAdapter->SetFenceValue(1);
+	 }
+	 else 
+	 {	
+		 ChosenAdapter->RenderEnd(CurrentCommandList, TargetFrame);
+		 CurrentCommandList->Close();
+		 CmdLists.push_back(CurrentCommandList);
+		 CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
+		 IDXGISwapChain* SwapChain = ChosenAdapter->GetSwapChain();
+		 SwapChain->Present(1, 0);
+	 }
 	 ChosenAdapter->WaitForPreviousFrame();
  }
 
- void FD3D12DynamicRHI::RHIFirstPresent()
- {
-	 //first flush, use init command list
-	 ID3D12GraphicsCommandList* CommandList = ChosenAdapter->GetCommandListManager()->GetDefaultCommandList();
-	 CommandList->Close();
-	 ID3D12CommandQueue* CommandQueue = ChosenAdapter->GetD3DCommandQueue();
-	 ID3D12CommandList* CmdsLists[] = { CommandList };
-	 CommandQueue->ExecuteCommandLists(_countof(CmdsLists), CmdsLists);
-	 ChosenAdapter->SetFenceValue(1);
-	 ChosenAdapter->WaitForPreviousFrame();
- }
 
  FIndexBuffer* FD3D12DynamicRHI::RHICreateIndexBuffer()
  {

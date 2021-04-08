@@ -86,10 +86,10 @@ public:
 	virtual void RHICreateConstantBuffer(UINT BufferSize, UINT DataSize) = 0;
 	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) = 0;
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) = 0;
-	virtual void RHICreatePiplineStateObject(FShader* Vs, FShader* Ps, bool bExcute = false) = 0;
+	virtual void RHICreatePiplineStateObject(FShader* Vs, FShader* Ps) = 0;
 
 	virtual void RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color) = 0;
-	virtual void RHIPresentToScreen(UINT TargetFrame) = 0;
+	virtual void RHIPresentToScreen(UINT TargetFrame, bool bFirstExcute = false) = 0;
 
 	virtual FIndexBuffer* RHICreateIndexBuffer() = 0;
 	virtual FVertexBuffer* RHICreateVertexBuffer() = 0;
@@ -130,7 +130,7 @@ FORCEINLINE  FShader* CreateShader(LPCWSTR ShaderFile)
 
 FORCEINLINE  void CreatePiplineStateObject(FShader* Vs, FShader* Ps, bool bExcute = false)
 {
-	GDynamicRHI->RHICreatePiplineStateObject(Vs, Ps, bExcute);
+	GDynamicRHI->RHICreatePiplineStateObject(Vs, Ps);
 }
 
 FORCEINLINE void InitRenderBegin(UINT TargetFrame, FRHIColor Color)
@@ -138,9 +138,9 @@ FORCEINLINE void InitRenderBegin(UINT TargetFrame, FRHIColor Color)
 	return GDynamicRHI->RHIInitRenderBegin(TargetFrame, Color);
 }
 
-FORCEINLINE void PresentToScreen(UINT TargetFrame)
+FORCEINLINE void PresentToScreen(UINT TargetFrame, bool bFirstExcute = false)
 {
-	GDynamicRHI->RHIPresentToScreen(TargetFrame);
+	GDynamicRHI->RHIPresentToScreen(TargetFrame, bFirstExcute);
 }
 
 FORCEINLINE FIndexBuffer* CreateIndexBuffer()

@@ -30,6 +30,8 @@ void FSceneRenderer::RenderInit(FScene* Scene)
 
 	delete Vs;
 	delete Ps;
+
+	PresentToScreen(0, true);
 }
 
 void FSceneRenderer::EndRenderFram(FScene* Scene)

@@ -32,12 +32,12 @@ public:
 	virtual void ShutDown() override;
 
 	virtual void RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color) override;
-	virtual void RHIPresentToScreen(UINT TargetFrame) override;
+	virtual void RHIPresentToScreen(UINT TargetFrame, bool bFirstExcute = false) override;
 
 	virtual void RHICreateConstantBuffer(UINT BufferSize, UINT DataSize) override;
 	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) override;
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) override;
-	virtual void RHICreatePiplineStateObject(FShader* Vs, FShader* Ps, bool bExcute = false) override;
+	virtual void RHICreatePiplineStateObject(FShader* Vs, FShader* Ps) override;
 	
 
 	virtual FIndexBuffer* RHICreateIndexBuffer() override;
@@ -48,7 +48,6 @@ public:
 
 private:
 	void RHIInitWindow(UINT Width, UINT Height, void* Window);
-	void RHIFirstPresent();
 
 	FD3D12Adapter* ChosenAdapter = nullptr;
 };
