@@ -13,16 +13,10 @@ public:
 
 	virtual void Destroy() override;
 	virtual void Initialize() override;
+	virtual void InitializeTexture(const std::string& Name);
 
-	std::string& GetTextureName()
-	{
-		return TextureName;
-	}
-
-	void SetTextureName(const std::string& Name)
-	{
-		TextureName = Name;
-	}
-private:
+protected:
+	uint8_t* BitData;
+	size_t BitSize;
 	std::string TextureName;
 };

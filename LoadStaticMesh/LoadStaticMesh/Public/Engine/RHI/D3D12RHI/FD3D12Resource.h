@@ -8,6 +8,7 @@
 #include "FRenderResource.h"
 #include "FD3D12Adapter.h"
 #include "FTexture.h"
+#include "FDDSTextureLoader.h"
 
 using namespace Microsoft::WRL;
 
@@ -64,6 +65,7 @@ public:
 
 	virtual void Destroy() override;
 	virtual void Initialize() override;
+	virtual void InitializeTexture(const std::string& Name) override;
 
 	void InitGPUTextureView(FD3D12Adapter* Adapter);
 private:
@@ -71,6 +73,8 @@ private:
 	ComPtr<ID3D12Resource> TextureResource;
 	ComPtr<ID3D12Resource> TextureResourceUpload;
 
+	DDS_HEADER* Header;
+	std::unique_ptr<uint8_t[]> DdsData;
 };
 
 class FD3D12Adapter;

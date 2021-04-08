@@ -15,21 +15,6 @@ public:
 	virtual void Destroy() override;
 	virtual void Initialize() override;
 
-	UINT GetVertexCount()
-	{
-		return VertexCount;
-	}
-
-	UINT GetVertexDataSize()
-	{
-		return VertexDataSize;
-	}
-
-	std::vector<FVertexData>& GetVertexData()
-	{
-		return VertexData;
-	}
-
 	void GetPositionTex0Input(std::vector<FVertex_PositionTex0>& OutPut)
 	{
 		if (VertexData.size() == 0)

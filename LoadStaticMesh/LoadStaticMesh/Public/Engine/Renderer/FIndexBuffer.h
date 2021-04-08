@@ -17,27 +17,13 @@ public:
 
 	void Init(UINT InCount, UINT InByteSize, E_INDEX_TYPE InType, void* InData);
 
-	E_INDEX_TYPE GetIndicesType() const 
-	{
-		return IndicesType;
-	}
 
 	UINT GetIndicesCount() const 
 	{
 		return IndicesCount;
 	}
 
-	UINT GetIndicesDataSize() const
-	{
-		return IndicesByteSize;
-	}
-
-	void* GetIndicesData() const 
-	{
-		return IndicesData;
-	}
-
-private:
+protected:
 	UINT IndicesCount;
 	UINT IndicesByteSize;
 	E_INDEX_TYPE IndicesType;

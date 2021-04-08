@@ -58,7 +58,7 @@ void FMesh::Initialize()
 	VertexBuffer = CreateVertexBuffer();
 	IndexBuffer = CreateIndexBuffer();
 	TextureRes = CreateTexture();
-	TextureRes->SetTextureName(MeshTextureName);
+	TextureRes->InitializeTexture(MeshTextureName);
 	LAssetDataLoader::LoadMeshVertexDataFromFile(MeshFileName, &IndexBuffer, &VertexBuffer);
 }
 

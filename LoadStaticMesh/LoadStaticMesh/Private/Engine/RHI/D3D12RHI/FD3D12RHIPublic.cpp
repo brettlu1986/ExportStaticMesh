@@ -272,9 +272,9 @@ void FD3D12DynamicRHI::ShutDown()
 
 void FD3D12DynamicRHI::RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture)
 {
-	FD3D12IndexBuffer* D3DIndexBuffer = static_cast<FD3D12IndexBuffer*>(IndexBuffer);
-	FD3D12VertexBuffer* D3DVertexBuffer = static_cast<FD3D12VertexBuffer*>(VertexBuffer);
-	FD3D12Texture* D3DTexture = static_cast<FD3D12Texture*>(Texture);
+	FD3D12IndexBuffer* D3DIndexBuffer = dynamic_cast<FD3D12IndexBuffer*>(IndexBuffer);
+	FD3D12VertexBuffer* D3DVertexBuffer = dynamic_cast<FD3D12VertexBuffer*>(VertexBuffer);
+	FD3D12Texture* D3DTexture = dynamic_cast<FD3D12Texture*>(Texture);
 	D3DIndexBuffer->InitGPUIndexBufferView(ChosenAdapter);
 	D3DVertexBuffer->InitGPUVertexBufferView(ChosenAdapter);
 	D3DTexture->InitGPUTextureView(ChosenAdapter);

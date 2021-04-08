@@ -33,13 +33,13 @@ void FD3D12IndexBuffer::Destroy()
 void FD3D12IndexBuffer::InitGPUIndexBufferView(FD3D12Adapter* Adapter)
 {
 	ID3D12GraphicsCommandList* CommandList = Adapter->GetCommandListManager()->GetDefaultCommandList();
-	CreateBuffer(Adapter->GetD3DDevice(), CommandList, GetIndicesData(), GetIndicesDataSize(), IndexBuffer, IndexBufferUpload);
+	CreateBuffer(Adapter->GetD3DDevice(), CommandList, IndicesData, IndicesByteSize, IndexBuffer, IndexBufferUpload);
 	NAME_D3D12_OBJECT(IndexBuffer);
 	NAME_D3D12_OBJECT(IndexBufferUpload);
 
 	IndexBufferView.BufferLocation = IndexBuffer->GetGPUVirtualAddress();
-	IndexBufferView.Format = GetIndicesType() == E_INDEX_TYPE::TYPE_UINT_16 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
-	IndexBufferView.SizeInBytes = GetIndicesDataSize();
+	IndexBufferView.Format = IndicesType == E_INDEX_TYPE::TYPE_UINT_16 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+	IndexBufferView.SizeInBytes = IndicesByteSize;
 }
 
 void FD3D12IndexBuffer::Initialize()
@@ -127,20 +127,25 @@ void FD3D12Texture::Initialize()
 
 }
 
+void FD3D12Texture::InitializeTexture(const std::string& Name)
+{
+	size_t Len = strlen(Name.c_str()) + 1;
+	size_t Converted = 0;
+	wchar_t* WStr = new wchar_t[(UINT)(Len * sizeof(wchar_t))];
+	memset(WStr, 0, Len * sizeof(wchar_t));
+	mbstowcs_s(&Converted, WStr, Len, Name.c_str(), _TRUNCATE);
+
+	DirectX::LoadTextureDataFromFile(WStr, DdsData, &Header, &BitData, &BitSize);
+	delete[] WStr;
+}
+
 void FD3D12Texture::InitGPUTextureView(FD3D12Adapter* Adapter)
 {
 	ID3D12GraphicsCommandList* CommandList = Adapter->GetCommandListManager()->GetDefaultCommandList();
 
-	size_t Len = strlen(GetTextureName().c_str()) + 1;
-	size_t Converted = 0;
-	wchar_t* WStr = new wchar_t[(UINT)(Len * sizeof(wchar_t))];
-	memset(WStr, 0, Len * sizeof(wchar_t));
-	mbstowcs_s(&Converted, WStr, Len, GetTextureName().c_str(), _TRUNCATE);
-
-	DirectX::CreateDDSTextureFromFile12(Adapter->GetD3DDevice(), CommandList, WStr, TextureResource, TextureResourceUpload);
+	DirectX::CreateTextureFromDDS12(Adapter->GetD3DDevice(), CommandList, Header, BitData, BitSize, 0, false, TextureResource, TextureResourceUpload);
 	NAME_D3D12_OBJECT(TextureResource);
 	NAME_D3D12_OBJECT(TextureResourceUpload);
-	delete [] WStr;
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
