@@ -19,7 +19,7 @@ public:
 	void InitRenderResource();
 	void Render();
 	void EndRender();
-
+	
 	void SetModelLocation(XMFLOAT3 Location);
 	XMMATRIX GetModelMatrix();
 

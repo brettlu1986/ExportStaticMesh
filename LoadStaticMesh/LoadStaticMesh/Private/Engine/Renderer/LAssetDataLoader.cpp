@@ -45,7 +45,7 @@ std::wstring LAssetDataLoader::GetAssetFullPath(LPCWSTR AssetName)
 }
 
 
-void LAssetDataLoader::LoadMeshVertexDataFromFile(std::string FileName, FIndexBuffer& IndexBuffer, FVertexBuffer& VertexBuffer)
+void LAssetDataLoader::LoadMeshVertexDataFromFile(std::string FileName, FIndexBuffer** IndexBuffer, FVertexBuffer** VertexBuffer)
 {
 	std::string FName = GetSaveDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
@@ -58,7 +58,7 @@ void LAssetDataLoader::LoadMeshVertexDataFromFile(std::string FileName, FIndexBu
 	std::vector<FVertexData> VertexDatas;
 	VertexDatas.resize(VertexCount);
 	Rf.read((char*)VertexDatas.data(), VertexCount * sizeof(FVertexData));
-	VertexBuffer.Init((char*)VertexDatas.data(), VertexCount * sizeof(FVertexData), VertexCount);
+	(*VertexBuffer)->Init((char*)VertexDatas.data(), VertexCount * sizeof(FVertexData), VertexCount);
 
 	bool bUseHalfInt32;
 	Rf.read((char*)&bUseHalfInt32, sizeof(UINT8));
@@ -82,7 +82,7 @@ void LAssetDataLoader::LoadMeshVertexDataFromFile(std::string FileName, FIndexBu
 		Rf.read((char*)Indices.data(), IndicesByteSize);
 	}
 
-	IndexBuffer.Init(IndicesCount, IndicesByteSize,
+	(*IndexBuffer)->Init(IndicesCount, IndicesByteSize,
 		bUseHalfInt32 ? E_INDEX_TYPE::TYPE_UINT_16 : E_INDEX_TYPE::TYPE_UINT_32,
 		bUseHalfInt32 ? reinterpret_cast<void*>(IndicesHalf.data()) : reinterpret_cast<void*>(Indices.data()));
 

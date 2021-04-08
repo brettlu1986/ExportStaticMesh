@@ -55,7 +55,7 @@ private:
 
 
 	FScene Scene;
-	FMesh Mesh;
+	FMesh* Mesh;
 	FSceneRenderer Renderer;
 
 	RingBuffer<ObjectConstants*>* MtBuffer;

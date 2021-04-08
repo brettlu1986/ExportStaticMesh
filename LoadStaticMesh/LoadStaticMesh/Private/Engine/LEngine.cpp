@@ -1,5 +1,6 @@
 #include "LEngine.h"
 #include "LDeviceWindows.h"
+#include "FRHI.h"
 
 LEngine* LEngine::Engine = nullptr;
 
@@ -30,7 +31,7 @@ void LEngine::Init(LEngineDesc Desc)
 	CurrentDevice = new LDeviceWindows(Desc.Width, Desc.Height, Desc.Name.c_str());
 #else 
 #endif
-
+	RHICreate();
 }
 
 void LEngine::Destroy()

@@ -20,8 +20,9 @@ FMesh::FMesh(std::string FileName, std::string TextureName)
 	,TextureRes(nullptr)
 	,ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
 {
-	
+	Initialize();
 }
+
 
 FMesh::~FMesh()
 {
@@ -58,7 +59,7 @@ void FMesh::Initialize()
 	IndexBuffer = CreateIndexBuffer();
 	TextureRes = CreateTexture();
 	TextureRes->SetTextureName(MeshTextureName);
-	LAssetDataLoader::LoadMeshVertexDataFromFile(MeshFileName, *IndexBuffer, *VertexBuffer);
+	LAssetDataLoader::LoadMeshVertexDataFromFile(MeshFileName, &IndexBuffer, &VertexBuffer);
 }
 
 
@@ -77,7 +78,6 @@ XMMATRIX FMesh::GetModelMatrix()
 
 void FMesh::InitRenderResource()
 {
-	Initialize();
 	InitMeshGPUResource(IndexBuffer, VertexBuffer, TextureRes);
 }
 

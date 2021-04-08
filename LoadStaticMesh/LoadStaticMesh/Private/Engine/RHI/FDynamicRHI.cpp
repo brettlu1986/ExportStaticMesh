@@ -4,13 +4,18 @@
 
 FDynamicRHI* GDynamicRHI = nullptr;
 
-void RHIInit()
+bool RHICreate()
 {
-	if(!GDynamicRHI)
+	if (!GDynamicRHI)
 	{
 		GDynamicRHI = PlatformCreateDynamicRHI();
+		return true;
 	}
+	return false;
+}
 
+void RHIInit()
+{
 	if(GDynamicRHI)
 		GDynamicRHI->Init();
 }

@@ -46,20 +46,26 @@ void LogicStaticModel::Initialize()
 	OnInit();
 }
 
+void LogicStaticModel::OnInit()
+{
+	InitCamera();
+	InitModelScene();
+	CreateRenderThread();
+}
+
 void LogicStaticModel::InitCamera()
 {
 	LAssetDataLoader::LoadCameraDataFromFile("camera.bin", MyCamera);
 	MyCamera.Init();
-
-	// The window resized, so update the aspect ratio and recompute the projection matrix.
 	XMMATRIX P = MyCamera.GetProjectionMatrix();
 	XMStoreFloat4x4(&MtProj, P);
 }
 
-void LogicStaticModel::OnInit()
+void LogicStaticModel::InitModelScene()
 {
-	InitCamera();
-	CreateRenderThread();
+	Mesh = new FMesh("mesh.bin", "Resource/T_Chair_M.dds");
+	Mesh->SetModelLocation(MyCamera.GetViewTargetLocation());
+	Scene.AddMeshToScene(Mesh);
 }
 
 // main thread
@@ -68,7 +74,7 @@ void LogicStaticModel::Update()
 	//update matrix
 	if(!bDestroy)
 	{
-		XMMATRIX WorldViewProj = Mesh.GetModelMatrix() * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
+		XMMATRIX WorldViewProj = Mesh->GetModelMatrix() * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
 		//Update the constant buffer with the latest WorldViewProj matrix.
 		XMFLOAT4X4 WVP;
 		XMStoreFloat4x4(&WVP, XMMatrixTranspose(WorldViewProj));
@@ -83,7 +89,6 @@ void LogicStaticModel::CreateRenderThread()
 		RenderInit();
 		while (!(MtBuffer->IsEmpty() && bDestroy))
 		{
-			
 			ObjectConstants* ConstantObj = nullptr;
 			if (MtBuffer->Dequeue(&ConstantObj))
 			{
@@ -108,17 +113,9 @@ void LogicStaticModel::CreateRenderThread()
 
 
 void LogicStaticModel::RenderInit()
-{
-	InitModelScene();
+{	
 	RHIInit();
 	Renderer.RenderInit(&Scene);
-}
-
-void LogicStaticModel::InitModelScene()
-{
-	Mesh = FMesh("mesh.bin", "Resource/T_Chair_M.dds");
-	Mesh.SetModelLocation(MyCamera.GetViewTargetLocation());
-	Scene.AddMeshToScene(&Mesh);
 }
 
 bool LogicStaticModel::Render()
