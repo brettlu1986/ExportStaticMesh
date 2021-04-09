@@ -17,10 +17,6 @@ using namespace std;
 
 static FString SavePath = FPaths::ProjectSavedDir() + "Export/";
 
-static FString CameraFileName = TEXT("camera.json");
-static FString CameraBinaryFileName = TEXT("camera.bin");
-static FString MeshFileName = TEXT("mesh.json");
-static FString MeshBinaryFileName = TEXT("mesh.bin");
 
 const FString Success = "Success";
 const FString Failed = "Fail";
@@ -72,7 +68,7 @@ void GetValidVsFormat(TArray<bool>& VsFormat, const FStaticMeshVertexBuffers& Ve
 	VsFormat[(uint32)EVsFormat::COLOR] = ColorBuffers.GetNumVertices() > 0;
 }
 
-void GetVertexPosition(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FMeshDataJson& MeshDataJson, FMeshDataBinary& MeshDataBin)
+void GetVertexPosition(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FMeshDataJson& MeshDataJson, FVertexDatas& MeshDataBin)
 {
 	if (ValidFormat[(uint32)EVsFormat::POSITION])
 	{
@@ -84,7 +80,7 @@ void GetVertexPosition(const TArray<bool>& ValidFormat, uint32 Index, const FSta
 	}
 }
 
-void GetVertexNormal(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FMeshDataJson& MeshDataJson, FMeshDataBinary& MeshDataBin)
+void GetVertexNormal(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FMeshDataJson& MeshDataJson, FVertexDatas& MeshDataBin)
 {
 	if (ValidFormat[(uint32)EVsFormat::NORMAL])
 	{
@@ -95,7 +91,7 @@ void GetVertexNormal(const TArray<bool>& ValidFormat, uint32 Index, const FStati
 	}
 }
 
-void GetVertexTangent(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FMeshDataJson& MeshDataJson, FMeshDataBinary& MeshDataBin)
+void GetVertexTangent(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FMeshDataJson& MeshDataJson, FVertexDatas& MeshDataBin)
 {
 	if (ValidFormat[(uint32)EVsFormat::TANGENT])
 	{
@@ -106,7 +102,7 @@ void GetVertexTangent(const TArray<bool>& ValidFormat, uint32 Index, const FStat
 	}
 }
 
-void GetVertexTex(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FMeshDataJson& MeshDataJson, FMeshDataBinary& MeshDataBin)
+void GetVertexTex(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FMeshDataJson& MeshDataJson, FVertexDatas& MeshDataBin)
 {
 	const FStaticMeshVertexBuffer& VertexBuffers = VertexBuffer.StaticMeshVertexBuffer;
 	if (ValidFormat[(uint32)EVsFormat::TEX0])
@@ -125,7 +121,7 @@ void GetVertexTex(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMe
 
 }
 
-void GetVertexColor(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FMeshDataJson& MeshDataJson, FMeshDataBinary& MeshDataBin)
+void GetVertexColor(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FMeshDataJson& MeshDataJson, FVertexDatas& MeshDataBin)
 {
 	if (ValidFormat[(uint32)EVsFormat::COLOR])
 	{
@@ -136,18 +132,19 @@ void GetVertexColor(const TArray<bool>& ValidFormat, uint32 Index, const FStatic
 	}
 }
 
-bool SaveMeshJsonToFile(const FMeshDataJson& MeshJson)
+bool SaveMeshJsonToFile(const FMeshDataJson& MeshJson, FString& FileName)
 {
 	//save json
 	FString Json;
 	FJsonObjectConverter::UStructToJsonObjectString(MeshJson, Json);
-	FString MeshSaveFile = SavePath + MeshFileName;
+	FString MeshSaveFile = SavePath + FileName;
 	return FFileHelper::SaveStringToFile(Json, *MeshSaveFile);
+	return true;
 }
 
-bool SaveMeshBinaryToFile(const TArray<FMeshDataBinary>& MeshBinArr, const TArray<uint32>& Indices, const bool& bUseHalfInt32)
+bool SaveMeshBinaryToFile(const FMeshDataBinary& MeshBinOut, const TArray<uint32>& Indices, const bool& bUseHalfInt32, FString& FileName)
 {
-	FString MeshSaveFile = SavePath + MeshBinaryFileName;
+	FString MeshSaveFile = SavePath + FileName;
 	char* ResultName = TCHAR_TO_ANSI(*MeshSaveFile);
 	ofstream Wf(ResultName, ios::out | ios::binary);
 	if (!Wf)
@@ -155,9 +152,13 @@ bool SaveMeshBinaryToFile(const TArray<FMeshDataBinary>& MeshBinArr, const TArra
 		return false;
 	}
 
-	uint32  MeshBinSize = MeshBinArr.Num();
-	Wf.write((char*)&MeshBinSize, sizeof(uint32));
-	Wf.write((char*)MeshBinArr.GetData(), sizeof(FMeshDataBinary) * MeshBinSize);
+	Wf.write((char*)&(MeshBinOut.WorldLocation), sizeof(FVector));
+	Wf.write((char*)&(MeshBinOut.WorldRotation), sizeof(FRotator));
+	Wf.write((char*)&(MeshBinOut.WorldScale), sizeof(FVector));
+
+	uint32  VertexsSize = MeshBinOut.MeshVertexDatas.Num();
+	Wf.write((char*)&VertexsSize, sizeof(uint32));
+	Wf.write((char*)MeshBinOut.MeshVertexDatas.GetData(), sizeof(FVertexDatas) * VertexsSize);
 
 	Wf.write((char*)&bUseHalfInt32, sizeof(uint8));
 
@@ -183,9 +184,29 @@ bool SaveMeshBinaryToFile(const TArray<FMeshDataBinary>& MeshBinArr, const TArra
 
 	Wf.close();
 	return Wf.good();
+
+	return true;
 }
 
-void UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh)
+void UCustomExportBPLibrary::ExportStaticMeshActor(const AStaticMeshActor* MeshActor, FMeshDataJson MeshDataJsonOut, FMeshDataBinary MeshDataBinaryOut, FString FileBaseName)
+{
+	UStaticMeshComponent* MeshComponent = MeshActor->GetStaticMeshComponent();
+	FVector MeshLocation = MeshActor->GetActorLocation();
+	const FRotator& MeshRotation = MeshActor->GetActorRotation();
+	const FVector& MeshScale = MeshActor->GetActorScale();
+	MeshLocation = MeshLocation * POSITION_SCALE;
+
+	MeshDataJsonOut.WorldLocation.Append({ MeshLocation.X , MeshLocation.Y , MeshLocation.Z });
+	MeshDataJsonOut.WorldRotation.Append({ MeshRotation.Pitch, MeshRotation.Yaw, MeshRotation.Roll });
+	MeshDataJsonOut.WorldScale.Append({ MeshScale.X, MeshScale.Y, MeshScale.Z });
+
+	MeshDataBinaryOut.WorldLocation = MeshLocation;
+	MeshDataBinaryOut.WorldRotation = MeshRotation;
+	MeshDataBinaryOut.WorldScale = MeshScale;
+	ExportStaticMesh(MeshComponent->GetStaticMesh(), MeshDataJsonOut, MeshDataBinaryOut, FileBaseName);
+}
+
+void UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh, FMeshDataJson& MeshDataJsonOut, FMeshDataBinary& MeshDataBinaryOut, FString& FileBaseName)
 {
 	const auto& LODResources = Mesh->RenderData->LODResources;
 	const FStaticMeshLODResources& StaticMeshResource = LODResources[LOD_LEVEL];
@@ -195,31 +216,28 @@ void UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh)
 	ValidFormat.Init(false, (int32)EVsFormat::MAX);
 	GetValidVsFormat(ValidFormat, VertexBuffers);
 
-	FMeshDataJson MeshJson;// use for save json
-	TArray<FMeshDataBinary> MeshBinArr;// use for save bin
-
 	//insert format 
 	UEnum* Enum = StaticEnum<EVsFormat>();
 	for (uint32 i = 0; i < (int32)EVsFormat::MAX; i++)
 	{
 		if (ValidFormat[i])
 		{
-			MeshJson.VsFormat.Add(Enum->GetDisplayNameTextByValue(i).ToString());
+			MeshDataJsonOut.VsFormat.Add(Enum->GetDisplayNameTextByValue(i).ToString());
 		}
 	}
 
 	//insert json/binary data
 	uint32 VertexNum = VertexBuffers.StaticMeshVertexBuffer.GetNumVertices();
-	MeshBinArr.Reserve(VertexNum);
+	MeshDataBinaryOut.MeshVertexDatas.Reserve(VertexNum);
 	for (uint32 i = 0; i < VertexNum; ++i)
 	{
-		FMeshDataBinary MeshDataBin;
-		GetVertexPosition(ValidFormat, i, VertexBuffers, MeshJson, MeshDataBin);
-		GetVertexNormal(ValidFormat, i, VertexBuffers, MeshJson, MeshDataBin);
-		GetVertexTangent(ValidFormat, i, VertexBuffers, MeshJson, MeshDataBin);
-		GetVertexTex(ValidFormat, i, VertexBuffers, MeshJson, MeshDataBin);
-		GetVertexColor(ValidFormat, i, VertexBuffers, MeshJson, MeshDataBin);
-		MeshBinArr.Add(MeshDataBin);
+		FVertexDatas MeshDataBin;
+		GetVertexPosition(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
+		GetVertexNormal(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
+		GetVertexTangent(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
+		GetVertexTex(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
+		GetVertexColor(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
+		MeshDataBinaryOut.MeshVertexDatas.Add(MeshDataBin);
 	}
 
 	//insert indices
@@ -233,28 +251,30 @@ void UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh)
 		{
 			bUseHalfInt = false;
 		}
-		MeshJson.Indices.Add(Value);
+		MeshDataJsonOut.Indices.Add(Value);
 	}
 
 	//delete old files
-	CheckFileExistAndDelete(MeshFileName);
-	CheckFileExistAndDelete(MeshBinaryFileName);
+	FString MeshFile = FileBaseName + ".json";
+	FString MeshBinFile = FileBaseName + ".bin";
+	CheckFileExistAndDelete(MeshFile);
+	CheckFileExistAndDelete(MeshBinFile);
 
-	if(!SaveMeshJsonToFile(MeshJson))
+	if (!SaveMeshJsonToFile(MeshDataJsonOut, MeshFile))
 	{
-		ShowMessageDialog(FText::FromString(MeshFileName), FText::FromString(Failed));
+		ShowMessageDialog(FText::FromString(MeshFile), FText::FromString(Failed));
 		return;
 	}
 
-	if(!SaveMeshBinaryToFile(MeshBinArr, MeshJson.Indices, bUseHalfInt))
+	if(!SaveMeshBinaryToFile(MeshDataBinaryOut, MeshDataJsonOut.Indices, bUseHalfInt, MeshBinFile))
 	{
-		ShowMessageDialog(FText::FromString(MeshBinaryFileName), FText::FromString(Failed));
+		ShowMessageDialog(FText::FromString(MeshBinFile), FText::FromString(Failed));
 		return;
 	}
-	ShowMessageDialog(FText::FromString(MeshFileName + " " + MeshBinaryFileName), FText::FromString(Success));
+	ShowMessageDialog(FText::FromString(MeshFile + " " + MeshBinFile), FText::FromString(Success));
 }
 
-void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component)
+void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component, FCameraData CameraDataOut, FString FileName)
 {
 	const FVector& CameraLocation = Component->GetComponentLocation();
 	const FRotator& CameraRot = Component->GetComponentRotation();
@@ -276,6 +296,8 @@ void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component)
 	CameraData.Aspect = AspectRatio;
 
 	//delete old files
+	FString CameraFileName = FileName + ".json";
+	FString CameraBinaryFileName = FileName + ".bin";
 	CheckFileExistAndDelete(CameraFileName);
 	CheckFileExistAndDelete(CameraBinaryFileName);
 

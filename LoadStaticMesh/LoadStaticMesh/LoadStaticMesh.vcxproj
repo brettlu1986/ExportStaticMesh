@@ -269,6 +269,7 @@
     <ClInclude Include="Public\Engine\Util\MathHelper.h" />
     <ClInclude Include="Public\LogicStaticModel.h" />
     <ClInclude Include="Public\RenderThread.h" />
+    <ClInclude Include="Public\SampleAssets.h" />
     <ClInclude Include="Public\stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

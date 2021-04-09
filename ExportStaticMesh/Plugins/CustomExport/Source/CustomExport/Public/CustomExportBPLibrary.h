@@ -5,6 +5,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include <vector>
+#include "Engine/StaticMeshActor.h"
 #include "CustomExportBPLibrary.generated.h"
 
 /* 
@@ -40,10 +41,19 @@ enum class EVsFormat : uint8
 #pragma pack(push)
 #pragma pack(4)
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FMeshDataJson
 {
 	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<float> WorldLocation;
+
+	UPROPERTY()
+	TArray<float> WorldRotation;
+
+	UPROPERTY()
+	TArray<float> WorldScale;
 
 	UPROPERTY()
 	TArray<FString> VsFormat;
@@ -70,27 +80,66 @@ struct FMeshDataJson
 	TArray<uint32> Indices;
 };
 
-struct FMeshDataBinary
+USTRUCT(BlueprintType)
+struct FVertexDatas
 {
+	GENERATED_BODY()
+
+	UPROPERTY()
 	FVector Position;
+
+	UPROPERTY()
 	FVector Normal;
+
+	UPROPERTY()
 	FVector Tangent;
+
+	UPROPERTY()
 	FVector2D Tex0;
+
+	UPROPERTY()
 	FVector2D Tex1;
+
+	UPROPERTY()
 	FLinearColor Color;
 
-	FMeshDataBinary()
+	FVertexDatas()
 		:Position(FVector::ZeroVector)
-		,Normal(FVector::ZeroVector)
-		,Tangent(FVector::ZeroVector)
-		,Tex0(FVector2D::ZeroVector)
-		,Tex1(FVector2D::ZeroVector)
-		,Color(FLinearColor::White)
+		, Normal(FVector::ZeroVector)
+		, Tangent(FVector::ZeroVector)
+		, Tex0(FVector2D::ZeroVector)
+		, Tex1(FVector2D::ZeroVector)
+		, Color(FLinearColor::White)
 	{
 	}
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
+struct FMeshDataBinary
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FVector WorldLocation;
+
+	UPROPERTY()
+	FRotator WorldRotation;
+
+	UPROPERTY()
+	FVector WorldScale;
+
+	UPROPERTY()
+	TArray<FVertexDatas> MeshVertexDatas;
+
+	FMeshDataBinary()
+		:WorldLocation(FVector::ZeroVector)
+		,WorldRotation(FRotator::ZeroRotator)
+		,WorldScale(FVector::ZeroVector)
+	{
+	}
+};
+
+USTRUCT(BlueprintType)
 struct FCameraData
 {
 	GENERATED_BODY()
@@ -119,9 +168,16 @@ class UCustomExportBPLibrary : public UBlueprintFunctionLibrary
 	GENERATED_UCLASS_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Static Mesh"), Category = "CustomExportBPLibrary")
-	static void ExportStaticMesh(const UStaticMesh* Mesh);
+	
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Camera"), Category = "CustomExportBPLibrary")
-	static void ExportCamera(const UCameraComponent* Component);
+	static void ExportCamera(const UCameraComponent* Component, FCameraData CameraData, FString FileName);
+
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Static Mesh Actor"), Category = "CustomExportBPLibrary")
+	static void ExportStaticMeshActor(const AStaticMeshActor* MeshActor, FMeshDataJson MeshDataJson, FMeshDataBinary MeshDataBinary, FString FileName);
+
+
+	static void ExportStaticMesh(const UStaticMesh* Mesh, FMeshDataJson& MeshDataJson, FMeshDataBinary& MeshDataBinary, FString& FileName);
+
 };

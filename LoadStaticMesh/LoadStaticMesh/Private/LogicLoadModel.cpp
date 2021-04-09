@@ -13,6 +13,7 @@
 
 #include "LDeviceWindows.h"
 #include "LEngine.h"
+#include "SampleAssets.h"
 #include "LAssetDataLoader.h"
 
 
@@ -55,7 +56,7 @@ void LogicStaticModel::OnInit()
 
 void LogicStaticModel::InitCamera()
 {
-	LAssetDataLoader::LoadCameraDataFromFile("camera.bin", MyCamera);
+	LAssetDataLoader::LoadCameraDataFromFile(SampleAssets::CameraBin, MyCamera);
 	MyCamera.Init();
 	XMMATRIX P = MyCamera.GetProjectionMatrix();
 	XMStoreFloat4x4(&MtProj, P);
@@ -63,8 +64,7 @@ void LogicStaticModel::InitCamera()
 
 void LogicStaticModel::InitModelScene()
 {
-	Mesh = new FMesh("mesh.bin", "Resource/T_Chair_M.dds");
-	Mesh->SetModelLocation(MyCamera.GetViewTargetLocation());
+	Mesh = new FMesh(SampleAssets::SampleResources[0], SampleAssets::ChairTextureName);
 	Scene.AddMeshToScene(Mesh);
 }
 
