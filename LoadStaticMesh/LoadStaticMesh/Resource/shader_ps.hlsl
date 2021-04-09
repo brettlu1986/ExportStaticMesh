@@ -1,7 +1,11 @@
 struct PSInput
 {
-    float4 position    : SV_POSITION;
-    float2 uv        : TEXCOORD0;
+	float4 position    : SV_POSITION;
+	float3 normal     : NORMAL;
+	float3 tangent   : TANGENT;
+	float2 uv0        : TEXCOORD0;
+	float2 uv1        : TEXCOORD1;
+	float4 color     : COLOR;
 };
 
 Texture2D       g_txDiffuse : register(t0);
@@ -9,5 +13,5 @@ SamplerState    g_sampler : register(s0);
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    return g_txDiffuse.Sample(g_sampler, input.uv);
+    return g_txDiffuse.Sample(g_sampler, input.uv0);
 }

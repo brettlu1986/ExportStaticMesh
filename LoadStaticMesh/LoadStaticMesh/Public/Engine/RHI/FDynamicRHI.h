@@ -36,43 +36,6 @@ public:
 	LONG Bottom;
 };
 
-
-typedef enum class ERHI_DATA_FORMAT
-{
-	FORMAT_UNKNONWN = 0,
-    FORMAT_R32G32B32_FLOAT,
-	FORMAT_R32G32_FLOAT,
-}ERHI_DATA_FORMAT;
-
-typedef enum class ERHI_INPUT_CLASSIFICATION
-{
-	INPUT_CLASSIFICATION_PER_VERTEX_DATA = 0,
-	INPUT_CLASSIFICATION_PER_INSTANCE_DATA = 1
-} 	ERHI_INPUT_CLASSIFICATION;
-
-struct FRHIInputElement
-{
-	std::string SemanticName;
-	UINT SemanticIndex;
-	ERHI_DATA_FORMAT Format;
-	UINT InputSlot;
-	UINT AlignedByteOffset;
-	ERHI_INPUT_CLASSIFICATION InputSlotClass;
-	UINT InstanceDataStepRate;
-};
-
-//later will add more param, temp use these for this project
-struct FRHIPiplineStateInitializer
-{
-    const FRHIInputElement* pInpueElement;
-	UINT NumElements;
-	BYTE* pVSPointer;
-	SIZE_T VsPointerLength;
-	BYTE* pPsPointer;
-	SIZE_T PsPointerLength;
-	UINT NumRenderTargets;
-};
-
 class FDynamicRHI
 {
 public:

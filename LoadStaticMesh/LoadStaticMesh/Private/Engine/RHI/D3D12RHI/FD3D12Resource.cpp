@@ -84,17 +84,13 @@ void FD3D12VertexBuffer::Initialize()
 void FD3D12VertexBuffer::InitGPUVertexBufferView(FD3D12Adapter* Adapter)
 {
 	ID3D12GraphicsCommandList* CommandList = Adapter->GetCommandListManager()->GetDefaultCommandList();
-	std::vector<FVertex_PositionTex0> TriangleVertices;
-	GetPositionTex0Input(TriangleVertices);
-	const UINT VertexBufferSize = static_cast<UINT>(TriangleVertices.size() * sizeof(FVertex_PositionTex0));
-	const UINT StrideInByte = sizeof(FVertex_PositionTex0);
-	CreateBuffer(Adapter->GetD3DDevice(), CommandList, TriangleVertices.data(), VertexBufferSize, VertexBuffer, VertexUploadBuffer);
+	CreateBuffer(Adapter->GetD3DDevice(), CommandList, VertexData.data(), VertexDataSize, VertexBuffer, VertexUploadBuffer);
 	NAME_D3D12_OBJECT(VertexBuffer);
 	NAME_D3D12_OBJECT(VertexUploadBuffer);
 
 	VertexBufferView.BufferLocation = VertexBuffer->GetGPUVirtualAddress();
-	VertexBufferView.StrideInBytes = StrideInByte;
-	VertexBufferView.SizeInBytes = VertexBufferSize;
+	VertexBufferView.StrideInBytes = StandardInputStride;
+	VertexBufferView.SizeInBytes = VertexDataSize;
 }
 
 /////////////////////////

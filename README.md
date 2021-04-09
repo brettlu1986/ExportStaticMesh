@@ -71,7 +71,7 @@ NAME_D3D12_OBJECT(Fence);
 
 # vertex shader (HLSL语言)
 - gpu对 vertex buffer中的点进行变换， 变换到3d空间当中
-
+[SV_POSITON? SV_TARGET?](https://zhuanlan.zhihu.com/p/113237579)
 # pixel shader (HLSL语言)
 -主要用于多边形着色，颜色，贴图，光照等
 

@@ -171,15 +171,9 @@ void FD3D12DynamicRHI::ShutDown()
 
  void FD3D12DynamicRHI::RHICreatePiplineStateObject(FShader* Vs, FShader* Ps)
  {
-	 FRHIInputElement RHIInputElementDescs[] =
-	 {
-		 { "POSITION", 0, ERHI_DATA_FORMAT::FORMAT_R32G32B32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		 { "TEXCOORD", 0, ERHI_DATA_FORMAT::FORMAT_R32G32_FLOAT, 0, 12, ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-	 };
-
 	 FRHIPiplineStateInitializer RHIPsoInitializer = {
-		RHIInputElementDescs,
-		_countof(RHIInputElementDescs),
+		StandardInputElementDescs,
+		_countof(StandardInputElementDescs),
 		Vs->GetShaderByteCode(),
 		Vs->GetDataLength(),
 		Ps->GetShaderByteCode(),
@@ -187,7 +181,6 @@ void FD3D12DynamicRHI::ShutDown()
 		1
 	 };
 	 ChosenAdapter->CreatePso(RHIPsoInitializer);
-
 		
  }
 

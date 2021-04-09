@@ -14,23 +14,9 @@ public:
 
 	virtual void Destroy() override;
 	virtual void Initialize() override;
-
-	void GetPositionTex0Input(std::vector<FVertex_PositionTex0>& OutPut)
-	{
-		if (VertexData.size() == 0)
-		{
-			return;
-		}
-		OutPut.reserve(VertexCount);
-		for (size_t i = 0; i < VertexCount; i++)
-		{
-			OutPut.push_back({ VertexData[i].Position, VertexData[i].Tex0 });
-		}
-	}
-
 	void Init(const char* DataSource, UINT DataSize, UINT DataCount);
 
-private: 
+protected: 
 
 	UINT VertexCount;
 	UINT VertexDataSize;
