@@ -8,11 +8,13 @@ FMesh::FMesh()
 ,IndexBuffer(nullptr)
 ,TextureRes(nullptr)
 ,ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
+, UsePsoKey("")
+, UseConstantBufferIdx(0)
 {
 	
 }
 
-FMesh::FMesh(const std::string& FileName, const std::string& TextureName, const std::string& InUsePsoKey)
+FMesh::FMesh(const std::string& FileName, UINT InBufferIdx, const std::string& TextureName, const std::string& InUsePsoKey)
 	:MeshFileName(FileName)
 	,MeshTextureName(TextureName)
 	,UsePsoKey(InUsePsoKey)
@@ -20,6 +22,7 @@ FMesh::FMesh(const std::string& FileName, const std::string& TextureName, const 
 	,IndexBuffer(nullptr)
 	,TextureRes(nullptr)
 	,ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
+	,UseConstantBufferIdx(InBufferIdx)
 {
 	Initialize();
 }
@@ -79,7 +82,7 @@ void FMesh::InitRenderResource()
 
 void FMesh::Render()
 {	
-	DrawMesh(IndexBuffer, VertexBuffer, UsePsoKey);
+	DrawMesh(this);
 }
 
 void FMesh::EndRender()

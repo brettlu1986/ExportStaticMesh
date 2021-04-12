@@ -66,7 +66,7 @@ void LogicStaticModel::InitModelScene()
 {
 	for (UINT i = 0; i < SampleAssets::SamepleCount; i++)
 	{
-		FMesh* Mesh = new FMesh(SampleAssets::SampleResources[i], SampleAssets::SampleResourceTexture[i],
+		FMesh* Mesh = new FMesh(SampleAssets::SampleResources[i], i, SampleAssets::SampleResourceTexture[i],
 			SampleAssets::SampleResourceTexture[i] != "" ? SampleAssets::PsoUseTexture : SampleAssets::PsoNoTexture);
 		Scene.AddMeshToScene(Mesh);
 	}

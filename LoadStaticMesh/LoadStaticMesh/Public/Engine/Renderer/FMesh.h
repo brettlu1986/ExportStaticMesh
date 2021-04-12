@@ -10,7 +10,7 @@ class FMesh : public FRenderResource
 {
 public:
 	FMesh();
-	FMesh(const std::string& FileName, const std::string& TextureName = "", const std::string& PsoKey = "");
+	FMesh(const std::string& FileName, UINT Index, const std::string& TextureName = "", const std::string& PsoKey = "");
 	virtual ~FMesh();
 
 	virtual void Destroy();
@@ -36,6 +36,20 @@ public:
 		return IndexBuffer;
 	}
 
+	FTexture* GetTexture()
+	{
+		return TextureRes;
+	}
+
+	const std::string& GetPsoKey()
+	{
+		return UsePsoKey;
+	}
+
+	const UINT GetBufferIndex()
+	{
+		return UseConstantBufferIdx;
+	}
 private:
 	void UpdateModelMatrix();
 
@@ -48,6 +62,8 @@ private:
 	std::string MeshFileName;
 	std::string MeshTextureName;
 	std::string UsePsoKey;
+
+	UINT UseConstantBufferIdx;
 	FVertexBuffer* VertexBuffer;
 	FIndexBuffer* IndexBuffer;
 	FTexture* TextureRes;

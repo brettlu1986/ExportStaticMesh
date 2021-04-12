@@ -7,6 +7,7 @@
 #include "FIndexBuffer.h"
 #include "FTexture.h"
 #include "FShader.h"
+#include "FMesh.h"
 
 struct FRHIViewPort
 {
@@ -58,7 +59,7 @@ public:
 	virtual FVertexBuffer* RHICreateVertexBuffer() = 0;
 	virtual FTexture* RHICreateTexture() = 0;
 	virtual void RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture) = 0;
-	virtual void RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, const std::string& PsoKey) = 0;
+	virtual void RHIDrawMesh(FMesh* Mesh) = 0;
 };
 
 
@@ -126,7 +127,7 @@ FORCEINLINE void InitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* V
 	return GDynamicRHI->RHIInitMeshGPUResource(IndexBuffer, VertexBuffer, Texture);
 }
 
-FORCEINLINE void DrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, const std::string& PsoKey)
+FORCEINLINE void DrawMesh(FMesh* Mesh)
 {
-	return GDynamicRHI->RHIDrawMesh(IndexBuffer, VertexBuffer, PsoKey);
+	return GDynamicRHI->RHIDrawMesh(Mesh);
 }

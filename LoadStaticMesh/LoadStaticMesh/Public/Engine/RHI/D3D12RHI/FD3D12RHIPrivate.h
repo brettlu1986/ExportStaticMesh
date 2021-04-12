@@ -44,7 +44,7 @@ public:
 	virtual FVertexBuffer* RHICreateVertexBuffer() override;
 	virtual FTexture* RHICreateTexture() override;
 	virtual void RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture) override;
-	virtual void RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, const std::string& PsoKey) override;
+	virtual void RHIDrawMesh(FMesh* Mesh) override;
 
 private:
 	void RHIInitWindow(UINT Width, UINT Height, void* Window);

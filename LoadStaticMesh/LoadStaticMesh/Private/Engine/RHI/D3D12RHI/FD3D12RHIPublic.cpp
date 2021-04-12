@@ -200,34 +200,39 @@ void FD3D12DynamicRHI::ShutDown()
 	 CurrentCommandList->RSSetScissorRects(1, &(ChosenAdapter->ScissorRect));
 	 ChosenAdapter->InitRenderBegin(CurrentCommandList, TargetFrame, Color);
 
-	 FD3DConstantBuffer* ConstantBuffer = ChosenAdapter->GetConstantBuffer();
-		
-	 UINT ConstantBufferViewCount = ChosenAdapter->GetConstantBufferViewCount();
-	 CD3DX12_GPU_DESCRIPTOR_HANDLE cbvSrvHandle(ChosenAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
-	 for (UINT i = 0; i < ConstantBufferViewCount; i++)
-	 {
-		 CurrentCommandList->SetGraphicsRootDescriptorTable(0, cbvSrvHandle);
-		 cbvSrvHandle.Offset(ConstantBuffer->GetCbvSrvUavDescriptorSize());
-	 }
-	 
-	 CD3DX12_GPU_DESCRIPTOR_HANDLE tex(ChosenAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), ConstantBufferViewCount, 
-		 ConstantBuffer->GetCbvSrvUavDescriptorSize());
-	 CurrentCommandList->SetGraphicsRootDescriptorTable(1, tex);
-	 CurrentCommandList->SetGraphicsRootDescriptorTable(2, ChosenAdapter->SamplerHeap->GetGPUDescriptorHandleForHeapStart());
  }
 
- void FD3D12DynamicRHI::RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, const std::string& PsoKey)
+ void FD3D12DynamicRHI::RHIDrawMesh(FMesh* Mesh)
  {
 	 ID3D12GraphicsCommandList* CurrentCommandList = ChosenAdapter->GetCommandListManager()->GetDefaultCommandList();
 
-	 CurrentCommandList->SetPipelineState(ChosenAdapter->GetPiplineState(PsoKey));
-
-	 FD3D12IndexBuffer* D3DIndexBuffer = static_cast<FD3D12IndexBuffer*>(IndexBuffer);
-	 FD3D12VertexBuffer* D3DVertexBuffer = static_cast<FD3D12VertexBuffer*>(VertexBuffer);
+	 FD3D12IndexBuffer* D3DIndexBuffer = dynamic_cast<FD3D12IndexBuffer*>(Mesh->GetIndexBuffer());
+	 FD3D12VertexBuffer* D3DVertexBuffer = dynamic_cast<FD3D12VertexBuffer*>(Mesh->GetVertexBuffer());
 
 	 CurrentCommandList->IASetVertexBuffers(0, 1, &(D3DVertexBuffer->GetVertexBufferView()));
 	 CurrentCommandList->IASetIndexBuffer(&(D3DIndexBuffer->GetIndexBufferView()));
 	 CurrentCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	 CurrentCommandList->SetPipelineState(ChosenAdapter->GetPiplineState(Mesh->GetPsoKey()));
+
+	 //
+	 FD3DConstantBuffer* ConstantBuffer = ChosenAdapter->GetConstantBuffer();
+	 
+
+	 CD3DX12_GPU_DESCRIPTOR_HANDLE cbvSrvHandle(ChosenAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), Mesh->GetBufferIndex(), 
+		ConstantBuffer->GetCbvSrvUavDescriptorSize());
+	 CurrentCommandList->SetGraphicsRootDescriptorTable(0, cbvSrvHandle);
+
+	 if(Mesh->GetTexture())
+	 {
+		 UINT ConstantBufferViewCount = ChosenAdapter->GetConstantBufferViewCount();
+		 CD3DX12_GPU_DESCRIPTOR_HANDLE tex(ChosenAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), ConstantBufferViewCount,
+			 ConstantBuffer->GetCbvSrvUavDescriptorSize());
+		 CurrentCommandList->SetGraphicsRootDescriptorTable(1, tex);
+		 CurrentCommandList->SetGraphicsRootDescriptorTable(2, ChosenAdapter->SamplerHeap->GetGPUDescriptorHandleForHeapStart());
+	 }
+	 //
+
 	 CurrentCommandList->DrawIndexedInstanced(D3DIndexBuffer->GetIndicesCount(), 1, 0, 0, 0);
  }
 

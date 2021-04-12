@@ -4,7 +4,7 @@
 
 namespace SampleAssets
 {
-	const UINT SamepleCount = 2;
+	const UINT SamepleCount = 9;
 
 	const std::string CameraBin = "CameraActor.bin";
 
