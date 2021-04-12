@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "FDynamicRHI.h"
 #include "FD3D12CommandListManager.h"
+#include <map>
 
 using namespace Microsoft::WRL;
 
@@ -56,7 +57,7 @@ public:
 		return SwapChain.Get();
 	}
 
-	void CreateConstantBuffer(UINT BufferSize, UINT DataSize);
+	void CreateConstantBuffer(UINT BufferSize, UINT BufferViewNum);
 	void UpdateConstantBufferData(void* pUpdateData, UINT DataSize);
 	FD3DConstantBuffer* GetConstantBuffer() const
 	{
@@ -81,14 +82,29 @@ public:
 	void RenderEnd(ID3D12GraphicsCommandList* CommandList, UINT TargetFrame);
 
 	void CreateSwapChain();
-	void CreatePso(const FRHIPiplineStateInitializer& PsoInitializer);
+	void CreatePso(const FRHIPiplineStateInitializer& PsoInitializer, bool bDefaultPso);
 
 	void SetFenceValue(UINT64 Value) { FenceValue  = Value;}
 	void WaitForPreviousFrame();
 
-	ID3D12PipelineState* GetDefaultPiplineState() 
+	ID3D12PipelineState* GetDefaultPiplineState() const 
 	{
-		return PiplelineStateCache[0].Get();
+		return DefaultPso.Get();
+	}
+
+	ID3D12PipelineState* GetPiplineState(const std::string& PsoKey)
+	{
+		return PiplelineStateCache[PsoKey].Get();
+	}
+
+	UINT GetSrvOffsetInHeap() const 
+	{
+		return OffsetSrvInHeap;
+	}
+
+	UINT GetConstantBufferViewCount() const
+	{
+		return ConstantBufferViewNum;
 	}
 
 	ComPtr<ID3D12DescriptorHeap> RtvHeap;
@@ -102,7 +118,7 @@ public:
 private:
 	void InitializeDevices();
 	void CreateDescriptorHeaps();
-	void CreateConstantBufferView();
+	void CreateConstantBufferView(UINT BufferViewNum);
 
 	void CreateDescripterHeap(UINT NumDescripters, D3D12_DESCRIPTOR_HEAP_TYPE Type,
 		D3D12_DESCRIPTOR_HEAP_FLAGS, UINT NodeMask, REFIID riid, _COM_Outptr_  void** ppvHeap);
@@ -123,7 +139,8 @@ private:
 	ComPtr<IDXGISwapChain> SwapChain;
 
 	ComPtr<ID3D12RootSignature> RootSignature;
-	std::vector<ComPtr<ID3D12PipelineState>> PiplelineStateCache;
+	std::map<std::string, ComPtr<ID3D12PipelineState>> PiplelineStateCache;
+	ComPtr <ID3D12PipelineState> DefaultPso;
 
 	UINT RtvDescriptorSize;
 	UINT DsvDescriptorSize;
@@ -131,6 +148,10 @@ private:
 	ComPtr<ID3D12Resource> DepthStencilBuffer;
 
 	FD3DConstantBuffer* ConstantBuffer;
+
+	UINT OffsetSrvInHeap;
+	UINT ConstantBufferViewNum;
+
 	FD3D12CommandListManager* CommandListManager;
 	ComPtr<ID3D12Fence> GpuFence;
 	HANDLE FenceEvent;

@@ -87,7 +87,7 @@ public:
 	virtual void Destroy() override;
 	virtual void Initialize() override;
 
-	void SetConstantBufferInfo(FD3D12Adapter* Adapter, UINT BufferSize,  UINT DataSize);
+	void SetConstantBufferInfo(FD3D12Adapter* Adapter, UINT BufferSize);
 	void UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSize);
 	ID3D12Resource* GetD3DConstantBuffer() const
 	{

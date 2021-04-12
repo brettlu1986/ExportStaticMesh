@@ -46,10 +46,10 @@ public:
 
 	virtual void ShutDown() = 0;
 
-	virtual void RHICreateConstantBuffer(UINT BufferSize, UINT DataSize) = 0;
+	virtual void RHICreateConstantBuffer(UINT BufferSize, UINT BufferViewNum) = 0;
 	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) = 0;
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) = 0;
-	virtual void RHICreatePiplineStateObject(FShader* Vs, FShader* Ps) = 0;
+	virtual void RHICreatePiplineStateObject(FShader* Vs, FShader* Ps, const std::string& PsoKey, bool bDefaultPso) = 0;
 
 	virtual void RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color) = 0;
 	virtual void RHIPresentToScreen(UINT TargetFrame, bool bFirstExcute = false) = 0;
@@ -58,7 +58,7 @@ public:
 	virtual FVertexBuffer* RHICreateVertexBuffer() = 0;
 	virtual FTexture* RHICreateTexture() = 0;
 	virtual void RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture) = 0;
-	virtual void RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) = 0;
+	virtual void RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, const std::string& PsoKey) = 0;
 };
 
 
@@ -76,9 +76,9 @@ public:
 
 };
 
-FORCEINLINE void CreateConstantBuffer(UINT BufferSize, UINT DataSize)
+FORCEINLINE void CreateConstantBuffer(UINT BufferSize, UINT BufferViewNum)
 {
-	return GDynamicRHI->RHICreateConstantBuffer(BufferSize, DataSize);
+	return GDynamicRHI->RHICreateConstantBuffer(BufferSize, BufferViewNum);
 }
 
 FORCEINLINE void UpdateConstantBuffer(void* pUpdateData, UINT DataSize)
@@ -91,9 +91,9 @@ FORCEINLINE  FShader* CreateShader(LPCWSTR ShaderFile)
 	return GDynamicRHI->RHICreateShader(ShaderFile);
 }
 
-FORCEINLINE  void CreatePiplineStateObject(FShader* Vs, FShader* Ps, bool bExcute = false)
+FORCEINLINE  void CreatePiplineStateObject(FShader* Vs, FShader* Ps, const std::string& PsoKey, bool bDefaultPso = false)
 {
-	GDynamicRHI->RHICreatePiplineStateObject(Vs, Ps);
+	GDynamicRHI->RHICreatePiplineStateObject(Vs, Ps, PsoKey, bDefaultPso);
 }
 
 FORCEINLINE void InitRenderBegin(UINT TargetFrame, FRHIColor Color)
@@ -126,7 +126,7 @@ FORCEINLINE void InitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* V
 	return GDynamicRHI->RHIInitMeshGPUResource(IndexBuffer, VertexBuffer, Texture);
 }
 
-FORCEINLINE void DrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer)
+FORCEINLINE void DrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, const std::string& PsoKey)
 {
-	return GDynamicRHI->RHIDrawMesh(IndexBuffer, VertexBuffer);
+	return GDynamicRHI->RHIDrawMesh(IndexBuffer, VertexBuffer, PsoKey);
 }

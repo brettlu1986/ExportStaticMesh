@@ -12,9 +12,10 @@ FMesh::FMesh()
 	
 }
 
-FMesh::FMesh(std::string FileName, std::string TextureName)
+FMesh::FMesh(const std::string& FileName, const std::string& TextureName, const std::string& InUsePsoKey)
 	:MeshFileName(FileName)
 	,MeshTextureName(TextureName)
+	,UsePsoKey(InUsePsoKey)
 	,VertexBuffer(nullptr)
 	,IndexBuffer(nullptr)
 	,TextureRes(nullptr)
@@ -58,18 +59,17 @@ void FMesh::Initialize()
 	VertexBuffer = CreateVertexBuffer();
 	IndexBuffer = CreateIndexBuffer();
 	LAssetDataLoader::LoadMeshVertexDataFromFile(MeshFileName, this);
-	TextureRes = CreateTexture();
-	TextureRes->InitializeTexture(MeshTextureName);
+	if(MeshTextureName != "")
+	{
+		TextureRes = CreateTexture();
+		TextureRes->InitializeTexture(MeshTextureName);
+	}
 }
 
 XMMATRIX FMesh::GetModelMatrix()
 {
 	//calculate model matrix : scale * rotation * translation
-	//determine the watch target matrix, the M view, make no scale no rotation , so we dont need to multiply scale and rotation
-	 //XMMatrixRotationRollPitchYaw(0.f, 0.f, 0.f) * XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
-	return  XMMatrixScaling(ModelScale.x, ModelScale.y, ModelScale.z) * 
-		XMMatrixRotationRollPitchYaw(XMConvertToRadians(-ModelRotation.z), XMConvertToRadians(-ModelRotation.x), XMConvertToRadians(ModelRotation.y)) *
-		XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
+	return ModelMatrix;
 }
 
 void FMesh::InitRenderResource()
@@ -79,10 +79,34 @@ void FMesh::InitRenderResource()
 
 void FMesh::Render()
 {	
-	DrawMesh(IndexBuffer, VertexBuffer);
+	DrawMesh(IndexBuffer, VertexBuffer, UsePsoKey);
 }
 
 void FMesh::EndRender()
 {
 
+}
+
+void FMesh::SetModelLocation(XMFLOAT3 Location) 
+{ 
+	ModelLocation = Location; 
+	UpdateModelMatrix();
+}
+void FMesh::SetModelRotation(XMFLOAT3 Rotator) { 
+	
+	ModelRotation = Rotator; 
+	UpdateModelMatrix();
+}
+
+void FMesh::SetModelScale(XMFLOAT3 Scale) { 
+	
+	ModelScale = Scale; 
+	UpdateModelMatrix();
+}
+
+void FMesh::UpdateModelMatrix()
+{
+	ModelMatrix = XMMatrixScaling(ModelScale.x, ModelScale.y, ModelScale.z) *
+		XMMatrixRotationRollPitchYaw(XMConvertToRadians(-ModelRotation.z), XMConvertToRadians(-ModelRotation.x), XMConvertToRadians(ModelRotation.y)) *
+		XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
 }

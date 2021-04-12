@@ -67,6 +67,7 @@ struct FRHIInputElement
 //later will add more param, temp use these for this project
 struct FRHIPiplineStateInitializer
 {
+	std::string KeyName;
 	const FRHIInputElement* pInpueElement;
 	UINT NumElements;
 	BYTE* pVSPointer;
@@ -91,6 +92,7 @@ const UINT StandardInputStride = 68;
 struct ObjectConstants
 {
 public: 
+	ObjectConstants(){};
 	ObjectConstants(XMFLOAT4X4 InWVP)
 	:WorldViewProj(InWVP)
 	{}

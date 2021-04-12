@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include "stdafx.h"
 
 class FMesh;
 class FRHICommandList;
@@ -16,6 +16,16 @@ public:
 	void Render();
 	void EndRender();
 	void Destroy();
+
+	UINT GetDrawObjectsNum()
+	{
+		return static_cast<UINT>(Meshes.size());
+	}
+	const std::vector<FMesh*>& GetDrawMeshes()
+	{
+		return Meshes;
+	}
+	
 private: 
 	std::vector<FMesh*> Meshes;
 };

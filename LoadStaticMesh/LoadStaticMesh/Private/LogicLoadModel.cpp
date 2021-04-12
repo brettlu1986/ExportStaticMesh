@@ -31,7 +31,7 @@ LogicStaticModel::LogicStaticModel()
 	MtProj = MathHelper::Identity4x4();
 	LastMousePoint = {0 , 0};
 	ThisLogic = this;
-	MtBuffer = new RingBuffer<ObjectConstants*>(FrameCount);
+	MtBuffer = new RingBuffer<int8_t*>(FrameCount);
 	MtBuffer->Clear();
 }
 
@@ -64,8 +64,16 @@ void LogicStaticModel::InitCamera()
 
 void LogicStaticModel::InitModelScene()
 {
-	Mesh = new FMesh(SampleAssets::SampleResources[0], SampleAssets::ChairTextureName);
-	Scene.AddMeshToScene(Mesh);
+	for (UINT i = 0; i < SampleAssets::SamepleCount; i++)
+	{
+		FMesh* Mesh = new FMesh(SampleAssets::SampleResources[i], SampleAssets::SampleResourceTexture[i],
+			SampleAssets::SampleResourceTexture[i] != "" ? SampleAssets::PsoUseTexture : SampleAssets::PsoNoTexture);
+		Scene.AddMeshToScene(Mesh);
+	}
+
+	ConstantBufferSingleSize = (sizeof(ObjectConstants) + 255) & ~255;
+	ConstantBufferTotalSize = ConstantBufferSingleSize * SampleAssets::SamepleCount;
+	
 }
 
 // main thread
@@ -74,11 +82,21 @@ void LogicStaticModel::Update()
 	//update matrix
 	if(!bDestroy)
 	{
-		XMMATRIX WorldViewProj = Mesh->GetModelMatrix() * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
-		//Update the constant buffer with the latest WorldViewProj matrix.
+		XMMATRIX WorldViewProj;
 		XMFLOAT4X4 WVP;
-		XMStoreFloat4x4(&WVP, XMMatrixTranspose(WorldViewProj));
-		MtBuffer->Enqueue(new ObjectConstants(WVP));
+		XMMATRIX Model;
+		
+		int8_t* ConstantBuffers = new int8_t[ConstantBufferTotalSize];
+		memset(ConstantBuffers, 0, ConstantBufferTotalSize);
+		for (UINT i = 0; i < SampleAssets::SamepleCount; i++)
+		{
+			Model = Scene.GetDrawMeshes()[i]->GetModelMatrix();
+			WorldViewProj = Model * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
+			//Update the constant buffer with the latest WorldViewProj matrix.
+			XMStoreFloat4x4(&WVP, XMMatrixTranspose(WorldViewProj));
+			memcpy( ConstantBuffers + i * ConstantBufferSingleSize, &WVP, sizeof(WVP));
+		}
+		MtBuffer->Enqueue(ConstantBuffers);
 	}
 }
 
@@ -89,10 +107,10 @@ void LogicStaticModel::CreateRenderThread()
 		RenderInit();
 		while (!(MtBuffer->IsEmpty() && bDestroy))
 		{
-			ObjectConstants* ConstantObj = nullptr;
+			int8_t* ConstantObj = nullptr;
 			if (MtBuffer->Dequeue(&ConstantObj))
 			{
-				UpdateConstantBuffer(ConstantObj, sizeof(ObjectConstants));
+				UpdateConstantBuffer(ConstantObj, ConstantBufferTotalSize);
 				delete ConstantObj;
 			}
 			Render();

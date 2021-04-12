@@ -151,9 +151,9 @@ void FD3D12DynamicRHI::ShutDown()
 }
  
 
- void FD3D12DynamicRHI::RHICreateConstantBuffer(UINT BufferSize, UINT DataSize)
+ void FD3D12DynamicRHI::RHICreateConstantBuffer(UINT BufferSize, UINT BufferViewNum)
  {
-	 ChosenAdapter->CreateConstantBuffer(BufferSize, DataSize);
+	 ChosenAdapter->CreateConstantBuffer(BufferSize, BufferViewNum);
  }
 
  void FD3D12DynamicRHI::RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize)
@@ -169,9 +169,10 @@ void FD3D12DynamicRHI::ShutDown()
 	 return new FShader(ShaderData, ShaderLen);
  }
 
- void FD3D12DynamicRHI::RHICreatePiplineStateObject(FShader* Vs, FShader* Ps)
+ void FD3D12DynamicRHI::RHICreatePiplineStateObject(FShader* Vs, FShader* Ps, const std::string& PsoKey, bool bDefaultPso)
  {
 	 FRHIPiplineStateInitializer RHIPsoInitializer = {
+		PsoKey,
 		StandardInputElementDescs,
 		_countof(StandardInputElementDescs),
 		Vs->GetShaderByteCode(),
@@ -180,7 +181,7 @@ void FD3D12DynamicRHI::ShutDown()
 		Ps->GetDataLength(),
 		1
 	 };
-	 ChosenAdapter->CreatePso(RHIPsoInitializer);
+	 ChosenAdapter->CreatePso(RHIPsoInitializer, bDefaultPso);
 		
  }
 
@@ -190,29 +191,37 @@ void FD3D12DynamicRHI::ShutDown()
 	 CommandList.Reset();
 
 	 ID3D12GraphicsCommandList* CurrentCommandList = ChosenAdapter->GetCommandListManager()->GetDefaultCommandList();
-
-	 CurrentCommandList->RSSetViewports(1, &(ChosenAdapter->ViewPort));
-	 CurrentCommandList->RSSetScissorRects(1, &(ChosenAdapter->ScissorRect));
-
-	 ChosenAdapter->InitRenderBegin(CurrentCommandList, TargetFrame, Color);
-
-	 FD3DConstantBuffer* ConstantBuffer = ChosenAdapter->GetConstantBuffer();
 	 CurrentCommandList->SetGraphicsRootSignature(ChosenAdapter->GetRootSignature());
-	 CurrentCommandList->SetPipelineState(ChosenAdapter->GetDefaultPiplineState());
 
 	 ID3D12DescriptorHeap* ppHeaps[] = { ChosenAdapter->CbvSrvHeap.Get(), ChosenAdapter->SamplerHeap.Get() };
 	 CurrentCommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
-	 CurrentCommandList->SetGraphicsRootDescriptorTable(0, ChosenAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
-	 CD3DX12_GPU_DESCRIPTOR_HANDLE tex(ChosenAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
-	 tex.Offset(1, ConstantBuffer->GetCbvSrvUavDescriptorSize());
+	 CurrentCommandList->RSSetViewports(1, &(ChosenAdapter->ViewPort));
+	 CurrentCommandList->RSSetScissorRects(1, &(ChosenAdapter->ScissorRect));
+	 ChosenAdapter->InitRenderBegin(CurrentCommandList, TargetFrame, Color);
+
+	 FD3DConstantBuffer* ConstantBuffer = ChosenAdapter->GetConstantBuffer();
+		
+	 UINT ConstantBufferViewCount = ChosenAdapter->GetConstantBufferViewCount();
+	 CD3DX12_GPU_DESCRIPTOR_HANDLE cbvSrvHandle(ChosenAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
+	 for (UINT i = 0; i < ConstantBufferViewCount; i++)
+	 {
+		 CurrentCommandList->SetGraphicsRootDescriptorTable(0, cbvSrvHandle);
+		 cbvSrvHandle.Offset(ConstantBuffer->GetCbvSrvUavDescriptorSize());
+	 }
+	 
+	 CD3DX12_GPU_DESCRIPTOR_HANDLE tex(ChosenAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), ConstantBufferViewCount, 
+		 ConstantBuffer->GetCbvSrvUavDescriptorSize());
 	 CurrentCommandList->SetGraphicsRootDescriptorTable(1, tex);
 	 CurrentCommandList->SetGraphicsRootDescriptorTable(2, ChosenAdapter->SamplerHeap->GetGPUDescriptorHandleForHeapStart());
  }
 
- void FD3D12DynamicRHI::RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer)
+ void FD3D12DynamicRHI::RHIDrawMesh(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, const std::string& PsoKey)
  {
 	 ID3D12GraphicsCommandList* CurrentCommandList = ChosenAdapter->GetCommandListManager()->GetDefaultCommandList();
+
+	 CurrentCommandList->SetPipelineState(ChosenAdapter->GetPiplineState(PsoKey));
+
 	 FD3D12IndexBuffer* D3DIndexBuffer = static_cast<FD3D12IndexBuffer*>(IndexBuffer);
 	 FD3D12VertexBuffer* D3DVertexBuffer = static_cast<FD3D12VertexBuffer*>(VertexBuffer);
 
@@ -267,10 +276,13 @@ void FD3D12DynamicRHI::RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertex
 {
 	FD3D12IndexBuffer* D3DIndexBuffer = dynamic_cast<FD3D12IndexBuffer*>(IndexBuffer);
 	FD3D12VertexBuffer* D3DVertexBuffer = dynamic_cast<FD3D12VertexBuffer*>(VertexBuffer);
-	FD3D12Texture* D3DTexture = dynamic_cast<FD3D12Texture*>(Texture);
 	D3DIndexBuffer->InitGPUIndexBufferView(ChosenAdapter);
 	D3DVertexBuffer->InitGPUVertexBufferView(ChosenAdapter);
-	D3DTexture->InitGPUTextureView(ChosenAdapter);
+	if(Texture)
+	{
+		FD3D12Texture* D3DTexture = dynamic_cast<FD3D12Texture*>(Texture);
+		D3DTexture->InitGPUTextureView(ChosenAdapter);
+	}
 }
 
 

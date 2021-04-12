@@ -166,6 +166,9 @@
     <FxCompile Include="Resource\shader_ps.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="Resource\shader_ps_notexture.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\ApplicationMain.h">

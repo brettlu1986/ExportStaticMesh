@@ -25,10 +25,14 @@ void FD3D12Adapter::ShutDown()
 	DepthStencilBuffer.Reset();
 	SwapChain.Reset();
 	RootSignature.Reset();
-	for (size_t i = 0; i < PiplelineStateCache.size(); ++i)
+
+	DefaultPso.Reset();
+	for (auto Pso : PiplelineStateCache)
 	{
-		PiplelineStateCache[i].Reset();
+		Pso.second.Reset();
 	}
+	PiplelineStateCache.clear();
+
 	for (size_t i = 0; i < RENDER_TARGET_COUNT; ++i)
 	{
 		if(RenderTargets)
@@ -105,10 +109,7 @@ void FD3D12Adapter::CreateDescriptorHeaps()
 	CreateDescripterHeap(1, D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
 		D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 0, IID_PPV_ARGS(&DsvHeap));
 	NAME_D3D12_OBJECT(DsvHeap);
-	//constant buffer and shader resource view buffer
-	CreateDescripterHeap(2, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-		D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 0, IID_PPV_ARGS(&CbvSrvHeap));
-	NAME_D3D12_OBJECT(CbvSrvHeap);
+	
 	//sample
 	CreateDescripterHeap(1, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER,
 		D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 0, IID_PPV_ARGS(&SamplerHeap));
@@ -220,7 +221,7 @@ void FD3D12Adapter::CreateSignature()
 	NAME_D3D12_OBJECT(RootSignature);
 }
 
-void FD3D12Adapter::CreatePso(const FRHIPiplineStateInitializer& PsoInitializer)
+void FD3D12Adapter::CreatePso(const FRHIPiplineStateInitializer& PsoInitializer, bool bDefaultPso)
 {
 	CD3DX12_RASTERIZER_DESC rasterizerStateDesc(D3D12_DEFAULT);
 	rasterizerStateDesc.FrontCounterClockwise = true;
@@ -283,27 +284,46 @@ void FD3D12Adapter::CreatePso(const FRHIPiplineStateInitializer& PsoInitializer)
 	ComPtr<ID3D12PipelineState> PipelineState;
 	ThrowIfFailed(GetD3DDevice()->CreateGraphicsPipelineState(&PsoDesc, IID_PPV_ARGS(&PipelineState)));
 	NAME_D3D12_OBJECT(PipelineState);
-	PiplelineStateCache.push_back(PipelineState);
-	
+	PiplelineStateCache[PsoInitializer.KeyName] = PipelineState;
+	if(bDefaultPso)
+	{
+		DefaultPso = PipelineState;
+		NAME_D3D12_OBJECT(PipelineState);
+	}
 }
 
-void FD3D12Adapter::CreateConstantBuffer(UINT BufferSize, UINT DataSize)
+void FD3D12Adapter::CreateConstantBuffer(UINT BufferSize, UINT BufferViewNum)
 {
+	//constant buffer and shader resource view buffer, 1 is for srv
+	CreateDescripterHeap(BufferViewNum + 1, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+		D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 0, IID_PPV_ARGS(&CbvSrvHeap));
+	NAME_D3D12_OBJECT(CbvSrvHeap);
+
 	if (!ConstantBuffer)
 	{
 		ConstantBuffer = new FD3DConstantBuffer();
 		ConstantBuffer->Initialize();
-		ConstantBuffer->SetConstantBufferInfo(this, BufferSize, DataSize);
+		ConstantBuffer->SetConstantBufferInfo(this, BufferSize);
 	}
-	CreateConstantBufferView();
+	CreateConstantBufferView(BufferViewNum);
 }
 
-void FD3D12Adapter::CreateConstantBufferView()
+void FD3D12Adapter::CreateConstantBufferView(UINT BufferViewNum)
 {
-	D3D12_CONSTANT_BUFFER_VIEW_DESC CbvDesc = {};
-	CbvDesc.BufferLocation = ConstantBuffer->GetD3DConstantBuffer()->GetGPUVirtualAddress();
-	CbvDesc.SizeInBytes = ConstantBuffer->GetBufferSize();
-	GetD3DDevice()->CreateConstantBufferView(&CbvDesc, CbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
+	UINT CbvSrvDescriptorSize = GetD3DDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE CbvSrvHandle(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
+	UINT64 CbOffset = 0;
+	for(UINT i = 0; i< BufferViewNum; i++)
+	{
+		D3D12_CONSTANT_BUFFER_VIEW_DESC CbvDesc = {};
+		CbvDesc.BufferLocation = ConstantBuffer->GetD3DConstantBuffer()->GetGPUVirtualAddress() + CbOffset;
+		CbvDesc.SizeInBytes = ConstantBuffer->GetBufferSize() / BufferViewNum;
+		CbOffset += CbvDesc.SizeInBytes;
+		GetD3DDevice()->CreateConstantBufferView(&CbvDesc, CbvSrvHandle);
+		CbvSrvHandle.Offset(CbvSrvDescriptorSize);
+	}
+	ConstantBufferViewNum = BufferViewNum;
+	OffsetSrvInHeap = BufferViewNum;
 }
 
 void FD3D12Adapter::UpdateConstantBufferData(void* pUpdateData, UINT DataSize)

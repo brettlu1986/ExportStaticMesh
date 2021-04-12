@@ -11,7 +11,7 @@
 #include "LDefine.h"
 #include "LRingBuffer.h"
 #include "RenderThread.h"
-
+#include "FDefine.h"
 
 using namespace DirectX;
 
@@ -55,11 +55,12 @@ private:
 
 
 	FScene Scene;
-	FMesh* Mesh;
 	FSceneRenderer Renderer;
 
-	RingBuffer<ObjectConstants*>* MtBuffer;
+	RingBuffer<int8_t*>* MtBuffer;
 	RenderThread RThread;
 
+	UINT ConstantBufferSingleSize;
+	UINT ConstantBufferTotalSize;
 	
 };

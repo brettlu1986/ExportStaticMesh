@@ -5,6 +5,7 @@
 #include "FRHI.h"
 #include "LAssetDataLoader.h"
 #include "FDefine.h"
+#include "SampleAssets.h"
 
 FSceneRenderer::FSceneRenderer()
 {
@@ -18,18 +19,25 @@ FSceneRenderer::~FSceneRenderer()
 
 void FSceneRenderer::RenderInit(FScene* Scene)
 {
-	Scene->InitRenderResource();
-
+	UINT ObjectNum = Scene->GetDrawObjectsNum();
 	UINT BufferSize = (sizeof(ObjectConstants) + 255) & ~255;
-	CreateConstantBuffer(BufferSize, sizeof(ObjectConstants));
+	BufferSize = BufferSize * ObjectNum;
+	CreateConstantBuffer(BufferSize, ObjectNum);
 
 	//IMPORTANT: after create pso, will excute first init command queue in the function
 	FShader* Vs = CreateShader(L"shader_vs.cso");
 	FShader* Ps = CreateShader(L"shader_ps.cso");
-	CreatePiplineStateObject(Vs, Ps, true);
+	CreatePiplineStateObject(Vs, Ps, SampleAssets::PsoUseTexture, true);
+
+	FShader* PsNoTex = CreateShader(L"shader_ps_notexture.cso");
+	CreatePiplineStateObject(Vs, PsNoTex, SampleAssets::PsoNoTexture);
 
 	delete Vs;
 	delete Ps;
+	delete PsNoTex;
+
+	//in root sig, I put srv behind cbv, so Scene->InitRenderResource must after constant buffer create
+	Scene->InitRenderResource();
 
 	PresentToScreen(0, true);
 }

@@ -151,7 +151,8 @@ void FD3D12Texture::InitGPUTextureView(FD3D12Adapter* Adapter)
 
 	UINT CbvSrvUavDescriptorSize = Adapter->GetD3DDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	ComPtr<ID3D12DescriptorHeap> CbvSrvHeap = Adapter->CbvSrvHeap;
-	CD3DX12_CPU_DESCRIPTOR_HANDLE CbvSrvHandle(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart(), 1, CbvSrvUavDescriptorSize);
+	UINT SrvOffsetInHeap = Adapter->GetSrvOffsetInHeap();
+	CD3DX12_CPU_DESCRIPTOR_HANDLE CbvSrvHandle(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart(), SrvOffsetInHeap, CbvSrvUavDescriptorSize);
 	Adapter->GetD3DDevice()->CreateShaderResourceView(TextureResource.Get(), &srvDesc, CbvSrvHandle);
 }
 
@@ -182,7 +183,7 @@ void FD3DConstantBuffer::Initialize()
 {
 }
 
-void FD3DConstantBuffer::SetConstantBufferInfo(FD3D12Adapter* Adapter, UINT InBufferSize, UINT DataSize)
+void FD3DConstantBuffer::SetConstantBufferInfo(FD3D12Adapter* Adapter, UINT InBufferSize)
 {
 	CbvSrvUavDescriptorSize = Adapter->GetD3DDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	BufferSize = InBufferSize;
@@ -197,12 +198,19 @@ void FD3DConstantBuffer::SetConstantBufferInfo(FD3D12Adapter* Adapter, UINT InBu
 		nullptr,
 		IID_PPV_ARGS(&ConstantBuffer)));
 	ThrowIfFailed(ConstantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&pCbvDataBegin)));
-	memset(pCbvDataBegin, 0, DataSize);
+	memset(pCbvDataBegin, 0, InBufferSize);
 	NAME_D3D12_OBJECT(ConstantBuffer);
 }
 
 void FD3DConstantBuffer::UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSize)
-{
-	memcpy(pCbvDataBegin, pDataUpdate, DataSize);
+{	
+	/*int8_t* pData = (int8_t*)pDataUpdate;
+	UINT ConstantBufferSingleSize = (sizeof(ObjectConstants) + 255) & ~255;
+	XMFLOAT4X4 WVP[2];
+	for (UINT i = 0; i < 2; i++)
+	{
+		memcpy(&WVP[i], pData + i * ConstantBufferSingleSize, sizeof(XMFLOAT4X4));
+	}*/
+	memcpy(pCbvDataBegin, pDataUpdate, BufferSize);
 }
 

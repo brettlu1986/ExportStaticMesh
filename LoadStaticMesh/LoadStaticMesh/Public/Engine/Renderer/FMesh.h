@@ -10,7 +10,7 @@ class FMesh : public FRenderResource
 {
 public:
 	FMesh();
-	FMesh(std::string FileName, std::string TextureName);
+	FMesh(const std::string& FileName, const std::string& TextureName = "", const std::string& PsoKey = "");
 	virtual ~FMesh();
 
 	virtual void Destroy();
@@ -20,9 +20,9 @@ public:
 	void Render();
 	void EndRender();
 	
-	void SetModelLocation(XMFLOAT3 Location) { ModelLocation = Location; }
-	void SetModelRotation(XMFLOAT3 Rotator) { ModelRotation = Rotator; }
-	void SetModelScale(XMFLOAT3 Scale) { ModelScale = Scale; }
+	void SetModelLocation(XMFLOAT3 Location);
+	void SetModelRotation(XMFLOAT3 Rotator) ;
+	void SetModelScale(XMFLOAT3 Scale);
 
 	XMMATRIX GetModelMatrix();
 
@@ -37,12 +37,17 @@ public:
 	}
 
 private:
+	void UpdateModelMatrix();
+
 	XMFLOAT3 ModelLocation;
 	XMFLOAT3 ModelRotation;
 	XMFLOAT3 ModelScale;
 
+	XMMATRIX ModelMatrix;
+
 	std::string MeshFileName;
 	std::string MeshTextureName;
+	std::string UsePsoKey;
 	FVertexBuffer* VertexBuffer;
 	FIndexBuffer* IndexBuffer;
 	FTexture* TextureRes;
