@@ -35,11 +35,9 @@ public:
 	virtual void RHIPresentToScreen(UINT TargetFrame, bool bFirstExcute = false) override;
 
 	virtual void RHICreateSrvAndCbvs(FCbvSrvDesc Desc) override;
-	virtual void RHICreateConstantBuffer(E_CONSTANT_BUFFER_TYPE BufferType, UINT BufferSize, UINT BufferViewNum) override;
 	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) override;
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) override;
 	virtual void RHICreatePiplineStateObject(FShader* Vs, FShader* Ps, const std::string& PsoKey, bool bDefaultPso = false) override;
-	
 
 	virtual FIndexBuffer* RHICreateIndexBuffer() override;
 	virtual FVertexBuffer* RHICreateVertexBuffer() override;

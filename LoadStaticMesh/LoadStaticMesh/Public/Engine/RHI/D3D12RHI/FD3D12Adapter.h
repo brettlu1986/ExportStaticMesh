@@ -59,12 +59,7 @@ public:
 
 	void CreateSrvAndCbvs(FCbvSrvDesc Desc);
 
-	void CreateConstantBuffer(E_CONSTANT_BUFFER_TYPE BufferType, UINT BufferSize, UINT BufferViewNum);
-	void UpdateConstantBufferData(void* pUpdateData, UINT DataSize);
-	FD3DConstantBuffer* GetConstantBuffer() const
-	{
-		return ConstantBuffer;
-	}
+	
 	FD3D12CommandListManager* GetCommandListManager() const {
 		return CommandListManager;
 	}
@@ -99,16 +94,6 @@ public:
 		return PiplelineStateCache[PsoKey].Get();
 	}
 
-	UINT GetSrvOffsetInHeap() const 
-	{
-		return OffsetSrvInHeap;
-	}
-
-	UINT GetConstantBufferViewCount() const
-	{
-		return ConstantBufferViewNum;
-	}
-
 	const FCbvSrvDesc& GetCurrentCbvSrvDesc()
 	{
 		return CurrentCbvSrvDesc;
@@ -135,7 +120,6 @@ public:
 private:
 	void InitializeDevices();
 	void CreateDescriptorHeaps();
-	void CreateConstantBufferView(UINT BufferViewNum);
 
 	void CreateDescripterHeap(UINT NumDescripters, D3D12_DESCRIPTOR_HEAP_TYPE Type,
 		D3D12_DESCRIPTOR_HEAP_FLAGS, UINT NodeMask, REFIID riid, _COM_Outptr_  void** ppvHeap);
@@ -164,15 +148,9 @@ private:
 	ComPtr<ID3D12Resource> RenderTargets[RENDER_TARGET_COUNT];
 	ComPtr<ID3D12Resource> DepthStencilBuffer;
 
-	FD3DConstantBuffer* ConstantBuffer;
-
-	UINT OffsetSrvInHeap;
-	UINT ConstantBufferViewNum;
-
 	FCbvSrvDesc CurrentCbvSrvDesc;
 	std::map<E_CONSTANT_BUFFER_TYPE, FD3DConstantBuffer*> ConstantBuffers;
 	UINT CbvSrvDescriptorSize;
-
 
 	FD3D12CommandListManager* CommandListManager;
 	ComPtr<ID3D12Fence> GpuFence;

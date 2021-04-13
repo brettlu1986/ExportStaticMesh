@@ -155,11 +155,6 @@ void FD3D12DynamicRHI::ShutDown()
 	 ChosenAdapter->CreateSrvAndCbvs(Desc);
  }
 
- void FD3D12DynamicRHI::RHICreateConstantBuffer(E_CONSTANT_BUFFER_TYPE BufferType, UINT BufferSize, UINT BufferViewNum)
- {
-	 ChosenAdapter->CreateConstantBuffer(BufferType, BufferSize, BufferViewNum);
- }
-
  void FD3D12DynamicRHI::RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize)
  {
 	FBufferObject* BuffObj = (FBufferObject*)(pUpdateData);

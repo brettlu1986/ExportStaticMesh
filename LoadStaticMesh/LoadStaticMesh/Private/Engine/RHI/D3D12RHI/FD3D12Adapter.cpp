@@ -45,12 +45,6 @@ void FD3D12Adapter::ShutDown()
 	}
 	ConstantBuffers.clear();
 
-	if (ConstantBuffer)
-	{
-		ConstantBuffer->Destroy();
-		ConstantBuffer = nullptr;
-	}
-
 	if (CommandListManager)
 	{
 		CommandListManager->Clear();
@@ -350,47 +344,6 @@ void FD3D12Adapter::CreateSrvAndCbvs(FCbvSrvDesc Desc)
 	//CurrentCbvSrvDesc.SrvDesc  can use to create texture in mesh, use GetCurrentCbvSrvDesc()
 }
 
-void FD3D12Adapter::CreateConstantBuffer(E_CONSTANT_BUFFER_TYPE BufferType, UINT BufferSize, UINT BufferViewNum)
-{
-	//constant buffer and shader resource view buffer, 1 is for srv
-	CreateDescripterHeap(BufferViewNum + 1, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-		D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 0, IID_PPV_ARGS(&CbvSrvHeap));
-	NAME_D3D12_OBJECT(CbvSrvHeap);
-
-	if (!ConstantBuffer)
-	{
-		ConstantBuffer = new FD3DConstantBuffer();
-		ConstantBuffer->Initialize();
-		ConstantBuffer->SetConstantBufferInfo(this, BufferSize);
-	}
-	CreateConstantBufferView(BufferViewNum);
-}
-
-void FD3D12Adapter::CreateConstantBufferView(UINT BufferViewNum)
-{
-	UINT CbvSrvDescriptorSize = GetD3DDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE CbvSrvHandle(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
-	UINT64 CbOffset = 0;
-	for(UINT i = 0; i< BufferViewNum; i++)
-	{
-		D3D12_CONSTANT_BUFFER_VIEW_DESC CbvDesc = {};
-		CbvDesc.BufferLocation = ConstantBuffer->GetD3DConstantBuffer()->GetGPUVirtualAddress() + CbOffset;
-		CbvDesc.SizeInBytes = ConstantBuffer->GetBufferSize() / BufferViewNum;
-		CbOffset += CbvDesc.SizeInBytes;
-		GetD3DDevice()->CreateConstantBufferView(&CbvDesc, CbvSrvHandle);
-		CbvSrvHandle.Offset(CbvSrvDescriptorSize);
-	}
-	ConstantBufferViewNum = BufferViewNum;
-	OffsetSrvInHeap = BufferViewNum;
-}
-
-void FD3D12Adapter::UpdateConstantBufferData(void* pUpdateData, UINT DataSize)
-{
-	if (ConstantBuffer)
-	{
-		ConstantBuffer->UpdateConstantBufferInfo(pUpdateData, DataSize);
-	}
-}
 
 void FD3D12Adapter::CreateRenderTargets()
 {
