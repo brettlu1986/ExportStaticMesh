@@ -154,6 +154,7 @@
     <ClCompile Include="Private\Engine\Common\Windows\LInputWindows.cpp" />
     <ClCompile Include="Private\Engine\LEngine.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FIndexBuffer.cpp" />
+    <ClCompile Include="Private\Engine\Renderer\FMaterial.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FMesh.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FRenderResource.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FSceneRenderer.cpp" />
@@ -265,6 +266,7 @@
     <ClInclude Include="Public\Engine\LEngine.h" />
     <ClInclude Include="Public\Engine\Renderer\FDefine.h" />
     <ClInclude Include="Public\Engine\Renderer\FIndexBuffer.h" />
+    <ClInclude Include="Public\Engine\Renderer\FMaterial.h" />
     <ClInclude Include="Public\Engine\Renderer\FMesh.h" />
     <ClInclude Include="Public\Engine\Renderer\FRenderer.h" />
     <ClInclude Include="Public\Engine\Renderer\FRenderResource.h" />

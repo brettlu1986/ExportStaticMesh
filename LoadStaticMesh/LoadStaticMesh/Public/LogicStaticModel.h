@@ -41,8 +41,10 @@ private:
 	void CreateRenderThread();
 
 private:
+	void UpdateMtConstantBuffer();
+	void UpdateMatConstantBuffer();
+
 	static const UINT FrameCount = 3;
-	static const UINT ThreadCount = 1;
 
 	bool bDestroy;
 	bool bRenderDestroy;
@@ -57,10 +59,12 @@ private:
 	FScene Scene;
 	FSceneRenderer Renderer;
 
-	RingBuffer<FBufferObject*>* MtBuffer;
+	RingBuffer<FBufferObject*>* CbBuffers;
 	RenderThread RThread;
 
 	UINT MtBufferSingleSize;
 	UINT MtBufferTotalSize;
 	
+	UINT MatBufferSingleSize;
+	UINT MatBufferTotalSize;
 };

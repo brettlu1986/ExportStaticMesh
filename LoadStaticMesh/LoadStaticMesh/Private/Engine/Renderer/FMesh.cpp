@@ -55,6 +55,13 @@ void FMesh::Destroy()
 		delete DiffuseTex;
 		DiffuseTex = nullptr;
 	}
+
+	if (Material)
+	{
+		Material->Destroy();
+		delete Material;
+		Material = nullptr;
+	}
 }
 
 void FMesh::Initialize()
@@ -67,6 +74,7 @@ void FMesh::Initialize()
 		DiffuseTex = CreateTexture();
 		DiffuseTex->InitializeTexture(MeshTextureName);
 	}
+	Material = new FMaterial();
 }
 
 XMMATRIX FMesh::GetModelMatrix()
@@ -117,4 +125,14 @@ void FMesh::UpdateModelMatrix()
 void FMesh::SetDiffuseTextureHeapIndex(UINT Index)
 {
 	DiffuseTex->SetTextureHeapIndex(Index);
+}
+
+void FMesh::SetMaterialCbvHeapIndex(UINT Index)
+{
+	Material->SetMaterialCbvHeapIndex(Index);
+}
+
+void FMesh::InitMaterial(const std::string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float Roughness)
+{
+	Material->Init(Name, InDiffuseAlbedo, InFresnelR0, Roughness);
 }

@@ -25,6 +25,7 @@ void FScene::Destroy()
 void FScene::AddMeshToScene(FMesh* Mesh)
 {
 	Mesh->SetMatrixCbIndex(MeshCount);
+	Mesh->SetMaterialCbvHeapIndex(MeshCount);
 	if(Mesh->GetDiffuseTexture())
 	{
 		Mesh->SetDiffuseTextureHeapIndex(MeshWithTextureCount);

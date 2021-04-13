@@ -153,6 +153,9 @@
     <ClCompile Include="Private\RenderThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\FMaterial.cpp">
+      <Filter>Source Files\Engine\Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds">
@@ -284,6 +287,9 @@
     </ClInclude>
     <ClInclude Include="Public\SampleAssets.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\FMaterial.h">
+      <Filter>Header Files\Engine\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

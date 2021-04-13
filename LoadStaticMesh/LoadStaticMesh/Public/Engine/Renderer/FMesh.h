@@ -2,6 +2,7 @@
 
 #include "FVertexBuffer.h"
 #include "FIndexBuffer.h"
+#include "FMaterial.h"
 #include "FRHIDef.h"
 #include "FRenderResource.h"
 
@@ -41,7 +42,13 @@ public:
 		return DiffuseTex;
 	}
 
+	FMaterial* GetMaterial()
+	{
+		return Material;
+	}
+
 	void SetDiffuseTextureHeapIndex(UINT Index) ;
+	void SetMaterialCbvHeapIndex(UINT Index);
 
 	const std::string& GetPsoKey()
 	{
@@ -57,6 +64,8 @@ public:
 	{
 		MatrixCbIndex = Index;
 	}
+
+	void InitMaterial(const std::string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float Roughness);
 private:
 	void UpdateModelMatrix();
 
@@ -75,5 +84,6 @@ private:
 	FIndexBuffer* IndexBuffer;
 
 	FTexture* DiffuseTex;
+	FMaterial* Material;
 	
 };

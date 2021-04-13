@@ -31,8 +31,9 @@ LogicStaticModel::LogicStaticModel()
 	MtProj = MathHelper::Identity4x4();
 	LastMousePoint = {0 , 0};
 	ThisLogic = this;
-	MtBuffer = new RingBuffer<FBufferObject*>(FrameCount);
-	MtBuffer->Clear();
+	CbBuffers = new RingBuffer<FBufferObject*>(FrameCount);
+	CbBuffers->Clear();
+
 }
 
 LogicStaticModel::~LogicStaticModel()
@@ -68,12 +69,17 @@ void LogicStaticModel::InitModelScene()
 	{
 		FMesh* Mesh = new FMesh(SampleAssets::SampleResources[i], SampleAssets::SampleResourceTexture[i],
 			SampleAssets::SampleResourceTexture[i] != "" ? SampleAssets::PsoUseTexture : SampleAssets::PsoNoTexture);
+
+		Mesh->InitMaterial(SampleAssets::SampeMats[i].Name, SampleAssets::SampeMats[i].DiffuseAlbedo, SampleAssets::SampeMats[i].FresnelR0,
+			SampleAssets::SampeMats[i].Roughness);
 		Scene.AddMeshToScene(Mesh);
 	}
 
 	MtBufferSingleSize = CalcConstantBufferByteSize(sizeof(FObjectConstants));
 	MtBufferTotalSize = MtBufferSingleSize * Scene.GetMeshCount();
 	
+	MatBufferSingleSize = CalcConstantBufferByteSize(sizeof(FMaterialConstants));
+	MatBufferTotalSize = MatBufferSingleSize * Scene.GetMeshCount();
 }
 
 // main thread
@@ -82,25 +88,56 @@ void LogicStaticModel::Update()
 	//update matrix
 	if(!bDestroy)
 	{
-		XMMATRIX WorldViewProj;
-		XMFLOAT4X4 WVP;
-		XMMATRIX Model;
-		
-		FBufferObject* BufferObj = new FBufferObject();
-		BufferObj->Type = E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATRIX;
-
-		BufferObj->BufferData = new int8_t[MtBufferTotalSize];
-		memset(BufferObj->BufferData, 0, MtBufferTotalSize);
-		for (UINT i = 0; i < Scene.GetMeshCount(); i++)
-		{
-			Model = Scene.GetDrawMeshes()[i]->GetModelMatrix();
-			WorldViewProj = Model * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
-			//Update the constant buffer with the latest WorldViewProj matrix.
-			XMStoreFloat4x4(&WVP, XMMatrixTranspose(WorldViewProj));
-			memcpy(BufferObj->BufferData + i * MtBufferSingleSize, &WVP, sizeof(WVP));
-		}
-		MtBuffer->Enqueue(BufferObj);
+		UpdateMtConstantBuffer();
+	//	UpdateMatConstantBuffer();
 	}
+}
+
+void LogicStaticModel::UpdateMtConstantBuffer()
+{
+	XMMATRIX WorldViewProj;
+	XMFLOAT4X4 WVP;
+	XMMATRIX Model;
+
+	FBufferObject* BufferObj = new FBufferObject();
+	BufferObj->Type = E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATRIX;
+
+	BufferObj->BufferData = new int8_t[MtBufferTotalSize];
+	memset(BufferObj->BufferData, 0, MtBufferTotalSize);
+	for (UINT i = 0; i < Scene.GetMeshCount(); i++)
+	{
+		Model = Scene.GetDrawMeshes()[i]->GetModelMatrix();
+		WorldViewProj = Model * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
+		//Update the constant buffer with the latest WorldViewProj matrix.
+		XMStoreFloat4x4(&WVP, XMMatrixTranspose(WorldViewProj));
+		memcpy(BufferObj->BufferData + i * MtBufferSingleSize, &WVP, sizeof(WVP));
+	}
+	CbBuffers->Enqueue(BufferObj);
+}
+
+void LogicStaticModel::UpdateMatConstantBuffer()
+{
+	FBufferObject* BufferObj = new FBufferObject();
+	BufferObj->Type = E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATERIAL;
+
+	BufferObj->BufferData = new int8_t[MatBufferTotalSize];
+	memset(BufferObj->BufferData, 0, MatBufferTotalSize);
+
+	XMFLOAT4X4 Mat;
+	for (UINT i = 0; i < Scene.GetMeshCount(); i++)
+	{
+		FMaterial* Material = Scene.GetDrawMeshes()[i]->GetMaterial();
+		Mat = Material->GetMaterialTransform();
+		XMMATRIX MatTransform = XMLoadFloat4x4(&Mat);
+		FMaterialConstants MatConstants;
+		MatConstants.DiffuseAlbedo = Material->GetDiffuseAlbedo();
+		MatConstants.FresnelR0 = Material->GetFresnelR0();
+		MatConstants.Roughness = Material->GetRoughness();
+		XMStoreFloat4x4(&MatConstants.MatTransform, XMMatrixTranspose(MatTransform));
+
+		memcpy(BufferObj->BufferData + i * MatBufferSingleSize, &MatConstants, sizeof(MatConstants));
+	}
+	CbBuffers->Enqueue(BufferObj);
 }
 
 // render thread
@@ -108,10 +145,10 @@ void LogicStaticModel::CreateRenderThread()
 {
 	auto Run = [this]() {
 		RenderInit();
-		while (!(MtBuffer->IsEmpty() && bDestroy))
+		while (!(CbBuffers->IsEmpty() && bDestroy))
 		{
 			FBufferObject* ConstantObj = nullptr;
-			if (MtBuffer->Dequeue(&ConstantObj))
+			if (CbBuffers->Dequeue(&ConstantObj))
 			{
 				UpdateConstantBuffer(ConstantObj, MtBufferTotalSize);
 				delete ConstantObj;
@@ -182,10 +219,10 @@ void LogicStaticModel::Destroy()
 		continue;
 	}
 
-	if(MtBuffer)
+	if(CbBuffers)
 	{
-		delete MtBuffer;
-		MtBuffer = nullptr;
+		delete CbBuffers;
+		CbBuffers = nullptr;
 	}
 	ThisLogic = nullptr;
 }
