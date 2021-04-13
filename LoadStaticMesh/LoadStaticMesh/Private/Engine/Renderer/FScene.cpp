@@ -3,6 +3,8 @@
 #include "FRHI.h"
 
 FScene::FScene()
+:MeshCount(0)
+,MeshWithTextureCount(0)
 {
 
 }
@@ -22,7 +24,14 @@ void FScene::Destroy()
 
 void FScene::AddMeshToScene(FMesh* Mesh)
 {
+	Mesh->SetMatrixCbIndex(MeshCount);
+	if(Mesh->GetDiffuseTexture())
+	{
+		Mesh->SetDiffuseTextureHeapIndex(MeshWithTextureCount);
+		MeshWithTextureCount ++;
+	}
 	Meshes.push_back(Mesh);
+	MeshCount++;
 }
 
 void FScene::InitRenderResource()

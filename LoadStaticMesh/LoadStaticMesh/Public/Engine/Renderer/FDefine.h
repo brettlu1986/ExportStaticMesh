@@ -21,6 +21,14 @@ enum class E_RESOURCE_TYPE : UINT8
 	TYPE_SHADER,
 };
 
+enum class E_CONSTANT_BUFFER_TYPE : UINT8
+{
+	TYPE_CB_MATRIX,
+	TYPE_CB_MATERIAL,
+	TYPE_CB_PASSCONSTANT,
+	TYPE_CB_UNKNOWN,
+};
+
 typedef struct FVertexData
 {
 	XMFLOAT3 Position;
@@ -38,6 +46,7 @@ typedef struct FCameraData {
 	float Fov;
 	float Aspect;
 }FCameraData;
+
 
 typedef enum class ERHI_DATA_FORMAT
 {
@@ -89,17 +98,75 @@ const FRHIInputElement StandardInputElementDescs[] =
 
 const UINT StandardInputStride = 68;
 
-struct ObjectConstants
+struct FObjectConstants
 {
 public: 
-	ObjectConstants(){};
-	ObjectConstants(XMFLOAT4X4 InWVP)
+	FObjectConstants(){};
+	FObjectConstants(XMFLOAT4X4 InWVP)
 	:WorldViewProj(InWVP)
 	{}
 
 	XMFLOAT4X4 WorldViewProj = MathHelper::Identity4x4();
 
 };
+
+struct FMaterialConstants
+{
+public: 
+	FMaterialConstants()
+	:DiffuseAlbedo({ 1.0f, 1.0f, 1.0f, 1.0f })
+	, FresnelR0({ 0.01f, 0.01f, 0.01f })
+	, Roughness(0.25f)
+	, MatTransform(MathHelper::Identity4x4())
+	{};
+
+	XMFLOAT4 DiffuseAlbedo;
+	XMFLOAT3 FresnelR0;
+	float Roughness;
+	XMFLOAT4X4 MatTransform;
+};
+
+struct FBufferObject
+{
+public: 
+	FBufferObject()
+	:Type(E_CONSTANT_BUFFER_TYPE::TYPE_CB_UNKNOWN)
+	,BufferData(nullptr)
+	{}
+
+	~FBufferObject()
+	{
+		if(BufferData)
+		{
+			delete BufferData;
+			BufferData = nullptr;
+		}
+	}
+	E_CONSTANT_BUFFER_TYPE Type;
+	int8_t* BufferData;
+};
+
+typedef struct FConstantBufferDesc
+{
+	E_CONSTANT_BUFFER_TYPE BufferType;
+	UINT HeapOffsetStart;
+	UINT BufferSize;
+	UINT BufferViewCount;
+}FConstantBufferDesc;
+
+typedef struct FShaderResourceDesc
+{
+	UINT HeapOffsetStart;
+	UINT ShaderResourceCount;
+}FShaderResourceDesc;
+
+typedef struct FCbvSrvDesc
+{
+	UINT NeedDesciptorCount;
+	FConstantBufferDesc CbMatrix;
+	FConstantBufferDesc CbMaterial;
+	FShaderResourceDesc SrvDesc;
+}FCbvSrvDesc;
 
 const UINT RENDER_TARGET_COUNT = 3;
 const UINT FRAME_COUNT = 3;

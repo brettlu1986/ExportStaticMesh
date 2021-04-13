@@ -6,23 +6,23 @@
 FMesh::FMesh()
 :VertexBuffer(nullptr)
 ,IndexBuffer(nullptr)
-,TextureRes(nullptr)
+,DiffuseTex(nullptr)
 ,ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
 , UsePsoKey("")
-, UseConstantBufferIdx(0)
+, MatrixCbIndex(0)
 {
 	
 }
 
-FMesh::FMesh(const std::string& FileName, UINT InBufferIdx, const std::string& TextureName, const std::string& InUsePsoKey)
+FMesh::FMesh(const std::string& FileName, const std::string& TextureName, const std::string& InUsePsoKey)
 	:MeshFileName(FileName)
 	,MeshTextureName(TextureName)
 	,UsePsoKey(InUsePsoKey)
 	,VertexBuffer(nullptr)
 	,IndexBuffer(nullptr)
-	,TextureRes(nullptr)
+	,DiffuseTex(nullptr)
 	,ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
-	,UseConstantBufferIdx(InBufferIdx)
+	, MatrixCbIndex(0)
 {
 	Initialize();
 }
@@ -49,11 +49,11 @@ void FMesh::Destroy()
 		IndexBuffer = nullptr;
 	}
 
-	if (TextureRes)
+	if (DiffuseTex)
 	{
-		TextureRes->Destroy();
-		delete TextureRes;
-		TextureRes = nullptr;
+		DiffuseTex->Destroy();
+		delete DiffuseTex;
+		DiffuseTex = nullptr;
 	}
 }
 
@@ -64,8 +64,8 @@ void FMesh::Initialize()
 	LAssetDataLoader::LoadMeshVertexDataFromFile(MeshFileName, this);
 	if(MeshTextureName != "")
 	{
-		TextureRes = CreateTexture();
-		TextureRes->InitializeTexture(MeshTextureName);
+		DiffuseTex = CreateTexture();
+		DiffuseTex->InitializeTexture(MeshTextureName);
 	}
 }
 
@@ -77,7 +77,7 @@ XMMATRIX FMesh::GetModelMatrix()
 
 void FMesh::InitRenderResource()
 {
-	InitMeshGPUResource(IndexBuffer, VertexBuffer, TextureRes);
+	InitMeshGPUResource(IndexBuffer, VertexBuffer, DiffuseTex);
 }
 
 void FMesh::Render()
@@ -112,4 +112,9 @@ void FMesh::UpdateModelMatrix()
 	ModelMatrix = XMMatrixScaling(ModelScale.x, ModelScale.y, ModelScale.z) *
 		XMMatrixRotationRollPitchYaw(XMConvertToRadians(-ModelRotation.z), XMConvertToRadians(-ModelRotation.x), XMConvertToRadians(ModelRotation.y)) *
 		XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
+}
+
+void FMesh::SetDiffuseTextureHeapIndex(UINT Index)
+{
+	DiffuseTex->SetTextureHeapIndex(Index);
 }

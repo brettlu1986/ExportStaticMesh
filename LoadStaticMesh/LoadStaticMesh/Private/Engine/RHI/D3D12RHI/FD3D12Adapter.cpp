@@ -38,6 +38,13 @@ void FD3D12Adapter::ShutDown()
 		if(RenderTargets)
 			RenderTargets[i].Reset();
 	}
+
+	for (auto Cb : ConstantBuffers)
+	{
+		Cb.second->Destroy();
+	}
+	ConstantBuffers.clear();
+
 	if (ConstantBuffer)
 	{
 		ConstantBuffer->Destroy();
@@ -292,7 +299,58 @@ void FD3D12Adapter::CreatePso(const FRHIPiplineStateInitializer& PsoInitializer,
 	}
 }
 
-void FD3D12Adapter::CreateConstantBuffer(UINT BufferSize, UINT BufferViewNum)
+void FD3D12Adapter::CreateSrvAndCbvs(FCbvSrvDesc Desc)
+{
+	CurrentCbvSrvDesc = Desc;
+
+	CreateDescripterHeap(CurrentCbvSrvDesc.NeedDesciptorCount, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+		D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 0, IID_PPV_ARGS(&CbvSrvHeap));
+	NAME_D3D12_OBJECT(CbvSrvHeap);
+	CbvSrvDescriptorSize = GetD3DDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+	//create matrix constant buffer
+	FD3DConstantBuffer* MtCb = new FD3DConstantBuffer();
+	MtCb->Initialize();
+	MtCb->SetConstantBufferInfo(this, CurrentCbvSrvDesc.CbMatrix.BufferSize);
+	ConstantBuffers[CurrentCbvSrvDesc.CbMatrix.BufferType] = MtCb;
+	
+	CD3DX12_CPU_DESCRIPTOR_HANDLE Cbv1Handle(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbMatrix.HeapOffsetStart, 
+		CbvSrvDescriptorSize);
+
+	UINT64 CbOffset = 0;
+	for (UINT i = 0; i < CurrentCbvSrvDesc.CbMatrix.BufferViewCount; i++)
+	{
+		D3D12_CONSTANT_BUFFER_VIEW_DESC CbvDesc = {};
+		CbvDesc.BufferLocation = MtCb->GetD3DConstantBuffer()->GetGPUVirtualAddress() + CbOffset;
+		CbvDesc.SizeInBytes = CurrentCbvSrvDesc.CbMatrix.BufferSize / CurrentCbvSrvDesc.CbMatrix.BufferViewCount;
+		CbOffset += CbvDesc.SizeInBytes;
+		GetD3DDevice()->CreateConstantBufferView(&CbvDesc, Cbv1Handle);
+		Cbv1Handle.Offset(CbvSrvDescriptorSize);
+	}
+
+	//create material constant buffer
+	FD3DConstantBuffer* MatCb = new FD3DConstantBuffer();
+	MatCb->Initialize();
+	MatCb->SetConstantBufferInfo(this, CurrentCbvSrvDesc.CbMaterial.BufferSize);
+	ConstantBuffers[CurrentCbvSrvDesc.CbMaterial.BufferType] = MatCb;
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE Cbv2Handle(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbMaterial.HeapOffsetStart,
+		CbvSrvDescriptorSize);
+	CbOffset = 0;
+	for (UINT i = 0; i < CurrentCbvSrvDesc.CbMaterial.BufferViewCount; i++)
+	{
+		D3D12_CONSTANT_BUFFER_VIEW_DESC Cbv2Desc = {};
+		Cbv2Desc.BufferLocation = MatCb->GetD3DConstantBuffer()->GetGPUVirtualAddress() + CbOffset;
+		Cbv2Desc.SizeInBytes = CurrentCbvSrvDesc.CbMaterial.BufferSize / CurrentCbvSrvDesc.CbMaterial.BufferViewCount;
+		CbOffset += Cbv2Desc.SizeInBytes;
+		GetD3DDevice()->CreateConstantBufferView(&Cbv2Desc, Cbv2Handle);
+		Cbv2Handle.Offset(CbvSrvDescriptorSize);
+	}
+
+	//CurrentCbvSrvDesc.SrvDesc  can use to create texture in mesh, use GetCurrentCbvSrvDesc()
+}
+
+void FD3D12Adapter::CreateConstantBuffer(E_CONSTANT_BUFFER_TYPE BufferType, UINT BufferSize, UINT BufferViewNum)
 {
 	//constant buffer and shader resource view buffer, 1 is for srv
 	CreateDescripterHeap(BufferViewNum + 1, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,

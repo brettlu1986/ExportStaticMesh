@@ -99,15 +99,9 @@ public:
 		return BufferSize;
 	}
 
-	UINT GetCbvSrvUavDescriptorSize()
-	{
-		return CbvSrvUavDescriptorSize;
-	}
-
 private:
 	UINT BufferSize;
 
 	UINT8* pCbvDataBegin;
-	UINT CbvSrvUavDescriptorSize;
 	ComPtr<ID3D12Resource> ConstantBuffer;
 };

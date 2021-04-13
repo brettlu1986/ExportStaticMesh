@@ -31,7 +31,7 @@ LogicStaticModel::LogicStaticModel()
 	MtProj = MathHelper::Identity4x4();
 	LastMousePoint = {0 , 0};
 	ThisLogic = this;
-	MtBuffer = new RingBuffer<int8_t*>(FrameCount);
+	MtBuffer = new RingBuffer<FBufferObject*>(FrameCount);
 	MtBuffer->Clear();
 }
 
@@ -66,13 +66,13 @@ void LogicStaticModel::InitModelScene()
 {
 	for (UINT i = 0; i < SampleAssets::SamepleCount; i++)
 	{
-		FMesh* Mesh = new FMesh(SampleAssets::SampleResources[i], i, SampleAssets::SampleResourceTexture[i],
+		FMesh* Mesh = new FMesh(SampleAssets::SampleResources[i], SampleAssets::SampleResourceTexture[i],
 			SampleAssets::SampleResourceTexture[i] != "" ? SampleAssets::PsoUseTexture : SampleAssets::PsoNoTexture);
 		Scene.AddMeshToScene(Mesh);
 	}
 
-	ConstantBufferSingleSize = (sizeof(ObjectConstants) + 255) & ~255;
-	ConstantBufferTotalSize = ConstantBufferSingleSize * SampleAssets::SamepleCount;
+	MtBufferSingleSize = CalcConstantBufferByteSize(sizeof(FObjectConstants));
+	MtBufferTotalSize = MtBufferSingleSize * Scene.GetMeshCount();
 	
 }
 
@@ -86,17 +86,20 @@ void LogicStaticModel::Update()
 		XMFLOAT4X4 WVP;
 		XMMATRIX Model;
 		
-		int8_t* ConstantBuffers = new int8_t[ConstantBufferTotalSize];
-		memset(ConstantBuffers, 0, ConstantBufferTotalSize);
-		for (UINT i = 0; i < SampleAssets::SamepleCount; i++)
+		FBufferObject* BufferObj = new FBufferObject();
+		BufferObj->Type = E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATRIX;
+
+		BufferObj->BufferData = new int8_t[MtBufferTotalSize];
+		memset(BufferObj->BufferData, 0, MtBufferTotalSize);
+		for (UINT i = 0; i < Scene.GetMeshCount(); i++)
 		{
 			Model = Scene.GetDrawMeshes()[i]->GetModelMatrix();
 			WorldViewProj = Model * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
 			//Update the constant buffer with the latest WorldViewProj matrix.
 			XMStoreFloat4x4(&WVP, XMMatrixTranspose(WorldViewProj));
-			memcpy( ConstantBuffers + i * ConstantBufferSingleSize, &WVP, sizeof(WVP));
+			memcpy(BufferObj->BufferData + i * MtBufferSingleSize, &WVP, sizeof(WVP));
 		}
-		MtBuffer->Enqueue(ConstantBuffers);
+		MtBuffer->Enqueue(BufferObj);
 	}
 }
 
@@ -107,10 +110,10 @@ void LogicStaticModel::CreateRenderThread()
 		RenderInit();
 		while (!(MtBuffer->IsEmpty() && bDestroy))
 		{
-			int8_t* ConstantObj = nullptr;
+			FBufferObject* ConstantObj = nullptr;
 			if (MtBuffer->Dequeue(&ConstantObj))
 			{
-				UpdateConstantBuffer(ConstantObj, ConstantBufferTotalSize);
+				UpdateConstantBuffer(ConstantObj, MtBufferTotalSize);
 				delete ConstantObj;
 			}
 			Render();

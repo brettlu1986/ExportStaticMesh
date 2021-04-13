@@ -27,6 +27,11 @@ public:
 	{
 		return CameraDatas;
 	}
+
+	const XMFLOAT3& GetCameraLocation()
+	{
+		return Position;
+	}
 private:
 
 	//void ReadCameraDataFromFile(LPCWSTR FileName );

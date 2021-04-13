@@ -57,10 +57,10 @@ private:
 	FScene Scene;
 	FSceneRenderer Renderer;
 
-	RingBuffer<int8_t*>* MtBuffer;
+	RingBuffer<FBufferObject*>* MtBuffer;
 	RenderThread RThread;
 
-	UINT ConstantBufferSingleSize;
-	UINT ConstantBufferTotalSize;
+	UINT MtBufferSingleSize;
+	UINT MtBufferTotalSize;
 	
 };

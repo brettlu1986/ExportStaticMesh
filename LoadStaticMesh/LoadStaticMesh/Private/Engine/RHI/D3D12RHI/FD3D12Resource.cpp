@@ -149,10 +149,12 @@ void FD3D12Texture::InitGPUTextureView(FD3D12Adapter* Adapter)
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = TextureResource->GetDesc().MipLevels;
 
-	UINT CbvSrvUavDescriptorSize = Adapter->GetD3DDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	UINT CbvSrvUavDescriptorSize = Adapter->GetCbvSrvUavDescriptorSize();
 	ComPtr<ID3D12DescriptorHeap> CbvSrvHeap = Adapter->CbvSrvHeap;
-	UINT SrvOffsetInHeap = Adapter->GetSrvOffsetInHeap();
-	CD3DX12_CPU_DESCRIPTOR_HANDLE CbvSrvHandle(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart(), SrvOffsetInHeap, CbvSrvUavDescriptorSize);
+
+	UINT SrvOffsetFromFirstTex = GetTextureHeapIndex();
+	const FCbvSrvDesc& CbvSrvDesc = Adapter->GetCurrentCbvSrvDesc();
+	CD3DX12_CPU_DESCRIPTOR_HANDLE CbvSrvHandle(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart(), CbvSrvDesc.SrvDesc.HeapOffsetStart + SrvOffsetFromFirstTex, CbvSrvUavDescriptorSize);
 	Adapter->GetD3DDevice()->CreateShaderResourceView(TextureResource.Get(), &srvDesc, CbvSrvHandle);
 }
 
@@ -185,7 +187,7 @@ void FD3DConstantBuffer::Initialize()
 
 void FD3DConstantBuffer::SetConstantBufferInfo(FD3D12Adapter* Adapter, UINT InBufferSize)
 {
-	CbvSrvUavDescriptorSize = Adapter->GetD3DDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	UINT CbvSrvUavDescriptorSize = Adapter->GetCbvSrvUavDescriptorSize();
 	BufferSize = InBufferSize;
 	const CD3DX12_HEAP_PROPERTIES ConstantProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	const CD3DX12_RESOURCE_DESC ConstantDesc = CD3DX12_RESOURCE_DESC::Buffer(BufferSize);
@@ -205,7 +207,7 @@ void FD3DConstantBuffer::SetConstantBufferInfo(FD3D12Adapter* Adapter, UINT InBu
 void FD3DConstantBuffer::UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSize)
 {	
 	/*int8_t* pData = (int8_t*)pDataUpdate;
-	UINT ConstantBufferSingleSize = (sizeof(ObjectConstants) + 255) & ~255;
+	UINT ConstantBufferSingleSize = (sizeof(FObjectConstants) + 255) & ~255;
 	XMFLOAT4X4 WVP[2];
 	for (UINT i = 0; i < 2; i++)
 	{

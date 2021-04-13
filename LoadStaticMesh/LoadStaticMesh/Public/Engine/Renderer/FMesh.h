@@ -10,7 +10,7 @@ class FMesh : public FRenderResource
 {
 public:
 	FMesh();
-	FMesh(const std::string& FileName, UINT Index, const std::string& TextureName = "", const std::string& PsoKey = "");
+	FMesh(const std::string& FileName, const std::string& TextureName = "", const std::string& PsoKey = "");
 	virtual ~FMesh();
 
 	virtual void Destroy();
@@ -36,10 +36,12 @@ public:
 		return IndexBuffer;
 	}
 
-	FTexture* GetTexture()
+	FTexture* GetDiffuseTexture()
 	{
-		return TextureRes;
+		return DiffuseTex;
 	}
+
+	void SetDiffuseTextureHeapIndex(UINT Index) ;
 
 	const std::string& GetPsoKey()
 	{
@@ -48,7 +50,12 @@ public:
 
 	const UINT GetBufferIndex()
 	{
-		return UseConstantBufferIdx;
+		return MatrixCbIndex;
+	}
+
+	void SetMatrixCbIndex(UINT Index)
+	{
+		MatrixCbIndex = Index;
 	}
 private:
 	void UpdateModelMatrix();
@@ -63,8 +70,10 @@ private:
 	std::string MeshTextureName;
 	std::string UsePsoKey;
 
-	UINT UseConstantBufferIdx;
+	UINT MatrixCbIndex;
 	FVertexBuffer* VertexBuffer;
 	FIndexBuffer* IndexBuffer;
-	FTexture* TextureRes;
+
+	FTexture* DiffuseTex;
+	
 };

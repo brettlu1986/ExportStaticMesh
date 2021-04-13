@@ -57,7 +57,9 @@ public:
 		return SwapChain.Get();
 	}
 
-	void CreateConstantBuffer(UINT BufferSize, UINT BufferViewNum);
+	void CreateSrvAndCbvs(FCbvSrvDesc Desc);
+
+	void CreateConstantBuffer(E_CONSTANT_BUFFER_TYPE BufferType, UINT BufferSize, UINT BufferViewNum);
 	void UpdateConstantBufferData(void* pUpdateData, UINT DataSize);
 	FD3DConstantBuffer* GetConstantBuffer() const
 	{
@@ -107,6 +109,21 @@ public:
 		return ConstantBufferViewNum;
 	}
 
+	const FCbvSrvDesc& GetCurrentCbvSrvDesc()
+	{
+		return CurrentCbvSrvDesc;
+	}
+
+	FD3DConstantBuffer* GetConstantBufferByCbType(E_CONSTANT_BUFFER_TYPE Type)
+	{
+		return ConstantBuffers[Type];
+	}
+
+	UINT GetCbvSrvUavDescriptorSize()
+	{
+		return CbvSrvDescriptorSize;
+	}
+
 	ComPtr<ID3D12DescriptorHeap> RtvHeap;
 	ComPtr<ID3D12DescriptorHeap> DsvHeap;
 	ComPtr<ID3D12DescriptorHeap> CbvSrvHeap;
@@ -151,6 +168,11 @@ private:
 
 	UINT OffsetSrvInHeap;
 	UINT ConstantBufferViewNum;
+
+	FCbvSrvDesc CurrentCbvSrvDesc;
+	std::map<E_CONSTANT_BUFFER_TYPE, FD3DConstantBuffer*> ConstantBuffers;
+	UINT CbvSrvDescriptorSize;
+
 
 	FD3D12CommandListManager* CommandListManager;
 	ComPtr<ID3D12Fence> GpuFence;

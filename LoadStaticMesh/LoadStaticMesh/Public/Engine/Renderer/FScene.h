@@ -17,10 +17,16 @@ public:
 	void EndRender();
 	void Destroy();
 
-	UINT GetDrawObjectsNum()
+	UINT GetMeshCount()
 	{
-		return static_cast<UINT>(Meshes.size());
+		return MeshCount;
 	}
+
+	UINT GetMeshWithTextureNum()
+	{
+		return MeshWithTextureCount;
+	}
+
 	const std::vector<FMesh*>& GetDrawMeshes()
 	{
 		return Meshes;
@@ -28,4 +34,6 @@ public:
 	
 private: 
 	std::vector<FMesh*> Meshes;
+	UINT MeshCount;
+	UINT MeshWithTextureCount;
 };

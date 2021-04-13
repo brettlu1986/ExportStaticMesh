@@ -19,10 +19,22 @@ FSceneRenderer::~FSceneRenderer()
 
 void FSceneRenderer::RenderInit(FScene* Scene)
 {
-	UINT ObjectNum = Scene->GetDrawObjectsNum();
-	UINT BufferSize = (sizeof(ObjectConstants) + 255) & ~255;
-	BufferSize = BufferSize * ObjectNum;
-	CreateConstantBuffer(BufferSize, ObjectNum);
+	UINT ObjectNum = Scene->GetMeshCount();
+	UINT TextureMeshNum = Scene->GetMeshWithTextureNum();
+
+	UINT MtBufferSize = CalcConstantBufferByteSize(sizeof(FObjectConstants));
+	MtBufferSize = MtBufferSize * ObjectNum;
+
+	UINT MatBufferSize = CalcConstantBufferByteSize(sizeof(FMaterialConstants));
+	MatBufferSize = MatBufferSize * ObjectNum;
+
+	FCbvSrvDesc BuffersDesc;
+	// material buffer count + matrix buffer count + texture count 
+	BuffersDesc.NeedDesciptorCount = ObjectNum * 2 + TextureMeshNum;
+	BuffersDesc.CbMatrix = { E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATRIX, 0, MtBufferSize, ObjectNum };
+	BuffersDesc.CbMaterial = { E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATERIAL, ObjectNum, MatBufferSize , ObjectNum };
+	BuffersDesc.SrvDesc = { ObjectNum*2,  TextureMeshNum };
+	CreateSrvAndCbvs(BuffersDesc);
 
 	//IMPORTANT: after create pso, will excute first init command queue in the function
 	FShader* Vs = CreateShader(L"shader_vs.cso");

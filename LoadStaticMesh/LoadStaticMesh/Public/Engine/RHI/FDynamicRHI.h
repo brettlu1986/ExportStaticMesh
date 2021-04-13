@@ -47,7 +47,8 @@ public:
 
 	virtual void ShutDown() = 0;
 
-	virtual void RHICreateConstantBuffer(UINT BufferSize, UINT BufferViewNum) = 0;
+	virtual void RHICreateConstantBuffer(E_CONSTANT_BUFFER_TYPE BufferType, UINT BufferSize, UINT BufferViewNum) = 0;
+	virtual void RHICreateSrvAndCbvs(FCbvSrvDesc) = 0;
 	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) = 0;
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) = 0;
 	virtual void RHICreatePiplineStateObject(FShader* Vs, FShader* Ps, const std::string& PsoKey, bool bDefaultPso) = 0;
@@ -77,9 +78,14 @@ public:
 
 };
 
-FORCEINLINE void CreateConstantBuffer(UINT BufferSize, UINT BufferViewNum)
+FORCEINLINE void CreateSrvAndCbvs(FCbvSrvDesc Desc)
 {
-	return GDynamicRHI->RHICreateConstantBuffer(BufferSize, BufferViewNum);
+	return GDynamicRHI->RHICreateSrvAndCbvs(Desc);
+}
+
+FORCEINLINE void CreateConstantBuffer(E_CONSTANT_BUFFER_TYPE BufferType, UINT BufferSize, UINT BufferViewNum)
+{
+	return GDynamicRHI->RHICreateConstantBuffer(BufferType, BufferSize, BufferViewNum);
 }
 
 FORCEINLINE void UpdateConstantBuffer(void* pUpdateData, UINT DataSize)
