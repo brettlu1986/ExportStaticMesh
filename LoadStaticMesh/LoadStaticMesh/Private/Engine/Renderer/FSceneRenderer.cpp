@@ -46,11 +46,13 @@ void FSceneRenderer::RenderInit(FScene* Scene)
 	FShader* Ps = CreateShader(L"shader_ps.cso");
 	CreatePiplineStateObject(Vs, Ps, SampleAssets::PsoUseTexture, true);
 
+	FShader* VsNoTex = CreateShader(L"shader_vs_notexture.cso");
 	FShader* PsNoTex = CreateShader(L"shader_ps_notexture.cso");
 	CreatePiplineStateObject(Vs, PsNoTex, SampleAssets::PsoNoTexture);
 
 	delete Vs;
 	delete Ps;
+	delete VsNoTex;
 	delete PsNoTex;
 
 	//in root sig, I put srv behind cbv, so Scene->InitRenderResource must after constant buffer create

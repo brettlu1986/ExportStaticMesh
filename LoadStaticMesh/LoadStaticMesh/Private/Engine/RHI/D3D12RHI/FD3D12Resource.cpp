@@ -206,13 +206,6 @@ void FD3DConstantBuffer::SetConstantBufferInfo(FD3D12Adapter* Adapter, UINT InBu
 
 void FD3DConstantBuffer::UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSize)
 {	
-	/*int8_t* pData = (int8_t*)pDataUpdate;
-	UINT ConstantBufferSingleSize = (sizeof(FObjectConstants) + 255) & ~255;
-	XMFLOAT4X4 WVP[2];
-	for (UINT i = 0; i < 2; i++)
-	{
-		memcpy(&WVP[i], pData + i * ConstantBufferSingleSize, sizeof(XMFLOAT4X4));
-	}*/
 	memcpy(pCbvDataBegin, pDataUpdate, BufferSize);
 }
 

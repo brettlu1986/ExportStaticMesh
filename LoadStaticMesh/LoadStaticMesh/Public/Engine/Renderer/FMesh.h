@@ -5,8 +5,8 @@
 #include "FMaterial.h"
 #include "FRHIDef.h"
 #include "FRenderResource.h"
+#include "FTexture.h"
 
-class FTexture;
 class FMesh : public FRenderResource
 {
 public:
@@ -41,6 +41,9 @@ public:
 	{
 		return DiffuseTex;
 	}
+
+	 XMFLOAT4X4 GetTextureTransform();
+	
 
 	FMaterial* GetMaterial()
 	{

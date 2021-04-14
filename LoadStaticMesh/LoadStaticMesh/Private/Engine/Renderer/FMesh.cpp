@@ -136,3 +136,14 @@ void FMesh::InitMaterial(const std::string& Name, XMFLOAT4 InDiffuseAlbedo, XMFL
 {
 	Material->Init(Name, InDiffuseAlbedo, InFresnelR0, Roughness);
 }
+
+XMFLOAT4X4 FMesh::GetTextureTransform()
+{
+	if(DiffuseTex != nullptr)
+		return DiffuseTex->GetTextureTransform();
+
+	XMFLOAT4X4 TexMat = MathHelper::Identity4x4();
+	XMStoreFloat4x4(&TexMat, XMMatrixScaling(1.0f, 1.0f, 1.0f));
+	return TexMat;
+}
+

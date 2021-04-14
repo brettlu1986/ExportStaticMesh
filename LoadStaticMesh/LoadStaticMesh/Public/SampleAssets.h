@@ -40,21 +40,18 @@ namespace SampleAssets
 		float Roughness;
 	};
 
-	const SampleMaterial SampleBrick = { "wall", XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(0.02f, 0.02f, 0.02f), 0.1f};
-	const SampleMaterial SampleChair = { "chair", XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(0.05f, 0.05f, 0.05f), 0.3f };
-	const SampleMaterial SampleFloor = { "floor", XMFLOAT4(Colors::LightGray), XMFLOAT3(0.02f, 0.02f, 0.02f), 0.2f };
 
 	const SampleMaterial SampeMats[] = 
 	{
-		SampleChair, 
-		SampleBrick,
-		SampleFloor,
-		SampleBrick,
-		SampleBrick,
-		SampleBrick,
-		SampleBrick,
-		SampleBrick,
-		SampleBrick,
+		{ "Chair", XMFLOAT4(Colors::LightGray), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.1f},
+		{ "Stair", XMFLOAT4(Colors::AliceBlue), XMFLOAT3(0.2f, 0.2f, 0.2f), 0.05f},
+		{ "Floor2", XMFLOAT4(Colors::Chocolate), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.02f},
+		{ "Bump", XMFLOAT4(Colors::Magenta), XMFLOAT3(0.2f, 0.2f, 0.2f), 0.2f},
+		{ "LeftArm", XMFLOAT4(Colors::OrangeRed), XMFLOAT3(0.3f, 0.3f, 0.3f), 0.4f},
+		{ "Wall6", XMFLOAT4(Colors::Purple), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.15f},
+		{ "Wall7", XMFLOAT4(Colors::Tan), XMFLOAT3(0.2f, 0.2f, 0.2f), 0.12f},
+		{ "Wall8", XMFLOAT4(Colors::White), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.3f},
+		{ "Wall9", XMFLOAT4(Colors::YellowGreen), XMFLOAT3(0.2f, 0.2f, 0.2f), 0.2f},
 	};
 	
 }

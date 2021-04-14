@@ -98,9 +98,6 @@ void LogicStaticModel::Update()
 
 void LogicStaticModel::UpdateMtConstantBuffer()
 {
-	XMMATRIX WorldViewProj;
-	XMFLOAT4X4 WVP;
-	XMMATRIX Model;
 
 	FBufferObject* BufferObj = new FBufferObject();
 	BufferObj->Type = E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATRIX;
@@ -110,11 +107,15 @@ void LogicStaticModel::UpdateMtConstantBuffer()
 	memset(BufferObj->BufferData, 0, MtBufferTotalSize);
 	for (UINT i = 0; i < Scene.GetMeshCount(); i++)
 	{
-		Model = Scene.GetDrawMeshes()[i]->GetModelMatrix();
-		WorldViewProj = Model * MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
-		//Update the constant buffer with the latest WorldViewProj matrix.
-		XMStoreFloat4x4(&WVP, XMMatrixTranspose(WorldViewProj));
-		memcpy(BufferObj->BufferData + i * MtBufferSingleSize, &WVP, sizeof(WVP));
+		FMesh* Mesh = Scene.GetDrawMeshes()[i];
+
+		FObjectConstants ObjConstants;
+		XMStoreFloat4x4(&ObjConstants.World, XMMatrixTranspose(Mesh->GetModelMatrix()));
+
+		XMFLOAT4X4 TexMat = Mesh->GetTextureTransform();
+		XMStoreFloat4x4(&ObjConstants.TexTransform, XMMatrixTranspose( XMLoadFloat4x4(&TexMat) ));
+
+		memcpy(BufferObj->BufferData + i * MtBufferSingleSize, &ObjConstants, sizeof(ObjConstants));
 	}
 	CbBuffers->Enqueue(BufferObj);
 }

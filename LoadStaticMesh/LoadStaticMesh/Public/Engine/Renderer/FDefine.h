@@ -102,13 +102,13 @@ const UINT StandardInputStride = 68;
 struct FObjectConstants
 {
 public: 
-	FObjectConstants(){};
-	FObjectConstants(XMFLOAT4X4 InWVP)
-	:WorldViewProj(InWVP)
-	{}
+	FObjectConstants()
+	:World(MathHelper::Identity4x4())
+	,TexTransform(MathHelper::Identity4x4())
+	{};
 
-	XMFLOAT4X4 WorldViewProj = MathHelper::Identity4x4();
-
+	XMFLOAT4X4 World;
+	XMFLOAT4X4 TexTransform;
 };
 
 struct FMaterialConstants

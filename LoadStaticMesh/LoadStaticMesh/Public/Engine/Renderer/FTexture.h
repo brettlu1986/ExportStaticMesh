@@ -18,10 +18,16 @@ public:
 	void SetTextureHeapIndex(UINT Index) { TexHeapIndex = Index; }
 	UINT GetTextureHeapIndex() const { return TexHeapIndex; }
 
+	const XMFLOAT4X4& GetTextureTransform() const 
+	{
+		return TexTransform;
+	}
 protected:
 	uint8_t* BitData;
 	size_t BitSize;
 	std::string TextureName;
 	//this index is the offset from first tex in heap
 	UINT TexHeapIndex;
+
+	XMFLOAT4X4 TexTransform;
 };

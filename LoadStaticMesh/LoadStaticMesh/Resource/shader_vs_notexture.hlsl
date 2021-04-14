@@ -1,7 +1,5 @@
 
-#ifndef NUM_DIR_LIGHTS
-#define NUM_DIR_LIGHTS 3
-#endif
+
 
 #include "LightingUtil.hlsl"
 
@@ -30,10 +28,10 @@ cbuffer cbPass : register(b2)
 
 struct VSInput
 {
-    float3 position    : POSITION;
+	float3 position    : POSITION;
 	float3 normal     : NORMAL;
 	float3 tangent   : TANGENT;
-    float2 uv0        : TEXCOORD0;
+	float2 uv0        : TEXCOORD0;
 	float2 uv1        : TEXCOORD1;
 	float4 color     : COLOR;
 };
@@ -52,18 +50,16 @@ struct PSInput
 PSInput VSMain(VSInput vin)
 {
 	PSInput vout = (PSInput)0.0f;
-	
+
 	//transfrom to world space
 	float4 posW = mul(float4(vin.position, 1.0f), gWorld);
 	vout.posW = posW.xyz;
-	
+
 	vout.normal = mul(vin.normal, (float3x3)gWorld);
 	vout.position = mul(posW, gViewProj);
 
-	float4 uv0 = mul(float4(vin.uv0, 0.0f, 1.0f), gTexTransform);
-	vout.uv0 = mul(uv0, gMatTransform).xy;
-
 	vout.tangent = vin.tangent;
+	vout.uv0 = vin.uv0;
 	vout.uv1 = vin.uv1;
 	vout.color = vin.color;
 

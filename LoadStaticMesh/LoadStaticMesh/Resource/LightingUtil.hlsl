@@ -1,4 +1,8 @@
 
+#ifndef NUM_DIR_LIGHTS
+#define NUM_DIR_LIGHTS 3
+#endif
+
 #define MaxLights 16
 
 struct Light
@@ -70,12 +74,10 @@ float4 ComputeLighting(Light gLights[MaxLights], Material mat,
 
     int i = 0;
 
-#if (NUM_DIR_LIGHTS > 0)
     for (i = 0; i < NUM_DIR_LIGHTS; ++i)
     {
         result += shadowFactor[i] * ComputeDirectionalLight(gLights[i], mat, normal, toEye);
     }
-#endif
     return float4(result, 0.0f);
 }
 
