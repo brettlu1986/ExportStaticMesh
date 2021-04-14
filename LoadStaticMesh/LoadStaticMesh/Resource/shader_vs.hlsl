@@ -1,8 +1,31 @@
 
+#ifndef NUM_DIR_LIGHTS
+#define NUM_DIR_LIGHTS 3
+#endif
+
+#include "LightingUtil.hlsl"
+
 cbuffer cbPerObject : register(b0)
 {
 	float4x4 gWorldViewProj;
 };
+
+cbuffer cbMaterial : register(b1)
+{
+	float4 gDiffuseAlbedo;
+	float3 gFresnelR0;
+	float gRoughness;
+	float4x4 gMatTransform;
+}
+
+cbuffer cbPass : register(b2)
+{
+	float4x4 gViewProj;
+	float3 gEyePosW;
+	float cbPerObjectPad1;
+	float4 gAimbientLight;
+	Light gLight[MaxLights];
+}
 
 struct VSInput
 {
@@ -26,8 +49,8 @@ struct PSInput
 
 PSInput VSMain(VSInput vin)
 {
-	PSInput vout;
-
+	PSInput vout = (PSInput)0.0f;
+	
 	vout.position = mul(float4(vin.position, 1.0f), gWorldViewProj);
 
 	vout.normal = vin.normal;

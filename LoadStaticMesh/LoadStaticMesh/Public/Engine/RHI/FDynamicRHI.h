@@ -48,7 +48,7 @@ public:
 	virtual void ShutDown() = 0;
 
 	virtual void RHICreateSrvAndCbvs(FCbvSrvDesc) = 0;
-	virtual void RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize) = 0;
+	virtual void RHIUpdateConstantBuffer(void* pUpdateData) = 0;
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) = 0;
 	virtual void RHICreatePiplineStateObject(FShader* Vs, FShader* Ps, const std::string& PsoKey, bool bDefaultPso) = 0;
 
@@ -82,9 +82,9 @@ FORCEINLINE void CreateSrvAndCbvs(FCbvSrvDesc Desc)
 	return GDynamicRHI->RHICreateSrvAndCbvs(Desc);
 }
 
-FORCEINLINE void UpdateConstantBuffer(void* pUpdateData, UINT DataSize)
+FORCEINLINE void UpdateConstantBuffer(void* pUpdateData)
 {
-	return GDynamicRHI->RHIUpdateConstantBuffer(pUpdateData, DataSize);
+	return GDynamicRHI->RHIUpdateConstantBuffer(pUpdateData);
 }
 
 FORCEINLINE  FShader* CreateShader(LPCWSTR ShaderFile)

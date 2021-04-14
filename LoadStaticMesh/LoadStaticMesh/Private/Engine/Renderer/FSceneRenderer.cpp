@@ -21,6 +21,7 @@ void FSceneRenderer::RenderInit(FScene* Scene)
 {
 	UINT ObjectNum = Scene->GetMeshCount();
 	UINT TextureMeshNum = Scene->GetMeshWithTextureNum();
+	UINT PassConNum = 1;
 
 	UINT MtBufferSize = CalcConstantBufferByteSize(sizeof(FObjectConstants));
 	MtBufferSize = MtBufferSize * ObjectNum;
@@ -28,12 +29,16 @@ void FSceneRenderer::RenderInit(FScene* Scene)
 	UINT MatBufferSize = CalcConstantBufferByteSize(sizeof(FMaterialConstants));
 	MatBufferSize = MatBufferSize * ObjectNum;
 
+	UINT PassConsBufferSize = CalcConstantBufferByteSize(sizeof(FPassConstants));
+	PassConsBufferSize = PassConsBufferSize * PassConNum;
+
 	FCbvSrvDesc BuffersDesc;
-	// material buffer count + matrix buffer count + texture count 
-	BuffersDesc.NeedDesciptorCount = ObjectNum * 2 + TextureMeshNum;
+	// material buffer count + matrix buffer count + texture count + constant buffer(1)
+	BuffersDesc.NeedDesciptorCount = ObjectNum * 2 + TextureMeshNum + PassConNum;
 	BuffersDesc.CbMatrix = { E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATRIX, 0, MtBufferSize, ObjectNum };
 	BuffersDesc.CbMaterial = { E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATERIAL, ObjectNum, MatBufferSize , ObjectNum };
-	BuffersDesc.SrvDesc = { ObjectNum*2,  TextureMeshNum };
+	BuffersDesc.CbConstant = { E_CONSTANT_BUFFER_TYPE::TYPE_CB_PASSCONSTANT, ObjectNum * 2, PassConsBufferSize, PassConNum };
+	BuffersDesc.SrvDesc = { ObjectNum * 2 + PassConNum,  TextureMeshNum };
 	CreateSrvAndCbvs(BuffersDesc);
 
 	//IMPORTANT: after create pso, will excute first init command queue in the function

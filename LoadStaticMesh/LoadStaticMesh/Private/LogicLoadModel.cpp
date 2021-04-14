@@ -31,7 +31,7 @@ LogicStaticModel::LogicStaticModel()
 	MtProj = MathHelper::Identity4x4();
 	LastMousePoint = {0 , 0};
 	ThisLogic = this;
-	CbBuffers = new RingBuffer<FBufferObject*>(FrameCount);
+	CbBuffers = new RingBuffer<FBufferObject*>(FrameCount * 2);
 	CbBuffers->Clear();
 
 }
@@ -80,6 +80,8 @@ void LogicStaticModel::InitModelScene()
 	
 	MatBufferSingleSize = CalcConstantBufferByteSize(sizeof(FMaterialConstants));
 	MatBufferTotalSize = MatBufferSingleSize * Scene.GetMeshCount();
+
+	PassConstantSize = CalcConstantBufferByteSize(sizeof(FPassConstants));
 }
 
 // main thread
@@ -89,7 +91,8 @@ void LogicStaticModel::Update()
 	if(!bDestroy)
 	{
 		UpdateMtConstantBuffer();
-	//	UpdateMatConstantBuffer();
+		UpdateMatConstantBuffer();
+		UpdatePassConstantBuffer();
 	}
 }
 
@@ -101,6 +104,7 @@ void LogicStaticModel::UpdateMtConstantBuffer()
 
 	FBufferObject* BufferObj = new FBufferObject();
 	BufferObj->Type = E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATRIX;
+	BufferObj->DataSize = MtBufferTotalSize;
 
 	BufferObj->BufferData = new int8_t[MtBufferTotalSize];
 	memset(BufferObj->BufferData, 0, MtBufferTotalSize);
@@ -119,6 +123,7 @@ void LogicStaticModel::UpdateMatConstantBuffer()
 {
 	FBufferObject* BufferObj = new FBufferObject();
 	BufferObj->Type = E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATERIAL;
+	BufferObj->DataSize = MatBufferTotalSize;
 
 	BufferObj->BufferData = new int8_t[MatBufferTotalSize];
 	memset(BufferObj->BufferData, 0, MatBufferTotalSize);
@@ -140,6 +145,30 @@ void LogicStaticModel::UpdateMatConstantBuffer()
 	CbBuffers->Enqueue(BufferObj);
 }
 
+
+void LogicStaticModel::UpdatePassConstantBuffer()
+{
+	FBufferObject* BufferObj = new FBufferObject();
+	BufferObj->Type = E_CONSTANT_BUFFER_TYPE::TYPE_CB_PASSCONSTANT;
+	BufferObj->DataSize = PassConstantSize;
+
+	BufferObj->BufferData = new int8_t[PassConstantSize];
+	memset(BufferObj->BufferData, 0, PassConstantSize);
+	
+	XMMATRIX ViewProj = MyCamera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
+	XMStoreFloat4x4(&PassConstant.ViewProj, XMMatrixTranspose(ViewProj));
+	PassConstant.EyePosW = MyCamera.GetCameraLocation();
+	PassConstant.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
+	PassConstant.Lights[0].Direction = { 0.57735f, -0.57735f, 0.57735f };
+	PassConstant.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
+	PassConstant.Lights[1].Direction = { -0.57735f, -0.57735f, 0.57735f };
+	PassConstant.Lights[1].Strength = { 0.4f, 0.4f, 0.4f };
+	PassConstant.Lights[2].Direction = { 0.0f, -0.707f, -0.707f };
+	PassConstant.Lights[2].Strength = { 0.2f, 0.2f, 0.2f };
+	memcpy(BufferObj->BufferData , &PassConstant, sizeof(PassConstant));
+	CbBuffers->Enqueue(BufferObj);
+}
+
 // render thread
 void LogicStaticModel::CreateRenderThread()
 {
@@ -150,7 +179,7 @@ void LogicStaticModel::CreateRenderThread()
 			FBufferObject* ConstantObj = nullptr;
 			if (CbBuffers->Dequeue(&ConstantObj))
 			{
-				UpdateConstantBuffer(ConstantObj, MtBufferTotalSize);
+				UpdateConstantBuffer(ConstantObj);
 				delete ConstantObj;
 			}
 			Render();

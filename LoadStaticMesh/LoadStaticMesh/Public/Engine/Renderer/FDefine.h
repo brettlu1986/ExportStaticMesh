@@ -127,11 +127,40 @@ public:
 	XMFLOAT4X4 MatTransform;
 };
 
+#define MaxLights 16
+
+struct FLight
+{
+	DirectX::XMFLOAT3 Strength = { 0.5f, 0.5f, 0.5f };
+	float FalloffStart = 1.0f;                          // point/spot light only
+	DirectX::XMFLOAT3 Direction = { 0.0f, -1.0f, 0.0f };// directional/spot light only
+	float FalloffEnd = 10.0f;                           // point/spot light only
+	DirectX::XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };  // point/spot light only
+	float SpotPower = 64.0f;                            // spot light only
+};
+
+struct FPassConstants
+{
+public:
+	FPassConstants()
+	:ViewProj(MathHelper::Identity4x4())
+	, EyePosW({ 0.0f, 0.0f, 0.0f })
+	, AmbientLight({ 0.0f, 0.0f, 0.0f, 1.0f })
+	, CbPerObjectPad1(0.f)
+	{};
+	DirectX::XMFLOAT4X4 ViewProj;
+	DirectX::XMFLOAT3 EyePosW ;
+	float CbPerObjectPad1 ;
+	DirectX::XMFLOAT4 AmbientLight;
+	FLight Lights[MaxLights];
+};
+
 struct FBufferObject
 {
 public: 
 	FBufferObject()
 	:Type(E_CONSTANT_BUFFER_TYPE::TYPE_CB_UNKNOWN)
+	, DataSize(0)
 	,BufferData(nullptr)
 	{}
 
@@ -144,6 +173,7 @@ public:
 		}
 	}
 	E_CONSTANT_BUFFER_TYPE Type;
+	UINT DataSize;
 	int8_t* BufferData;
 };
 
@@ -166,6 +196,7 @@ typedef struct FCbvSrvDesc
 	UINT NeedDesciptorCount;
 	FConstantBufferDesc CbMatrix;
 	FConstantBufferDesc CbMaterial;
+	FConstantBufferDesc CbConstant;
 	FShaderResourceDesc SrvDesc;
 }FCbvSrvDesc;
 

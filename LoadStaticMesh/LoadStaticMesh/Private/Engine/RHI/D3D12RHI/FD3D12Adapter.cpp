@@ -198,19 +198,22 @@ void FD3D12Adapter::CreateSwapChain()
 
 void FD3D12Adapter::CreateSignature()
 {
-	CD3DX12_ROOT_PARAMETER RootParameters[3];
+	CD3DX12_ROOT_PARAMETER RootParameters[5];
 	ZeroMemory(RootParameters, sizeof(RootParameters));
-	CD3DX12_DESCRIPTOR_RANGE Ranges[3];
+	CD3DX12_DESCRIPTOR_RANGE Ranges[5];
 	ZeroMemory(Ranges, sizeof(Ranges));
-	Ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 0);
-	//Ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 0);
-	Ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0);
-	Ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
+	Ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+	Ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
+	Ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);
+	Ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+	Ranges[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
+
 
 	RootParameters[0].InitAsDescriptorTable(1, &Ranges[0], D3D12_SHADER_VISIBILITY_ALL);
-	//RootParameters[1].InitAsDescriptorTable(1, &Ranges[1], D3D12_SHADER_VISIBILITY_ALL);
-	RootParameters[1].InitAsDescriptorTable(1, &Ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
-	RootParameters[2].InitAsDescriptorTable(1, &Ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
+	RootParameters[1].InitAsDescriptorTable(1, &Ranges[1], D3D12_SHADER_VISIBILITY_ALL);
+	RootParameters[2].InitAsDescriptorTable(1, &Ranges[2], D3D12_SHADER_VISIBILITY_ALL);
+	RootParameters[3].InitAsDescriptorTable(1, &Ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
+	RootParameters[4].InitAsDescriptorTable(1, &Ranges[4], D3D12_SHADER_VISIBILITY_PIXEL);
 
 	// Allow input layout and deny uneccessary access to certain pipeline stages.
 	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(_countof(RootParameters), RootParameters, 0, nullptr,
@@ -342,6 +345,19 @@ void FD3D12Adapter::CreateSrvAndCbvs(FCbvSrvDesc Desc)
 		GetD3DDevice()->CreateConstantBufferView(&Cbv2Desc, Cbv2Handle);
 		Cbv2Handle.Offset(CbvSrvDescriptorSize);
 	}
+
+	//create pass constant
+	FD3DConstantBuffer* PassConstantCb = new FD3DConstantBuffer();
+	PassConstantCb->Initialize();
+	PassConstantCb->SetConstantBufferInfo(this, CurrentCbvSrvDesc.CbConstant.BufferSize);
+	ConstantBuffers[CurrentCbvSrvDesc.CbConstant.BufferType] =  PassConstantCb;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE Cbv3Handle(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbConstant.HeapOffsetStart,
+		CbvSrvDescriptorSize);
+
+	D3D12_CONSTANT_BUFFER_VIEW_DESC Cbv3Desc = {};
+	Cbv3Desc.BufferLocation = PassConstantCb->GetD3DConstantBuffer()->GetGPUVirtualAddress();
+	Cbv3Desc.SizeInBytes = CurrentCbvSrvDesc.CbConstant.BufferSize ;
+	GetD3DDevice()->CreateConstantBufferView(&Cbv3Desc, Cbv3Handle);
 
 	//CurrentCbvSrvDesc.SrvDesc  can use to create texture in mesh, use GetCurrentCbvSrvDesc()
 }

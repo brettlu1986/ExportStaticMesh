@@ -155,13 +155,13 @@ void FD3D12DynamicRHI::ShutDown()
 	 ChosenAdapter->CreateSrvAndCbvs(Desc);
  }
 
- void FD3D12DynamicRHI::RHIUpdateConstantBuffer(void* pUpdateData, UINT DataSize)
+ void FD3D12DynamicRHI::RHIUpdateConstantBuffer(void* pUpdateData)
  {
 	FBufferObject* BuffObj = (FBufferObject*)(pUpdateData);
 	FD3DConstantBuffer* Cb = ChosenAdapter->GetConstantBufferByCbType(BuffObj->Type);
 	if(Cb)
 	{
-		Cb->UpdateConstantBufferInfo(BuffObj->BufferData, DataSize);
+		Cb->UpdateConstantBufferInfo(BuffObj->BufferData, BuffObj->DataSize);
 	}
  }
 
@@ -204,6 +204,11 @@ void FD3D12DynamicRHI::ShutDown()
 	 CurrentCommandList->RSSetScissorRects(1, &(ChosenAdapter->ScissorRect));
 	 ChosenAdapter->InitRenderBegin(CurrentCommandList, TargetFrame, Color);
 
+	 // pass constant buffer
+	 const FCbvSrvDesc& CbvSrvDesc = ChosenAdapter->GetCurrentCbvSrvDesc();
+	 CD3DX12_GPU_DESCRIPTOR_HANDLE cbvSrvHandle(ChosenAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CbvSrvDesc.CbConstant.HeapOffsetStart,
+		 ChosenAdapter->GetCbvSrvUavDescriptorSize());
+	 CurrentCommandList->SetGraphicsRootDescriptorTable(2, cbvSrvHandle);
  }
 
  void FD3D12DynamicRHI::RHIDrawMesh(FMesh* Mesh)
@@ -220,18 +225,22 @@ void FD3D12DynamicRHI::ShutDown()
 	 CurrentCommandList->SetPipelineState(ChosenAdapter->GetPiplineState(Mesh->GetPsoKey()));
 
 	 const FCbvSrvDesc& CbvSrvDesc = ChosenAdapter->GetCurrentCbvSrvDesc();
-	 FD3DConstantBuffer* MtCb = ChosenAdapter->GetConstantBufferByCbType(E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATRIX);
-	 CD3DX12_GPU_DESCRIPTOR_HANDLE cbvSrvHandle(ChosenAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CbvSrvDesc.CbMatrix.HeapOffsetStart + Mesh->GetBufferIndex(),
+	 CD3DX12_GPU_DESCRIPTOR_HANDLE MtHandle(ChosenAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CbvSrvDesc.CbMatrix.HeapOffsetStart + Mesh->GetBufferIndex(),
 		 ChosenAdapter->GetCbvSrvUavDescriptorSize());
-	 CurrentCommandList->SetGraphicsRootDescriptorTable(0, cbvSrvHandle);
+	 CurrentCommandList->SetGraphicsRootDescriptorTable(0, MtHandle);
+
+	 FMaterial* Material = Mesh->GetMaterial();
+	 CD3DX12_GPU_DESCRIPTOR_HANDLE MatHandle(ChosenAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CbvSrvDesc.CbMaterial.HeapOffsetStart + Material->GetMaterialCbvHeapIndex(),
+		 ChosenAdapter->GetCbvSrvUavDescriptorSize());
+	 CurrentCommandList->SetGraphicsRootDescriptorTable(1, MatHandle);
 
 	 if(Mesh->GetDiffuseTexture())
 	 {
 		 FTexture* Tex = Mesh->GetDiffuseTexture();
 		 CD3DX12_GPU_DESCRIPTOR_HANDLE TexHandle(ChosenAdapter->CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CbvSrvDesc.SrvDesc.HeapOffsetStart + Tex->GetTextureHeapIndex(),
 			 ChosenAdapter->GetCbvSrvUavDescriptorSize());
-		 CurrentCommandList->SetGraphicsRootDescriptorTable(1, TexHandle);
-		 CurrentCommandList->SetGraphicsRootDescriptorTable(2, ChosenAdapter->SamplerHeap->GetGPUDescriptorHandleForHeapStart());
+		 CurrentCommandList->SetGraphicsRootDescriptorTable(3, TexHandle);
+		 CurrentCommandList->SetGraphicsRootDescriptorTable(4, ChosenAdapter->SamplerHeap->GetGPUDescriptorHandleForHeapStart());
 	 }
 
 	 CurrentCommandList->DrawIndexedInstanced(D3DIndexBuffer->GetIndicesCount(), 1, 0, 0, 0);

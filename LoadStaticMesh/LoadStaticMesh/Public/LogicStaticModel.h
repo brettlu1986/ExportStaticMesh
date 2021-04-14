@@ -43,6 +43,7 @@ private:
 private:
 	void UpdateMtConstantBuffer();
 	void UpdateMatConstantBuffer();
+	void UpdatePassConstantBuffer();
 
 	static const UINT FrameCount = 3;
 
@@ -67,4 +68,7 @@ private:
 	
 	UINT MatBufferSingleSize;
 	UINT MatBufferTotalSize;
+
+	UINT PassConstantSize;
+	FPassConstants PassConstant;
 };
