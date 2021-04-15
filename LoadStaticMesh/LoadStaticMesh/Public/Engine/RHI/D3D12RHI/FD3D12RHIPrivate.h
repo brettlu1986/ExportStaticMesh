@@ -14,19 +14,14 @@ public:
 	FD3D12DynamicRHIModule() {}
 	~FD3D12DynamicRHIModule() {}
 
-	virtual bool IsSupported() override;
 	virtual FDynamicRHI* CreateRHI() override;
 
-private:
-	FD3D12Adapter* ChosenAdapter = nullptr;
-
-	void FindAdapter();
 };
 
 class FD3D12DynamicRHI : public FDynamicRHI
 {
 public:
-	FD3D12DynamicRHI(FD3D12Adapter* ChosenAdapterIn);
+	FD3D12DynamicRHI();
 
 	virtual void Init() override;
 	virtual void ShutDown() override;
@@ -46,6 +41,8 @@ public:
 	virtual void RHIDrawMesh(FMesh* Mesh) override;
 
 private:
+	bool IsSupported();
+	void FindAdapter();
 	void RHIInitWindow(UINT Width, UINT Height, void* Window);
 
 	FD3D12Adapter* ChosenAdapter = nullptr;

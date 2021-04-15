@@ -13,10 +13,6 @@ static IDynamicRHIModule* LoadDynamicRHIModule()
 	case EDynamicModuleType::MODULE_D3D12:
 	{
 		DynamicRHIModule = new FD3D12DynamicRHIModule();
-		if (!DynamicRHIModule->IsSupported())
-		{
-			DynamicRHIModule = nullptr;
-		}
 	}
 	break;
 	default:{}

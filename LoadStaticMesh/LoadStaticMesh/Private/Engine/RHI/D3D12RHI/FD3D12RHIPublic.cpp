@@ -14,21 +14,22 @@
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
-bool FD3D12DynamicRHIModule::IsSupported()
-{
-	if(ChosenAdapter == nullptr)
-	{
-		FindAdapter();
-	}
-	return ChosenAdapter != nullptr;
-}
+
 
 FDynamicRHI* FD3D12DynamicRHIModule::CreateRHI()
 {
-	return new FD3D12DynamicRHI(ChosenAdapter);
+	return new FD3D12DynamicRHI();
 }
 
-void FD3D12DynamicRHIModule::FindAdapter()
+
+
+/////////////////////////// dynamic RHI implement
+FD3D12DynamicRHI::FD3D12DynamicRHI()
+{
+	
+}
+
+void FD3D12DynamicRHI::FindAdapter()
 {
 #if defined(_DEBUG)
 	// Enable the debug layer (requires the Graphics Tools "optional feature").
@@ -105,14 +106,20 @@ void FD3D12DynamicRHIModule::FindAdapter()
 	pDevice->Release();
 }
 
-/////////////////////////// dynamic RHI implement
-FD3D12DynamicRHI::FD3D12DynamicRHI(FD3D12Adapter* ChosenAdapterIn)
+bool FD3D12DynamicRHI::IsSupported()
 {
-	ChosenAdapter = ChosenAdapterIn;
+	if (ChosenAdapter == nullptr)
+	{
+		FindAdapter();
+	}
+	return ChosenAdapter != nullptr;
 }
 
 void FD3D12DynamicRHI::Init() 
 {
+	if(!IsSupported())
+		return;
+
 	if(ChosenAdapter)
 	{
 		ChosenAdapter->Initialize(this);
@@ -139,15 +146,15 @@ void FD3D12DynamicRHI::ShutDown()
 		ChosenAdapter = nullptr;
 	}
 
-#if defined(_DEBUG)
-	{
-		ComPtr<IDXGIDebug1> DxgiDebug;
-		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&DxgiDebug))))
-		{
-			DxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
-		}
-	}
-#endif
+//#if defined(_DEBUG)
+//	{
+//		ComPtr<IDXGIDebug1> DxgiDebug;
+//		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&DxgiDebug))))
+//		{
+//			DxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
+//		}
+//	}
+//#endif
 }
  
  void FD3D12DynamicRHI::RHICreateSrvAndCbvs(FCbvSrvDesc Desc)

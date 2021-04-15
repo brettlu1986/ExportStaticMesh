@@ -72,7 +72,6 @@ class IDynamicRHIModule
 {
 public:
 
-	virtual bool IsSupported() = 0;
 	virtual FDynamicRHI* CreateRHI() = 0;
 
 };

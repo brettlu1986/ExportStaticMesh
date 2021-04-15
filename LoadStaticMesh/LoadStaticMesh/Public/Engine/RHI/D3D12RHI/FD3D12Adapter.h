@@ -47,7 +47,7 @@ public:
 	FD3D12DynamicRHI* GetOwningRHI() const { return OwningRHI; }
 	IDXGIAdapter1* GetAdapter() const { return DxgiAdapter.Get(); }
 
-	ID3D12Device* GetD3DDevice() const { return D3DDevice1.Get(); }
+	ID3D12Device* GetD3DDevice() const { return D3DDevice.Get(); }
 
 	ID3D12RootSignature* GetRootSignature() const {
 		return RootSignature.Get();
@@ -134,7 +134,7 @@ private:
 	FD3D12AdapterDesc Desc;
 	FD3D12DynamicRHI* OwningRHI;
 
-	ComPtr<ID3D12Device> D3DDevice1;
+	ComPtr<ID3D12Device> D3DDevice;
 	ComPtr<IDXGIFactory4> DxgiFactory;
 	ComPtr<IDXGIAdapter1> DxgiAdapter;
 	ComPtr<IDXGISwapChain> SwapChain;

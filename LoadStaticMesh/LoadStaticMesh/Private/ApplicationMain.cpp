@@ -6,6 +6,9 @@
 #include "LAssetDataLoader.h"
 #include <DirectXMath.h>
 
+#include <dxgidebug.h>
+#include <d3dcompiler.h>
+
 using namespace DirectX;
 
 ApplicationMain* ApplicationMain::Application = nullptr;
@@ -72,7 +75,6 @@ void ApplicationMain::Run()
 void ApplicationMain::Destroy()
 {
 	LEngine::GetEngine()->Destroy();
-	Scene.Destroy();
 }
 
 void ApplicationMain::ProcessInput(FInputResult Input)
