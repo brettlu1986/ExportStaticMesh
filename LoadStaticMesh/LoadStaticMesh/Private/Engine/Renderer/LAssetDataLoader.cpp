@@ -1,5 +1,6 @@
 
 #include "LAssetDataLoader.h"
+#include "SampleAssets.h"
 
 #include <iostream>
 #include <fstream>
@@ -126,4 +127,22 @@ void LAssetDataLoader::LoadCameraDataFromFile(std::string FileName, LCamera& Cam
 	if (!Rf.good()) {
 		return;
 	}
+}
+
+
+void LAssetDataLoader::LoadSampleScene(FScene* Scene)
+{
+	for (UINT i = 0; i < SampleAssets::SamepleCount; i++)
+	{
+		FMesh* Mesh = new FMesh(SampleAssets::SampleResources[i], SampleAssets::SampleResourceTexture[i],
+			SampleAssets::SampleResourceTexture[i] != "" ? SampleAssets::PsoUseTexture : SampleAssets::PsoNoTexture);
+
+		Mesh->InitMaterial(SampleAssets::SampeMats[i].Name, SampleAssets::SampeMats[i].DiffuseAlbedo, SampleAssets::SampeMats[i].FresnelR0,
+			SampleAssets::SampeMats[i].Roughness);
+		Scene->AddMeshToScene(Mesh);
+	}
+
+	LCamera& Camera = Scene->GetCamera();
+	LoadCameraDataFromFile(SampleAssets::CameraBin, Camera);
+	Camera.Init();
 }

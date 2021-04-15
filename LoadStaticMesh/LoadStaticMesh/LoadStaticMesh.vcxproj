@@ -72,20 +72,20 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event</IncludePath>
+    <IncludePath>$(IncludePath);$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -174,9 +174,10 @@
     <ClCompile Include="Private\Engine\RHI\FDynamicRHI.cpp" />
     <ClCompile Include="Private\Engine\RHI\FRHI.cpp" />
     <ClCompile Include="Private\Engine\RHI\FWindowsDynamicRHI.cpp" />
+    <ClCompile Include="Private\Engine\Thread\FRenderThread.cpp" />
+    <ClCompile Include="Private\Engine\Thread\FThread.cpp" />
+    <ClCompile Include="Private\Engine\Thread\FTaskThread.cpp" />
     <ClCompile Include="Private\Engine\Util\MathHelper.cpp" />
-    <ClCompile Include="Private\LogicLoadModel.cpp" />
-    <ClCompile Include="Private\RenderThread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds" />
@@ -336,9 +337,10 @@
     <ClInclude Include="Public\Engine\RHI\FDynamicRHI.h" />
     <ClInclude Include="Public\Engine\RHI\FRHI.h" />
     <ClInclude Include="Public\Engine\RHI\FRHIDef.h" />
+    <ClInclude Include="Public\Engine\Thread\FRenderThread.h" />
+    <ClInclude Include="Public\Engine\Thread\FThread.h" />
+    <ClInclude Include="Public\Engine\Thread\FTaskThread.h" />
     <ClInclude Include="Public\Engine\Util\MathHelper.h" />
-    <ClInclude Include="Public\LogicStaticModel.h" />
-    <ClInclude Include="Public\RenderThread.h" />
     <ClInclude Include="Public\SampleAssets.h" />
     <ClInclude Include="Public\stdafx.h" />
   </ItemGroup>

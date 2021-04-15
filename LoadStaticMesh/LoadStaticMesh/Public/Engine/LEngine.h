@@ -12,6 +12,7 @@ typedef struct LEngineDesc
 }LEngineDesc;
 
 class LDevice;
+class FScene;
 class LEngine
 {
 public:
@@ -21,6 +22,7 @@ public:
 
 	void Init(LEngineDesc Desc);
 	bool Run();
+	void Render();
 	void Destroy();
 
 	E_DEVICE_PLATFORM GetPlatform() const
@@ -37,6 +39,12 @@ public:
 	{
 		return EventDisp;
 	}
+
+	void InitRenderThreadScene(FScene* Scene);
+	void WaitForRenderThread();
+	void UpdateRenderThreadScene(FScene* Scene);
+	void DrawThreadThreadScene(FScene* Scene);
+
 private: 
 	static LEngine* Engine;
 	LDevice* CurrentDevice = nullptr;

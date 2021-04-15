@@ -16,6 +16,8 @@
 #include "SampleAssets.h"
 #include "LAssetDataLoader.h"
 
+using namespace std;
+
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
@@ -33,6 +35,7 @@ LogicStaticModel::LogicStaticModel()
 	ThisLogic = this;
 	CbBuffers = new RingBuffer<FBufferObject*>(FrameCount * 2);
 	CbBuffers->Clear();
+
 
 }
 
@@ -160,12 +163,12 @@ void LogicStaticModel::UpdatePassConstantBuffer()
 	XMStoreFloat4x4(&PassConstant.ViewProj, XMMatrixTranspose(ViewProj));
 	PassConstant.EyePosW = MyCamera.GetCameraLocation();
 	PassConstant.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
-	PassConstant.Lights[0].Direction = { 0.57735f, -0.57735f, 0.57735f };
+	PassConstant.Lights[0].Direction = { 0.f, -0.8f, 0.f };
 	PassConstant.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
 	PassConstant.Lights[1].Direction = { -0.57735f, -0.57735f, 0.57735f };
-	PassConstant.Lights[1].Strength = { 0.4f, 0.4f, 0.4f };
-	PassConstant.Lights[2].Direction = { 0.0f, -0.707f, -0.707f };
-	PassConstant.Lights[2].Strength = { 0.2f, 0.2f, 0.2f };
+	PassConstant.Lights[1].Strength = { 0.8f, 0.8f, 0.8f };
+	PassConstant.Lights[0].Direction = { 0.0f, -0.707f, -0.707f };
+	PassConstant.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
 	memcpy(BufferObj->BufferData , &PassConstant, sizeof(PassConstant));
 	CbBuffers->Enqueue(BufferObj);
 }

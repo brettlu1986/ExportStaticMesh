@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "FMesh.h"
 #include "LCamera.h"
+#include "FScene.h"
 
 class LAssetDataLoader
 {
@@ -13,4 +14,6 @@ public:
 	static void LoadCameraDataFromFile(std::string FileName, LCamera& Camera);
 
 	static std::wstring GetAssetFullPath(LPCWSTR AssetName);
+
+	static void LoadSampleScene(FScene* Scene);
 };

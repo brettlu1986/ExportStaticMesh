@@ -58,15 +58,18 @@
     <Filter Include="Header Files\Engine\Common\Event">
       <UniqueIdentifier>{6a3ec42a-8673-43cb-b1ec-561b6d64e8b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Thread">
+      <UniqueIdentifier>{253995ad-9aec-47c0-81d8-288c7ab59b6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Thread">
+      <UniqueIdentifier>{bf26e770-928a-4a87-a607-3cdf516f7e4f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Private\ApplicationMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\LogicLoadModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Private\Engine\Common\LCamera.cpp">
@@ -150,11 +153,17 @@
     <ClCompile Include="Private\Engine\Common\Windows\LInputWindows.cpp">
       <Filter>Source Files\Engine\Common\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="Private\RenderThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Private\Engine\Renderer\FMaterial.cpp">
       <Filter>Source Files\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Thread\FRenderThread.cpp">
+      <Filter>Source Files\Engine\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Thread\FThread.cpp">
+      <Filter>Source Files\Engine\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Thread\FTaskThread.cpp">
+      <Filter>Source Files\Engine\Thread</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -231,9 +240,6 @@
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12RHIPrivate.h">
       <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
     </ClInclude>
-    <ClInclude Include="Public\LogicStaticModel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Public\Engine\Renderer\FVertexBuffer.h">
       <Filter>Header Files\Engine\Renderer</Filter>
     </ClInclude>
@@ -288,14 +294,20 @@
     <ClInclude Include="Public\Engine\Common\LRingBuffer.h">
       <Filter>Header Files\Engine\Common</Filter>
     </ClInclude>
-    <ClInclude Include="Public\RenderThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Public\SampleAssets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Public\Engine\Renderer\FMaterial.h">
       <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Thread\FRenderThread.h">
+      <Filter>Header Files\Engine\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Thread\FThread.h">
+      <Filter>Header Files\Engine\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Thread\FTaskThread.h">
+      <Filter>Header Files\Engine\Thread</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

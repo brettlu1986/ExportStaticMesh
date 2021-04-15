@@ -1,6 +1,7 @@
 #include "FScene.h"
 #include "FMesh.h"
 #include "FRHI.h"
+#include "LCamera.h"
 
 FScene::FScene()
 :MeshCount(0)
@@ -11,7 +12,7 @@ FScene::FScene()
 
 FScene::~FScene()
 {
-
+	Destroy();
 }
 
 void FScene::Destroy()
@@ -20,6 +21,7 @@ void FScene::Destroy()
 	{
 		Meshes[i]->Destroy();
 	}
+	Meshes.clear();
 }
 
 void FScene::AddMeshToScene(FMesh* Mesh)
@@ -41,6 +43,16 @@ void FScene::InitRenderResource()
 	{
 		Meshes[i]->InitRenderResource();
 	}
+}
+
+void FScene::Update()
+{
+
+}
+
+void FScene::UpdateCameraMatrix(float x, float y)
+{	
+	Camera.ChangeViewMatrixByMouseEvent(x, y);
 }
 
 void FScene::Render()

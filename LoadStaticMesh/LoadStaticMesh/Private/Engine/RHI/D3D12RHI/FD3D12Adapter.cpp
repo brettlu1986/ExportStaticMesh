@@ -50,7 +50,7 @@ void FD3D12Adapter::ShutDown()
 		CommandListManager->Clear();
 		CommandListManager = nullptr;
 	}
-	D3DDevice.Reset();
+	D3DDevice1.Reset();
 }
 
 void FD3D12Adapter::Initialize(FD3D12DynamicRHI* RHI)
@@ -65,7 +65,7 @@ void FD3D12Adapter::Initialize(FD3D12DynamicRHI* RHI)
 void FD3D12Adapter::InitializeDevices()
 {
 
-	if(!D3DDevice)
+	if(!D3DDevice1)
 	{
 		ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&DxgiFactory)));
 
@@ -81,7 +81,7 @@ void FD3D12Adapter::InitializeDevices()
 		HRESULT HardwareResult = D3D12CreateDevice(
 			GetAdapter(),             // default adapter
 			D3D_FEATURE_LEVEL_11_0,
-			IID_PPV_ARGS(&D3DDevice));
+			IID_PPV_ARGS(&D3DDevice1));
 
 		if (FAILED(HardwareResult))
 		{
@@ -89,9 +89,9 @@ void FD3D12Adapter::InitializeDevices()
 			ThrowIfFailed(D3D12CreateDevice(
 				GetAdapter(),
 				D3D_FEATURE_LEVEL_11_0,
-				IID_PPV_ARGS(&D3DDevice)));
+				IID_PPV_ARGS(&D3DDevice1)));
 		}
-		NAME_D3D12_OBJECT(D3DDevice);
+		NAME_D3D12_OBJECT(D3DDevice1);
 
 		CommandListManager = new FD3D12CommandListManager(this);
 		CommandListManager->Initialize();

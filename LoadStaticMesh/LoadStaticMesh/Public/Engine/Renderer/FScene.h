@@ -1,9 +1,10 @@
 #pragma once
 
 #include "stdafx.h"
+#include "LCamera.h"
 
 class FMesh;
-class FRHICommandList;
+class LCamera;
 class FScene
 {
 public: 
@@ -13,6 +14,8 @@ public:
 	void AddMeshToScene(FMesh* Mesh);
 
 	void InitRenderResource();
+	void UpdateCameraMatrix(float x, float y);
+	void Update();
 	void Render();
 	void EndRender();
 	void Destroy();
@@ -31,9 +34,16 @@ public:
 	{
 		return Meshes;
 	}
+
+	LCamera& GetCamera()
+	{
+		return Camera;
+	}
 	
 private: 
 	std::vector<FMesh*> Meshes;
 	UINT MeshCount;
 	UINT MeshWithTextureCount;
+
+	LCamera Camera;
 };
