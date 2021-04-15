@@ -93,9 +93,6 @@
     <ClCompile Include="Private\Engine\RHI\FWindowsDynamicRHI.cpp">
       <Filter>Source Files\Engine\RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Adapter.cpp">
-      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
-    </ClCompile>
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12CommandList.cpp">
       <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
@@ -218,9 +215,6 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\RHI\FRHIDef.h">
       <Filter>Header Files\Engine\RHI</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Adapter.h">
-      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
     </ClInclude>
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12CommandList.h">
       <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>

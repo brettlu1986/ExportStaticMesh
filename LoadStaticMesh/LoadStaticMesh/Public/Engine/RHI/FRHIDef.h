@@ -22,6 +22,29 @@ struct FRHIColor
 	float A;
 };
 
+struct FD3D12AdapterDesc
+{
+	FD3D12AdapterDesc()
+		:AdapterIndex(-1)
+		, MaxSupportedFeatureLevel((D3D_FEATURE_LEVEL)0)
+		, NumDeviceNodes(0)
+		, Desc()
+	{
+	}
+
+	FD3D12AdapterDesc(DXGI_ADAPTER_DESC1& DescIn, INT32 InAdapterIndex, D3D_FEATURE_LEVEL InMaxSupportedFeatureLevel, UINT NumNodes)
+		: AdapterIndex(InAdapterIndex)
+		, MaxSupportedFeatureLevel(InMaxSupportedFeatureLevel)
+		, Desc(DescIn)
+		, NumDeviceNodes(NumNodes)
+	{
+	}
+
+	INT32 AdapterIndex;
+	D3D_FEATURE_LEVEL MaxSupportedFeatureLevel;
+	DXGI_ADAPTER_DESC1 Desc;
+	UINT NumDeviceNodes;
+};
 
 static UINT CalcConstantBufferByteSize(UINT byteSize)
 {

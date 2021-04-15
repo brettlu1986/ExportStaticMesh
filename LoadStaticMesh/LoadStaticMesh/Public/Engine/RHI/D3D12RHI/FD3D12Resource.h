@@ -6,7 +6,6 @@
 #include "FVertexBuffer.h"
 #include "FTexture.h"
 #include "FRenderResource.h"
-#include "FD3D12Adapter.h"
 #include "FTexture.h"
 #include "FDDSTextureLoader.h"
 
@@ -20,7 +19,7 @@ public:
 
 	virtual void Destroy() override;
 	virtual void Initialize() override;
-	void InitGPUIndexBufferView(FD3D12Adapter* Adapter);
+	void InitGPUIndexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList);
 
 	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const
 	{
@@ -43,7 +42,7 @@ public:
 	virtual void Destroy() override;
 	virtual void Initialize() override;
 	
-	void InitGPUVertexBufferView(FD3D12Adapter* Adapter);
+	void InitGPUVertexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList);
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView()
 	{
@@ -67,7 +66,7 @@ public:
 	virtual void Initialize() override;
 	virtual void InitializeTexture(const std::string& Name) override;
 
-	void InitGPUTextureView(FD3D12Adapter* Adapter);
+	void InitGPUTextureView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, UINT CbvSrvUavDescriptorSize, ID3D12DescriptorHeap* CbvSrvHeap, FCbvSrvDesc& Desc);
 private:
 
 	ComPtr<ID3D12Resource> TextureResource;
@@ -87,7 +86,7 @@ public:
 	virtual void Destroy() override;
 	virtual void Initialize() override;
 
-	void SetConstantBufferInfo(FD3D12Adapter* Adapter, UINT BufferSize);
+	void SetConstantBufferInfo(ID3D12Device* Device, UINT BufferSize);
 	void UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSize);
 	ID3D12Resource* GetD3DConstantBuffer() const
 	{

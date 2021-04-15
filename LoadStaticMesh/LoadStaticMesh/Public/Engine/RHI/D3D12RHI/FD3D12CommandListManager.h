@@ -8,11 +8,10 @@
 using namespace std;
 using namespace Microsoft::WRL;
 
-class FD3D12Adapter;
 class FD3D12CommandListManager
 {
 public:
-	FD3D12CommandListManager(FD3D12Adapter* InAdapter);
+	FD3D12CommandListManager(ID3D12Device* InAdapter);
 	virtual ~FD3D12CommandListManager();
 	void Initialize();
 	void Clear();
@@ -58,7 +57,7 @@ public:
 private:
 
 	ComPtr<ID3D12CommandQueue> CommandQueue;
-	FD3D12Adapter* ParentAdapter;
+	ID3D12Device* ParentDevice;
 	std::vector<FD3D12CommandList*> ComandLists;
 
 	std::atomic<int> ReadIndex;

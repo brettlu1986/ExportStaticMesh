@@ -4,11 +4,10 @@
 
 using namespace Microsoft::WRL;
 
-class FD3D12Adapter;
 class FD3D12CommandList 
 {
 public:
-	FD3D12CommandList(FD3D12Adapter* InAdapter, UINT InCommandListIndex);
+	FD3D12CommandList(ID3D12Device* InAdapter, UINT InCommandListIndex);
 
 	~FD3D12CommandList();
 	ID3D12GraphicsCommandList* GetD3DCommandList() 
@@ -23,10 +22,10 @@ public:
 
 	void Clear() ;
 	void Close() ;
-	void Reset() ;
+	void Reset(ID3D12PipelineState* Pso) ;
 
 private: 
-	FD3D12Adapter* ParentAdapter;
+	ID3D12Device* ParentDevice;
 	UINT CommandListIndex;
 
 	ComPtr<ID3D12GraphicsCommandList> CommandList;

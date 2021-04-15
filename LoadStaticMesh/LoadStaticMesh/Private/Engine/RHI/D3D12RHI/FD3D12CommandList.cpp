@@ -2,17 +2,16 @@
 #include "FD3D12CommandList.h"
 #include "FD3D12Helper.h"
 #include "FD3D12Resource.h"
-#include "FD3D12Adapter.h"
 
-FD3D12CommandList::FD3D12CommandList(FD3D12Adapter* InAdapter, UINT InCommandListIndex)
-:ParentAdapter(InAdapter)
+FD3D12CommandList::FD3D12CommandList(ID3D12Device* InAdapter, UINT InCommandListIndex)
+:ParentDevice(InAdapter)
 {
 	CommandListIndex = InCommandListIndex;
 
-	ThrowIfFailed(ParentAdapter->GetD3DDevice()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&CommandAllocator)));
+	ThrowIfFailed(ParentDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&CommandAllocator)));
 	NAME_D3D12_OBJECT_WITHINDEX(CommandAllocator, CommandListIndex);
 
-	ParentAdapter->GetD3DDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, CommandAllocator.Get(),
+	ParentDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, CommandAllocator.Get(),
 		nullptr, IID_PPV_ARGS(&CommandList));
 	NAME_D3D12_OBJECT_WITHINDEX(CommandList, CommandListIndex);
 }
@@ -32,8 +31,8 @@ void FD3D12CommandList::Close()
 	CommandList->Close();
 }
 
-void FD3D12CommandList::Reset()
+void FD3D12CommandList::Reset(ID3D12PipelineState* Pso)
 {
 	CommandAllocator->Reset();
-	CommandList->Reset(CommandAllocator.Get(), ParentAdapter->GetDefaultPiplineState());
+	CommandList->Reset(CommandAllocator.Get(), Pso);
 }
