@@ -164,8 +164,6 @@
     <ClCompile Include="Private\Engine\Renderer\FTexture.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FVertexBuffer.cpp" />
     <ClCompile Include="Private\Engine\Renderer\LAssetDataLoader.cpp" />
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12CommandList.cpp" />
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12CommandListManager.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Resource.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12RHIPublic.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FDDSTextureLoader.cpp" />
@@ -324,8 +322,6 @@
     <ClInclude Include="Public\Engine\Renderer\FVertexBuffer.h" />
     <ClInclude Include="Public\Engine\Renderer\LAssetDataLoader.h" />
     <ClInclude Include="Public\Engine\Renderer\FSceneRenderer.h" />
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12CommandList.h" />
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12CommandListManager.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Helper.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Resource.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12RHIPrivate.h" />

@@ -43,10 +43,9 @@ public:
 	virtual void RHIDrawMesh(FMesh* Mesh) override;
 
 private:
-	//bool IsSupported();
 	void FindAdapter();
 
-	void RHIInitWindow(UINT Width, UINT Height, void* Window);
+	void InitWindow(UINT Width, UINT Height, void* Window);
 	void InitializeDevices();
 	void CreateDescriptorHeaps();
 
@@ -72,6 +71,10 @@ private:
 	ComPtr<ID3D12DescriptorHeap> CbvSrvHeap;
 	ComPtr<ID3D12DescriptorHeap> SamplerHeap;
 
+	ComPtr<ID3D12CommandQueue> CommandQueue;
+	ComPtr<ID3D12GraphicsCommandList> CommandList;
+	ComPtr<ID3D12CommandAllocator> CommandAllocator;
+
 	CD3DX12_VIEWPORT ViewPort;
 	CD3DX12_RECT ScissorRect;
 
@@ -84,7 +87,6 @@ private:
 	ComPtr<ID3D12Resource> RenderTargets[RENDER_TARGET_COUNT];
 	ComPtr<ID3D12Resource> DepthStencilBuffer;
 
-	FD3D12CommandListManager* CommandListManager;
 	ComPtr<ID3D12Fence> GpuFence;
 	HANDLE FenceEvent;
 	UINT64 FenceValue;

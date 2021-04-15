@@ -114,7 +114,7 @@ void FD3D12DynamicRHI::Init()
 	CreateSignature();
 	CreateSampler();
 	LDeviceWindows* DeviceWindows = dynamic_cast<LDeviceWindows*>(LEngine::GetEngine()->GetPlatformDevice());
-	RHIInitWindow(DeviceWindows->GetWidth(), DeviceWindows->GetHeight(), DeviceWindows->GetHwnd());
+	InitWindow(DeviceWindows->GetWidth(), DeviceWindows->GetHeight(), DeviceWindows->GetHwnd());
 }
 
 void FD3D12DynamicRHI::InitializeDevices()
@@ -147,9 +147,18 @@ void FD3D12DynamicRHI::InitializeDevices()
 		}
 		NAME_D3D12_OBJECT(D3DDevice);
 
-		CommandListManager = new FD3D12CommandListManager(D3DDevice.Get());
-		CommandListManager->Initialize();
-		CommandListManager->CreateCommandLists(COMMAND_LIST_NUM);
+		D3D12_COMMAND_QUEUE_DESC QueueDesc = {};
+		QueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+		QueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+		ThrowIfFailed(D3DDevice.Get()->CreateCommandQueue(&QueueDesc, IID_PPV_ARGS(&CommandQueue)));
+		NAME_D3D12_OBJECT(CommandQueue);
+
+		ThrowIfFailed(D3DDevice.Get()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&CommandAllocator)));
+		NAME_D3D12_OBJECT_WITHINDEX(CommandAllocator, 0);
+
+		ThrowIfFailed(D3DDevice.Get()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, CommandAllocator.Get(),
+			nullptr, IID_PPV_ARGS(&CommandList)));
+		NAME_D3D12_OBJECT(CommandList);
 
 		ThrowIfFailed(D3DDevice.Get()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&GpuFence)));
 		NAME_D3D12_OBJECT(GpuFence);
@@ -232,7 +241,7 @@ void FD3D12DynamicRHI::CreateSampler()
 }
 
 
-void FD3D12DynamicRHI::RHIInitWindow(UINT Width, UINT Height, void* InWindow)
+void FD3D12DynamicRHI::InitWindow(UINT Width, UINT Height, void* InWindow)
 {
 	WndWidth = Width;
 	WndHeight = Height;
@@ -240,7 +249,7 @@ void FD3D12DynamicRHI::RHIInitWindow(UINT Width, UINT Height, void* InWindow)
 
 	ViewPort = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(Width), static_cast<float>(Height));
 	ScissorRect = CD3DX12_RECT(0, 0, static_cast<LONG>(Width), static_cast<LONG>(Height));
-
+	
 	CreateSwapChain();
 	CreateRenderTargets();
 }
@@ -268,7 +277,7 @@ void FD3D12DynamicRHI::CreateSwapChain()
 	Sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	ThrowIfFailed(DxgiFactory->CreateSwapChain(
-		CommandListManager->GetD3DCommandQueue(),
+		CommandQueue.Get(),
 		&Sd,
 		&SwapChain));
 
@@ -346,11 +355,10 @@ void FD3D12DynamicRHI::ShutDown()
 	}
 	ConstantBuffers.clear();
 
-	if (CommandListManager)
-	{
-		CommandListManager->Clear();
-		CommandListManager = nullptr;
-	}
+	CommandAllocator.Reset();
+	CommandList.Reset();
+	CommandQueue.Reset();
+
 	D3DDevice.Reset();
 
 //#if defined(_DEBUG)
@@ -529,88 +537,88 @@ void FD3D12DynamicRHI::ShutDown()
 
  void FD3D12DynamicRHI::RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color)
  {
-	 FD3D12CommandList CommandList = CommandListManager->GetCommandList(0);
-	 CommandList.Reset(DefaultPso.Get());
 
-	 ID3D12GraphicsCommandList* CurrentCommandList = CommandListManager->GetDefaultCommandList();
-	 CurrentCommandList->SetGraphicsRootSignature(RootSignature.Get());
+	 CommandAllocator->Reset();
+	 CommandList->Reset(CommandAllocator.Get(), DefaultPso.Get());
+
+	 
+	 CommandList->SetGraphicsRootSignature(RootSignature.Get());
 
 	 ID3D12DescriptorHeap* ppHeaps[] = { CbvSrvHeap.Get(), SamplerHeap.Get() };
-	 CurrentCommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+	 CommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
-	 CurrentCommandList->RSSetViewports(1, &(ViewPort));
-	 CurrentCommandList->RSSetScissorRects(1, &(ScissorRect));
+	 CommandList->RSSetViewports(1, &(ViewPort));
+	 CommandList->RSSetScissorRects(1, &(ScissorRect));
 
 
 	 const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[TargetFrame].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	 CurrentCommandList->ResourceBarrier(1, &Rb1);
+	 CommandList->ResourceBarrier(1, &Rb1);
 	 CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart(), TargetFrame, RtvDescriptorSize);
 	 float ClearColor[4] = { Color.R, Color.G, Color.B, Color.A };
-	 CurrentCommandList->ClearRenderTargetView(RtvHandle, ClearColor, 0, nullptr);
-	 CurrentCommandList->ClearDepthStencilView(DsvHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	 CommandList->ClearRenderTargetView(RtvHandle, ClearColor, 0, nullptr);
+	 CommandList->ClearDepthStencilView(DsvHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	 D3D12_CPU_DESCRIPTOR_HANDLE DsvHandle = DsvHeap->GetCPUDescriptorHandleForHeapStart();
-	 CurrentCommandList->OMSetRenderTargets(1, &RtvHandle, true, &DsvHandle);
+	 CommandList->OMSetRenderTargets(1, &RtvHandle, true, &DsvHandle);
 
 	 // pass constant buffer
 	 CD3DX12_GPU_DESCRIPTOR_HANDLE cbvSrvHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbConstant.HeapOffsetStart,
 		 CbvSrvDescriptorSize);
-	 CurrentCommandList->SetGraphicsRootDescriptorTable(2, cbvSrvHandle);
+	 CommandList->SetGraphicsRootDescriptorTable(2, cbvSrvHandle);
  }
 
  void FD3D12DynamicRHI::RHIDrawMesh(FMesh* Mesh)
  {
-	 ID3D12GraphicsCommandList* CurrentCommandList = CommandListManager->GetDefaultCommandList();
+	
 
 	 FD3D12IndexBuffer* D3DIndexBuffer = dynamic_cast<FD3D12IndexBuffer*>(Mesh->GetIndexBuffer());
 	 FD3D12VertexBuffer* D3DVertexBuffer = dynamic_cast<FD3D12VertexBuffer*>(Mesh->GetVertexBuffer());
 
-	 CurrentCommandList->IASetVertexBuffers(0, 1, &(D3DVertexBuffer->GetVertexBufferView()));
-	 CurrentCommandList->IASetIndexBuffer(&(D3DIndexBuffer->GetIndexBufferView()));
-	 CurrentCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	 CommandList->IASetVertexBuffers(0, 1, &(D3DVertexBuffer->GetVertexBufferView()));
+	 CommandList->IASetIndexBuffer(&(D3DIndexBuffer->GetIndexBufferView()));
+	 CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	 CurrentCommandList->SetPipelineState(PiplelineStateCache[Mesh->GetPsoKey()].Get());
+	 CommandList->SetPipelineState(PiplelineStateCache[Mesh->GetPsoKey()].Get());
 
 	
 	 CD3DX12_GPU_DESCRIPTOR_HANDLE MtHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbMatrix.HeapOffsetStart + Mesh->GetBufferIndex(),
 		 CbvSrvDescriptorSize);
-	 CurrentCommandList->SetGraphicsRootDescriptorTable(0, MtHandle);
+	 CommandList->SetGraphicsRootDescriptorTable(0, MtHandle);
 
 	 FMaterial* Material = Mesh->GetMaterial();
 	 CD3DX12_GPU_DESCRIPTOR_HANDLE MatHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbMaterial.HeapOffsetStart + Material->GetMaterialCbvHeapIndex(),
 		 CbvSrvDescriptorSize);
-	 CurrentCommandList->SetGraphicsRootDescriptorTable(1, MatHandle);
+	 CommandList->SetGraphicsRootDescriptorTable(1, MatHandle);
 
 	 if(Mesh->GetDiffuseTexture())
 	 {
 		 FTexture* Tex = Mesh->GetDiffuseTexture();
 		 CD3DX12_GPU_DESCRIPTOR_HANDLE TexHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.SrvDesc.HeapOffsetStart + Tex->GetTextureHeapIndex(),
 			 CbvSrvDescriptorSize);
-		 CurrentCommandList->SetGraphicsRootDescriptorTable(3, TexHandle);
-		 CurrentCommandList->SetGraphicsRootDescriptorTable(4, SamplerHeap->GetGPUDescriptorHandleForHeapStart());
+		 CommandList->SetGraphicsRootDescriptorTable(3, TexHandle);
+		 CommandList->SetGraphicsRootDescriptorTable(4, SamplerHeap->GetGPUDescriptorHandleForHeapStart());
 	 }
 
-	 CurrentCommandList->DrawIndexedInstanced(D3DIndexBuffer->GetIndicesCount(), 1, 0, 0, 0);
+	 CommandList->DrawIndexedInstanced(D3DIndexBuffer->GetIndicesCount(), 1, 0, 0, 0);
  }
 
 
  void FD3D12DynamicRHI::RHIPresentToScreen(UINT TargetFrame, bool bFirstExcute)
  {
-	 ID3D12GraphicsCommandList* CurrentCommandList = CommandListManager->GetDefaultCommandList();
-	 ID3D12CommandQueue* CommandQueue = CommandListManager->GetD3DCommandQueue();
+	 
 	 std::vector<ID3D12CommandList*> CmdLists;
 	 if(bFirstExcute)
 	 {
-		 CurrentCommandList->Close();
-		 CmdLists.push_back(CurrentCommandList);
+		 CommandList->Close();
+		 CmdLists.push_back(CommandList.Get());
 		 CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
 		 SetFenceValue(1);
 	 }
 	 else 
 	 {	
 		 const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[TargetFrame].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-		 CurrentCommandList->ResourceBarrier(1, &Rb2);
-		 CurrentCommandList->Close();
-		 CmdLists.push_back(CurrentCommandList);
+		 CommandList->ResourceBarrier(1, &Rb2);
+		 CommandList->Close();
+		 CmdLists.push_back(CommandList.Get());
 		 CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
 		 SwapChain->Present(1, 0);
 	 }
@@ -637,19 +645,19 @@ void FD3D12DynamicRHI::RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertex
 {
 	FD3D12IndexBuffer* D3DIndexBuffer = dynamic_cast<FD3D12IndexBuffer*>(IndexBuffer);
 	FD3D12VertexBuffer* D3DVertexBuffer = dynamic_cast<FD3D12VertexBuffer*>(VertexBuffer);
-	D3DIndexBuffer->InitGPUIndexBufferView(D3DDevice.Get(), CommandListManager->GetDefaultCommandList());
-	D3DVertexBuffer->InitGPUVertexBufferView(D3DDevice.Get(), CommandListManager->GetDefaultCommandList());
+	D3DIndexBuffer->InitGPUIndexBufferView(D3DDevice.Get(), CommandList.Get());
+	D3DVertexBuffer->InitGPUVertexBufferView(D3DDevice.Get(), CommandList.Get());
 	if(Texture)
 	{
 		FD3D12Texture* D3DTexture = dynamic_cast<FD3D12Texture*>(Texture);
-		D3DTexture->InitGPUTextureView(D3DDevice.Get(), CommandListManager->GetDefaultCommandList(), CbvSrvDescriptorSize, CbvSrvHeap.Get(), CurrentCbvSrvDesc);
+		D3DTexture->InitGPUTextureView(D3DDevice.Get(), CommandList.Get(), CbvSrvDescriptorSize, CbvSrvHeap.Get(), CurrentCbvSrvDesc);
 	}
 }
 
 void FD3D12DynamicRHI::WaitForPreviousFrame()
 {
 	const UINT64 Value = FenceValue;
-	ThrowIfFailed(CommandListManager->GetD3DCommandQueue()->Signal(GpuFence.Get(), Value));
+	ThrowIfFailed(CommandQueue->Signal(GpuFence.Get(), Value));
 	FenceValue++;
 	if (GpuFence->GetCompletedValue() < Value)
 	{
