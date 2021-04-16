@@ -47,18 +47,3 @@ void FScene::UpdateCameraMatrix(float x, float y)
 	Camera.ChangeViewMatrixByMouseEvent(x, y);
 }
 
-void FScene::Render()
-{
-	for (size_t i = 0; i < Meshes.size(); ++i)
-	{
-		Meshes[i]->Render();
-	}
-}
-
-void FScene::EndRender()
-{
-	for (size_t i = 0; Meshes.size(); ++i)
-	{
-		Meshes[i]->EndRender();
-	}
-}

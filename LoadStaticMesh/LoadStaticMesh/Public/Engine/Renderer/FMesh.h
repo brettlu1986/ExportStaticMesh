@@ -18,8 +18,6 @@ public:
 	virtual void Initialize();
 
 	void InitRenderResource();
-	void Render();
-	void EndRender();
 	
 	void SetModelLocation(XMFLOAT3 Location);
 	void SetModelRotation(XMFLOAT3 Rotator) ;

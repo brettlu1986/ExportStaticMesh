@@ -75,7 +75,6 @@ public:
 	virtual void RHIRenderFrameResource(FFrameResource& FrameResource) = 0;
 };
 
-
 extern FDynamicRHI* GDynamicRHI;
 extern EDynamicModuleType DynamicModuleType;
 

@@ -88,16 +88,6 @@ void FMesh::InitRenderResource()
 	InitMeshGPUResource(IndexBuffer, VertexBuffer, DiffuseTex);
 }
 
-void FMesh::Render()
-{	
-	DrawMesh(this);
-}
-
-void FMesh::EndRender()
-{
-
-}
-
 void FMesh::SetModelLocation(XMFLOAT3 Location) 
 { 
 	ModelLocation = Location; 

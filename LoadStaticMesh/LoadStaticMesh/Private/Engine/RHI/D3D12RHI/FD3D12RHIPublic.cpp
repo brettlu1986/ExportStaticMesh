@@ -109,7 +109,6 @@ void FD3D12DynamicRHI::Init()
 	FindAdapter();
 	InitializeDevices();
 	CreateDescriptorHeaps();
-	CreateSignature();
 	CreateSampler();
 	LDeviceWindows* DeviceWindows = dynamic_cast<LDeviceWindows*>(LEngine::GetEngine()->GetPlatformDevice());
 	InitWindow(DeviceWindows->GetWidth(), DeviceWindows->GetHeight(), DeviceWindows->GetHwnd());
@@ -195,37 +194,6 @@ void FD3D12DynamicRHI::CreateDescripterHeap(UINT NumDescripters, D3D12_DESCRIPTO
 	Desc.Flags = Flag;
 	Desc.NodeMask = NodeMask;
 	ThrowIfFailed(D3DDevice.Get()->CreateDescriptorHeap(&Desc, riid, ppvHeap));
-}
-
-void FD3D12DynamicRHI::CreateSignature()
-{
-	CD3DX12_ROOT_PARAMETER RootParameters[5];
-	ZeroMemory(RootParameters, sizeof(RootParameters));
-	CD3DX12_DESCRIPTOR_RANGE Ranges[5];
-	ZeroMemory(Ranges, sizeof(Ranges));
-	Ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
-	Ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
-	Ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);
-	Ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-	Ranges[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
-
-
-	RootParameters[0].InitAsDescriptorTable(1, &Ranges[0], D3D12_SHADER_VISIBILITY_ALL);
-	RootParameters[1].InitAsDescriptorTable(1, &Ranges[1], D3D12_SHADER_VISIBILITY_ALL);
-	RootParameters[2].InitAsDescriptorTable(1, &Ranges[2], D3D12_SHADER_VISIBILITY_ALL);
-	RootParameters[3].InitAsDescriptorTable(1, &Ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
-	RootParameters[4].InitAsDescriptorTable(1, &Ranges[4], D3D12_SHADER_VISIBILITY_PIXEL);
-
-	// Allow input layout and deny uneccessary access to certain pipeline stages.
-	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(_countof(RootParameters), RootParameters, 0, nullptr,
-		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
-	ComPtr<ID3DBlob> Signature;
-	ComPtr<ID3DBlob> Error;
-
-	ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &Signature, &Error));
-	ThrowIfFailed(D3DDevice.Get()->CreateRootSignature(0, Signature->GetBufferPointer(), Signature->GetBufferSize(), IID_PPV_ARGS(&RootSignature)));
-	NAME_D3D12_OBJECT(RootSignature);
 }
 
 void FD3D12DynamicRHI::CreateSampler()
@@ -337,9 +305,7 @@ void FD3D12DynamicRHI::ShutDown()
 	SamplerHeap.Reset();
 	DepthStencilBuffer.Reset();
 	SwapChain.Reset();
-	RootSignature.Reset();
 
-	//DefaultPso.Reset();
 	for (auto Pso : PiplelineStateObjCache)
 	{
 		Pso.second->Destroy();

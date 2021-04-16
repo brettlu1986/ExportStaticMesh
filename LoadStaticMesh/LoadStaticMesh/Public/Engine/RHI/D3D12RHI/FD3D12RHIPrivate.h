@@ -8,8 +8,6 @@
 
 using namespace Microsoft::WRL;
 
-
-
 class FD3D12DynamicRHIModule : public IDynamicRHIModule
 {
 public:
@@ -42,24 +40,20 @@ public:
 	virtual void RHIUpdateFrameResources(FScene* Scene, UINT FrameIndex) override;
 	virtual FFrameResource& RHIGetFrameResource(UINT FrameIndex) override;
 	virtual void RHIRenderFrameResource(FFrameResource& FrameResource) override;
+
 private:
 	void UpdateFrameResourceMtConstants(FScene* Scene, FFrameResource& FrameResource);
 	void UpdateFrameResourceMatConstants(FScene* Scene, FFrameResource& FrameResource);
 	void UpdateFrameResourcePassConstants(FScene* Scene, FFrameResource& FrameResource);
 
 	void FindAdapter();
-
 	void InitWindow(UINT Width, UINT Height, void* Window);
 	void InitializeDevices();
 	void CreateDescriptorHeaps();
-
 	void CreateDescripterHeap(UINT NumDescripters, D3D12_DESCRIPTOR_HEAP_TYPE Type,
 		D3D12_DESCRIPTOR_HEAP_FLAGS, UINT NodeMask, REFIID riid, _COM_Outptr_  void** ppvHeap);
-
 	void CreateSrvAndCbvs(FFrameResource* FrameResource);
 	void CreatePiplineStateObject(FShader* Vs, FShader* Ps, const std::string& PsoKey);
-
-	void CreateSignature();
 	void CreateSampler();
 	void CreateSwapChain();
 	void CreateRenderTargets();
@@ -86,7 +80,6 @@ private:
 	CD3DX12_VIEWPORT ViewPort;
 	CD3DX12_RECT ScissorRect;
 
-	ComPtr<ID3D12RootSignature> RootSignature;
 	std::map<std::string, FD3DGraphicPipline*> PiplelineStateObjCache;
 
 	UINT RtvDescriptorSize;

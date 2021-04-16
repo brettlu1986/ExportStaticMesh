@@ -15,8 +15,6 @@ public:
 
 	void UpdateCameraMatrix(float x, float y);
 	void Update();
-	void Render();
-	void EndRender();
 	void Destroy();
 
 	UINT GetMeshCount()
