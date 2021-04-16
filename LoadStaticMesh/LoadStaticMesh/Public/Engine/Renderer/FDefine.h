@@ -20,6 +20,7 @@ enum class E_RESOURCE_TYPE : UINT8
 	TYPE_TEXTURE,
 	TYPE_SHADER,
 	TYPE_MATERIAL,
+	TYPE_PIPLINE,
 };
 
 enum class E_CONSTANT_BUFFER_TYPE : UINT8
@@ -201,5 +202,5 @@ typedef struct FCbvSrvDesc
 }FCbvSrvDesc;
 
 const UINT RENDER_TARGET_COUNT = 3;
-const UINT FRAME_COUNT = 3;
-const UINT COMMAND_LIST_NUM = 3;
+const int FRAME_COUNT = 3;
+

@@ -25,11 +25,6 @@ bool LEngine::Run()
 	return CurrentDevice->Run();
 }
 
-void LEngine::Render()
-{
-
-}
-
 void LEngine::Init(LEngineDesc Desc)
 {
 

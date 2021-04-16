@@ -22,7 +22,6 @@ public:
 
 	void Init(LEngineDesc Desc);
 	bool Run();
-	void Render();
 	void Destroy();
 
 	E_DEVICE_PLATFORM GetPlatform() const

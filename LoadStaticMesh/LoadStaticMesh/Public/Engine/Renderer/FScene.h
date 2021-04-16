@@ -13,7 +13,6 @@ public:
 
 	void AddMeshToScene(FMesh* Mesh);
 
-	void InitRenderResource();
 	void UpdateCameraMatrix(float x, float y);
 	void Update();
 	void Render();

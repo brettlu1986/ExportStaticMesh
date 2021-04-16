@@ -3,8 +3,7 @@
 
 FRenderThread* FRenderThread::RenderThread = nullptr;
 
-static const FRHIColor ClearColor = { 0.690196097f, 0.768627524f, 0.870588303f, 1.000000000f };
-static const int FrameCount = 3;
+
 
 FRenderThread::FRenderThread()
 :FTaskThread("RenderThread")
@@ -41,31 +40,34 @@ FRenderThread* FRenderThread::Get()
 void FRenderThread::WaitForRenderThread()
 {
 	unique_lock<mutex> Lock(Mutex);
-	RenderCV.wait(Lock, [this]() { return FrameTaskNum <= FrameCount;});
+	RenderCV.wait(Lock, [this]() { return FrameTaskNum <= FRAME_COUNT;});
 	++FrameTaskNum;
 }
 
 void FRenderThread::InitRenderThreadScene(FScene* Scene)
 {
 	AddTask([this, Scene] {
-		Renderer.RenderInit(Scene);
+		CreateFrameResources(Scene);
 	});
 }
 
 void FRenderThread::UpdateRenderThreadScene(FScene* Scene)
 {
 	AddTask([this, Scene]{
-		Renderer.UpdateResource(Scene);
+		UpdateFrameResources(Scene, FrameIndex);
 	});
 }
 
 void FRenderThread::DrawThreadThreadScene(FScene* Scene)
 {
 	AddTask([this, Scene] {
-		InitRenderBegin(FrameIndex, ClearColor);
-		Renderer.Render(Scene);
+
+		BeginRenderFrame(FrameIndex);
+		FFrameResource& FrameResource = GetFrameResource(FrameIndex);
+		Renderer.RenderFrameResource(FrameResource);
 		PresentToScreen(FrameIndex);
-		FrameIndex = (FrameIndex + 1) % FrameCount;
+
+		FrameIndex = (FrameIndex + 1) % FRAME_COUNT;
 		--FrameTaskNum;
 		RenderCV.notify_all();
 	});

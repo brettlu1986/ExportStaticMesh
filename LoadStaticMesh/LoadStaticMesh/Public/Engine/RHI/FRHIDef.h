@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
+
 typedef enum class EDynamicModuleType : UINT8
 {
 	MODULE_D3D12 = 0,
@@ -45,6 +46,8 @@ struct FD3D12AdapterDesc
 	DXGI_ADAPTER_DESC1 Desc;
 	UINT NumDeviceNodes;
 };
+
+
 
 static UINT CalcConstantBufferByteSize(UINT byteSize)
 {

@@ -41,9 +41,7 @@ public:
 	{
 		return DiffuseTex;
 	}
-
-	 XMFLOAT4X4 GetTextureTransform();
-	
+	XMFLOAT4X4 GetTextureTransform();
 
 	FMaterial* GetMaterial()
 	{
@@ -56,6 +54,11 @@ public:
 	const std::string& GetPsoKey()
 	{
 		return UsePsoKey;
+	}
+
+	void SetPsoKey(std::string InKey)
+	{
+		UsePsoKey = InKey;
 	}
 
 	const UINT GetBufferIndex()

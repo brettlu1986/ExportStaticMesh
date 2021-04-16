@@ -3,9 +3,11 @@
 #include "FRHI.h"
 #include "stdafx.h"
 #include "FD3D12Resource.h"
+#include "FMesh.h"
 #include <map>
 
 using namespace Microsoft::WRL;
+
 
 
 class FD3D12DynamicRHIModule : public IDynamicRHIModule
@@ -13,9 +15,7 @@ class FD3D12DynamicRHIModule : public IDynamicRHIModule
 public:
 	FD3D12DynamicRHIModule() {}
 	~FD3D12DynamicRHIModule() {}
-
 	virtual FDynamicRHI* CreateRHI() override;
-
 };
 
 class FD3D12DynamicRHI : public FDynamicRHI
@@ -26,13 +26,11 @@ public:
 	virtual void Init() override;
 	virtual void ShutDown() override;
 
-	virtual void RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color) override;
+	virtual void RHIBeginRenderFrame(UINT TargetFrame) override;
 	virtual void RHIPresentToScreen(UINT TargetFrame, bool bFirstExcute = false) override;
-
-	virtual void RHICreateSrvAndCbvs(FCbvSrvDesc Desc) override;
+	
 	virtual void RHIUpdateConstantBuffer(void* pUpdateData) override;
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) override;
-	virtual void RHICreatePiplineStateObject(FShader* Vs, FShader* Ps, const std::string& PsoKey, bool bDefaultPso = false) override;
 
 	virtual FIndexBuffer* RHICreateIndexBuffer() override;
 	virtual FVertexBuffer* RHICreateVertexBuffer() override;
@@ -40,7 +38,15 @@ public:
 	virtual void RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture) override;
 	virtual void RHIDrawMesh(FMesh* Mesh) override;
 
+	virtual void RHICreateFrameResources(FScene* Scene) override;
+	virtual void RHIUpdateFrameResources(FScene* Scene, UINT FrameIndex) override;
+	virtual FFrameResource& RHIGetFrameResource(UINT FrameIndex) override;
+	virtual void RHIRenderFrameResource(FFrameResource& FrameResource) override;
 private:
+	void UpdateFrameResourceMtConstants(FScene* Scene, FFrameResource& FrameResource);
+	void UpdateFrameResourceMatConstants(FScene* Scene, FFrameResource& FrameResource);
+	void UpdateFrameResourcePassConstants(FScene* Scene, FFrameResource& FrameResource);
+
 	void FindAdapter();
 
 	void InitWindow(UINT Width, UINT Height, void* Window);
@@ -50,12 +56,14 @@ private:
 	void CreateDescripterHeap(UINT NumDescripters, D3D12_DESCRIPTOR_HEAP_TYPE Type,
 		D3D12_DESCRIPTOR_HEAP_FLAGS, UINT NodeMask, REFIID riid, _COM_Outptr_  void** ppvHeap);
 
+	void CreateSrvAndCbvs(FFrameResource* FrameResource);
+	void CreatePiplineStateObject(FShader* Vs, FShader* Ps, const std::string& PsoKey);
+
 	void CreateSignature();
 	void CreateSampler();
 	void CreateSwapChain();
 	void CreateRenderTargets();
 
-	void SetFenceValue(UINT64 Value) { FenceValue = Value; }
 	void WaitForPreviousFrame();
 
 	FD3D12AdapterDesc CurrentAdapterDesc;
@@ -71,14 +79,15 @@ private:
 
 	ComPtr<ID3D12CommandQueue> CommandQueue;
 	ComPtr<ID3D12GraphicsCommandList> CommandList;
-	ComPtr<ID3D12CommandAllocator> CommandAllocator;
+	//ComPtr<ID3D12CommandAllocator> CommandAllocator;
+
+	ComPtr<ID3D12CommandAllocator> CommandAllocator[FRAME_COUNT];
 
 	CD3DX12_VIEWPORT ViewPort;
 	CD3DX12_RECT ScissorRect;
 
 	ComPtr<ID3D12RootSignature> RootSignature;
-	std::map<std::string, ComPtr<ID3D12PipelineState>> PiplelineStateCache;
-	ComPtr <ID3D12PipelineState> DefaultPso;
+	std::map<std::string, FD3DGraphicPipline*> PiplelineStateObjCache;
 
 	UINT RtvDescriptorSize;
 	UINT DsvDescriptorSize;
@@ -87,7 +96,9 @@ private:
 
 	ComPtr<ID3D12Fence> GpuFence;
 	HANDLE FenceEvent;
-	UINT64 FenceValue;
+
+	UINT64 FenceValues[FRAME_COUNT];
+	UINT CurrentFrame;
 
 	FCbvSrvDesc CurrentCbvSrvDesc;
 	std::map<E_CONSTANT_BUFFER_TYPE, FD3DConstantBuffer*> ConstantBuffers;
@@ -96,4 +107,7 @@ private:
 	UINT WndWidth;
 	UINT WndHeight;
 	HWND Window;
+
+	std::vector<FFrameResource> FrameResources;
+	FPassConstants PassConstant;
 };

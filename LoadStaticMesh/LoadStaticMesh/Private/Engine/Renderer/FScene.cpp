@@ -37,14 +37,6 @@ void FScene::AddMeshToScene(FMesh* Mesh)
 	MeshCount++;
 }
 
-void FScene::InitRenderResource()
-{
-	for (size_t i = 0; i < Meshes.size(); ++i)
-	{
-		Meshes[i]->InitRenderResource();
-	}
-}
-
 void FScene::Update()
 {
 

@@ -76,7 +76,6 @@ private:
 	std::unique_ptr<uint8_t[]> DdsData;
 };
 
-class FD3D12Adapter;
 class FD3DConstantBuffer :public FRenderResource
 {
 public:
@@ -103,4 +102,17 @@ private:
 
 	UINT8* pCbvDataBegin;
 	ComPtr<ID3D12Resource> ConstantBuffer;
+};
+
+class FD3DGraphicPipline : public FRenderResource
+{
+public:
+	FD3DGraphicPipline();
+	virtual ~FD3DGraphicPipline();
+
+	virtual void Destroy() override;
+	virtual void Initialize() override;
+
+	ComPtr<ID3D12RootSignature> RootSignature;
+	ComPtr<ID3D12PipelineState> PipelineState;
 };

@@ -196,3 +196,23 @@ void FD3DConstantBuffer::UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSi
 	memcpy(pCbvDataBegin, pDataUpdate, BufferSize);
 }
 
+FD3DGraphicPipline::FD3DGraphicPipline()
+	:FRenderResource(E_RESOURCE_TYPE::TYPE_PIPLINE)
+{
+
+}
+FD3DGraphicPipline::~FD3DGraphicPipline()
+{
+	
+}
+
+void FD3DGraphicPipline::Destroy()
+{
+	PipelineState.Reset();
+	RootSignature.Reset();
+}
+
+void FD3DGraphicPipline::Initialize()
+{
+
+}

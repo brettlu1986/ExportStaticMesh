@@ -8,6 +8,9 @@
 #include "FTexture.h"
 #include "FShader.h"
 #include "FMesh.h"
+#include "FScene.h"
+#include "FD3D12Resource.h"
+#include <map>
 
 struct FRHIViewPort
 {
@@ -37,6 +40,13 @@ public:
 	LONG Bottom;
 };
 
+struct FFrameResource
+{
+	std::vector<FMesh*> MeshRenderResources;
+	std::map<E_CONSTANT_BUFFER_TYPE, FD3DConstantBuffer*> ConstantBuffers;
+	UINT NumFrameDirty = 1;
+};
+
 class FDynamicRHI
 {
 public:
@@ -47,12 +57,10 @@ public:
 
 	virtual void ShutDown() = 0;
 
-	virtual void RHICreateSrvAndCbvs(FCbvSrvDesc) = 0;
 	virtual void RHIUpdateConstantBuffer(void* pUpdateData) = 0;
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) = 0;
-	virtual void RHICreatePiplineStateObject(FShader* Vs, FShader* Ps, const std::string& PsoKey, bool bDefaultPso) = 0;
 
-	virtual void RHIInitRenderBegin(UINT TargetFrame, FRHIColor Color) = 0;
+	virtual void RHIBeginRenderFrame(UINT TargetFrame) = 0;
 	virtual void RHIPresentToScreen(UINT TargetFrame, bool bFirstExcute = false) = 0;
 
 	virtual FIndexBuffer* RHICreateIndexBuffer() = 0;
@@ -60,6 +68,11 @@ public:
 	virtual FTexture* RHICreateTexture() = 0;
 	virtual void RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture) = 0;
 	virtual void RHIDrawMesh(FMesh* Mesh) = 0;
+
+	virtual void RHICreateFrameResources(FScene* Scene) = 0;
+	virtual void RHIUpdateFrameResources(FScene* Scene, UINT FrameIndex) = 0;
+	virtual FFrameResource& RHIGetFrameResource(UINT FrameIndex) = 0;
+	virtual void RHIRenderFrameResource(FFrameResource& FrameResource) = 0;
 };
 
 
@@ -71,15 +84,8 @@ FDynamicRHI* PlatformCreateDynamicRHI();
 class IDynamicRHIModule
 {
 public:
-
 	virtual FDynamicRHI* CreateRHI() = 0;
-
 };
-
-FORCEINLINE void CreateSrvAndCbvs(FCbvSrvDesc Desc)
-{
-	return GDynamicRHI->RHICreateSrvAndCbvs(Desc);
-}
 
 FORCEINLINE void UpdateConstantBuffer(void* pUpdateData)
 {
@@ -91,14 +97,9 @@ FORCEINLINE  FShader* CreateShader(LPCWSTR ShaderFile)
 	return GDynamicRHI->RHICreateShader(ShaderFile);
 }
 
-FORCEINLINE  void CreatePiplineStateObject(FShader* Vs, FShader* Ps, const std::string& PsoKey, bool bDefaultPso = false)
+FORCEINLINE void BeginRenderFrame(UINT TargetFrame)
 {
-	GDynamicRHI->RHICreatePiplineStateObject(Vs, Ps, PsoKey, bDefaultPso);
-}
-
-FORCEINLINE void InitRenderBegin(UINT TargetFrame, FRHIColor Color)
-{
-	return GDynamicRHI->RHIInitRenderBegin(TargetFrame, Color);
+	return GDynamicRHI->RHIBeginRenderFrame(TargetFrame);
 }
 
 FORCEINLINE void PresentToScreen(UINT TargetFrame, bool bFirstExcute = false)
@@ -129,4 +130,24 @@ FORCEINLINE void InitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* V
 FORCEINLINE void DrawMesh(FMesh* Mesh)
 {
 	return GDynamicRHI->RHIDrawMesh(Mesh);
+}
+
+FORCEINLINE void CreateFrameResources(FScene* Scene)
+{
+	return GDynamicRHI->RHICreateFrameResources(Scene);
+}
+
+FORCEINLINE void UpdateFrameResources(FScene* Scene, UINT FrameIndex)
+{
+	return GDynamicRHI->RHIUpdateFrameResources(Scene, FrameIndex);
+}
+
+FORCEINLINE FFrameResource& GetFrameResource(UINT FrameIndex) 
+{
+	return GDynamicRHI->RHIGetFrameResource(FrameIndex);
+}
+
+FORCEINLINE void RenderFrameResources(FFrameResource& FrameResource)
+{
+	GDynamicRHI->RHIRenderFrameResource(FrameResource);
 }
