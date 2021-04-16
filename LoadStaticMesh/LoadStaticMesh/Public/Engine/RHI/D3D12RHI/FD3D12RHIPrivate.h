@@ -2,8 +2,6 @@
 
 #include "FRHI.h"
 #include "stdafx.h"
-#include "FD3D12CommandList.h"
-#include "FD3D12CommandListManager.h"
 #include "FD3D12Resource.h"
 #include <map>
 
