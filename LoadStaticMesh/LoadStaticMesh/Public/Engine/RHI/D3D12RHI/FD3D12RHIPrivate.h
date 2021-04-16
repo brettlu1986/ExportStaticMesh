@@ -25,9 +25,9 @@ public:
 	virtual void ShutDown() override;
 
 	virtual void RHIBeginRenderFrame(UINT TargetFrame) override;
+	virtual void RHIEndRenderFrame(UINT TargetFrame) override;
 	virtual void RHIPresentToScreen(UINT TargetFrame, bool bFirstExcute = false) override;
 	
-	virtual void RHIUpdateConstantBuffer(void* pUpdateData) override;
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) override;
 
 	virtual FIndexBuffer* RHICreateIndexBuffer() override;
@@ -94,7 +94,6 @@ private:
 	UINT CurrentFrame;
 
 	FCbvSrvDesc CurrentCbvSrvDesc;
-	std::map<E_CONSTANT_BUFFER_TYPE, FD3DConstantBuffer*> ConstantBuffers;
 	UINT CbvSrvDescriptorSize;
 
 	UINT WndWidth;

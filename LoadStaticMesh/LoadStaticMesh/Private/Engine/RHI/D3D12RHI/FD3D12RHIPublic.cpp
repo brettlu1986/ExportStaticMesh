@@ -317,11 +317,6 @@ void FD3D12DynamicRHI::ShutDown()
 		if (RenderTargets)
 			RenderTargets[i].Reset();
 	}
-	for (auto Cb : ConstantBuffers)
-	{
-		Cb.second->Destroy();
-	}
-	ConstantBuffers.clear();
 
 	for (UINT i = 0; i < FRAME_COUNT; i++)
 	{
@@ -351,15 +346,7 @@ void FD3D12DynamicRHI::ShutDown()
 //#endif
 }
 
- void FD3D12DynamicRHI::RHIUpdateConstantBuffer(void* pUpdateData)
- {
-	FBufferObject* BuffObj = (FBufferObject*)(pUpdateData);
-	FD3DConstantBuffer* Cb = ConstantBuffers[BuffObj->Type];
-	if(Cb)
-	{
-		Cb->UpdateConstantBufferInfo(BuffObj->BufferData, BuffObj->DataSize);
-	}
- }
+
 
  FShader* FD3D12DynamicRHI::RHICreateShader(LPCWSTR  ShaderFile)
  {
@@ -416,7 +403,7 @@ void FD3D12DynamicRHI::ShutDown()
 	 CD3DX12_GPU_DESCRIPTOR_HANDLE cbvSrvHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbConstant.HeapOffsetStart,
 		 CbvSrvDescriptorSize);
 	 CommandList->SetGraphicsRootDescriptorTable(2, cbvSrvHandle);
-	
+
 	 CD3DX12_GPU_DESCRIPTOR_HANDLE MtHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbMatrix.HeapOffsetStart + Mesh->GetBufferIndex(),
 		 CbvSrvDescriptorSize);
 	 CommandList->SetGraphicsRootDescriptorTable(0, MtHandle);
@@ -438,27 +425,27 @@ void FD3D12DynamicRHI::ShutDown()
 	 CommandList->DrawIndexedInstanced(D3DIndexBuffer->GetIndicesCount(), 1, 0, 0, 0);
  }
 
+ void FD3D12DynamicRHI::RHIEndRenderFrame(UINT TargetFrame)
+ {
+	 CurrentFrame = TargetFrame;
+	 std::vector<ID3D12CommandList*> CmdLists;
+	 const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[TargetFrame].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	 CommandList->ResourceBarrier(1, &Rb2);
+	 CommandList->Close();
+	 CmdLists.push_back(CommandList.Get());
+	 CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
+	 SwapChain->Present(1, 0);
+	 WaitForPreviousFrame();
+ }
+
  void FD3D12DynamicRHI::RHIPresentToScreen(UINT TargetFrame, bool bFirstExcute)
  {
 	 CurrentFrame = TargetFrame;
 	 std::vector<ID3D12CommandList*> CmdLists;
-	 if(bFirstExcute)
-	 {
-		 CommandList->Close();
-		 CmdLists.push_back(CommandList.Get());
-		 CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
-		 FenceValues[CurrentFrame] ++;
-		// SetFenceValue(1);
-	 }
-	 else 
-	 {	
-		 const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[TargetFrame].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-		 CommandList->ResourceBarrier(1, &Rb2);
-		 CommandList->Close();
-		 CmdLists.push_back(CommandList.Get());
-		 CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
-		 SwapChain->Present(1, 0);
-	 }
+	 CommandList->Close();
+	 CmdLists.push_back(CommandList.Get());
+	 CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
+	 FenceValues[CurrentFrame] ++;
 	 WaitForPreviousFrame();
  }
 
@@ -657,13 +644,13 @@ void FD3D12DynamicRHI::UpdateFrameResourcePassConstants(FScene* Scene, FFrameRes
 	XMMATRIX ViewProj = Camera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
 	XMStoreFloat4x4(&PassConstant.ViewProj, XMMatrixTranspose(ViewProj));
 	PassConstant.EyePosW = Camera.GetCameraLocation();
-	PassConstant.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
-	PassConstant.Lights[0].Direction = { 0.f, -0.8f, 0.f };
+	PassConstant.AmbientLight = { 0.25f, 0.25f, 0.25f, 1.0f };
+	PassConstant.Lights[0].Direction = { 1.f, 0.f, -1.f };
 	PassConstant.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
-	PassConstant.Lights[1].Direction = { -0.57735f, -0.57735f, 0.57735f };
-	PassConstant.Lights[1].Strength = { 0.8f, 0.8f, 0.8f };
-	PassConstant.Lights[0].Direction = { 0.0f, -0.707f, -0.707f };
-	PassConstant.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
+	//PassConstant.Lights[1].Direction = { -0.57735f, -0.57735f, 0.57735f };
+	//PassConstant.Lights[1].Strength = { 0.8f, 0.8f, 0.8f };
+	//PassConstant.Lights[2].Direction = { 0.0f, -0.707f, -0.707f };
+	//PassConstant.Lights[2].Strength = { 0.8f, 0.8f, 0.8f };
 	memcpy(BufferObj->BufferData, &PassConstant, sizeof(PassConstant));
 	FD3DConstantBuffer* Cb = FrameResource.ConstantBuffers[BufferObj->Type];
 	if (Cb)

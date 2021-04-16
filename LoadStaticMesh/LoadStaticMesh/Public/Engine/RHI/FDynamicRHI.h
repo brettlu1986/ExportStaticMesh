@@ -57,10 +57,10 @@ public:
 
 	virtual void ShutDown() = 0;
 
-	virtual void RHIUpdateConstantBuffer(void* pUpdateData) = 0;
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) = 0;
 
 	virtual void RHIBeginRenderFrame(UINT TargetFrame) = 0;
+	virtual void RHIEndRenderFrame(UINT TargetFrame) = 0;
 	virtual void RHIPresentToScreen(UINT TargetFrame, bool bFirstExcute = false) = 0;
 
 	virtual FIndexBuffer* RHICreateIndexBuffer() = 0;
@@ -86,11 +86,6 @@ public:
 	virtual FDynamicRHI* CreateRHI() = 0;
 };
 
-FORCEINLINE void UpdateConstantBuffer(void* pUpdateData)
-{
-	return GDynamicRHI->RHIUpdateConstantBuffer(pUpdateData);
-}
-
 FORCEINLINE  FShader* CreateShader(LPCWSTR ShaderFile)
 {
 	return GDynamicRHI->RHICreateShader(ShaderFile);
@@ -99,6 +94,11 @@ FORCEINLINE  FShader* CreateShader(LPCWSTR ShaderFile)
 FORCEINLINE void BeginRenderFrame(UINT TargetFrame)
 {
 	return GDynamicRHI->RHIBeginRenderFrame(TargetFrame);
+}
+
+FORCEINLINE void EndRenderFrame(UINT TargetFrame)
+{
+	return GDynamicRHI->RHIEndRenderFrame(TargetFrame);
 }
 
 FORCEINLINE void PresentToScreen(UINT TargetFrame, bool bFirstExcute = false)

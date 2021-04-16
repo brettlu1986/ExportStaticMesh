@@ -65,7 +65,7 @@ void FRenderThread::DrawThreadThreadScene(FScene* Scene)
 		BeginRenderFrame(FrameIndex);
 		FFrameResource& FrameResource = GetFrameResource(FrameIndex);
 		Renderer.RenderFrameResource(FrameResource);
-		PresentToScreen(FrameIndex);
+		EndRenderFrame(FrameIndex);
 
 		FrameIndex = (FrameIndex + 1) % FRAME_COUNT;
 		--FrameTaskNum;

@@ -1,6 +1,6 @@
 
 #ifndef NUM_DIR_LIGHTS
-#define NUM_DIR_LIGHTS 3
+#define NUM_DIR_LIGHTS 1
 #endif
 
 #define MaxLights 16

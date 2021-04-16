@@ -51,11 +51,10 @@ PSInput VSMain(VSInput vin)
 {
 	PSInput vout = (PSInput)0.0f;
 
-	//transfrom to world space
 	float4 posW = mul(float4(vin.position, 1.0f), gWorld);
 	vout.posW = posW.xyz;
 
-	vout.normal = mul(vin.normal, (float3x3)gWorld);
+	vout.normal = normalize((float3)(mul(vin.normal, gWorld)));
 	vout.position = mul(posW, gViewProj);
 
 	vout.tangent = vin.tangent;
