@@ -3,11 +3,9 @@
 
 FRenderThread* FRenderThread::RenderThread = nullptr;
 
-
-
 FRenderThread::FRenderThread()
-:FTaskThread("RenderThread")
-,FrameIndex(0)
+	:FTaskThread("RenderThread")
+	, FrameIndex(0)
 {
 
 }
@@ -15,7 +13,29 @@ FRenderThread::FRenderThread()
 void FRenderThread::Run()
 {
 	RHIInit();
-	FTaskThread::Run();
+	while (IsRun)
+	{
+		while(ShouldWaitGame())
+		{
+			continue;
+		}
+
+		DoTasks();
+
+		UpdateFrameResource(FrameIndex);
+		BeginRenderFrame(FrameIndex);
+		FFrameResource& FrameResource = GetFrameResource(FrameIndex);
+		Renderer.RenderFrameResource(FrameResource);
+		EndRenderFrame(FrameIndex);
+
+		FrameIndex = (FrameIndex + 1) % FRAME_COUNT;
+
+		NotifyGameExcute();
+		//--FrameTaskNum;
+		//RenderCV.notify_all();
+	}
+	ClearCounter();
+	ClearTask();
 	RHIExit();
 }
 
@@ -37,13 +57,6 @@ FRenderThread* FRenderThread::Get()
 	return RenderThread;
 }
 
-void FRenderThread::WaitForRenderThread()
-{
-	unique_lock<mutex> Lock(Mutex);
-	RenderCV.wait(Lock, [this]() { return FrameTaskNum <= FRAME_COUNT;});
-	++FrameTaskNum;
-}
-
 void FRenderThread::InitRenderThreadScene(FScene* Scene)
 {
 	AddTask([this, Scene] {
@@ -51,24 +64,67 @@ void FRenderThread::InitRenderThreadScene(FScene* Scene)
 	});
 }
 
-void FRenderThread::UpdateRenderThreadScene(FScene* Scene)
+void FRenderThread::UpdateFrameCamera(LCamera& Camera)
 {
-	AddTask([this, Scene]{
-		UpdateFrameResources(Scene, FrameIndex);
+	AddTask([this, &Camera] {
+		UpdateFrameResourceCamera(Camera);
 	});
 }
 
-void FRenderThread::DrawThreadThreadScene(FScene* Scene)
+void FRenderThread::NotifyRenderThreadExcute()
 {
-	AddTask([this, Scene] {
-
-		BeginRenderFrame(FrameIndex);
-		FFrameResource& FrameResource = GetFrameResource(FrameIndex);
-		Renderer.RenderFrameResource(FrameResource);
-		EndRenderFrame(FrameIndex);
-
-		FrameIndex = (FrameIndex + 1) % FRAME_COUNT;
-		--FrameTaskNum;
-		RenderCV.notify_all();
-	});
+	lock_guard<mutex> Lock(Mutex);
+	++SyncCount;
 }
+
+void FRenderThread::NotifyGameExcute()
+{
+	lock_guard<mutex> Lock(Mutex);
+	--SyncCount;
+}
+
+bool FRenderThread::ShouldWaitRender()
+{	
+	lock_guard<mutex> Lock(Mutex);
+	return SyncCount > CPU_MAX_AHEAD;
+}
+
+bool FRenderThread::ShouldWaitGame()
+{
+	lock_guard<mutex> Lock(Mutex);
+	return SyncCount <= 0;
+}
+
+void FRenderThread::ClearCounter()
+{
+	lock_guard<mutex> Lock(Mutex);
+	SyncCount = 0;
+}
+
+//void FRenderThread::WaitForRenderThread()
+//{
+//	unique_lock<mutex> Lock(Mutex);
+//	RenderCV.wait(Lock, [this]() { return FrameTaskNum <= FRAME_COUNT; });
+//	++FrameTaskNum;
+//}
+//void FRenderThread::UpdateRenderThreadScene(FScene* Scene)
+//{
+//	AddTask([this, Scene]{
+//		UpdateFrameResources(Scene, FrameIndex);
+//	});
+//}
+//
+//void FRenderThread::DrawThreadThreadScene(FScene* Scene)
+//{
+//	AddTask([this, Scene] {
+//
+//		BeginRenderFrame(FrameIndex);
+//		FFrameResource& FrameResource = GetFrameResource(FrameIndex);
+//		Renderer.RenderFrameResource(FrameResource);
+//		EndRenderFrame(FrameIndex);
+//
+//		FrameIndex = (FrameIndex + 1) % FRAME_COUNT;
+//		--FrameTaskNum;
+//		RenderCV.notify_all();
+//	});
+//}

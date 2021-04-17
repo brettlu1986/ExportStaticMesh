@@ -547,6 +547,7 @@ void FD3D12DynamicRHI::RHICreateFrameResources(FScene* Scene)
 	{
 		CreateSrvAndCbvs(&FrameResources[i]);
 		FrameResources[i].MeshRenderResources = Scene->GetDrawMeshes();
+		FrameResources[i].Camera = Scene->GetCamera();
 	}
 
 	PresentToScreen(0, true);
@@ -554,15 +555,27 @@ void FD3D12DynamicRHI::RHICreateFrameResources(FScene* Scene)
 
 void FD3D12DynamicRHI::RHIUpdateFrameResources(FScene* Scene, UINT FrameIndex)
 {
-	FFrameResource& FrameResource = FrameResources[FrameIndex];
+	//FFrameResource& FrameResource = FrameResources[FrameIndex];
 
-	if(FrameResource.NumFrameDirty > 0)
+	//if(FrameResource.NumFrameDirty > 0)
+	//{
+	//	UpdateFrameResourceMtConstants(Scene, FrameResource);
+	//	UpdateFrameResourceMatConstants(Scene, FrameResource);
+	//	FrameResource.NumFrameDirty--;
+	//}
+	//UpdateFrameResourcePassConstants(Scene, FrameResource);
+}
+
+void FD3D12DynamicRHI::RHIUpdateFrameResource(UINT FrameIndex)
+{
+	FFrameResource& FrameResource = FrameResources[FrameIndex];
+	if (FrameResource.NumFrameDirty > 0)
 	{
-		UpdateFrameResourceMtConstants(Scene, FrameResource);
-		UpdateFrameResourceMatConstants(Scene, FrameResource);
+		UpdateFrameResourceMtConstants(FrameResource);
+		UpdateFrameResourceMatConstants(FrameResource);
 		FrameResource.NumFrameDirty--;
 	}
-	UpdateFrameResourcePassConstants(Scene, FrameResource);
+	UpdateFrameResourcePassConstants(FrameResource);
 }
 
 FFrameResource& FD3D12DynamicRHI::RHIGetFrameResource(UINT FrameIndex)
@@ -570,9 +583,9 @@ FFrameResource& FD3D12DynamicRHI::RHIGetFrameResource(UINT FrameIndex)
 	return FrameResources[FrameIndex];
 }
 
-void FD3D12DynamicRHI::UpdateFrameResourceMtConstants(FScene* Scene, FFrameResource& FrameResource)
+void FD3D12DynamicRHI::UpdateFrameResourceMtConstants( FFrameResource& FrameResource)
 {
-	const std::vector<FMesh*>& Meshes = Scene->GetDrawMeshes();
+	const std::vector<FMesh*>& Meshes = FrameResource.MeshRenderResources;
 	FBufferObject* ObjConsBuffer = new FBufferObject();
 	ObjConsBuffer->Type = E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATRIX;
 	ObjConsBuffer->DataSize = CurrentCbvSrvDesc.CbMatrix.BufferSize;
@@ -596,9 +609,9 @@ void FD3D12DynamicRHI::UpdateFrameResourceMtConstants(FScene* Scene, FFrameResou
 	delete ObjConsBuffer;
 }
 
-void FD3D12DynamicRHI::UpdateFrameResourceMatConstants(FScene* Scene, FFrameResource& FrameResource)
+void FD3D12DynamicRHI::UpdateFrameResourceMatConstants( FFrameResource& FrameResource)
 {
-	const std::vector<FMesh*>& Meshes = Scene->GetDrawMeshes();
+	const std::vector<FMesh*>& Meshes = FrameResource.MeshRenderResources;
 	FBufferObject* BufferObj = new FBufferObject();
 	BufferObj->Type = E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATERIAL;
 	BufferObj->DataSize = CurrentCbvSrvDesc.CbMaterial.BufferSize;
@@ -628,9 +641,9 @@ void FD3D12DynamicRHI::UpdateFrameResourceMatConstants(FScene* Scene, FFrameReso
 	delete BufferObj;
 }
 
-void FD3D12DynamicRHI::UpdateFrameResourcePassConstants(FScene* Scene, FFrameResource& FrameResource)
+void FD3D12DynamicRHI::UpdateFrameResourcePassConstants(FFrameResource& FrameResource)
 {
-	const std::vector<FMesh*>& Meshes = Scene->GetDrawMeshes();
+	const std::vector<FMesh*>& Meshes = FrameResource.MeshRenderResources;
 	FBufferObject* BufferObj = new FBufferObject();
 	BufferObj->Type = E_CONSTANT_BUFFER_TYPE::TYPE_CB_PASSCONSTANT;
 	BufferObj->DataSize = CurrentCbvSrvDesc.CbConstant.BufferSize;
@@ -638,7 +651,7 @@ void FD3D12DynamicRHI::UpdateFrameResourcePassConstants(FScene* Scene, FFrameRes
 	BufferObj->BufferData = new int8_t[CurrentCbvSrvDesc.CbConstant.BufferSize];
 	memset(BufferObj->BufferData, 0, CurrentCbvSrvDesc.CbConstant.BufferSize);
 
-	LCamera& Camera = Scene->GetCamera();
+	LCamera& Camera = FrameResource.Camera;
 	XMFLOAT4X4 MtProj;
 	XMStoreFloat4x4(&MtProj, Camera.GetProjectionMatrix());
 	XMMATRIX ViewProj = Camera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
@@ -658,6 +671,14 @@ void FD3D12DynamicRHI::UpdateFrameResourcePassConstants(FScene* Scene, FFrameRes
 		Cb->UpdateConstantBufferInfo(BufferObj->BufferData, BufferObj->DataSize);
 	}
 	delete BufferObj;
+}
+
+void FD3D12DynamicRHI::RHIUpdateFrameResourceCamera(LCamera& Camera)
+{
+	for (UINT i = 0; i < FRAME_COUNT; i++)
+	{
+		FrameResources[i].Camera.SetCameraControlRot(Camera.GetControlRotate());
+	}
 }
 
 void FD3D12DynamicRHI::CreateSrvAndCbvs(FFrameResource* FrameResource)

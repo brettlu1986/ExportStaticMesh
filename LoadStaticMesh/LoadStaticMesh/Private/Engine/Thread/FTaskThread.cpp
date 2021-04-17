@@ -1,6 +1,7 @@
 
 
 #include "FTaskThread.h"
+#include "FDefine.h"
 
 FThreadTask::FThreadTask(TaskFunc TaskF)
 :Task(TaskF)
@@ -25,30 +26,39 @@ void FTaskThread::Run()
 {
 	while(IsRun)
 	{
-		FThreadTask* Task = nullptr;
+		DoTasks();
+	}
+	ClearTask();
+}
+
+void FTaskThread::ClearTask()
+{
+	Tasks.clear();
+}
+
+void FTaskThread::DoTasks()
+{
+	FThreadTask* Task = nullptr;
+	{
+		lock_guard<mutex> Lock(Mutex);
+		if (!Tasks.empty())
 		{
-			lock_guard<mutex> Lock(Mutex);
-			if(!Tasks.empty())
-			{
-				Task = &Tasks.front();
-			}
-		}
-		if(Task != nullptr)
-		{
-			Task->DoTask();
-			{
-				lock_guard<mutex> Lock(Mutex);
-				Tasks.pop_front();
-			}
+			Task = &Tasks.front();
 		}
 	}
-
-	Tasks.clear();
+	if (Task != nullptr)
+	{
+		Task->DoTask();
+		{
+			lock_guard<mutex> Lock(Mutex);
+			Tasks.pop_front();
+		}
+	}
 }
 
 void FTaskThread::AddTask(TaskFunc&& TaskF)
 {
-	if(IsRun)
+	if(IsRun )
 	{
 		lock_guard<mutex> Lock(Mutex);
 		Tasks.push_back(FThreadTask(TaskF));

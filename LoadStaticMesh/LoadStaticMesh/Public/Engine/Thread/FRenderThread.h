@@ -14,16 +14,28 @@ public:
 	static void CreateRenderThread();
 	static void DestroyRenderThread();
 	static FRenderThread* Get();
-	void WaitForRenderThread();
 
 	condition_variable RenderCV;
 	atomic_int FrameTaskNum;
 
 	void InitRenderThreadScene(FScene* Scene);
-	void UpdateRenderThreadScene(FScene* Scene);
-	void DrawThreadThreadScene(FScene* Scene);
-private: 
+	void UpdateFrameCamera(LCamera& Camera);
+
+	void NotifyRenderThreadExcute();
+	void NotifyGameExcute();
+	bool ShouldWaitRender();
+	bool ShouldWaitGame();
+	void ClearCounter();
+	
+	//void WaitForRenderThread();
+	//void UpdateRenderThreadScene(FScene* Scene);
+	//void DrawThreadThreadScene(FScene* Scene);
+
+private:
 	static FRenderThread* RenderThread;
+	static const UINT CPU_MAX_AHEAD = 3;
 	FSceneRenderer Renderer;
 	UINT FrameIndex;
+
+	UINT SyncCount = 0;
 };

@@ -38,13 +38,15 @@ public:
 
 	virtual void RHICreateFrameResources(FScene* Scene) override;
 	virtual void RHIUpdateFrameResources(FScene* Scene, UINT FrameIndex) override;
+	virtual void RHIUpdateFrameResource(UINT FrameIndex) override;
 	virtual FFrameResource& RHIGetFrameResource(UINT FrameIndex) override;
 	virtual void RHIRenderFrameResource(FFrameResource& FrameResource) override;
 
+	virtual void RHIUpdateFrameResourceCamera(LCamera& Camera) override;
 private:
-	void UpdateFrameResourceMtConstants(FScene* Scene, FFrameResource& FrameResource);
-	void UpdateFrameResourceMatConstants(FScene* Scene, FFrameResource& FrameResource);
-	void UpdateFrameResourcePassConstants(FScene* Scene, FFrameResource& FrameResource);
+	void UpdateFrameResourceMtConstants(FFrameResource& FrameResource);
+	void UpdateFrameResourceMatConstants(FFrameResource& FrameResource);
+	void UpdateFrameResourcePassConstants(FFrameResource& FrameResource);
 
 	void FindAdapter();
 	void InitWindow(UINT Width, UINT Height, void* Window);

@@ -5,6 +5,7 @@
 #include "LInput.h"
 #include "LAssetDataLoader.h"
 #include <DirectXMath.h>
+#include "FRenderThread.h"
 
 #include <dxgidebug.h>
 #include <d3dcompiler.h>
@@ -48,19 +49,24 @@ void ApplicationMain::OnTouchInit()
 void ApplicationMain::OnSceneInit()
 {
 	LAssetDataLoader::LoadSampleScene(&Scene);
-	LEngine::GetEngine()->InitRenderThreadScene(&Scene);
+	FRenderThread::Get()->InitRenderThreadScene(&Scene);
 }
 
 void ApplicationMain::Update()
 {
+	while(FRenderThread::Get()->ShouldWaitRender())
+	{
+		continue;
+	}
 	Scene.Update();
-	LEngine::GetEngine()->WaitForRenderThread();
-	LEngine::GetEngine()->UpdateRenderThreadScene(&Scene);
+	FRenderThread::Get()->NotifyRenderThreadExcute();
+	//LEngine::GetEngine()->WaitForRenderThread();
+	//LEngine::GetEngine()->UpdateRenderThreadScene(&Scene);
 }
 
 void ApplicationMain::Render()
 {	
-	LEngine::GetEngine()->DrawThreadThreadScene(&Scene);
+	//LEngine::GetEngine()->DrawThreadThreadScene(&Scene);
 }
 
 void ApplicationMain::Run()

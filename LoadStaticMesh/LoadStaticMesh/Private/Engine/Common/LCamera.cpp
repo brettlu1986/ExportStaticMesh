@@ -6,6 +6,7 @@
 #include <fstream>
 #include "LEngine.h"
 #include "LDeviceWindows.h"
+#include "FRenderThread.h"
 
 using namespace DirectX;
 using namespace std;
@@ -79,8 +80,15 @@ void LCamera::ChangeViewMatrixByMouseEvent(float x, float y)
 	Theta += x;
 	Alpha = MathHelper::Clamp(Alpha, 0.1f, MathHelper::Pi - 0.1f);
 
+	CalculateLocation();
+
+	FRenderThread::Get()->UpdateFrameCamera(*this);
+}
+
+void LCamera::CalculateLocation()
+{
 	XMVECTOR V = DirectX::XMVectorSet(Radius * sinf(Alpha) * sinf(Theta),
-		Radius * sinf(Alpha) * cosf(Theta), 
+		Radius * sinf(Alpha) * cosf(Theta),
 		Radius * cosf(Alpha),
 		1.f);
 	V += XMLoadFloat3(&FocusPosition);

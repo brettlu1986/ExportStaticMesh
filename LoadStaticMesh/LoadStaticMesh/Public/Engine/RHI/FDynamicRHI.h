@@ -44,6 +44,7 @@ struct FFrameResource
 {
 	std::vector<FMesh*> MeshRenderResources;
 	std::map<E_CONSTANT_BUFFER_TYPE, FD3DConstantBuffer*> ConstantBuffers;
+	LCamera Camera;
 	UINT NumFrameDirty = 1;
 };
 
@@ -71,8 +72,10 @@ public:
 
 	virtual void RHICreateFrameResources(FScene* Scene) = 0;
 	virtual void RHIUpdateFrameResources(FScene* Scene, UINT FrameIndex) = 0;
+	virtual void RHIUpdateFrameResource(UINT FrameIndex) = 0;
 	virtual FFrameResource& RHIGetFrameResource(UINT FrameIndex) = 0;
 	virtual void RHIRenderFrameResource(FFrameResource& FrameResource) = 0;
+	virtual void RHIUpdateFrameResourceCamera(LCamera& Camera) = 0;
 };
 
 extern FDynamicRHI* GDynamicRHI;
@@ -141,6 +144,11 @@ FORCEINLINE void UpdateFrameResources(FScene* Scene, UINT FrameIndex)
 	return GDynamicRHI->RHIUpdateFrameResources(Scene, FrameIndex);
 }
 
+FORCEINLINE void UpdateFrameResource(UINT FrameIndex)
+{
+	return GDynamicRHI->RHIUpdateFrameResource(FrameIndex);
+}
+
 FORCEINLINE FFrameResource& GetFrameResource(UINT FrameIndex) 
 {
 	return GDynamicRHI->RHIGetFrameResource(FrameIndex);
@@ -149,4 +157,9 @@ FORCEINLINE FFrameResource& GetFrameResource(UINT FrameIndex)
 FORCEINLINE void RenderFrameResources(FFrameResource& FrameResource)
 {
 	GDynamicRHI->RHIRenderFrameResource(FrameResource);
+}
+
+FORCEINLINE void UpdateFrameResourceCamera(LCamera& Camera)
+{
+	GDynamicRHI->RHIUpdateFrameResourceCamera(Camera);
 }

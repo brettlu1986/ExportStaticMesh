@@ -32,6 +32,26 @@ public:
 	{
 		return Position;
 	}
+
+	void SetCameraLocation(const XMFLOAT3& InLoc)
+	{
+		Position.x = InLoc.x;
+		Position.y = InLoc.x;
+		Position.z = InLoc.z;
+	}
+
+	void SetCameraControlRot(XMFLOAT2 InRotate)
+	{
+		Theta = InRotate.x;
+		Alpha = InRotate.y;
+		CalculateLocation();
+	}
+
+	void CalculateLocation();
+	XMFLOAT2 GetControlRotate()
+	{
+		return XMFLOAT2(Theta, Alpha);
+	}
 private:
 
 	//void ReadCameraDataFromFile(LPCWSTR FileName );

@@ -23,8 +23,10 @@ public:
 
 	virtual void Run() override;
 	virtual void AddTask(TaskFunc&& TaskF);
-
 protected:
+
+	void DoTasks();
+	void ClearTask();
 	deque<FThreadTask> Tasks;
 	
 };
