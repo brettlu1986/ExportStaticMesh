@@ -91,13 +91,13 @@ void LCamera::UpdateCameraDistance(UINT8 Key)
 	case 'W': 
 	{
 		Radius = Radius - DirectionMoveOffset;
-		Radius = Radius <= 0 ?  0 : Radius;
+		Radius = Radius <= 1 ?  1 : Radius;
 	}
 	break;
 	case 'S': 
 	{
 		Radius = Radius + DirectionMoveOffset;
-		Radius = Radius >= 50? 50 : Radius;
+		Radius = Radius >= 15? 15 : Radius;
 	}
 	break;
 	default:
