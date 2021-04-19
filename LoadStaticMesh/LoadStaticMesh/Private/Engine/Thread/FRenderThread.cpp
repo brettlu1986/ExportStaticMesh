@@ -22,11 +22,11 @@ void FRenderThread::Run()
 
 		DoTasks();
 
-		UpdateFrameResource(FrameIndex);
-		BeginRenderFrame(FrameIndex);
-		FFrameResource& FrameResource = GetFrameResource(FrameIndex);
+		GRHI->RHIUpdateFrameResource(FrameIndex);
+		GRHI->RHIBeginRenderFrame(FrameIndex);
+		FFrameResource& FrameResource = GRHI->RHIGetFrameResource(FrameIndex);
 		Renderer.RenderFrameResource(FrameResource);
-		EndRenderFrame(FrameIndex);
+		GRHI->RHIEndRenderFrame(FrameIndex);
 
 		FrameIndex = (FrameIndex + 1) % FRAME_COUNT;
 
@@ -60,14 +60,14 @@ FRenderThread* FRenderThread::Get()
 void FRenderThread::InitRenderThreadScene(FScene* Scene)
 {
 	AddTask([this, Scene] {
-		CreateFrameResources(Scene);
+		GRHI->RHICreateFrameResources(Scene);
 	});
 }
 
 void FRenderThread::UpdateFrameCamera(LCamera& Camera)
 {
 	AddTask([this, &Camera] {
-		UpdateFrameResourceCamera(Camera);
+		GRHI->RHIUpdateFrameResourceCamera(Camera);
 	});
 }
 

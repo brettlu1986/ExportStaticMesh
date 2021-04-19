@@ -2,13 +2,13 @@
 #include "FRHI.h"
 #include "FDynamicRHI.h"
 
-FDynamicRHI* GDynamicRHI = nullptr;
+FDynamicRHI* GRHI = nullptr;
 
 bool RHICreate()
 {
-	if (!GDynamicRHI)
+	if (!GRHI)
 	{
-		GDynamicRHI = PlatformCreateDynamicRHI();
+		GRHI = PlatformCreateDynamicRHI();
 		return true;
 	}
 	return false;
@@ -16,13 +16,13 @@ bool RHICreate()
 
 void RHIInit()
 {
-	if(GDynamicRHI)
-		GDynamicRHI->Init();
+	if(GRHI)
+		GRHI->Init();
 }
 
 void RHIExit()
 {
-	GDynamicRHI->ShutDown();
-	delete GDynamicRHI;
-	GDynamicRHI = nullptr;
+	GRHI->ShutDown();
+	delete GRHI;
+	GRHI = nullptr;
 }

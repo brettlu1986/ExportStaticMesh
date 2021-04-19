@@ -11,5 +11,5 @@ FSceneRenderer::~FSceneRenderer()
 
 void FSceneRenderer::RenderFrameResource(FFrameResource& FrameResource)
 {
-	RenderFrameResources(FrameResource);
+	GRHI->RHIRenderFrameResource(FrameResource);
 }

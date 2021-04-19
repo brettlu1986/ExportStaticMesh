@@ -519,12 +519,12 @@ void FD3D12DynamicRHI::RHICreateFrameResources(FScene* Scene)
 	NAME_D3D12_OBJECT(CbvSrvHeap);
 	CbvSrvDescriptorSize = D3DDevice.Get()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	FShader* Vs = CreateShader(L"shader_vs.cso");
-	FShader* Ps = CreateShader(L"shader_ps.cso");
+	FShader* Vs = RHICreateShader(L"shader_vs.cso");
+	FShader* Ps = RHICreateShader(L"shader_ps.cso");
 	CreatePiplineStateObject(Vs, Ps, "PsoUseTexture");
 
-	FShader* VsNoTex = CreateShader(L"shader_vs_notexture.cso");
-	FShader* PsNoTex = CreateShader(L"shader_ps_notexture.cso");
+	FShader* VsNoTex = RHICreateShader(L"shader_vs_notexture.cso");
+	FShader* PsNoTex = RHICreateShader(L"shader_ps_notexture.cso");
 	CreatePiplineStateObject(Vs, PsNoTex, "PsoNoTexture");
 
 	delete Vs;
@@ -550,7 +550,7 @@ void FD3D12DynamicRHI::RHICreateFrameResources(FScene* Scene)
 		FrameResources[i].Camera = Scene->GetCamera();
 	}
 
-	PresentToScreen(0, true);
+	RHIPresentToScreen(0, true);
 }
 
 void FD3D12DynamicRHI::RHIUpdateFrameResources(FScene* Scene, UINT FrameIndex)
@@ -659,7 +659,7 @@ void FD3D12DynamicRHI::UpdateFrameResourcePassConstants(FFrameResource& FrameRes
 	PassConstant.EyePosW = Camera.GetCameraLocation();
 	PassConstant.LightPos = {-9.2f, 2.4f, 10.1f};
 	PassConstant.AmbientLight = { 0.8f, 0.8f, 0.8f, 1.0f };
-	PassConstant.Lights[0].Direction = { 0.28f, -0.497f, -0.821f };
+	PassConstant.Lights[0].Direction = { -0.33f, 0.781f, -0.53f };
 	PassConstant.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
 	memcpy(BufferObj->BufferData, &PassConstant, sizeof(PassConstant));
 	FD3DConstantBuffer* Cb = FrameResource.ConstantBuffers[BufferObj->Type];

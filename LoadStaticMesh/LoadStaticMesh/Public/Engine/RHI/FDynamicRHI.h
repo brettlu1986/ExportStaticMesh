@@ -78,7 +78,7 @@ public:
 	virtual void RHIUpdateFrameResourceCamera(LCamera& Camera) = 0;
 };
 
-extern FDynamicRHI* GDynamicRHI;
+extern FDynamicRHI* GRHI;
 extern EDynamicModuleType DynamicModuleType;
 
 FDynamicRHI* PlatformCreateDynamicRHI();
@@ -89,77 +89,3 @@ public:
 	virtual FDynamicRHI* CreateRHI() = 0;
 };
 
-FORCEINLINE  FShader* CreateShader(LPCWSTR ShaderFile)
-{
-	return GDynamicRHI->RHICreateShader(ShaderFile);
-}
-
-FORCEINLINE void BeginRenderFrame(UINT TargetFrame)
-{
-	return GDynamicRHI->RHIBeginRenderFrame(TargetFrame);
-}
-
-FORCEINLINE void EndRenderFrame(UINT TargetFrame)
-{
-	return GDynamicRHI->RHIEndRenderFrame(TargetFrame);
-}
-
-FORCEINLINE void PresentToScreen(UINT TargetFrame, bool bFirstExcute = false)
-{
-	GDynamicRHI->RHIPresentToScreen(TargetFrame, bFirstExcute);
-}
-
-FORCEINLINE FIndexBuffer* CreateIndexBuffer()
-{
-	return GDynamicRHI->RHICreateIndexBuffer();
-}
-
-FORCEINLINE FVertexBuffer* CreateVertexBuffer()
-{
-	return GDynamicRHI->RHICreateVertexBuffer();
-}
-
-FORCEINLINE FTexture* CreateTexture() 
-{
-	return GDynamicRHI->RHICreateTexture();
-}
-
-FORCEINLINE void InitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture)
-{
-	return GDynamicRHI->RHIInitMeshGPUResource(IndexBuffer, VertexBuffer, Texture);
-}
-
-FORCEINLINE void DrawMesh(FMesh* Mesh)
-{
-	return GDynamicRHI->RHIDrawMesh(Mesh);
-}
-
-FORCEINLINE void CreateFrameResources(FScene* Scene)
-{
-	return GDynamicRHI->RHICreateFrameResources(Scene);
-}
-
-FORCEINLINE void UpdateFrameResources(FScene* Scene, UINT FrameIndex)
-{
-	return GDynamicRHI->RHIUpdateFrameResources(Scene, FrameIndex);
-}
-
-FORCEINLINE void UpdateFrameResource(UINT FrameIndex)
-{
-	return GDynamicRHI->RHIUpdateFrameResource(FrameIndex);
-}
-
-FORCEINLINE FFrameResource& GetFrameResource(UINT FrameIndex) 
-{
-	return GDynamicRHI->RHIGetFrameResource(FrameIndex);
-}
-
-FORCEINLINE void RenderFrameResources(FFrameResource& FrameResource)
-{
-	GDynamicRHI->RHIRenderFrameResource(FrameResource);
-}
-
-FORCEINLINE void UpdateFrameResourceCamera(LCamera& Camera)
-{
-	GDynamicRHI->RHIUpdateFrameResourceCamera(Camera);
-}

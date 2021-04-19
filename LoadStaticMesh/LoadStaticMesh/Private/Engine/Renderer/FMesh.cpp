@@ -66,12 +66,12 @@ void FMesh::Destroy()
 
 void FMesh::Initialize()
 {
-	VertexBuffer = CreateVertexBuffer();
-	IndexBuffer = CreateIndexBuffer();
+	VertexBuffer = GRHI->RHICreateVertexBuffer();
+	IndexBuffer = GRHI->RHICreateIndexBuffer();
 	LAssetDataLoader::LoadMeshVertexDataFromFile(MeshFileName, this);
 	if(MeshTextureName != "")
 	{
-		DiffuseTex = CreateTexture();
+		DiffuseTex = GRHI->RHICreateTexture();
 		DiffuseTex->InitializeTexture(MeshTextureName);
 	}
 	Material = new FMaterial();
@@ -85,7 +85,7 @@ XMMATRIX FMesh::GetModelMatrix()
 
 void FMesh::InitRenderResource()
 {
-	InitMeshGPUResource(IndexBuffer, VertexBuffer, DiffuseTex);
+	GRHI->RHIInitMeshGPUResource(IndexBuffer, VertexBuffer, DiffuseTex);
 }
 
 void FMesh::SetModelLocation(XMFLOAT3 Location) 
