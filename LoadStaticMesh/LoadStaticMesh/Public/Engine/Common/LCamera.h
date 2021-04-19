@@ -18,6 +18,7 @@ public:
 	XMMATRIX GetProjectionMatrix(float NearPlane = 1.0f, float FarPlane = 1000.0f);
 
 	void ChangeViewMatrixByMouseEvent(float x, float y);
+	void UpdateCameraDistance(UINT8 Key);
 
 	const XMFLOAT3& GetViewTargetLocation() {
 		return CameraDatas.Target;
@@ -65,6 +66,7 @@ private:
 	//we can use either look direction or focus position to calculate view matrix
 	XMFLOAT3 LookDirection;
 	XMFLOAT3 FocusPosition;
+	float DirectionMoveOffset;
 
 	XMFLOAT3 UpDirection;
 

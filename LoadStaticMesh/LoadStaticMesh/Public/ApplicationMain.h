@@ -20,6 +20,7 @@ public:
 	static ApplicationMain* Get() { return Application; }
 	static void ProcessInput(FInputResult Input);
 	void ProcessMouseInput(FInputResult& Input);
+	void ProcessKeyInput(FInputResult& Input);
 
 private:
 	static ApplicationMain* Application;

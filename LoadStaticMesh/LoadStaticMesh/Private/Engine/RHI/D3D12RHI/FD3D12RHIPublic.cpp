@@ -659,7 +659,7 @@ void FD3D12DynamicRHI::UpdateFrameResourcePassConstants(FFrameResource& FrameRes
 	PassConstant.EyePosW = Camera.GetCameraLocation();
 	PassConstant.LightPos = {-9.2f, 2.4f, 10.1f};
 	PassConstant.AmbientLight = { 0.8f, 0.8f, 0.8f, 1.0f };
-	PassConstant.Lights[0].Direction = { -0.33f, 0.781f, -0.53f };
+	PassConstant.Lights[0].Direction = { -0.103f, -0.636f, -0.765f };
 	PassConstant.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
 	memcpy(BufferObj->BufferData, &PassConstant, sizeof(PassConstant));
 	FD3DConstantBuffer* Cb = FrameResource.ConstantBuffers[BufferObj->Type];
@@ -674,7 +674,7 @@ void FD3D12DynamicRHI::RHIUpdateFrameResourceCamera(LCamera& Camera)
 {
 	for (UINT i = 0; i < FRAME_COUNT; i++)
 	{
-		FrameResources[i].Camera.SetCameraControlRot(Camera.GetControlRotate());
+		FrameResources[i].Camera = Camera;//.SetCameraControlRot(Camera.GetControlRotate());
 	}
 }
 

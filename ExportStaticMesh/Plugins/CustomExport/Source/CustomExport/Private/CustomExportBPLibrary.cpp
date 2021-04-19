@@ -23,7 +23,7 @@ const FString Failed = "Fail";
 const uint32 LOD_LEVEL = 0;
 const uint32 MAX_UINT16 = 65535;
 const float POSITION_SCALE = 0.01f;
-const float CameraTargetOffset = 350.f;
+const float CameraTargetOffset = 3500.f;
 
 UCustomExportBPLibrary::UCustomExportBPLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

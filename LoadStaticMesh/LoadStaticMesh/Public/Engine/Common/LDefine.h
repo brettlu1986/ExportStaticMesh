@@ -37,38 +37,25 @@ typedef enum class E_TOUCH_TYPE : UINT8
 	INPUT_UNKNOWN,
 }E_TOUCH_TYPE;
 
-typedef enum class E_KEY_MAP : UINT
-{
-	W = 0,
-	A,
-	S,
-	D,
-	UP,
-	DOWN,
-	LEFT,
-	RIGHT,
-	INPUT_UNKNOWN,
-}E_KEY_MAP;
-
 typedef struct FInputResult
 {
 public:
 	E_INPUT_TYPE InputType;
 	E_TOUCH_TYPE TouchType;
-	E_KEY_MAP KeyMapType;
+	UINT8 KeyMapType;
 	int X;
 	int Y;
 
 	FInputResult()
 	:InputType(E_INPUT_TYPE::INPUT_UNKNOWN)
 	, TouchType(E_TOUCH_TYPE::INPUT_UNKNOWN)
-	, KeyMapType(E_KEY_MAP::INPUT_UNKNOWN)
+	, KeyMapType(0)
 	,X(0)
 	,Y(0)
 	{
 	}
 
-	FInputResult(E_INPUT_TYPE InInput, E_TOUCH_TYPE InTouch, E_KEY_MAP InKey, int InX, int InY)
+	FInputResult(E_INPUT_TYPE InInput, E_TOUCH_TYPE InTouch, UINT8 InKey, int InX, int InY)
 		:InputType(InInput)
 		, TouchType(InTouch)
 		, KeyMapType(InKey)

@@ -90,6 +90,18 @@ void ApplicationMain::ProcessInput(FInputResult Input)
 	{
 		ApplicationMain::Get()->ProcessMouseInput(Input);
 	}
+	else if(LInput::IsKeyInput(Input))
+	{
+		ApplicationMain::Get()->ProcessKeyInput(Input);
+	}
+}
+
+void ApplicationMain::ProcessKeyInput(FInputResult& Input)
+{
+	if (Input.TouchType == E_TOUCH_TYPE::KEY_DOWN)
+	{
+		Scene.UpdateCameraDistanceByKey(Input.KeyMapType);
+	}
 }
 
 void ApplicationMain::ProcessMouseInput(FInputResult& Input)
@@ -108,5 +120,6 @@ void ApplicationMain::ProcessMouseInput(FInputResult& Input)
 		LastMousePoint.x = Input.X;
 		LastMousePoint.y = Input.Y;
 	}
+	
 }
 

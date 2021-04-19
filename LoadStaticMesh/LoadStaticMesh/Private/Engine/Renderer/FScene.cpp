@@ -47,3 +47,8 @@ void FScene::UpdateCameraMatrix(float x, float y)
 	Camera.ChangeViewMatrixByMouseEvent(x, y);
 }
 
+void FScene::UpdateCameraDistanceByKey(UINT8 Key)
+{
+	Camera.UpdateCameraDistance(Key);
+}
+

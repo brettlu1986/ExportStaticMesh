@@ -25,6 +25,7 @@ LCamera::LCamera()
 	,Radius(1.f)
 	,Alpha(0.f)
 	,Theta(0.f)
+	,DirectionMoveOffset(1.f)
 {
 
 }
@@ -79,9 +80,31 @@ void LCamera::ChangeViewMatrixByMouseEvent(float x, float y)
 	Alpha += y;
 	Theta += x;
 	Alpha = MathHelper::Clamp(Alpha, 0.1f, MathHelper::Pi - 0.1f);
+	CalculateLocation();
+	FRenderThread::Get()->UpdateFrameCamera(*this);
+}
+
+void LCamera::UpdateCameraDistance(UINT8 Key)
+{
+	switch (static_cast<char>(Key))
+	{
+	case 'W': 
+	{
+		Radius = Radius - DirectionMoveOffset;
+		Radius = Radius <= 0 ?  0 : Radius;
+	}
+	break;
+	case 'S': 
+	{
+		Radius = Radius + DirectionMoveOffset;
+		Radius = Radius >= 50? 50 : Radius;
+	}
+	break;
+	default:
+		break;
+	}
 
 	CalculateLocation();
-
 	FRenderThread::Get()->UpdateFrameCamera(*this);
 }
 
