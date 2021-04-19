@@ -13,6 +13,8 @@ cbuffer cbPass : register(b2)
 	float4x4 gViewProj;
 	float3 gEyePosW;
 	float cbPerObjectPad1;
+	float3 gLightPos;
+	float cbPerObjectPad2;
 	float4 gAimbientLight;
 	Light gLight[MaxLights];
 }

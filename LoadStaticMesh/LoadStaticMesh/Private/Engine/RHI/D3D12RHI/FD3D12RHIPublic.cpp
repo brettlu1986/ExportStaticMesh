@@ -657,9 +657,11 @@ void FD3D12DynamicRHI::UpdateFrameResourcePassConstants(FFrameResource& FrameRes
 	XMMATRIX ViewProj = Camera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
 	XMStoreFloat4x4(&PassConstant.ViewProj, XMMatrixTranspose(ViewProj));
 	PassConstant.EyePosW = Camera.GetCameraLocation();
+	PassConstant.LightPos = {-9.2f, 2.4f, 10.1f};
 	PassConstant.AmbientLight = { 0.25f, 0.25f, 0.25f, 1.0f };
 	PassConstant.Lights[0].Direction = { 0.8f, 0.2f, -1.f };
 	PassConstant.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
+	//-9.200 2.4 ,10.100
 	//PassConstant.Lights[1].Direction = { -0.57735f, -0.57735f, 0.57735f };
 	//PassConstant.Lights[1].Strength = { 0.8f, 0.8f, 0.8f };
 	//PassConstant.Lights[2].Direction = { 0.0f, -0.707f, -0.707f };

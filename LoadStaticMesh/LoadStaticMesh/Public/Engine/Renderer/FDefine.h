@@ -148,10 +148,13 @@ public:
 	, EyePosW({ 0.0f, 0.0f, 0.0f })
 	, AmbientLight({ 0.0f, 0.0f, 0.0f, 1.0f })
 	, CbPerObjectPad1(0.f)
+	, CbPerObjectPad2(0.f)
 	{};
 	DirectX::XMFLOAT4X4 ViewProj;
 	DirectX::XMFLOAT3 EyePosW ;
-	float CbPerObjectPad1 ;
+	float CbPerObjectPad1;
+	DirectX::XMFLOAT3 LightPos;
+	float CbPerObjectPad2;
 	DirectX::XMFLOAT4 AmbientLight;
 	FLight Lights[MaxLights];
 };
