@@ -1,5 +1,5 @@
 
-
+#include "stdafx.h"
 #include "LInputWindows.h"
 #include "LEngine.h"
 #include "LEvent.h"

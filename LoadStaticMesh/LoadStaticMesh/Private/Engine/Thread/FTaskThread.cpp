@@ -1,4 +1,5 @@
 
+#include "stdafx.h"
 
 #include "FTaskThread.h"
 #include "FDefine.h"

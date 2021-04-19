@@ -1,4 +1,5 @@
 
+#include "stdafx.h"
 #include "FD3D12Resource.h"
 #include "FD3D12Helper.h"
 #include "FDDSTextureLoader.h"

@@ -1,4 +1,5 @@
 
+#include "stdafx.h"
 #include "FShader.h"
 
 FShader::FShader()

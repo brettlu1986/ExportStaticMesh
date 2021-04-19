@@ -1,4 +1,5 @@
 
+#include "stdafx.h"
 #include "FThread.h"
 
 FThread::FThread(const string& InName)

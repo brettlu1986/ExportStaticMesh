@@ -1,3 +1,5 @@
+
+#include "stdafx.h"
 #include "FScene.h"
 #include "FMesh.h"
 #include "FRHI.h"

@@ -1,9 +1,8 @@
 
+#include "stdafx.h"
 #include "LAssetDataLoader.h"
 #include "SampleAssets.h"
 
-#include <iostream>
-#include <fstream>
 
 using namespace std;
 

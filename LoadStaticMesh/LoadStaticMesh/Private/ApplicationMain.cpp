@@ -1,4 +1,5 @@
 
+#include "stdafx.h"
 #include "ApplicationMain.h"
 #include "LEngine.h"
 #include "LEvent.h"

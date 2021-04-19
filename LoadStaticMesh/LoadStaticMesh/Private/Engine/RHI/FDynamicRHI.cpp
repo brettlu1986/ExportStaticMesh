@@ -1,4 +1,6 @@
 
+#include "stdafx.h"
+
 #include "FRHI.h"
 #include "FDynamicRHI.h"
 

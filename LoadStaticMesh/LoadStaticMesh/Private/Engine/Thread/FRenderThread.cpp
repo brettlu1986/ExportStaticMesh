@@ -1,3 +1,6 @@
+
+#include "stdafx.h"
+
 #include "FRenderThread.h"
 #include "FRHI.h"
 

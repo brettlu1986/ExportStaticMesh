@@ -1,5 +1,5 @@
 
-
+#include "stdafx.h"
 #include "LDeviceWindows.h"
 #include <windowsx.h>
 #include "LInputWindows.h"

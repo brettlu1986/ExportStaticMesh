@@ -1,4 +1,5 @@
 
+#include "stdafx.h"
 #include "FIndexBuffer.h"
 
 FIndexBuffer::FIndexBuffer()

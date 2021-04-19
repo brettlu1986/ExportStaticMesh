@@ -1,9 +1,10 @@
+
+#include "stdafx.h"
+
 #include "LCamera.h"
 #include "MathHelper.h"
 #include "FD3D12Helper.h"
-#include <DirectXMath.h>
-#include <iostream>
-#include <fstream>
+
 #include "LEngine.h"
 #include "LDeviceWindows.h"
 #include "FRenderThread.h"

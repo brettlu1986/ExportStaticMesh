@@ -1,3 +1,5 @@
+
+#include "stdafx.h"
 #include "FSceneRenderer.h"
 
 FSceneRenderer::FSceneRenderer()
