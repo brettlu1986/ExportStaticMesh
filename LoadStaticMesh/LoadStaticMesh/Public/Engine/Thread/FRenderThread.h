@@ -39,3 +39,5 @@ private:
 
 	UINT SyncCount = 0;
 };
+
+#define RENDER_THREAD(...) FRenderThread::Get()->AddTask(__VA_ARGS__)

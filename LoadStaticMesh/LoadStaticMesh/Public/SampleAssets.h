@@ -6,7 +6,7 @@ using namespace DirectX;
 
 namespace SampleAssets
 {
-	const UINT SamepleCount = 9;
+	const UINT SamepleCount = 10;
 
 	const std::string CameraBin = "CameraActor.bin";
 
@@ -14,6 +14,7 @@ namespace SampleAssets
 	{
 		"BP_Chair.bin",
 		"Linear_Stair_StaticMesh.bin",
+		"Sphere.bin",
 		"Floor2.bin",
 		"Bump_StaticMesh.bin",
 		"LeftArm_StaticMesh.bin",
@@ -26,7 +27,7 @@ namespace SampleAssets
 	const std::string SampleResourceTexture[] = 
 	{
 		"Resource/T_Chair_M.dds",
-		"","","","","","","","",
+		"","","","","","","","",""
 	};
 
 	const std::string PsoUseTexture = "PsoUseTexture";
@@ -40,11 +41,11 @@ namespace SampleAssets
 		float Roughness;
 	};
 
-
 	const SampleMaterial SampeMats[] = 
 	{
 		{ "Chair", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.1f},
 		{ "Stair", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.2f, 0.2f, 0.2f), 0.05f},
+		{ "Sphere", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.02f},
 		{ "Floor2", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.02f},
 		{ "Bump", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.2f, 0.2f, 0.2f), 0.2f},
 		{ "LeftArm", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.3f, 0.3f, 0.3f), 0.4f},

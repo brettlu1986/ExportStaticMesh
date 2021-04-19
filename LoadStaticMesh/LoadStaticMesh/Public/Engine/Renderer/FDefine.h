@@ -38,7 +38,7 @@ typedef struct FVertexData
 	XMFLOAT3 Tangent;
 	XMFLOAT2 Tex0;
 	XMFLOAT2 Tex1;
-	XMFLOAT4 Color;
+	XMFLOAT4 Color = {0.66f, 0.66f, 0.66f, 1.0};
 }FVertexData;
 
 typedef struct FCameraData {

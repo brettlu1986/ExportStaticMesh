@@ -50,6 +50,7 @@ void ApplicationMain::OnSceneInit()
 {
 	LAssetDataLoader::LoadSampleScene(&Scene);
 	FRenderThread::Get()->InitRenderThreadScene(&Scene);
+	
 }
 
 void ApplicationMain::Update()

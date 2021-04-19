@@ -33,22 +33,21 @@ struct PSInput
 
 float4 PsMain(PSInput input) : SV_TARGET
 {
-	float AmbientStrength = 0.1;
+	float AmbientStrength = 0.2;
 	float3 DirectionalLightColor = gAimbientLight.xyz;
 	float3 AmbientColor = AmbientStrength * DirectionalLightColor;
 
-	float DiffuseStrength = max(dot(input.normal, -gLight[0].Direction), 0.0);
+	float3 LightDirection = -gLight[0].Direction;
+	float DiffuseStrength = max(dot(input.normal, LightDirection), 0.0);
 	float3 DiffuseColor = DiffuseStrength * DirectionalLightColor;
 
 	float Shininess = 64.0f;
-
 	float3 ViewDirection = normalize(gEyePosW - input.posW);
-
-	float3 HalfwayDir = normalize(-gLight[0].Direction - ViewDirection);
+	float3 HalfwayDir = normalize(LightDirection + ViewDirection);
 	float SpecularStrength = pow(max(dot(input.normal, HalfwayDir), 0.0), Shininess);
 	float3 SpecularColor = DirectionalLightColor * SpecularStrength;
 
-	float3 color = AmbientColor + DiffuseColor + SpecularColor;
+	float3 color = ( AmbientColor + DiffuseColor + SpecularColor) * input.color;
 	color = color * 0.8;
 	float gamma = 2.2f;
 	color = pow(color, 1.0f / gamma);
