@@ -53,13 +53,13 @@ void ApplicationMain::OnSceneInit()
 
 void ApplicationMain::Update()
 {
-	while(FRenderThread::Get()->ShouldWaitRender())
-	{
-		continue;
-	}
+	//while(FRenderThread::Get()->ShouldWaitRender())
+	//{
+	//	continue;
+	//}
 	Scene.Update();
-	FRenderThread::Get()->NotifyRenderThreadExcute();
-	//LEngine::GetEngine()->WaitForRenderThread();
+	//FRenderThread::Get()->NotifyRenderThreadExcute();
+	FRenderThread::Get()->WaitForRenderThread();
 }
 
 void ApplicationMain::Run()

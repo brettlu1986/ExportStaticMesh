@@ -20,10 +20,10 @@ public:
 
 	void InitRenderThreadScene(FScene* Scene);
 
-	void NotifyRenderThreadExcute();
+	/*void NotifyRenderThreadExcute();
 	void NotifyGameExcute();
 	bool ShouldWaitRender();
-	bool ShouldWaitGame();
+	bool ShouldWaitGame();*/
 	void Clear();
 
 	FScene* GetRenderScene()
@@ -31,7 +31,7 @@ public:
 		return RenderScene;
 	}
 	
-	//void WaitForRenderThread();
+	void WaitForRenderThread();
 
 private:
 	static FRenderThread* RenderThread;
@@ -39,7 +39,7 @@ private:
 	FSceneRenderer Renderer;
 	FScene* RenderScene;
 	
-	UINT SyncCount = 0;
+	//UINT SyncCount = 0;
 };
 
 #define RENDER_THREAD(...) FRenderThread::Get()->AddTask(__VA_ARGS__)
