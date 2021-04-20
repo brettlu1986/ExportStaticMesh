@@ -81,27 +81,52 @@ void LCamera::OnResize()
 	AspectRatio = static_cast<float>(DeviceWindows->GetWidth()) / DeviceWindows->GetHeight();
 }
 
+void LCamera::UpdateForcusPosition(XMVECTOR UpdateVec)
+{
+	FocusPosition.x = XMVectorGetX(UpdateVec);
+	FocusPosition.y = XMVectorGetY(UpdateVec);
+	FocusPosition.z = XMVectorGetZ(UpdateVec);
+}
 
 void LCamera::Update()
 {
 	bool bDirty = false;
 
-	bool bForward = IsKeyDown('W');
-	bool bBackward = IsKeyDown('S');
-	if(bForward || bBackward)
+	XMVECTOR Direction;
+	XMVECTOR Offset;
+	XMVECTOR CurFocusLoc;
+
+	if(IsKeyDown('W') || IsKeyDown('S'))
 	{
-		XMVECTOR EyeDirection = XMVectorSubtract(XMLoadFloat3(&FocusPosition), XMLoadFloat3(&Position));
-		EyeDirection = XMVector3Normalize(EyeDirection);
-		XMVECTOR Offset = DirectionMoveOffset * EyeDirection;
+		Direction = XMVectorSubtract(XMLoadFloat3(&FocusPosition), XMLoadFloat3(&Position));
+		Direction = XMVector3Normalize(Direction);
+		Offset = DirectionMoveOffset * Direction;
+	}
 
-		XMVECTOR CurFocusLoc = bForward ? XMVectorAdd(XMLoadFloat3(&FocusPosition), Offset) :
-			XMVectorSubtract(XMLoadFloat3(&FocusPosition), Offset);
-		FocusPosition.x = XMVectorGetX(CurFocusLoc);
-		FocusPosition.y = XMVectorGetY(CurFocusLoc);
-		FocusPosition.z = XMVectorGetZ(CurFocusLoc);
+	if(IsKeyDown('A') || IsKeyDown('D'))
+	{
+		XMFLOAT3 Up = {0, 1, 0};
+		Direction = XMVectorSubtract(XMLoadFloat3(&FocusPosition), XMLoadFloat3(&Position));
+		XMVECTOR UpDir = XMLoadFloat3(&Up);
+		Direction = XMVectorMultiply(Direction, UpDir);
+		Direction = XMVector3Normalize(Direction); //left dir
+		Offset = DirectionMoveOffset * Direction;
+	}
 
+	if(IsKeyDown('W') || IsKeyDown('A'))
+	{
+		CurFocusLoc = XMVectorAdd(XMLoadFloat3(&FocusPosition), Offset);
+		UpdateForcusPosition(CurFocusLoc);
 		bDirty = true;
 	}
+
+	if(IsKeyDown('S') || IsKeyDown('D'))
+	{
+		CurFocusLoc = XMVectorSubtract(XMLoadFloat3(&FocusPosition), Offset);
+		UpdateForcusPosition(CurFocusLoc);
+		bDirty = true;
+	}
+
 
 	if(bDirty)
 	{
