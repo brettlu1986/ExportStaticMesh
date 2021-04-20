@@ -27,6 +27,5 @@ private:
 	void OnSceneInit();
 
 private: 
-	POINT LastMousePoint;
 	FScene Scene;
 };

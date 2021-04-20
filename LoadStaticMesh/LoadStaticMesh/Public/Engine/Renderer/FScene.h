@@ -14,8 +14,6 @@ public:
 	void AddMeshToScene(FMesh* Mesh);
 	void InitSceneRenderResource();
 
-	void UpdateCameraMatrix(float x, float y);
-	void UpdateCameraDistanceByKey(UINT8 Key);
 	void Update();
 	void Destroy();
 

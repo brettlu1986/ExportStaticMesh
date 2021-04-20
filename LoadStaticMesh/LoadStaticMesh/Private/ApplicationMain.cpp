@@ -5,16 +5,11 @@
 #include "LEvent.h"
 #include "LInput.h"
 #include "LAssetDataLoader.h"
-#include <DirectXMath.h>
 #include "FRenderThread.h"
-
-
-using namespace DirectX;
 
 ApplicationMain* ApplicationMain::Application = nullptr;
 
 ApplicationMain::ApplicationMain()
-	:LastMousePoint({0, 0})
 {
 	Application = this;
 }
@@ -89,28 +84,13 @@ void ApplicationMain::ProcessInput(FInputResult Input)
 
 void ApplicationMain::ProcessKeyInput(FInputResult& Input)
 {
-	if (Input.TouchType == E_TOUCH_TYPE::KEY_DOWN)
-	{
-		Scene.UpdateCameraDistanceByKey(Input.KeyMapType);
-	}
+	LCamera& Camera = Scene.GetCamera();
+	Camera.ProcessCameraKeyInput(Input);
 }
 
 void ApplicationMain::ProcessMouseInput(FInputResult& Input)
 {
-	if (Input.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_DOWN)
-	{
-		LastMousePoint.x = Input.X;
-		LastMousePoint.y = Input.Y;
-	}
-	else if (Input.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_MOVE)
-	{
-		float dx = XMConvertToRadians(0.25f * static_cast<float>(Input.X - LastMousePoint.x));
-		float dy = XMConvertToRadians(0.25f * static_cast<float>(Input.Y - LastMousePoint.y));
-
-		Scene.UpdateCameraMatrix(dx, dy);
-		LastMousePoint.x = Input.X;
-		LastMousePoint.y = Input.Y;
-	}
-	
+	LCamera& Camera= Scene.GetCamera();
+	Camera.ProcessCameraMouseInput(Input);
 }
 

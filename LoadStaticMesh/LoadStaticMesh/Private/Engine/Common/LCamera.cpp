@@ -12,6 +12,8 @@
 using namespace DirectX;
 using namespace std;
 
+static const float DirectionMoveOffset = 0.15f;
+
 LCamera::LCamera()
 	:Position(0, 0, 0)
 	,InitialPosition(0,0,0)
@@ -26,9 +28,12 @@ LCamera::LCamera()
 	,Radius(1.f)
 	,Alpha(0.f)
 	,Theta(0.f)
-	,DirectionMoveOffset(1.f)
+	,LastMousePoint({ 0, 0 })
 {
-
+	for (UINT i = 0; i < KEY_SIZE; i++)
+	{
+		Keys[i] = false;
+	}
 }
 
 LCamera::~LCamera()
@@ -76,35 +81,78 @@ void LCamera::OnResize()
 	AspectRatio = static_cast<float>(DeviceWindows->GetWidth()) / DeviceWindows->GetHeight();
 }
 
-void LCamera::ChangeViewMatrixByMouseEvent(float x, float y)
+
+void LCamera::Update()
 {
-	Alpha += y;
-	Theta += x;
-	Alpha = MathHelper::Clamp(Alpha, 0.1f, MathHelper::Pi - 0.1f);
-	CalculateLocation();
+	bool bDirty = false;
+
+	bool bForward = IsKeyDown('W');
+	bool bBackward = IsKeyDown('S');
+	if(bForward || bBackward)
+	{
+		XMVECTOR EyeDirection = XMVectorSubtract(XMLoadFloat3(&FocusPosition), XMLoadFloat3(&Position));
+		EyeDirection = XMVector3Normalize(EyeDirection);
+		XMVECTOR Offset = DirectionMoveOffset * EyeDirection;
+
+		XMVECTOR CurFocusLoc = bForward ? XMVectorAdd(XMLoadFloat3(&FocusPosition), Offset) :
+			XMVectorSubtract(XMLoadFloat3(&FocusPosition), Offset);
+		FocusPosition.x = XMVectorGetX(CurFocusLoc);
+		FocusPosition.y = XMVectorGetY(CurFocusLoc);
+		FocusPosition.z = XMVectorGetZ(CurFocusLoc);
+
+		bDirty = true;
+	}
+
+	if(bDirty)
+	{
+		CalculateLocation();
+	}
 }
 
-void LCamera::UpdateCameraDistance(UINT8 Key)
+void LCamera::ProcessCameraMouseInput(FInputResult& MouseInput)
 {
-	switch (static_cast<char>(Key))
+	if (MouseInput.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_DOWN)
 	{
-	case 'W': 
+		LastMousePoint.x = MouseInput.X;
+		LastMousePoint.y = MouseInput.Y;
+	}
+	else if (MouseInput.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_MOVE)
 	{
-		Radius = Radius - DirectionMoveOffset;
-		Radius = Radius <= 1 ?  1 : Radius;
-	}
-	break;
-	case 'S': 
-	{
-		Radius = Radius + DirectionMoveOffset;
-		Radius = Radius >= 15? 15 : Radius;
-	}
-	break;
-	default:
-		break;
-	}
+		float dx = XMConvertToRadians(0.25f * static_cast<float>(MouseInput.X - LastMousePoint.x));
+		float dy = XMConvertToRadians(0.25f * static_cast<float>(MouseInput.Y - LastMousePoint.y));
 
-	CalculateLocation();
+		Alpha -= dy;
+		Theta -= dx;
+		Alpha = MathHelper::Clamp(Alpha, 0.1f, MathHelper::Pi - 0.1f);
+		CalculateLocation();
+
+		LastMousePoint.x = MouseInput.X;
+		LastMousePoint.y = MouseInput.Y;
+	}
+}
+
+void LCamera::ProcessCameraKeyInput(FInputResult& KeyInput)
+{
+	if(KeyInput.TouchType == E_TOUCH_TYPE::KEY_DOWN)
+	{
+		Keys[KeyInput.KeyMapType] = true;
+	}
+	else if (KeyInput.TouchType == E_TOUCH_TYPE::KEY_UP)
+	{
+		Keys[KeyInput.KeyMapType] = false;
+	}
+}
+
+bool LCamera::IsKeyDown(char InKey)
+{
+	UINT8 Key = static_cast<UINT8>(InKey);
+	return Keys[Key];
+}
+
+bool LCamera::IsKeyUp(char InKey)
+{
+	UINT8 Key = static_cast<UINT8>(InKey);
+	return !Keys[Key];
 }
 
 void LCamera::CalculateLocation()

@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include "FDefine.h"
+#include "LDefine.h"
 
 using namespace DirectX;
 
@@ -17,8 +18,9 @@ public:
 	XMMATRIX GetViewMarix();
 	XMMATRIX GetProjectionMatrix(float NearPlane = 1.0f, float FarPlane = 1000.0f);
 
-	void ChangeViewMatrixByMouseEvent(float x, float y);
-	void UpdateCameraDistance(UINT8 Key);
+	void ProcessCameraMouseInput(FInputResult& MouseInput);
+	void ProcessCameraKeyInput(FInputResult& KeyInput);
+	void Update();
 
 	const XMFLOAT3& GetViewTargetLocation() {
 		return CameraDatas.Target;
@@ -41,22 +43,14 @@ public:
 		Position.z = InLoc.z;
 	}
 
-	void SetCameraControlRot(XMFLOAT2 InRotate)
-	{
-		Theta = InRotate.x;
-		Alpha = InRotate.y;
-		CalculateLocation();
-	}
-
 	void CalculateLocation();
-	XMFLOAT2 GetControlRotate()
-	{
-		return XMFLOAT2(Theta, Alpha);
-	}
 private:
 
-	//void ReadCameraDataFromFile(LPCWSTR FileName );
+	bool IsKeyDown(char Key);
+	bool IsKeyUp(char Key);
 
+	static const UINT KEY_SIZE = 256;
+	
 	FCameraData CameraDatas;
 	//use for reset
 	XMFLOAT3 InitialPosition;
@@ -66,7 +60,6 @@ private:
 	//we can use either look direction or focus position to calculate view matrix
 	XMFLOAT3 LookDirection;
 	XMFLOAT3 FocusPosition;
-	float DirectionMoveOffset;
 
 	XMFLOAT3 UpDirection;
 
@@ -77,4 +70,8 @@ private:
 	float Alpha;// Spherical coordinate, direction vector up angle to y
 	float Theta;// Spherical coordinate, direction shadow vector angle in x-z plain to x
 	float Radius;
+
+	POINT LastMousePoint;
+	bool Keys[KEY_SIZE];
+
 };
