@@ -88,41 +88,48 @@ void LCamera::UpdateForcusPosition(XMVECTOR UpdateVec)
 	FocusPosition.z = XMVectorGetZ(UpdateVec);
 }
 
+void LCamera::UpdateMoveOffset()
+{
+	XMVECTOR MoveDirection;
+	if (IsKeyDown('W') || IsKeyDown('S'))
+	{
+		MoveDirection = XMVectorSubtract(XMLoadFloat3(&FocusPosition), XMLoadFloat3(&Position));
+		MoveDirection = XMVector3Normalize(MoveDirection);
+		MoveOffset = DirectionMoveOffset * MoveDirection;
+	}
+
+	if (IsKeyDown('A') || IsKeyDown('D'))
+	{
+		MoveDirection = XMVectorSubtract(XMLoadFloat3(&FocusPosition), XMLoadFloat3(&Position));
+		MoveDirection = XMVector3Normalize(MoveDirection);
+		MoveDirection = XMVector3Cross(MoveDirection, XMLoadFloat3(&UpDirection));
+		MoveDirection = XMVector3Normalize(MoveDirection); //left dir
+		MoveOffset = DirectionMoveOffset * MoveDirection;
+		XMVectorSetZ(MoveOffset, 0.f);
+	}
+
+	if (IsKeyDown('Q') || IsKeyDown('E'))
+	{
+		MoveDirection = XMLoadFloat3(&UpDirection);
+		MoveOffset = DirectionMoveOffset * MoveDirection;
+	}
+}
+
 void LCamera::Update()
 {
 	bool bDirty = false;
 
-	XMVECTOR Direction;
-	XMVECTOR Offset;
 	XMVECTOR CurFocusLoc;
-
-	if(IsKeyDown('W') || IsKeyDown('S'))
+	if(IsKeyDown('W') || IsKeyDown('A') || IsKeyDown('E'))
 	{
-		Direction = XMVectorSubtract(XMLoadFloat3(&FocusPosition), XMLoadFloat3(&Position));
-		Direction = XMVector3Normalize(Direction);
-		Offset = DirectionMoveOffset * Direction;
-	}
-
-	if(IsKeyDown('A') || IsKeyDown('D'))
-	{
-		XMFLOAT3 Up = {0, 1, 0};
-		Direction = XMVectorSubtract(XMLoadFloat3(&FocusPosition), XMLoadFloat3(&Position));
-		XMVECTOR UpDir = XMLoadFloat3(&Up);
-		Direction = XMVectorMultiply(Direction, UpDir);
-		Direction = XMVector3Normalize(Direction); //left dir
-		Offset = DirectionMoveOffset * Direction;
-	}
-
-	if(IsKeyDown('W') || IsKeyDown('A'))
-	{
-		CurFocusLoc = XMVectorAdd(XMLoadFloat3(&FocusPosition), Offset);
+		CurFocusLoc = XMVectorAdd(XMLoadFloat3(&FocusPosition), MoveOffset);
 		UpdateForcusPosition(CurFocusLoc);
 		bDirty = true;
 	}
 
-	if(IsKeyDown('S') || IsKeyDown('D'))
+	if(IsKeyDown('S') || IsKeyDown('D') || IsKeyDown('Q'))
 	{
-		CurFocusLoc = XMVectorSubtract(XMLoadFloat3(&FocusPosition), Offset);
+		CurFocusLoc = XMVectorSubtract(XMLoadFloat3(&FocusPosition), MoveOffset);
 		UpdateForcusPosition(CurFocusLoc);
 		bDirty = true;
 	}
@@ -161,6 +168,7 @@ void LCamera::ProcessCameraKeyInput(FInputResult& KeyInput)
 	if(KeyInput.TouchType == E_TOUCH_TYPE::KEY_DOWN)
 	{
 		Keys[KeyInput.KeyMapType] = true;
+		UpdateMoveOffset();
 	}
 	else if (KeyInput.TouchType == E_TOUCH_TYPE::KEY_UP)
 	{

@@ -49,6 +49,7 @@ private:
 	bool IsKeyDown(char Key);
 	bool IsKeyUp(char Key);
 	void UpdateForcusPosition(XMVECTOR UpdateVec);
+	void UpdateMoveOffset();
 
 	static const UINT KEY_SIZE = 256;
 	
@@ -74,5 +75,6 @@ private:
 
 	POINT LastMousePoint;
 	bool Keys[KEY_SIZE];
+	XMVECTOR MoveOffset;
 
 };
