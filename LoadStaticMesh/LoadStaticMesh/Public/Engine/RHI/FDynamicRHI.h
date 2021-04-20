@@ -40,14 +40,6 @@ public:
 	LONG Bottom;
 };
 
-struct FFrameResource
-{
-	std::vector<FMesh*> MeshRenderResources;
-	std::map<E_CONSTANT_BUFFER_TYPE, FD3DConstantBuffer*> ConstantBuffers;
-	LCamera Camera;
-	UINT NumFrameDirty = 1;
-};
-
 class FDynamicRHI
 {
 public:
@@ -58,24 +50,22 @@ public:
 
 	virtual void ShutDown() = 0;
 
-	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) = 0;
+	
 
-	virtual void RHIBeginRenderFrame(UINT TargetFrame) = 0;
-	virtual void RHIEndRenderFrame(UINT TargetFrame) = 0;
-	virtual void RHIPresentToScreen(UINT TargetFrame, bool bFirstExcute = false) = 0;
-
+	virtual void UpdateSceneResources(FScene* RenderScene) = 0;
+	virtual void BeginRenderScene() = 0;
+	virtual void EndRenderScene() = 0;
+	virtual void DrawMesh(FMesh* Mesh) = 0;
+	
 	virtual FIndexBuffer* RHICreateIndexBuffer() = 0;
 	virtual FVertexBuffer* RHICreateVertexBuffer() = 0;
 	virtual FTexture* RHICreateTexture() = 0;
+	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) = 0;
 	virtual void RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture) = 0;
-	virtual void RHIDrawMesh(FMesh* Mesh) = 0;
 
-	virtual void RHICreateFrameResources(FScene* Scene) = 0;
-	virtual void RHIUpdateFrameResources(FScene* Scene, UINT FrameIndex) = 0;
-	virtual void RHIUpdateFrameResource(UINT FrameIndex) = 0;
-	virtual FFrameResource& RHIGetFrameResource(UINT FrameIndex) = 0;
-	virtual void RHIRenderFrameResource(FFrameResource& FrameResource) = 0;
-	virtual void RHIUpdateFrameResourceCamera(LCamera& Camera) = 0;
+	virtual void BeginCreateSceneResource() = 0;
+	virtual void CreateSceneResources(FScene* Scene) = 0;
+	virtual void EndCreateSceneResource() = 0;
 };
 
 extern FDynamicRHI* GRHI;

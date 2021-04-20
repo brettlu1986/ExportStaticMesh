@@ -24,29 +24,25 @@ public:
 	virtual void Init() override;
 	virtual void ShutDown() override;
 
-	virtual void RHIBeginRenderFrame(UINT TargetFrame) override;
-	virtual void RHIEndRenderFrame(UINT TargetFrame) override;
-	virtual void RHIPresentToScreen(UINT TargetFrame, bool bFirstExcute = false) override;
+	virtual void BeginRenderScene() override;
+	virtual void UpdateSceneResources(FScene* RenderScene) override;
+	virtual void DrawMesh(FMesh* Mesh) override;
+	virtual void EndRenderScene() override;
 	
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) override;
-
 	virtual FIndexBuffer* RHICreateIndexBuffer() override;
 	virtual FVertexBuffer* RHICreateVertexBuffer() override;
 	virtual FTexture* RHICreateTexture() override;
 	virtual void RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture) override;
-	virtual void RHIDrawMesh(FMesh* Mesh) override;
 
-	virtual void RHICreateFrameResources(FScene* Scene) override;
-	virtual void RHIUpdateFrameResources(FScene* Scene, UINT FrameIndex) override;
-	virtual void RHIUpdateFrameResource(UINT FrameIndex) override;
-	virtual FFrameResource& RHIGetFrameResource(UINT FrameIndex) override;
-	virtual void RHIRenderFrameResource(FFrameResource& FrameResource) override;
-
-	virtual void RHIUpdateFrameResourceCamera(LCamera& Camera) override;
+	virtual void BeginCreateSceneResource() override;
+	virtual void CreateSceneResources(FScene* RenderScene) override;
+	virtual void EndCreateSceneResource() override;
+	
 private:
-	void UpdateFrameResourceMtConstants(FFrameResource& FrameResource);
-	void UpdateFrameResourceMatConstants(FFrameResource& FrameResource);
-	void UpdateFrameResourcePassConstants(FFrameResource& FrameResource);
+	void UpdateFrameResourceMtConstants(FScene* RenderScene);
+	void UpdateFrameResourceMatConstants(FScene* RenderScene);
+	void UpdateFrameResourcePassConstants(FScene* RenderScene);
 
 	void FindAdapter();
 	void InitWindow(UINT Width, UINT Height, void* Window);
@@ -54,12 +50,12 @@ private:
 	void CreateDescriptorHeaps();
 	void CreateDescripterHeap(UINT NumDescripters, D3D12_DESCRIPTOR_HEAP_TYPE Type,
 		D3D12_DESCRIPTOR_HEAP_FLAGS, UINT NodeMask, REFIID riid, _COM_Outptr_  void** ppvHeap);
-	void CreateSrvAndCbvs(FFrameResource* FrameResource);
+
+	void CreateSrvAndCbvs();
 	void CreatePiplineStateObject(FShader* Vs, FShader* Ps, const std::string& PsoKey);
 	void CreateSampler();
 	void CreateSwapChain();
 	void CreateRenderTargets();
-
 	void WaitForPreviousFrame();
 
 	FD3D12AdapterDesc CurrentAdapterDesc;
@@ -75,33 +71,30 @@ private:
 
 	ComPtr<ID3D12CommandQueue> CommandQueue;
 	ComPtr<ID3D12GraphicsCommandList> CommandList;
-	//ComPtr<ID3D12CommandAllocator> CommandAllocator;
-
-	ComPtr<ID3D12CommandAllocator> CommandAllocator[FRAME_COUNT];
+	ComPtr<ID3D12CommandAllocator> CommandAllocator;
 
 	CD3DX12_VIEWPORT ViewPort;
 	CD3DX12_RECT ScissorRect;
-
 	std::map<std::string, FD3DGraphicPipline*> PiplelineStateObjCache;
 
 	UINT RtvDescriptorSize;
 	UINT DsvDescriptorSize;
+	UINT CbvSrvDescriptorSize;
 	ComPtr<ID3D12Resource> RenderTargets[RENDER_TARGET_COUNT];
 	ComPtr<ID3D12Resource> DepthStencilBuffer;
 
 	ComPtr<ID3D12Fence> GpuFence;
 	HANDLE FenceEvent;
-
-	UINT64 FenceValues[FRAME_COUNT];
-	UINT CurrentFrame;
+	UINT64 FenceValues;
 
 	FCbvSrvDesc CurrentCbvSrvDesc;
-	UINT CbvSrvDescriptorSize;
 
 	UINT WndWidth;
 	UINT WndHeight;
 	HWND Window;
 
-	std::vector<FFrameResource> FrameResources;
 	FPassConstants PassConstant;
+
+	UINT FrameIndex;
+	std::map<E_CONSTANT_BUFFER_TYPE, FD3DConstantBuffer*> ConstantBuffers;
 };

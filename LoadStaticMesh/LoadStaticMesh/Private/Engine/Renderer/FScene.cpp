@@ -8,6 +8,7 @@
 FScene::FScene()
 :MeshCount(0)
 ,MeshWithTextureCount(0)
+,ConstantDirty(1)
 {
 
 }
@@ -37,6 +38,15 @@ void FScene::AddMeshToScene(FMesh* Mesh)
 	}
 	Meshes.push_back(Mesh);
 	MeshCount++;
+}
+
+void FScene::InitSceneRenderResource()
+{
+	for(size_t i = 0; i < Meshes.size(); ++i)
+	{
+		Meshes[i]->InitRenderResource();
+		Meshes[i]->SetPsoKey(Meshes[i]->GetDiffuseTexture() != nullptr ? "PsoUseTexture" : "PsoNoTexture");
+	}
 }
 
 void FScene::Update()

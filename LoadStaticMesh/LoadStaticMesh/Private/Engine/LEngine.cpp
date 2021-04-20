@@ -42,26 +42,6 @@ void LEngine::Init(LEngineDesc Desc)
 	FRenderThread::Get()->Start();
 }
 
-//void LEngine::InitRenderThreadScene(FScene* Scene)
-//{
-//	FRenderThread::Get()->InitRenderThreadScene(Scene);
-//}
-
-//void LEngine::WaitForRenderThread()
-//{
-//	FRenderThread::Get()->WaitForRenderThread();
-//}
-//
-//void LEngine::UpdateRenderThreadScene(FScene* Scene)
-//{
-//	FRenderThread::Get()->UpdateRenderThreadScene(Scene);
-//}
-//
-//void LEngine::DrawThreadThreadScene(FScene* Scene)
-//{
-//	FRenderThread::Get()->DrawThreadThreadScene(Scene);
-//}
-
 void LEngine::Destroy()
 {
 	FRenderThread::DestroyRenderThread();

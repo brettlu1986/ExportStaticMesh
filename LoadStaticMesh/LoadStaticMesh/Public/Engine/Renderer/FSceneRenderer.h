@@ -9,5 +9,5 @@ public:
 	FSceneRenderer();
 	virtual ~FSceneRenderer();
 
-	void RenderFrameResource(FFrameResource& FrameResource) ;
+	void RenderScene(FScene* RenderScene);
 };

@@ -11,7 +11,12 @@ FSceneRenderer::~FSceneRenderer()
 
 }
 
-void FSceneRenderer::RenderFrameResource(FFrameResource& FrameResource)
+void FSceneRenderer::RenderScene(FScene* RenderScene)
 {
-	GRHI->RHIRenderFrameResource(FrameResource);
+	const std::vector<FMesh*> Meshes = RenderScene->GetDrawMeshes();
+	for(size_t i = 0; i < Meshes.size(); i++)
+	{
+		GRHI->DrawMesh(Meshes[i]);
+	}
 }
+

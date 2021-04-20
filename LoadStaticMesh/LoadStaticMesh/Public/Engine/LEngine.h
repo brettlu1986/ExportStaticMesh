@@ -39,11 +39,6 @@ public:
 		return EventDisp;
 	}
 
-	//void InitRenderThreadScene(FScene* Scene);
-	//void WaitForRenderThread();
-	//void UpdateRenderThreadScene(FScene* Scene);
-	//void DrawThreadThreadScene(FScene* Scene);
-
 private: 
 	static LEngine* Engine;
 	LDevice* CurrentDevice = nullptr;

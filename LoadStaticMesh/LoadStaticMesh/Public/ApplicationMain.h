@@ -14,7 +14,6 @@ public:
 	void Run();
 
 	void Update();
-	void Render();
 	void Destroy();
 	
 	static ApplicationMain* Get() { return Application; }

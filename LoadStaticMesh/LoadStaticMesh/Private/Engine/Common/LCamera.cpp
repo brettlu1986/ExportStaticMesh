@@ -82,7 +82,6 @@ void LCamera::ChangeViewMatrixByMouseEvent(float x, float y)
 	Theta += x;
 	Alpha = MathHelper::Clamp(Alpha, 0.1f, MathHelper::Pi - 0.1f);
 	CalculateLocation();
-	FRenderThread::Get()->UpdateFrameCamera(*this);
 }
 
 void LCamera::UpdateCameraDistance(UINT8 Key)
@@ -106,7 +105,6 @@ void LCamera::UpdateCameraDistance(UINT8 Key)
 	}
 
 	CalculateLocation();
-	FRenderThread::Get()->UpdateFrameCamera(*this);
 }
 
 void LCamera::CalculateLocation()

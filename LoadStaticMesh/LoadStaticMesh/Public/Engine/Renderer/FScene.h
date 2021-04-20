@@ -12,6 +12,7 @@ public:
 	~FScene();
 
 	void AddMeshToScene(FMesh* Mesh);
+	void InitSceneRenderResource();
 
 	void UpdateCameraMatrix(float x, float y);
 	void UpdateCameraDistanceByKey(UINT8 Key);
@@ -38,10 +39,19 @@ public:
 		return Camera;
 	}
 	
+	bool IsConstantDirty()
+	{
+		return ConstantDirty > 0;
+	}
+
+	void DecreaseDirtyCount()
+	{
+		ConstantDirty --;
+	}
 private: 
 	std::vector<FMesh*> Meshes;
 	UINT MeshCount;
 	UINT MeshWithTextureCount;
-
+	UINT ConstantDirty;
 	LCamera Camera;
 };

@@ -8,8 +8,6 @@
 #include <DirectXMath.h>
 #include "FRenderThread.h"
 
-#include <dxgidebug.h>
-#include <d3dcompiler.h>
 
 using namespace DirectX;
 
@@ -51,7 +49,6 @@ void ApplicationMain::OnSceneInit()
 {
 	LAssetDataLoader::LoadSampleScene(&Scene);
 	FRenderThread::Get()->InitRenderThreadScene(&Scene);
-	
 }
 
 void ApplicationMain::Update()
@@ -63,12 +60,6 @@ void ApplicationMain::Update()
 	Scene.Update();
 	FRenderThread::Get()->NotifyRenderThreadExcute();
 	//LEngine::GetEngine()->WaitForRenderThread();
-	//LEngine::GetEngine()->UpdateRenderThreadScene(&Scene);
-}
-
-void ApplicationMain::Render()
-{	
-	//LEngine::GetEngine()->DrawThreadThreadScene(&Scene);
 }
 
 void ApplicationMain::Run()
@@ -76,7 +67,6 @@ void ApplicationMain::Run()
 	while (LEngine::GetEngine()->Run())
 	{
 		Update();
-		Render();
 	}
 }
 

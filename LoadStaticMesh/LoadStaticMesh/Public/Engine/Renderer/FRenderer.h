@@ -6,8 +6,5 @@ class FRenderer
 {
 public:
 	FRenderer();
-	virtual ~FRenderer();
-
-	virtual void RenderFrameResource(FFrameResource& FrameResource) = 0;
-	
+	virtual ~FRenderer();	
 };

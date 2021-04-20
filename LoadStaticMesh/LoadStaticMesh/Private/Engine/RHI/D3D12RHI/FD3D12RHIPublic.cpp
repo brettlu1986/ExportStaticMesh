@@ -150,13 +150,11 @@ void FD3D12DynamicRHI::InitializeDevices()
 		ThrowIfFailed(D3DDevice.Get()->CreateCommandQueue(&QueueDesc, IID_PPV_ARGS(&CommandQueue)));
 		NAME_D3D12_OBJECT(CommandQueue);
 
-		for(UINT i = 0; i < FRAME_COUNT; i++)
-		{
-			ThrowIfFailed(D3DDevice.Get()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&CommandAllocator[i])));
-			NAME_D3D12_OBJECT_WITHINDEX(CommandAllocator[i], i);
-		}
+		FrameIndex = 0;
+		ThrowIfFailed(D3DDevice.Get()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&CommandAllocator)));
+		NAME_D3D12_OBJECT(CommandAllocator);
 
-		ThrowIfFailed(D3DDevice.Get()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, CommandAllocator[0].Get(),
+		ThrowIfFailed(D3DDevice.Get()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, CommandAllocator.Get(),
 			nullptr, IID_PPV_ARGS(&CommandList)));
 		NAME_D3D12_OBJECT(CommandList);
 		ThrowIfFailed(CommandList->Close());
@@ -318,32 +316,26 @@ void FD3D12DynamicRHI::ShutDown()
 			RenderTargets[i].Reset();
 	}
 
-	for (UINT i = 0; i < FRAME_COUNT; i++)
+	for (auto Cb : ConstantBuffers)
 	{
-		CommandAllocator[i].Reset();
+		Cb.second->Destroy();
 	}
+	ConstantBuffers.clear();
+
+	CommandAllocator.Reset();
 	CommandList.Reset();
 	CommandQueue.Reset();
 	D3DDevice.Reset();
 
-	for (UINT i = 0; i < FRAME_COUNT; i++)
+#if defined(_DEBUG)
 	{
-		for (auto Buffers : FrameResources[i].ConstantBuffers)
+		ComPtr<IDXGIDebug1> DxgiDebug;
+		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&DxgiDebug))))
 		{
-			Buffers.second->Destroy();
+			DxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
 		}
 	}
-	FrameResources.clear();
-//
-//#if defined(_DEBUG)
-//	{
-//		ComPtr<IDXGIDebug1> DxgiDebug;
-//		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&DxgiDebug))))
-//		{
-//			DxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_SUMMARY | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
-//		}
-//	}
-//#endif
+#endif
 }
 
 
@@ -356,11 +348,10 @@ void FD3D12DynamicRHI::ShutDown()
 	 return new FShader(ShaderData, ShaderLen);
  }
 
- void FD3D12DynamicRHI::RHIBeginRenderFrame(UINT TargetFrame)
+ void FD3D12DynamicRHI::BeginRenderScene()
  {
-	 CurrentFrame = TargetFrame;
-	 ThrowIfFailed(CommandAllocator[CurrentFrame]->Reset());
-	 ThrowIfFailed(CommandList->Reset(CommandAllocator[CurrentFrame].Get(), nullptr));
+	 ThrowIfFailed(CommandAllocator->Reset());
+	 ThrowIfFailed(CommandList->Reset(CommandAllocator.Get(), nullptr));
 
 	 ID3D12DescriptorHeap* ppHeaps[] = { CbvSrvHeap.Get(), SamplerHeap.Get() };
 	 CommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
@@ -368,10 +359,10 @@ void FD3D12DynamicRHI::ShutDown()
 	 CommandList->RSSetViewports(1, &(ViewPort));
 	 CommandList->RSSetScissorRects(1, &(ScissorRect));
 
-	 const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[CurrentFrame].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	 const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	 CommandList->ResourceBarrier(1, &Rb1);
 
-	 CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart(), CurrentFrame, RtvDescriptorSize);
+	 CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart(), FrameIndex, RtvDescriptorSize);
 	 float Color[4] = { ClearColor.R, ClearColor.G, ClearColor.B, ClearColor.A };
 	 CommandList->ClearRenderTargetView(RtvHandle, Color, 0, nullptr);
 	 CommandList->ClearDepthStencilView(DsvHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
@@ -380,15 +371,7 @@ void FD3D12DynamicRHI::ShutDown()
 
  }
 
- void FD3D12DynamicRHI::RHIRenderFrameResource(FFrameResource& FrameResource) 
- {
-	for(size_t i = 0; i< FrameResource.MeshRenderResources.size(); ++i)
-	{
-		RHIDrawMesh(FrameResource.MeshRenderResources[i]);
-	}
- }
-
- void FD3D12DynamicRHI::RHIDrawMesh(FMesh* Mesh)
+ void FD3D12DynamicRHI::DrawMesh(FMesh* Mesh)
  {
 	 FD3D12IndexBuffer* D3DIndexBuffer = dynamic_cast<FD3D12IndexBuffer*>(Mesh->GetIndexBuffer());
 	 FD3D12VertexBuffer* D3DVertexBuffer = dynamic_cast<FD3D12VertexBuffer*>(Mesh->GetVertexBuffer());
@@ -425,30 +408,18 @@ void FD3D12DynamicRHI::ShutDown()
 	 CommandList->DrawIndexedInstanced(D3DIndexBuffer->GetIndicesCount(), 1, 0, 0, 0);
  }
 
- void FD3D12DynamicRHI::RHIEndRenderFrame(UINT TargetFrame)
+ void FD3D12DynamicRHI::EndRenderScene()
  {
-	 CurrentFrame = TargetFrame;
 	 std::vector<ID3D12CommandList*> CmdLists;
-	 const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[TargetFrame].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	 const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	 CommandList->ResourceBarrier(1, &Rb2);
 	 CommandList->Close();
 	 CmdLists.push_back(CommandList.Get());
 	 CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
 	 SwapChain->Present(1, 0);
 	 WaitForPreviousFrame();
+	 FrameIndex = (FrameIndex + 1) % FRAME_COUNT;
  }
-
- void FD3D12DynamicRHI::RHIPresentToScreen(UINT TargetFrame, bool bFirstExcute)
- {
-	 CurrentFrame = TargetFrame;
-	 std::vector<ID3D12CommandList*> CmdLists;
-	 CommandList->Close();
-	 CmdLists.push_back(CommandList.Get());
-	 CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
-	 FenceValues[CurrentFrame] ++;
-	 WaitForPreviousFrame();
- }
-
 
  FIndexBuffer* FD3D12DynamicRHI::RHICreateIndexBuffer()
  {
@@ -480,9 +451,9 @@ void FD3D12DynamicRHI::RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertex
 
 void FD3D12DynamicRHI::WaitForPreviousFrame()
 {
-	const UINT64 Value = FenceValues[CurrentFrame];
+	const UINT64 Value = FenceValues;
 	ThrowIfFailed(CommandQueue->Signal(GpuFence.Get(), Value));
-	FenceValues[CurrentFrame]++;
+	FenceValues++;
 	if (GpuFence->GetCompletedValue() < Value)
 	{
 		ThrowIfFailed(GpuFence->SetEventOnCompletion(Value, FenceEvent));
@@ -490,102 +461,82 @@ void FD3D12DynamicRHI::WaitForPreviousFrame()
 	}
 }
 
-void FD3D12DynamicRHI::RHICreateFrameResources(FScene* Scene) 
+void FD3D12DynamicRHI::BeginCreateSceneResource()
+{
+	ThrowIfFailed(CommandList->Reset(CommandAllocator.Get(), nullptr));
+}
+
+void FD3D12DynamicRHI::EndCreateSceneResource()
+{
+	std::vector<ID3D12CommandList*> CmdLists;
+	CommandList->Close();
+	CmdLists.push_back(CommandList.Get());
+	CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
+	FenceValues = 1;
+	WaitForPreviousFrame();
+	
+}
+
+void FD3D12DynamicRHI::CreateSceneResources(FScene* Scene) 
 {	
-	ThrowIfFailed(CommandList->Reset(CommandAllocator[0].Get(), nullptr));
-
-	UINT ObjectNum = Scene->GetMeshCount();
-	UINT TextureMeshNum = Scene->GetMeshWithTextureNum();
-	UINT PassConNum = 1;
-
-	UINT MtBufferSingleSize = CalcConstantBufferByteSize(sizeof(FObjectConstants));
-	UINT MtBufferTotalSize = MtBufferSingleSize * ObjectNum;
-
-	UINT MatBufferSingleSize = CalcConstantBufferByteSize(sizeof(FMaterialConstants));
-	UINT MatBufferTotalSize = MatBufferSingleSize * ObjectNum;
-
-	UINT PassConstantSize = CalcConstantBufferByteSize(sizeof(FPassConstants));
-	PassConstantSize = PassConstantSize * PassConNum;
-
-	// material buffer count + matrix buffer count + texture count + constant buffer(1)
-	CurrentCbvSrvDesc.NeedDesciptorCount = ObjectNum * 2 + TextureMeshNum + PassConNum;
-	CurrentCbvSrvDesc.CbMatrix = { E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATRIX, 0, MtBufferTotalSize, ObjectNum };
-	CurrentCbvSrvDesc.CbMaterial = { E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATERIAL, ObjectNum, MatBufferTotalSize , ObjectNum };
-	CurrentCbvSrvDesc.CbConstant = { E_CONSTANT_BUFFER_TYPE::TYPE_CB_PASSCONSTANT, ObjectNum * 2, PassConstantSize, PassConNum };
-	CurrentCbvSrvDesc.SrvDesc = { ObjectNum * 2 + PassConNum,  TextureMeshNum };
-
-	CreateDescripterHeap(CurrentCbvSrvDesc.NeedDesciptorCount, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-		D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 0, IID_PPV_ARGS(&CbvSrvHeap));
-	NAME_D3D12_OBJECT(CbvSrvHeap);
-	CbvSrvDescriptorSize = D3DDevice.Get()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-	FShader* Vs = RHICreateShader(L"shader_vs.cso");
-	FShader* Ps = RHICreateShader(L"shader_ps.cso");
-	CreatePiplineStateObject(Vs, Ps, "PsoUseTexture");
-
-	FShader* VsNoTex = RHICreateShader(L"shader_vs_notexture.cso");
-	FShader* PsNoTex = RHICreateShader(L"shader_ps_notexture.cso");
-	CreatePiplineStateObject(Vs, PsNoTex, "PsoNoTexture");
-
-	delete Vs;
-	delete Ps;
-	delete VsNoTex;
-	delete PsNoTex;
-
-	for (UINT MeshIndex = 0; MeshIndex < ObjectNum; ++MeshIndex)
+	if(Scene != nullptr)
 	{
-		FMesh* Mesh = Scene->GetDrawMeshes()[MeshIndex];
-		Mesh->InitRenderResource();
-		if(Mesh->GetDiffuseTexture())
+		UINT ObjectNum = Scene->GetMeshCount();
+		UINT TextureMeshNum = Scene->GetMeshWithTextureNum();
+		UINT PassConNum = 1;
+
+		UINT MtBufferSingleSize = CalcConstantBufferByteSize(sizeof(FObjectConstants));
+		UINT MtBufferTotalSize = MtBufferSingleSize * ObjectNum;
+
+		UINT MatBufferSingleSize = CalcConstantBufferByteSize(sizeof(FMaterialConstants));
+		UINT MatBufferTotalSize = MatBufferSingleSize * ObjectNum;
+
+		UINT PassConstantSize = CalcConstantBufferByteSize(sizeof(FPassConstants));
+		PassConstantSize = PassConstantSize * PassConNum;
+
+		// material buffer count + matrix buffer count + texture count + constant buffer(1)
+		CurrentCbvSrvDesc.NeedDesciptorCount = ObjectNum * 2 + TextureMeshNum + PassConNum;
+		CurrentCbvSrvDesc.CbMatrix = { E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATRIX, 0, MtBufferTotalSize, ObjectNum };
+		CurrentCbvSrvDesc.CbMaterial = { E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATERIAL, ObjectNum, MatBufferTotalSize , ObjectNum };
+		CurrentCbvSrvDesc.CbConstant = { E_CONSTANT_BUFFER_TYPE::TYPE_CB_PASSCONSTANT, ObjectNum * 2, PassConstantSize, PassConNum };
+		CurrentCbvSrvDesc.SrvDesc = { ObjectNum * 2 + PassConNum,  TextureMeshNum };
+
+		FShader* Vs = RHICreateShader(L"shader_vs.cso");
+		FShader* Ps = RHICreateShader(L"shader_ps.cso");
+		CreatePiplineStateObject(Vs, Ps, "PsoUseTexture");
+
+		FShader* VsNoTex = RHICreateShader(L"shader_vs_notexture.cso");
+		FShader* PsNoTex = RHICreateShader(L"shader_ps_notexture.cso");
+		CreatePiplineStateObject(Vs, PsNoTex, "PsoNoTexture");
+
+		delete Vs;
+		delete Ps;
+		delete VsNoTex;
+		delete PsNoTex;
+
+		CreateSrvAndCbvs();
+		Scene->InitSceneRenderResource();
+	}
+}
+
+void FD3D12DynamicRHI::UpdateSceneResources(FScene* RenderScene)
+{
+	if(RenderScene != nullptr)
+	{
+		if(RenderScene->IsConstantDirty())
 		{
-			Mesh->SetPsoKey(Mesh->GetDiffuseTexture() != nullptr ? "PsoUseTexture":"PsoNoTexture" );
+			UpdateFrameResourceMtConstants(RenderScene);
+			UpdateFrameResourceMatConstants(RenderScene);
+			RenderScene->DecreaseDirtyCount();
 		}
+		UpdateFrameResourcePassConstants(RenderScene);
 	}
-
-	FrameResources.resize(FRAME_COUNT);
-	for (UINT i = 0; i < FRAME_COUNT; ++i)
-	{
-		CreateSrvAndCbvs(&FrameResources[i]);
-		FrameResources[i].MeshRenderResources = Scene->GetDrawMeshes();
-		FrameResources[i].Camera = Scene->GetCamera();
-	}
-
-	RHIPresentToScreen(0, true);
 }
 
-void FD3D12DynamicRHI::RHIUpdateFrameResources(FScene* Scene, UINT FrameIndex)
-{
-	//FFrameResource& FrameResource = FrameResources[FrameIndex];
 
-	//if(FrameResource.NumFrameDirty > 0)
-	//{
-	//	UpdateFrameResourceMtConstants(Scene, FrameResource);
-	//	UpdateFrameResourceMatConstants(Scene, FrameResource);
-	//	FrameResource.NumFrameDirty--;
-	//}
-	//UpdateFrameResourcePassConstants(Scene, FrameResource);
-}
-
-void FD3D12DynamicRHI::RHIUpdateFrameResource(UINT FrameIndex)
+void FD3D12DynamicRHI::UpdateFrameResourceMtConstants(FScene* RenderScene)
 {
-	FFrameResource& FrameResource = FrameResources[FrameIndex];
-	if (FrameResource.NumFrameDirty > 0)
-	{
-		UpdateFrameResourceMtConstants(FrameResource);
-		UpdateFrameResourceMatConstants(FrameResource);
-		FrameResource.NumFrameDirty--;
-	}
-	UpdateFrameResourcePassConstants(FrameResource);
-}
-
-FFrameResource& FD3D12DynamicRHI::RHIGetFrameResource(UINT FrameIndex)
-{
-	return FrameResources[FrameIndex];
-}
-
-void FD3D12DynamicRHI::UpdateFrameResourceMtConstants( FFrameResource& FrameResource)
-{
-	const std::vector<FMesh*>& Meshes = FrameResource.MeshRenderResources;
+	const std::vector<FMesh*>& Meshes = RenderScene->GetDrawMeshes();
 	FBufferObject* ObjConsBuffer = new FBufferObject();
 	ObjConsBuffer->Type = E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATRIX;
 	ObjConsBuffer->DataSize = CurrentCbvSrvDesc.CbMatrix.BufferSize;
@@ -601,7 +552,7 @@ void FD3D12DynamicRHI::UpdateFrameResourceMtConstants( FFrameResource& FrameReso
 		memcpy(ObjConsBuffer->BufferData + i * CurrentCbvSrvDesc.CbMatrix.BufferSize / CurrentCbvSrvDesc.CbMatrix.BufferViewCount, &ObjConstants, sizeof(ObjConstants));
 	}
 
-	FD3DConstantBuffer* Cb = FrameResource.ConstantBuffers[ObjConsBuffer->Type];
+	FD3DConstantBuffer* Cb = ConstantBuffers[ObjConsBuffer->Type];
 	if (Cb)
 	{
 		Cb->UpdateConstantBufferInfo(ObjConsBuffer->BufferData, ObjConsBuffer->DataSize);
@@ -609,9 +560,9 @@ void FD3D12DynamicRHI::UpdateFrameResourceMtConstants( FFrameResource& FrameReso
 	delete ObjConsBuffer;
 }
 
-void FD3D12DynamicRHI::UpdateFrameResourceMatConstants( FFrameResource& FrameResource)
+void FD3D12DynamicRHI::UpdateFrameResourceMatConstants(FScene* RenderScene)
 {
-	const std::vector<FMesh*>& Meshes = FrameResource.MeshRenderResources;
+	const std::vector<FMesh*>& Meshes = RenderScene->GetDrawMeshes();
 	FBufferObject* BufferObj = new FBufferObject();
 	BufferObj->Type = E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATERIAL;
 	BufferObj->DataSize = CurrentCbvSrvDesc.CbMaterial.BufferSize;
@@ -633,7 +584,7 @@ void FD3D12DynamicRHI::UpdateFrameResourceMatConstants( FFrameResource& FrameRes
 
 		memcpy(BufferObj->BufferData + i * CurrentCbvSrvDesc.CbMaterial.BufferSize / CurrentCbvSrvDesc.CbMaterial.BufferViewCount, &MatConstants, sizeof(MatConstants));
 	}
-	FD3DConstantBuffer* Cb = FrameResource.ConstantBuffers[BufferObj->Type];
+	FD3DConstantBuffer* Cb = ConstantBuffers[BufferObj->Type];
 	if (Cb)
 	{
 		Cb->UpdateConstantBufferInfo(BufferObj->BufferData, BufferObj->DataSize);
@@ -641,9 +592,9 @@ void FD3D12DynamicRHI::UpdateFrameResourceMatConstants( FFrameResource& FrameRes
 	delete BufferObj;
 }
 
-void FD3D12DynamicRHI::UpdateFrameResourcePassConstants(FFrameResource& FrameResource)
+void FD3D12DynamicRHI::UpdateFrameResourcePassConstants(FScene* RenderScene)
 {
-	const std::vector<FMesh*>& Meshes = FrameResource.MeshRenderResources;
+	const std::vector<FMesh*>& Meshes = RenderScene->GetDrawMeshes();
 	FBufferObject* BufferObj = new FBufferObject();
 	BufferObj->Type = E_CONSTANT_BUFFER_TYPE::TYPE_CB_PASSCONSTANT;
 	BufferObj->DataSize = CurrentCbvSrvDesc.CbConstant.BufferSize;
@@ -651,7 +602,7 @@ void FD3D12DynamicRHI::UpdateFrameResourcePassConstants(FFrameResource& FrameRes
 	BufferObj->BufferData = new int8_t[CurrentCbvSrvDesc.CbConstant.BufferSize];
 	memset(BufferObj->BufferData, 0, CurrentCbvSrvDesc.CbConstant.BufferSize);
 
-	LCamera& Camera = FrameResource.Camera;
+	LCamera& Camera = RenderScene->GetCamera();
 	XMFLOAT4X4 MtProj;
 	XMStoreFloat4x4(&MtProj, Camera.GetProjectionMatrix());
 	XMMATRIX ViewProj = Camera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
@@ -662,7 +613,7 @@ void FD3D12DynamicRHI::UpdateFrameResourcePassConstants(FFrameResource& FrameRes
 	PassConstant.Lights[0].Direction = { -0.112f, -0.633f, -0.766f }; //{ 0.643f, -0.163f, -0.748f };
 	PassConstant.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
 	memcpy(BufferObj->BufferData, &PassConstant, sizeof(PassConstant));
-	FD3DConstantBuffer* Cb = FrameResource.ConstantBuffers[BufferObj->Type];
+	FD3DConstantBuffer* Cb = ConstantBuffers[BufferObj->Type];
 	if (Cb)
 	{
 		Cb->UpdateConstantBufferInfo(BufferObj->BufferData, BufferObj->DataSize);
@@ -670,21 +621,18 @@ void FD3D12DynamicRHI::UpdateFrameResourcePassConstants(FFrameResource& FrameRes
 	delete BufferObj;
 }
 
-void FD3D12DynamicRHI::RHIUpdateFrameResourceCamera(LCamera& Camera)
+void FD3D12DynamicRHI::CreateSrvAndCbvs()
 {
-	for (UINT i = 0; i < FRAME_COUNT; i++)
-	{
-		FrameResources[i].Camera = Camera;//.SetCameraControlRot(Camera.GetControlRotate());
-	}
-}
+	CreateDescripterHeap(CurrentCbvSrvDesc.NeedDesciptorCount, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+		D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 0, IID_PPV_ARGS(&CbvSrvHeap));
+	NAME_D3D12_OBJECT(CbvSrvHeap);
+	CbvSrvDescriptorSize = D3DDevice.Get()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-void FD3D12DynamicRHI::CreateSrvAndCbvs(FFrameResource* FrameResource)
-{
 	//create matrix constant buffer
 	FD3DConstantBuffer* MtCb = new FD3DConstantBuffer();
 	MtCb->Initialize();
 	MtCb->SetConstantBufferInfo(D3DDevice.Get(), CurrentCbvSrvDesc.CbMatrix.BufferSize);
-	FrameResource->ConstantBuffers[CurrentCbvSrvDesc.CbMatrix.BufferType] = MtCb;
+	ConstantBuffers[CurrentCbvSrvDesc.CbMatrix.BufferType] = MtCb;
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE Cbv1Handle(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbMatrix.HeapOffsetStart,
 		CbvSrvDescriptorSize);
@@ -704,7 +652,7 @@ void FD3D12DynamicRHI::CreateSrvAndCbvs(FFrameResource* FrameResource)
 	FD3DConstantBuffer* MatCb = new FD3DConstantBuffer();
 	MatCb->Initialize();
 	MatCb->SetConstantBufferInfo(D3DDevice.Get(), CurrentCbvSrvDesc.CbMaterial.BufferSize);
-	FrameResource->ConstantBuffers[CurrentCbvSrvDesc.CbMaterial.BufferType] = MatCb;
+	ConstantBuffers[CurrentCbvSrvDesc.CbMaterial.BufferType] = MatCb;
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE Cbv2Handle(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbMaterial.HeapOffsetStart,
 		CbvSrvDescriptorSize);
@@ -723,7 +671,8 @@ void FD3D12DynamicRHI::CreateSrvAndCbvs(FFrameResource* FrameResource)
 	FD3DConstantBuffer* PassConstantCb = new FD3DConstantBuffer();
 	PassConstantCb->Initialize();
 	PassConstantCb->SetConstantBufferInfo(D3DDevice.Get(), CurrentCbvSrvDesc.CbConstant.BufferSize);
-	FrameResource->ConstantBuffers[CurrentCbvSrvDesc.CbConstant.BufferType] = PassConstantCb;
+	ConstantBuffers[CurrentCbvSrvDesc.CbConstant.BufferType] = PassConstantCb;
+
 	CD3DX12_CPU_DESCRIPTOR_HANDLE Cbv3Handle(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbConstant.HeapOffsetStart,
 		CbvSrvDescriptorSize);
 
