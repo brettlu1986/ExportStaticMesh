@@ -409,6 +409,7 @@ void FD3D12DynamicRHI::RenderSceneObjects(FScene* Scene)
 	{
 		DrawMesh(Meshes[i], PiplelineStateObjCache[Meshes[i]->GetPsoKey()]);
 	}
+	CommandList->SetGraphicsRootDescriptorTable(4, ShaderMap->Srv());
 }
 
 void FD3D12DynamicRHI::DrawMesh(FMesh* Mesh, FD3DGraphicPipline* Pso)
@@ -442,7 +443,7 @@ void FD3D12DynamicRHI::DrawMesh(FMesh* Mesh, FD3DGraphicPipline* Pso)
 		CD3DX12_GPU_DESCRIPTOR_HANDLE TexHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.SrvDesc.HeapOffsetStart + Tex->GetTextureHeapIndex(),
 			CbvSrvDescriptorSize);
 		CommandList->SetGraphicsRootDescriptorTable(3, TexHandle);
-		CommandList->SetGraphicsRootDescriptorTable(4, SamplerHeap->GetGPUDescriptorHandleForHeapStart());
+		CommandList->SetGraphicsRootDescriptorTable(5, SamplerHeap->GetGPUDescriptorHandleForHeapStart());
 	}
 
 	CommandList->DrawIndexedInstanced(D3DIndexBuffer->GetIndicesCount(), 1, 0, 0, 0);
@@ -796,21 +797,23 @@ void FD3D12DynamicRHI::CreatePipelineStateObject(FRHIPiplineStateInitializer& In
 
 	FD3DGraphicPipline* PsoObj = new FD3DGraphicPipline();
 
-	CD3DX12_ROOT_PARAMETER RootParameters[5];
+	CD3DX12_ROOT_PARAMETER RootParameters[6];
 	ZeroMemory(RootParameters, sizeof(RootParameters));
-	CD3DX12_DESCRIPTOR_RANGE Ranges[5];
+	CD3DX12_DESCRIPTOR_RANGE Ranges[6];
 	ZeroMemory(Ranges, sizeof(Ranges));
 	Ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
 	Ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
 	Ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);
 	Ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-	Ranges[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
+	Ranges[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
+	Ranges[5].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
 
 	RootParameters[0].InitAsDescriptorTable(1, &Ranges[0], D3D12_SHADER_VISIBILITY_ALL);
 	RootParameters[1].InitAsDescriptorTable(1, &Ranges[1], D3D12_SHADER_VISIBILITY_ALL);
 	RootParameters[2].InitAsDescriptorTable(1, &Ranges[2], D3D12_SHADER_VISIBILITY_ALL);
 	RootParameters[3].InitAsDescriptorTable(1, &Ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
 	RootParameters[4].InitAsDescriptorTable(1, &Ranges[4], D3D12_SHADER_VISIBILITY_PIXEL);
+	RootParameters[5].InitAsDescriptorTable(1, &Ranges[5], D3D12_SHADER_VISIBILITY_PIXEL);
 
 	// Allow input layout and deny uneccessary access to certain pipeline stages.
 	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(_countof(RootParameters), RootParameters, 0, nullptr,
