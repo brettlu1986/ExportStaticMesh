@@ -141,6 +141,13 @@ void LAssetDataLoader::LoadSampleScene(FScene* Scene)
 		Scene->AddMeshToScene(Mesh);
 	}
 
+	FLight* Light = new FLight();
+	Light->Direction = SampleAssets::SampleLights[0].Direction;
+	Light->Position = SampleAssets::SampleLights[0].Position;
+	Light->Strength = SampleAssets::SampleLights[0].Strength;
+	Light->LightIndex = 0;
+	Scene->AddLightToScene(Light);
+
 	LCamera& Camera = Scene->GetCamera();
 	LoadCameraDataFromFile(SampleAssets::CameraBin, Camera);
 	Camera.Init();

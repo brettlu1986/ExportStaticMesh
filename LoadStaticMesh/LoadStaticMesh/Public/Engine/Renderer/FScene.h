@@ -12,6 +12,8 @@ public:
 	~FScene();
 
 	void AddMeshToScene(FMesh* Mesh);
+	void AddLightToScene(FLight* Light);
+
 	void InitSceneRenderResource();
 
 	void Update();
@@ -46,8 +48,14 @@ public:
 	{
 		ConstantDirty --;
 	}
+
+	FLight* GetLight(UINT LightIndex)
+	{
+		return SceneLights[LightIndex];
+	}
 private: 
 	std::vector<FMesh*> Meshes;
+	std::vector<FLight*> SceneLights;
 	UINT MeshCount;
 	UINT MeshWithTextureCount;
 	UINT ConstantDirty;

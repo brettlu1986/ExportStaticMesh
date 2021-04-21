@@ -1,8 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
-#include <map>
-#include <functional>
+
 
 enum class E_EVENT_KEY : int
 {

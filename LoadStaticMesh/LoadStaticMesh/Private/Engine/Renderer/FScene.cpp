@@ -40,6 +40,11 @@ void FScene::AddMeshToScene(FMesh* Mesh)
 	MeshCount++;
 }
 
+void FScene::AddLightToScene(FLight* Light)
+{
+	SceneLights.push_back(Light);
+}
+
 void FScene::InitSceneRenderResource()
 {
 	for(size_t i = 0; i < Meshes.size(); ++i)

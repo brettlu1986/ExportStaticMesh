@@ -178,6 +178,12 @@
     <FxCompile Include="Resource\shader_vs_notexture.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="Resource\SampleDepthShaderVs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\SampleDepthShaderPs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\ApplicationMain.h">

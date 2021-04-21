@@ -169,8 +169,8 @@ void FD3D12DynamicRHI::InitializeDevices()
 
 void FD3D12DynamicRHI::CreateDescriptorHeaps()
 {
-	//dsv
-	CreateDescripterHeap(1, D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
+	//dsv + 1 DSV for shader map
+	CreateDescripterHeap(2, D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
 		D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 0, IID_PPV_ARGS(&DsvHeap));
 	NAME_D3D12_OBJECT(DsvHeap);
 
@@ -322,6 +322,12 @@ void FD3D12DynamicRHI::ShutDown()
 	}
 	ConstantBuffers.clear();
 
+	if(ShaderMap)
+	{
+		ShaderMap->Destroy();
+		ShaderMap = nullptr;
+	}
+
 	CommandAllocator.Reset();
 	CommandList.Reset();
 	CommandQueue.Reset();
@@ -337,8 +343,6 @@ void FD3D12DynamicRHI::ShutDown()
 	}
 #endif
 }
-
-
 
  FShader* FD3D12DynamicRHI::RHICreateShader(LPCWSTR  ShaderFile)
  {
@@ -482,8 +486,9 @@ void FD3D12DynamicRHI::CreateSceneResources(FScene* Scene)
 	if(Scene != nullptr)
 	{
 		UINT ObjectNum = Scene->GetMeshCount();
-		UINT TextureMeshNum = Scene->GetMeshWithTextureNum();
 		UINT PassConNum = 1;
+		UINT TextureMeshNum = Scene->GetMeshWithTextureNum();
+		UINT TextureShaderMapNum = 1;
 
 		UINT MtBufferSingleSize = CalcConstantBufferByteSize(sizeof(FObjectConstants));
 		UINT MtBufferTotalSize = MtBufferSingleSize * ObjectNum;
@@ -495,26 +500,73 @@ void FD3D12DynamicRHI::CreateSceneResources(FScene* Scene)
 		PassConstantSize = PassConstantSize * PassConNum;
 
 		// material buffer count + matrix buffer count + texture count + constant buffer(1)
-		CurrentCbvSrvDesc.NeedDesciptorCount = ObjectNum * 2 + TextureMeshNum + PassConNum;
+		CurrentCbvSrvDesc.NeedDesciptorCount = ObjectNum * 2 + TextureMeshNum + PassConNum + TextureShaderMapNum;
 		CurrentCbvSrvDesc.CbMatrix = { E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATRIX, 0, MtBufferTotalSize, ObjectNum };
 		CurrentCbvSrvDesc.CbMaterial = { E_CONSTANT_BUFFER_TYPE::TYPE_CB_MATERIAL, ObjectNum, MatBufferTotalSize , ObjectNum };
 		CurrentCbvSrvDesc.CbConstant = { E_CONSTANT_BUFFER_TYPE::TYPE_CB_PASSCONSTANT, ObjectNum * 2, PassConstantSize, PassConNum };
 		CurrentCbvSrvDesc.SrvDesc = { ObjectNum * 2 + PassConNum,  TextureMeshNum };
+		CurrentCbvSrvDesc.ShaderMapDesc = { ObjectNum * 2 + PassConNum + TextureMeshNum };
+		CreateD3DResources();
 
 		FShader* Vs = RHICreateShader(L"shader_vs.cso");
 		FShader* Ps = RHICreateShader(L"shader_ps.cso");
-		CreatePiplineStateObject(Vs, Ps, "PsoUseTexture");
+		FRHIPiplineStateInitializer PsoInitializer = {
+		   "PsoUseTexture",
+		   StandardInputElementDescs,
+		   _countof(StandardInputElementDescs),
+		   Vs->GetShaderByteCode(),
+		   Vs->GetDataLength(),
+		   Ps->GetShaderByteCode(),
+		   Ps->GetDataLength(),
+		   1,
+		   FRtvFormat::FORMAT_R8G8B8A8_UNORM,
+		   FRHIRasterizerState()
+		};
+		CreatePipelineStateObject(PsoInitializer);
 
 		FShader* VsNoTex = RHICreateShader(L"shader_vs_notexture.cso");
 		FShader* PsNoTex = RHICreateShader(L"shader_ps_notexture.cso");
-		CreatePiplineStateObject(Vs, PsNoTex, "PsoNoTexture");
+		FRHIPiplineStateInitializer PsoInitializerNoTex = {
+		   "PsoNoTexture",
+		   StandardInputElementDescs,
+		   _countof(StandardInputElementDescs),
+		   VsNoTex->GetShaderByteCode(),
+		   VsNoTex->GetDataLength(),
+		   PsNoTex->GetShaderByteCode(),
+		   PsNoTex->GetDataLength(),
+		   1,
+		   FRtvFormat::FORMAT_R8G8B8A8_UNORM,
+		   FRHIRasterizerState()
+		};
+		CreatePipelineStateObject(PsoInitializerNoTex);
+
+		FShader* ShadowPassVs = RHICreateShader(L"SampleDepthShaderVs.cso");
+		FShader* ShadowPassPs = RHICreateShader(L"SampleDepthShaderPs.cso");
+		FRHIRasterizerState State;
+		State.DepthBias = 100000;
+		State.DepthBiasClamp = 0.f;
+		State.SlopeScaledDepthBias = 1.f;
+		FRHIPiplineStateInitializer PsoInitializerShadowPass = {
+		   "ShaderPass",
+		   StandardInputElementDescs,
+		   _countof(StandardInputElementDescs),
+		   ShadowPassVs->GetShaderByteCode(),
+		   ShadowPassVs->GetDataLength(),
+		   ShadowPassPs->GetShaderByteCode(),
+		   ShadowPassPs->GetDataLength(),
+		   0,
+		   FRtvFormat::FORMAT_UNKNOWN,
+		   State
+		};
+		CreatePipelineStateObject(PsoInitializerShadowPass);
 
 		delete Vs;
 		delete Ps;
 		delete VsNoTex;
 		delete PsNoTex;
+		delete ShadowPassVs;
+		delete ShadowPassPs;
 
-		CreateSrvAndCbvs();
 		Scene->InitSceneRenderResource();
 	}
 }
@@ -525,16 +577,16 @@ void FD3D12DynamicRHI::UpdateSceneResources(FScene* RenderScene)
 	{
 		if(RenderScene->IsConstantDirty())
 		{
-			UpdateFrameResourceMtConstants(RenderScene);
-			UpdateFrameResourceMatConstants(RenderScene);
+			UpdateSceneMtConstants(RenderScene);
+			UpdateSceneMatConstants(RenderScene);
 			RenderScene->DecreaseDirtyCount();
 		}
-		UpdateFrameResourcePassConstants(RenderScene);
+		UpdateScenePassConstants(RenderScene);
 	}
 }
 
 
-void FD3D12DynamicRHI::UpdateFrameResourceMtConstants(FScene* RenderScene)
+void FD3D12DynamicRHI::UpdateSceneMtConstants(FScene* RenderScene)
 {
 	const std::vector<FMesh*>& Meshes = RenderScene->GetDrawMeshes();
 	FBufferObject* ObjConsBuffer = new FBufferObject();
@@ -560,7 +612,7 @@ void FD3D12DynamicRHI::UpdateFrameResourceMtConstants(FScene* RenderScene)
 	delete ObjConsBuffer;
 }
 
-void FD3D12DynamicRHI::UpdateFrameResourceMatConstants(FScene* RenderScene)
+void FD3D12DynamicRHI::UpdateSceneMatConstants(FScene* RenderScene)
 {
 	const std::vector<FMesh*>& Meshes = RenderScene->GetDrawMeshes();
 	FBufferObject* BufferObj = new FBufferObject();
@@ -592,7 +644,7 @@ void FD3D12DynamicRHI::UpdateFrameResourceMatConstants(FScene* RenderScene)
 	delete BufferObj;
 }
 
-void FD3D12DynamicRHI::UpdateFrameResourcePassConstants(FScene* RenderScene)
+void FD3D12DynamicRHI::UpdateScenePassConstants(FScene* RenderScene)
 {
 	const std::vector<FMesh*>& Meshes = RenderScene->GetDrawMeshes();
 	FBufferObject* BufferObj = new FBufferObject();
@@ -608,10 +660,20 @@ void FD3D12DynamicRHI::UpdateFrameResourcePassConstants(FScene* RenderScene)
 	XMMATRIX ViewProj = Camera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
 	XMStoreFloat4x4(&PassConstant.ViewProj, XMMatrixTranspose(ViewProj));
 	PassConstant.EyePosW = Camera.GetCameraLocation();
-	PassConstant.LightPos = {-9.2f, 2.4f, 10.1f};//
+	//PassConstant.LightPos = {1.6f, 13.7f, 8.7f};//
+
+	FLight* Light = RenderScene->GetLight(0);
 	PassConstant.AmbientLight = { 0.8f, 0.8f, 0.8f, 1.0f };
-	PassConstant.Lights[0].Direction = { -0.112f, -0.633f, -0.766f }; //{ 0.643f, -0.163f, -0.748f };
-	PassConstant.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
+	PassConstant.Lights[0].Direction = Light->Direction; //{ 0.643f, -0.163f, -0.748f };
+	PassConstant.Lights[0].Strength = Light->Strength;
+	PassConstant.Lights[0].Position = Light->Position;
+
+	XMFLOAT3 LightUp = {0, 0, 1};
+	XMMATRIX LightView = XMMatrixLookToLH(XMLoadFloat3(&Light->Position), XMLoadFloat3(&Light->Direction), XMLoadFloat3(&LightUp));
+	XMMATRIX LightProj = XMMatrixOrthographicLH((float)WndWidth, (float)WndHeight, 1.f, 100.f);
+	XMMATRIX LightSpaceMatrix = LightView * LightProj;
+	XMStoreFloat4x4(&PassConstant.LightSpaceMatrix, XMMatrixTranspose(LightSpaceMatrix));
+
 	memcpy(BufferObj->BufferData, &PassConstant, sizeof(PassConstant));
 	FD3DConstantBuffer* Cb = ConstantBuffers[BufferObj->Type];
 	if (Cb)
@@ -621,7 +683,7 @@ void FD3D12DynamicRHI::UpdateFrameResourcePassConstants(FScene* RenderScene)
 	delete BufferObj;
 }
 
-void FD3D12DynamicRHI::CreateSrvAndCbvs()
+void FD3D12DynamicRHI::CreateD3DResources()
 {
 	CreateDescripterHeap(CurrentCbvSrvDesc.NeedDesciptorCount, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 		D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 0, IID_PPV_ARGS(&CbvSrvHeap));
@@ -680,11 +742,20 @@ void FD3D12DynamicRHI::CreateSrvAndCbvs()
 	Cbv3Desc.BufferLocation = PassConstantCb->GetD3DConstantBuffer()->GetGPUVirtualAddress();
 	Cbv3Desc.SizeInBytes = CurrentCbvSrvDesc.CbConstant.BufferSize;
 	D3DDevice.Get()->CreateConstantBufferView(&Cbv3Desc, Cbv3Handle);
+
+	// create shader map resource
+	ShaderMap = new FD3DShaderMap(D3DDevice.Get(), WndWidth, WndHeight);
+	ShaderMap->BuildDescriptors(
+		CD3DX12_CPU_DESCRIPTOR_HANDLE(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.ShaderMapDesc.HeapOffsetStart, CbvSrvDescriptorSize),
+		CD3DX12_GPU_DESCRIPTOR_HANDLE(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.ShaderMapDesc.HeapOffsetStart, CbvSrvDescriptorSize),
+		CD3DX12_CPU_DESCRIPTOR_HANDLE(DsvHeap->GetCPUDescriptorHandleForHeapStart(), 1, DsvDescriptorSize)
+	);
+
 }
 
-void FD3D12DynamicRHI::CreatePiplineStateObject(FShader* Vs, FShader* Ps, const std::string& PsoKey)
+void FD3D12DynamicRHI::CreatePipelineStateObject(FRHIPiplineStateInitializer& Initializer)
 {
-	if (PiplelineStateObjCache.find(PsoKey) != PiplelineStateObjCache.end())
+	if (PiplelineStateObjCache.find(Initializer.KeyName) != PiplelineStateObjCache.end())
 		return;
 
 	FD3DGraphicPipline* PsoObj = new FD3DGraphicPipline();
@@ -713,24 +784,25 @@ void FD3D12DynamicRHI::CreatePiplineStateObject(FShader* Vs, FShader* Ps, const 
 	ComPtr<ID3DBlob> Error;
 
 	ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &Signature, &Error));
-	ThrowIfFailed(D3DDevice.Get()->CreateRootSignature(0, Signature->GetBufferPointer(), Signature->GetBufferSize(), IID_PPV_ARGS(&PsoObj->RootSignature) ));
+	ThrowIfFailed(D3DDevice.Get()->CreateRootSignature(0, Signature->GetBufferPointer(), Signature->GetBufferSize(), IID_PPV_ARGS(&PsoObj->RootSignature)));
 	NAME_D3D12_OBJECT(PsoObj->RootSignature);
 
-
-	FRHIPiplineStateInitializer RHIPsoInitializer = {
-	   PsoKey,
-	   StandardInputElementDescs,
-	   _countof(StandardInputElementDescs),
-	   Vs->GetShaderByteCode(),
-	   Vs->GetDataLength(),
-	   Ps->GetShaderByteCode(),
-	   Ps->GetDataLength(),
-	   1
-	};
-
 	CD3DX12_RASTERIZER_DESC rasterizerStateDesc(D3D12_DEFAULT);
-	rasterizerStateDesc.FrontCounterClockwise = true;
-	rasterizerStateDesc.CullMode = D3D12_CULL_MODE_NONE;
+	rasterizerStateDesc.FrontCounterClockwise = Initializer.RasterizerStat.FrontCounterClockwise;
+	rasterizerStateDesc.DepthBias = Initializer.RasterizerStat.DepthBias;
+	rasterizerStateDesc.DepthBiasClamp = Initializer.RasterizerStat.DepthBiasClamp;
+	rasterizerStateDesc.SlopeScaledDepthBias = Initializer.RasterizerStat.SlopeScaledDepthBias;
+	auto ConvCullMode = [](FCullMode Mode) -> D3D12_CULL_MODE
+	{
+		switch (Mode)
+		{
+		case FCullMode::CULL_MODE_NONE: { return D3D12_CULL_MODE_NONE; }
+		case FCullMode::CULL_MODE_FRONT: { return D3D12_CULL_MODE_FRONT; }
+		case FCullMode::CULL_MODE_BACK: { return D3D12_CULL_MODE_BACK; }
+		default: {return D3D12_CULL_MODE_NONE; }
+		}
+	};
+	rasterizerStateDesc.CullMode = ConvCullMode(Initializer.RasterizerStat.CullMode);
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC PsoDesc = {};
 	ZeroMemory(&PsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
@@ -757,9 +829,9 @@ void FD3D12DynamicRHI::CreatePiplineStateObject(FShader* Vs, FShader* Ps, const 
 		}
 	};
 
-	for (UINT i = 0; i < RHIPsoInitializer.NumElements; i++)
+	for (UINT i = 0; i < Initializer.NumElements; i++)
 	{
-		FRHIInputElement* RHIDesc = (FRHIInputElement*)(RHIPsoInitializer.pInpueElement + i);
+		FRHIInputElement* RHIDesc = (FRHIInputElement*)(Initializer.pInpueElement + i);
 		D3D12_INPUT_ELEMENT_DESC D3DInputDesc;
 		D3DInputDesc.SemanticName = RHIDesc->SemanticName.c_str();
 		D3DInputDesc.SemanticIndex = RHIDesc->SemanticIndex;
@@ -771,25 +843,26 @@ void FD3D12DynamicRHI::CreatePiplineStateObject(FShader* Vs, FShader* Ps, const 
 		InputElementDescs.push_back(D3DInputDesc);
 	}
 
-	PsoDesc.InputLayout = { InputElementDescs.data(), RHIPsoInitializer.NumElements };
+	PsoDesc.InputLayout = { InputElementDescs.data(), Initializer.NumElements };
 	PsoDesc.pRootSignature = PsoObj->RootSignature.Get();
-	PsoDesc.VS = CD3DX12_SHADER_BYTECODE(RHIPsoInitializer.pVSPointer, RHIPsoInitializer.VsPointerLength);
-	PsoDesc.PS = CD3DX12_SHADER_BYTECODE(RHIPsoInitializer.pPsPointer, RHIPsoInitializer.PsPointerLength);
+	PsoDesc.VS = CD3DX12_SHADER_BYTECODE(Initializer.pVSPointer, Initializer.VsPointerLength);
+	PsoDesc.PS = CD3DX12_SHADER_BYTECODE(Initializer.pPsPointer, Initializer.PsPointerLength);
 	PsoDesc.RasterizerState = rasterizerStateDesc;
 	PsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	PsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	PsoDesc.SampleMask = UINT_MAX;
 	PsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	PsoDesc.NumRenderTargets = RHIPsoInitializer.NumRenderTargets;
-	PsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	PsoDesc.NumRenderTargets = Initializer.NumRenderTargets;
+	PsoDesc.RTVFormats[0] = Initializer.RtvFormat == FRtvFormat::FORMAT_UNKNOWN ? DXGI_FORMAT_UNKNOWN : DXGI_FORMAT_R8G8B8A8_UNORM;
 	PsoDesc.SampleDesc.Count = 1;
 	PsoDesc.SampleDesc.Quality = 0;	////not use 4XMSAA
-	PsoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+	PsoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;// DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	ComPtr<ID3D12PipelineState> PipelineState;
 	ThrowIfFailed(D3DDevice.Get()->CreateGraphicsPipelineState(&PsoDesc, IID_PPV_ARGS(&PsoObj->PipelineState)));
 	NAME_D3D12_OBJECT(PsoObj->PipelineState);
-	PiplelineStateObjCache[RHIPsoInitializer.KeyName] = PsoObj;
+	PiplelineStateObjCache[Initializer.KeyName] = PsoObj;
 }
+
 
 

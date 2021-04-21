@@ -21,6 +21,7 @@ enum class E_RESOURCE_TYPE : UINT8
 	TYPE_SHADER,
 	TYPE_MATERIAL,
 	TYPE_PIPLINE,
+	TYPE_SHADERMAP,
 };
 
 enum class E_CONSTANT_BUFFER_TYPE : UINT8
@@ -75,6 +76,27 @@ struct FRHIInputElement
 	UINT InstanceDataStepRate;
 };
 
+typedef enum class FRtvFormat
+{
+	FORMAT_UNKNOWN = 0,
+	FORMAT_R8G8B8A8_UNORM,
+}FRtvFormat;
+
+typedef enum class FCullMode
+{
+	CULL_MODE_NONE = 1,
+	CULL_MODE_FRONT = 2,
+	CULL_MODE_BACK = 3
+}FCullMode;
+
+struct FRHIRasterizerState
+{
+	int DepthBias = 0;
+	float DepthBiasClamp = 0.f;
+	float SlopeScaledDepthBias = 0.f;
+	bool FrontCounterClockwise = true;
+	FCullMode CullMode = FCullMode::CULL_MODE_NONE;
+};
 //later will add more param, temp use these for this project
 struct FRHIPiplineStateInitializer
 {
@@ -86,6 +108,8 @@ struct FRHIPiplineStateInitializer
 	BYTE* pPsPointer;
 	SIZE_T PsPointerLength;
 	UINT NumRenderTargets;
+	FRtvFormat RtvFormat;
+	FRHIRasterizerState RasterizerStat;
 };
 
 const FRHIInputElement StandardInputElementDescs[] =
@@ -138,6 +162,7 @@ struct FLight
 	float FalloffEnd = 10.0f;                           // point/spot light only
 	DirectX::XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };  // point/spot light only
 	float SpotPower = 64.0f;                            // spot light only
+	UINT LightIndex = 0;
 };
 
 struct FPassConstants
@@ -148,13 +173,11 @@ public:
 	, EyePosW({ 0.0f, 0.0f, 0.0f })
 	, AmbientLight({ 0.0f, 0.0f, 0.0f, 1.0f })
 	, CbPerObjectPad1(0.f)
-	, CbPerObjectPad2(0.f)
 	{};
 	DirectX::XMFLOAT4X4 ViewProj;
 	DirectX::XMFLOAT3 EyePosW ;
 	float CbPerObjectPad1;
-	DirectX::XMFLOAT3 LightPos;
-	float CbPerObjectPad2;
+	DirectX::XMFLOAT4X4 LightSpaceMatrix;
 	DirectX::XMFLOAT4 AmbientLight;
 	FLight Lights[MaxLights];
 };
@@ -195,6 +218,11 @@ typedef struct FShaderResourceDesc
 	UINT ShaderResourceCount;
 }FShaderResourceDesc;
 
+typedef struct FShaderMapDesc
+{
+	UINT HeapOffsetStart;
+}FShaderMapDesc;
+
 typedef struct FCbvSrvDesc
 {
 	UINT NeedDesciptorCount;
@@ -202,6 +230,7 @@ typedef struct FCbvSrvDesc
 	FConstantBufferDesc CbMaterial;
 	FConstantBufferDesc CbConstant;
 	FShaderResourceDesc SrvDesc;
+	FShaderMapDesc ShaderMapDesc;
 }FCbvSrvDesc;
 
 const UINT RENDER_TARGET_COUNT = 3;

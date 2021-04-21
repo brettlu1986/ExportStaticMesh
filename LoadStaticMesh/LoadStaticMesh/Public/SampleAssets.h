@@ -54,5 +54,11 @@ namespace SampleAssets
 		{ "Wall8", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.3f},
 		{ "Wall9", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.2f, 0.2f, 0.2f), 0.2f},
 	};
+
+	const FLight SampleLights[] = 
+	{
+		//     Strength      fallOffStart    Direction            FallOffEnd   Position      SpotPowner LightIndex
+		{ { 0.8f, 0.8f, 0.8f },  1.f, { -0.112f, -0.633f, -0.766f }, 10.f,  {1.6f, 13.7f, 8.7f}, 64.f,  0},
+	};
 	
 }

@@ -40,9 +40,9 @@ public:
 	virtual void EndCreateSceneResource() override;
 	
 private:
-	void UpdateFrameResourceMtConstants(FScene* RenderScene);
-	void UpdateFrameResourceMatConstants(FScene* RenderScene);
-	void UpdateFrameResourcePassConstants(FScene* RenderScene);
+	void UpdateSceneMtConstants(FScene* RenderScene);
+	void UpdateSceneMatConstants(FScene* RenderScene);
+	void UpdateScenePassConstants(FScene* RenderScene);
 
 	void FindAdapter();
 	void InitWindow(UINT Width, UINT Height, void* Window);
@@ -51,8 +51,8 @@ private:
 	void CreateDescripterHeap(UINT NumDescripters, D3D12_DESCRIPTOR_HEAP_TYPE Type,
 		D3D12_DESCRIPTOR_HEAP_FLAGS, UINT NodeMask, REFIID riid, _COM_Outptr_  void** ppvHeap);
 
-	void CreateSrvAndCbvs();
-	void CreatePiplineStateObject(FShader* Vs, FShader* Ps, const std::string& PsoKey);
+	void CreateD3DResources();
+	void CreatePipelineStateObject(FRHIPiplineStateInitializer& Initializer);
 	void CreateSampler();
 	void CreateSwapChain();
 	void CreateRenderTargets();
@@ -97,4 +97,5 @@ private:
 
 	UINT FrameIndex;
 	std::map<E_CONSTANT_BUFFER_TYPE, FD3DConstantBuffer*> ConstantBuffers;
+	FD3DShaderMap* ShaderMap;
 };

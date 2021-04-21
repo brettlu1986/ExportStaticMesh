@@ -116,3 +116,32 @@ public:
 	ComPtr<ID3D12RootSignature> RootSignature;
 	ComPtr<ID3D12PipelineState> PipelineState;
 };
+
+class FD3DShaderMap : public FRenderResource
+{
+public:
+	FD3DShaderMap();
+	FD3DShaderMap(ID3D12Device* Device, UINT InWidth, UINT InHeight);
+	virtual ~FD3DShaderMap();
+
+	virtual void Destroy() override;
+	virtual void Initialize() override;
+
+	void BuildDescriptors(
+		CD3DX12_CPU_DESCRIPTOR_HANDLE InCpuSrv,
+		CD3DX12_GPU_DESCRIPTOR_HANDLE InGpuSrv,
+		CD3DX12_CPU_DESCRIPTOR_HANDLE InCpuDsv);
+
+private:
+	D3D12_VIEWPORT Viewport;
+	D3D12_RECT ScissorRect;
+
+	ID3D12Device* ParentDevice;
+	UINT Width;
+	UINT Height;
+	ComPtr<ID3D12Resource> ShadowMap;
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE CpuSrv;
+	CD3DX12_GPU_DESCRIPTOR_HANDLE GpuSrv;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE CpuDsv;
+};
