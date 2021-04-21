@@ -26,7 +26,7 @@ public:
 
 	virtual void BeginRenderScene() override;
 	virtual void UpdateSceneResources(FScene* RenderScene) override;
-	virtual void DrawMesh(FMesh* Mesh) override;
+	virtual void DrawMesh(FMesh* Mesh, FD3DGraphicPipline* Pso) override;
 	virtual void EndRenderScene() override;
 	
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) override;
@@ -37,7 +37,9 @@ public:
 
 	virtual void BeginCreateSceneResource() override;
 	virtual void CreateSceneResources(FScene* RenderScene) override;
+	virtual void RenderSceneObjects(FScene* Scene) override;
 	virtual void EndCreateSceneResource() override;
+	virtual void DrawSceneToShaderMap(FScene* Scene) override;
 	
 private:
 	void UpdateSceneMtConstants(FScene* RenderScene);

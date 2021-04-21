@@ -249,8 +249,8 @@ void FD3DShaderMap::Destroy()
 
 void FD3DShaderMap::Initialize() 
 {
-	Viewport = { 0.0f, 0.0f, (float)Width, (float)Height, 0.0f, 1.0f };
-	ScissorRect = { 0, 0, (int)Width, (int)Height };
+	ViewPort = { 0.0f, 0.0f, (float)Width, (float)Height, 0.0f, 1.0f };
+	RScissorRect = { 0, 0, (int)Width, (int)Height };
 
 	D3D12_RESOURCE_DESC TexDesc;
 	ZeroMemory(&TexDesc, sizeof(D3D12_RESOURCE_DESC));

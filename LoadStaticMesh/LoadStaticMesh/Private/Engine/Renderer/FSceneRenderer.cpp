@@ -13,10 +13,12 @@ FSceneRenderer::~FSceneRenderer()
 
 void FSceneRenderer::RenderScene(FScene* RenderScene)
 {
-	const std::vector<FMesh*> Meshes = RenderScene->GetDrawMeshes();
-	for(size_t i = 0; i < Meshes.size(); i++)
-	{
-		GRHI->DrawMesh(Meshes[i]);
-	}
+	GRHI->BeginRenderScene();
+
+	GRHI->DrawSceneToShaderMap(RenderScene);
+
+	GRHI->RenderSceneObjects(RenderScene);
+	
+	GRHI->EndRenderScene();
 }
 

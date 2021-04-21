@@ -55,7 +55,7 @@ public:
 	virtual void UpdateSceneResources(FScene* RenderScene) = 0;
 	virtual void BeginRenderScene() = 0;
 	virtual void EndRenderScene() = 0;
-	virtual void DrawMesh(FMesh* Mesh) = 0;
+	virtual void DrawMesh(FMesh* Mesh, FD3DGraphicPipline* Pso) = 0;
 	
 	virtual FIndexBuffer* RHICreateIndexBuffer() = 0;
 	virtual FVertexBuffer* RHICreateVertexBuffer() = 0;
@@ -65,7 +65,10 @@ public:
 
 	virtual void BeginCreateSceneResource() = 0;
 	virtual void CreateSceneResources(FScene* Scene) = 0;
+	virtual void RenderSceneObjects(FScene* Scene) = 0;
 	virtual void EndCreateSceneResource() = 0;
+
+	virtual void DrawSceneToShaderMap(FScene* Scene) = 0;
 };
 
 extern FDynamicRHI* GRHI;

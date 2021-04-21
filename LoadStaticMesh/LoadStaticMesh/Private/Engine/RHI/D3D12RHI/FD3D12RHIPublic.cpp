@@ -268,12 +268,12 @@ void FD3D12DynamicRHI::CreateRenderTargets()
 	}
 
 	D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
-	depthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
+	depthOptimizedClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
 	depthOptimizedClearValue.DepthStencil.Stencil = 0;
 
 	CD3DX12_HEAP_PROPERTIES ProDefault = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-	CD3DX12_RESOURCE_DESC ResDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, WndWidth, WndHeight, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+	CD3DX12_RESOURCE_DESC ResDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R24G8_TYPELESS, WndWidth, WndHeight, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
 	ThrowIfFailed(D3DDevice.Get()->CreateCommittedResource(
 		&ProDefault,
 		D3D12_HEAP_FLAG_NONE,
@@ -286,7 +286,7 @@ void FD3D12DynamicRHI::CreateRenderTargets()
 
 	// Create the depth/stencil buffer and view.
 	D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
-	depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 	depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
 	D3DDevice.Get()->CreateDepthStencilView(DepthStencilBuffer.Get(), &depthStencilDesc, DsvHeap->GetCPUDescriptorHandleForHeapStart());
@@ -344,101 +344,137 @@ void FD3D12DynamicRHI::ShutDown()
 #endif
 }
 
- FShader* FD3D12DynamicRHI::RHICreateShader(LPCWSTR  ShaderFile)
- {
-	 UINT8* ShaderData = nullptr;
-	 UINT ShaderLen = 0;
-	 ThrowIfFailed(ReadDataFromFile(LAssetDataLoader::GetAssetFullPath(ShaderFile).c_str(), &ShaderData, &ShaderLen));
-	 return new FShader(ShaderData, ShaderLen);
- }
+FShader* FD3D12DynamicRHI::RHICreateShader(LPCWSTR  ShaderFile)
+{
+	UINT8* ShaderData = nullptr;
+	UINT ShaderLen = 0;
+	ThrowIfFailed(ReadDataFromFile(LAssetDataLoader::GetAssetFullPath(ShaderFile).c_str(), &ShaderData, &ShaderLen));
+	return new FShader(ShaderData, ShaderLen);
+}
 
- void FD3D12DynamicRHI::BeginRenderScene()
- {
-	 ThrowIfFailed(CommandAllocator->Reset());
-	 ThrowIfFailed(CommandList->Reset(CommandAllocator.Get(), nullptr));
+void FD3D12DynamicRHI::BeginRenderScene()
+{
+	ThrowIfFailed(CommandAllocator->Reset());
+	ThrowIfFailed(CommandList->Reset(CommandAllocator.Get(), nullptr));
 
-	 ID3D12DescriptorHeap* ppHeaps[] = { CbvSrvHeap.Get(), SamplerHeap.Get() };
-	 CommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+	ID3D12DescriptorHeap* ppHeaps[] = { CbvSrvHeap.Get(), SamplerHeap.Get() };
+	CommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+}
 
-	 CommandList->RSSetViewports(1, &(ViewPort));
-	 CommandList->RSSetScissorRects(1, &(ScissorRect));
+void FD3D12DynamicRHI::DrawSceneToShaderMap(FScene* RenderScene)
+{
+	D3D12_VIEWPORT ViewPort = ShaderMap->Viewport();
+	CommandList->RSSetViewports(1, &ViewPort);
+	D3D12_RECT Rect = ShaderMap->ScissorRect();
+	CommandList->RSSetScissorRects(1, &Rect);
 
-	 const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	 CommandList->ResourceBarrier(1, &Rb1);
+	const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(ShaderMap->Resource(),
+		D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+	CommandList->ResourceBarrier(1, &Rb1);
 
-	 CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart(), FrameIndex, RtvDescriptorSize);
-	 float Color[4] = { ClearColor.R, ClearColor.G, ClearColor.B, ClearColor.A };
-	 CommandList->ClearRenderTargetView(RtvHandle, Color, 0, nullptr);
-	 CommandList->ClearDepthStencilView(DsvHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-	 D3D12_CPU_DESCRIPTOR_HANDLE DsvHandle = DsvHeap->GetCPUDescriptorHandleForHeapStart();
-	 CommandList->OMSetRenderTargets(1, &RtvHandle, true, &DsvHandle);
+	CommandList->ClearDepthStencilView(ShaderMap->Dsv(),
+		D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE DsvHandle = ShaderMap->Dsv();
+	CommandList->OMSetRenderTargets(0, nullptr, false, &DsvHandle);
 
- }
+	const std::vector<FMesh*> Meshes = RenderScene->GetDrawMeshes();
+	for (size_t i = 0; i < Meshes.size(); i++)
+	{
+		DrawMesh(Meshes[i], PiplelineStateObjCache["ShaderPass"]);
+	}
 
- void FD3D12DynamicRHI::DrawMesh(FMesh* Mesh)
- {
-	 FD3D12IndexBuffer* D3DIndexBuffer = dynamic_cast<FD3D12IndexBuffer*>(Mesh->GetIndexBuffer());
-	 FD3D12VertexBuffer* D3DVertexBuffer = dynamic_cast<FD3D12VertexBuffer*>(Mesh->GetVertexBuffer());
+	// Change back to GENERIC_READ so we can read the texture in a shader.
+	const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(ShaderMap->Resource(),
+		D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
+	CommandList->ResourceBarrier(1, &Rb2);
+}
 
-	 CommandList->IASetVertexBuffers(0, 1, &(D3DVertexBuffer->GetVertexBufferView()));
-	 CommandList->IASetIndexBuffer(&(D3DIndexBuffer->GetIndexBufferView()));
-	 CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+void FD3D12DynamicRHI::RenderSceneObjects(FScene* Scene)
+{	
+	CommandList->RSSetViewports(1, &(ViewPort));
+	CommandList->RSSetScissorRects(1, &(ScissorRect));
 
-	 CommandList->SetGraphicsRootSignature(PiplelineStateObjCache[Mesh->GetPsoKey()]->RootSignature.Get());
-	 CommandList->SetPipelineState(PiplelineStateObjCache[Mesh->GetPsoKey()]->PipelineState.Get());
+	const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	CommandList->ResourceBarrier(1, &Rb1);
 
-	 CD3DX12_GPU_DESCRIPTOR_HANDLE cbvSrvHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbConstant.HeapOffsetStart,
-		 CbvSrvDescriptorSize);
-	 CommandList->SetGraphicsRootDescriptorTable(2, cbvSrvHandle);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart(), FrameIndex, RtvDescriptorSize);
+	float Color[4] = { ClearColor.R, ClearColor.G, ClearColor.B, ClearColor.A };
+	CommandList->ClearRenderTargetView(RtvHandle, Color, 0, nullptr);
+	CommandList->ClearDepthStencilView(DsvHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	D3D12_CPU_DESCRIPTOR_HANDLE DsvHandle = DsvHeap->GetCPUDescriptorHandleForHeapStart();
+	CommandList->OMSetRenderTargets(1, &RtvHandle, true, &DsvHandle);
 
-	 CD3DX12_GPU_DESCRIPTOR_HANDLE MtHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbMatrix.HeapOffsetStart + Mesh->GetBufferIndex(),
-		 CbvSrvDescriptorSize);
-	 CommandList->SetGraphicsRootDescriptorTable(0, MtHandle);
+	const std::vector<FMesh*> Meshes = Scene->GetDrawMeshes();
+	for (size_t i = 0; i < Meshes.size(); i++)
+	{
+		DrawMesh(Meshes[i], PiplelineStateObjCache[Meshes[i]->GetPsoKey()]);
+	}
+}
 
-	 FMaterial* Material = Mesh->GetMaterial();
-	 CD3DX12_GPU_DESCRIPTOR_HANDLE MatHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbMaterial.HeapOffsetStart + Material->GetMaterialCbvHeapIndex(),
-		 CbvSrvDescriptorSize);
-	 CommandList->SetGraphicsRootDescriptorTable(1, MatHandle);
+void FD3D12DynamicRHI::DrawMesh(FMesh* Mesh, FD3DGraphicPipline* Pso)
+{
+	FD3D12IndexBuffer* D3DIndexBuffer = dynamic_cast<FD3D12IndexBuffer*>(Mesh->GetIndexBuffer());
+	FD3D12VertexBuffer* D3DVertexBuffer = dynamic_cast<FD3D12VertexBuffer*>(Mesh->GetVertexBuffer());
 
-	 if(Mesh->GetDiffuseTexture())
-	 {
-		 FTexture* Tex = Mesh->GetDiffuseTexture();
-		 CD3DX12_GPU_DESCRIPTOR_HANDLE TexHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.SrvDesc.HeapOffsetStart + Tex->GetTextureHeapIndex(),
-			 CbvSrvDescriptorSize);
-		 CommandList->SetGraphicsRootDescriptorTable(3, TexHandle);
-		 CommandList->SetGraphicsRootDescriptorTable(4, SamplerHeap->GetGPUDescriptorHandleForHeapStart());
-	 }
+	CommandList->IASetVertexBuffers(0, 1, &(D3DVertexBuffer->GetVertexBufferView()));
+	CommandList->IASetIndexBuffer(&(D3DIndexBuffer->GetIndexBufferView()));
+	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	 CommandList->DrawIndexedInstanced(D3DIndexBuffer->GetIndicesCount(), 1, 0, 0, 0);
- }
+	CommandList->SetGraphicsRootSignature(Pso->RootSignature.Get());
+	CommandList->SetPipelineState(Pso->PipelineState.Get());
 
- void FD3D12DynamicRHI::EndRenderScene()
- {
-	 std::vector<ID3D12CommandList*> CmdLists;
-	 const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-	 CommandList->ResourceBarrier(1, &Rb2);
-	 CommandList->Close();
-	 CmdLists.push_back(CommandList.Get());
-	 CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
-	 SwapChain->Present(1, 0);
-	 WaitForPreviousFrame();
-	 FrameIndex = (FrameIndex + 1) % FRAME_COUNT;
- }
+	CD3DX12_GPU_DESCRIPTOR_HANDLE cbvSrvHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbConstant.HeapOffsetStart,
+		CbvSrvDescriptorSize);
+	CommandList->SetGraphicsRootDescriptorTable(2, cbvSrvHandle);
 
- FIndexBuffer* FD3D12DynamicRHI::RHICreateIndexBuffer()
- {
+	CD3DX12_GPU_DESCRIPTOR_HANDLE MtHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbMatrix.HeapOffsetStart + Mesh->GetBufferIndex(),
+		CbvSrvDescriptorSize);
+	CommandList->SetGraphicsRootDescriptorTable(0, MtHandle);
+
+	FMaterial* Material = Mesh->GetMaterial();
+	CD3DX12_GPU_DESCRIPTOR_HANDLE MatHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbMaterial.HeapOffsetStart + Material->GetMaterialCbvHeapIndex(),
+		CbvSrvDescriptorSize);
+	CommandList->SetGraphicsRootDescriptorTable(1, MatHandle);
+
+	if(Mesh->GetDiffuseTexture())
+	{
+		FTexture* Tex = Mesh->GetDiffuseTexture();
+		CD3DX12_GPU_DESCRIPTOR_HANDLE TexHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.SrvDesc.HeapOffsetStart + Tex->GetTextureHeapIndex(),
+			CbvSrvDescriptorSize);
+		CommandList->SetGraphicsRootDescriptorTable(3, TexHandle);
+		CommandList->SetGraphicsRootDescriptorTable(4, SamplerHeap->GetGPUDescriptorHandleForHeapStart());
+	}
+
+	CommandList->DrawIndexedInstanced(D3DIndexBuffer->GetIndicesCount(), 1, 0, 0, 0);
+}
+
+void FD3D12DynamicRHI::EndRenderScene()
+{
+	std::vector<ID3D12CommandList*> CmdLists;
+	const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	CommandList->ResourceBarrier(1, &Rb2);
+	CommandList->Close();
+	CmdLists.push_back(CommandList.Get());
+	CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
+	SwapChain->Present(1, 0);
+	WaitForPreviousFrame();
+	FrameIndex = (FrameIndex + 1) % FRAME_COUNT;
+}
+
+FIndexBuffer* FD3D12DynamicRHI::RHICreateIndexBuffer()
+{
 	return new FD3D12IndexBuffer();
- }
+}
 
- FVertexBuffer* FD3D12DynamicRHI::RHICreateVertexBuffer()
- {
+FVertexBuffer* FD3D12DynamicRHI::RHICreateVertexBuffer()
+{
 	return new FD3D12VertexBuffer();
- }
+}
 
- FTexture* FD3D12DynamicRHI::RHICreateTexture()
- {
+FTexture* FD3D12DynamicRHI::RHICreateTexture()
+{
 	return new FD3D12Texture();
- }
+}
 
 void FD3D12DynamicRHI::RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture)
 {
@@ -856,7 +892,7 @@ void FD3D12DynamicRHI::CreatePipelineStateObject(FRHIPiplineStateInitializer& In
 	PsoDesc.RTVFormats[0] = Initializer.RtvFormat == FRtvFormat::FORMAT_UNKNOWN ? DXGI_FORMAT_UNKNOWN : DXGI_FORMAT_R8G8B8A8_UNORM;
 	PsoDesc.SampleDesc.Count = 1;
 	PsoDesc.SampleDesc.Quality = 0;	////not use 4XMSAA
-	PsoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;// DXGI_FORMAT_D24_UNORM_S8_UINT;
+	PsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;//DXGI_FORMAT_D32_FLOAT;// DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	ComPtr<ID3D12PipelineState> PipelineState;
 	ThrowIfFailed(D3DDevice.Get()->CreateGraphicsPipelineState(&PsoDesc, IID_PPV_ARGS(&PsoObj->PipelineState)));

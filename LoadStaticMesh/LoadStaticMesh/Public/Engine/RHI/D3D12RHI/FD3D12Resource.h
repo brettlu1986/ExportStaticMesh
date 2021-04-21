@@ -132,9 +132,34 @@ public:
 		CD3DX12_GPU_DESCRIPTOR_HANDLE InGpuSrv,
 		CD3DX12_CPU_DESCRIPTOR_HANDLE InCpuDsv);
 
+	ID3D12Resource* Resource()
+	{
+		return ShadowMap.Get();
+	}
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE Srv() const
+	{
+		return GpuSrv;
+	}
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE Dsv() const
+	{
+		return CpuDsv;
+	}
+
+	D3D12_VIEWPORT Viewport() const
+	{
+		return ViewPort;
+	}
+
+	D3D12_RECT ScissorRect() const
+	{
+		return RScissorRect;
+	}
+
 private:
-	D3D12_VIEWPORT Viewport;
-	D3D12_RECT ScissorRect;
+	D3D12_VIEWPORT ViewPort;
+	D3D12_RECT RScissorRect;
 
 	ID3D12Device* ParentDevice;
 	UINT Width;

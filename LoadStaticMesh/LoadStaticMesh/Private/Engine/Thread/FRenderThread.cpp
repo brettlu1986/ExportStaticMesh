@@ -26,10 +26,8 @@ void FRenderThread::Run()
 		DoTasks();
 
 		GRHI->UpdateSceneResources(RenderScene);
-		GRHI->BeginRenderScene();
 		Renderer.RenderScene(RenderScene);
-		GRHI->EndRenderScene();
-
+		
 		//NotifyGameExcute();
 		--FrameTaskNum;
 		RenderCV.notify_all();
