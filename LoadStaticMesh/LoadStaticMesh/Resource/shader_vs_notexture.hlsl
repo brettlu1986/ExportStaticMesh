@@ -23,6 +23,7 @@ cbuffer cbPass : register(b2)
 	float3 gEyePosW;
 	float cbPerObjectPad1;
 	float4x4 gLightSpaceMatrix;
+	float4x4 gShadowMatrix;
 	float4 gAimbientLight;
 	Light gLight[MaxLights];
 }
@@ -41,7 +42,7 @@ struct PSInput
 {
 	float4 position    : SV_POSITION;
 	float3 posW		   : POSITION;
-	float4 positionLightSpace :POSITION1;
+	float4 shadowPosH :POSITION1;
 	float3 normal     : NORMAL;
 	float3 tangent   : TANGENT;
 	float2 uv0        : TEXCOORD0;
@@ -59,7 +60,7 @@ PSInput VSMain(VSInput vin)
 	vout.normal = normalize((float3)(mul(vin.normal, gWorld)));
 	vout.position = mul(posW, gViewProj);
 
-	vout.positionLightSpace = mul(posW, gLightSpaceMatrix);
+	vout.shadowPosH = mul(posW, gShadowMatrix);
 
 	vout.tangent = vin.tangent;
 	vout.uv0 = vin.uv0;

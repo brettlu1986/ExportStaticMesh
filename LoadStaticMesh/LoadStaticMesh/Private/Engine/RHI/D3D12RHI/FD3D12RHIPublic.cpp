@@ -174,7 +174,7 @@ void FD3D12DynamicRHI::CreateDescriptorHeaps()
 		D3D12_DESCRIPTOR_HEAP_FLAG_NONE, 0, IID_PPV_ARGS(&DsvHeap));
 	NAME_D3D12_OBJECT(DsvHeap);
 
-	//sample
+	//normal texture sampler 
 	CreateDescripterHeap(1, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER,
 		D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 0, IID_PPV_ARGS(&SamplerHeap));
 	NAME_D3D12_OBJECT(SamplerHeap);
@@ -207,6 +207,19 @@ void FD3D12DynamicRHI::CreateSampler()
 	SamplerDesc.MaxAnisotropy = 8;
 	SamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	D3DDevice.Get()->CreateSampler(&SamplerDesc, SamplerHeap->GetCPUDescriptorHandleForHeapStart());
+
+
+	CD3DX12_STATIC_SAMPLER_DESC shadow(
+		1, // shaderRegister
+		D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT, // filter
+		D3D12_TEXTURE_ADDRESS_MODE_BORDER,  // addressU
+		D3D12_TEXTURE_ADDRESS_MODE_BORDER,  // addressV
+		D3D12_TEXTURE_ADDRESS_MODE_BORDER,  // addressW
+		0.0f,                               // mipLODBias
+		16,                                 // maxAnisotropy
+		D3D12_COMPARISON_FUNC_LESS_EQUAL,
+		D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK);
+	StaticSamplers.push_back(shadow);
 }
 
 
@@ -363,6 +376,9 @@ void FD3D12DynamicRHI::BeginRenderScene()
 
 void FD3D12DynamicRHI::DrawSceneToShaderMap(FScene* RenderScene)
 {
+	CommandList->SetGraphicsRootSignature(PiplelineStateObjCache["ShaderPass"]->RootSignature.Get());
+	CommandList->SetPipelineState(PiplelineStateObjCache["ShaderPass"]->PipelineState.Get());
+
 	D3D12_VIEWPORT ViewPort = ShaderMap->Viewport();
 	CommandList->RSSetViewports(1, &ViewPort);
 	D3D12_RECT Rect = ShaderMap->ScissorRect();
@@ -377,10 +393,13 @@ void FD3D12DynamicRHI::DrawSceneToShaderMap(FScene* RenderScene)
 	CD3DX12_CPU_DESCRIPTOR_HANDLE DsvHandle = ShaderMap->Dsv();
 	CommandList->OMSetRenderTargets(0, nullptr, false, &DsvHandle);
 
+	CD3DX12_GPU_DESCRIPTOR_HANDLE NulSrv = CD3DX12_GPU_DESCRIPTOR_HANDLE(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), 
+		CurrentCbvSrvDesc.ShaderMapDesc.HeapOffsetStart + 1, CbvSrvDescriptorSize);
+	CommandList->SetGraphicsRootDescriptorTable(4, NulSrv);
 	const std::vector<FMesh*> Meshes = RenderScene->GetDrawMeshes();
 	for (size_t i = 0; i < Meshes.size(); i++)
 	{
-		DrawMesh(Meshes[i], PiplelineStateObjCache["ShaderPass"]);
+		DrawMesh(Meshes[i], nullptr);
 	}
 
 	// Change back to GENERIC_READ so we can read the texture in a shader.
@@ -409,7 +428,7 @@ void FD3D12DynamicRHI::RenderSceneObjects(FScene* Scene)
 	{
 		DrawMesh(Meshes[i], PiplelineStateObjCache[Meshes[i]->GetPsoKey()]);
 	}
-	CommandList->SetGraphicsRootDescriptorTable(4, ShaderMap->Srv());
+	
 }
 
 void FD3D12DynamicRHI::DrawMesh(FMesh* Mesh, FD3DGraphicPipline* Pso)
@@ -420,13 +439,20 @@ void FD3D12DynamicRHI::DrawMesh(FMesh* Mesh, FD3DGraphicPipline* Pso)
 	CommandList->IASetVertexBuffers(0, 1, &(D3DVertexBuffer->GetVertexBufferView()));
 	CommandList->IASetIndexBuffer(&(D3DIndexBuffer->GetIndexBufferView()));
 	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	CommandList->SetGraphicsRootSignature(Pso->RootSignature.Get());
-	CommandList->SetPipelineState(Pso->PipelineState.Get());
-
+	
+	if(Pso)
+	{
+		CommandList->SetGraphicsRootSignature(Pso->RootSignature.Get());
+		CommandList->SetPipelineState(Pso->PipelineState.Get());
+	}
+	
 	CD3DX12_GPU_DESCRIPTOR_HANDLE cbvSrvHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbConstant.HeapOffsetStart,
 		CbvSrvDescriptorSize);
 	CommandList->SetGraphicsRootDescriptorTable(2, cbvSrvHandle);
+	
+	CD3DX12_GPU_DESCRIPTOR_HANDLE ShadowMapHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.ShaderMapDesc.HeapOffsetStart,
+		CbvSrvDescriptorSize);
+	CommandList->SetGraphicsRootDescriptorTable(4, ShadowMapHandle);
 
 	CD3DX12_GPU_DESCRIPTOR_HANDLE MtHandle(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.CbMatrix.HeapOffsetStart + Mesh->GetBufferIndex(),
 		CbvSrvDescriptorSize);
@@ -707,9 +733,20 @@ void FD3D12DynamicRHI::UpdateScenePassConstants(FScene* RenderScene)
 
 	XMFLOAT3 LightUp = {0, 0, 1};
 	XMMATRIX LightView = XMMatrixLookToLH(XMLoadFloat3(&Light->Position), XMLoadFloat3(&Light->Direction), XMLoadFloat3(&LightUp));
-	XMMATRIX LightProj = XMMatrixOrthographicLH((float)WndWidth, (float)WndHeight, 1.f, 100.f);
+	XMMATRIX LightProj = XMMatrixOrthographicLH((float)100, (float)100, 1.f, 50.f);
 	XMMATRIX LightSpaceMatrix = LightView * LightProj;
+
 	XMStoreFloat4x4(&PassConstant.LightSpaceMatrix, XMMatrixTranspose(LightSpaceMatrix));
+
+	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
+	XMMATRIX T(
+		0.5f, 0.0f, 0.0f, 0.0f,
+		0.0f, -0.5f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.0f, 1.0f);
+	XMMATRIX S = LightView * LightProj * T;
+	XMStoreFloat4x4(&PassConstant.ShadowTransform, XMMatrixTranspose(S));
+	
 
 	memcpy(BufferObj->BufferData, &PassConstant, sizeof(PassConstant));
 	FD3DConstantBuffer* Cb = ConstantBuffers[BufferObj->Type];
@@ -722,7 +759,7 @@ void FD3D12DynamicRHI::UpdateScenePassConstants(FScene* RenderScene)
 
 void FD3D12DynamicRHI::CreateD3DResources()
 {
-	CreateDescripterHeap(CurrentCbvSrvDesc.NeedDesciptorCount, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+	CreateDescripterHeap(CurrentCbvSrvDesc.NeedDesciptorCount + 2, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 		D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 0, IID_PPV_ARGS(&CbvSrvHeap));
 	NAME_D3D12_OBJECT(CbvSrvHeap);
 	CbvSrvDescriptorSize = D3DDevice.Get()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -781,7 +818,7 @@ void FD3D12DynamicRHI::CreateD3DResources()
 	D3DDevice.Get()->CreateConstantBufferView(&Cbv3Desc, Cbv3Handle);
 
 	// create shader map resource
-	ShaderMap = new FD3DShaderMap(D3DDevice.Get(), WndWidth, WndHeight);
+	ShaderMap = new FD3DShaderMap(D3DDevice.Get(), SHADOW_WIDTH, SHADOW_HEIGHT);
 	ShaderMap->BuildDescriptors(
 		CD3DX12_CPU_DESCRIPTOR_HANDLE(CbvSrvHeap->GetCPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.ShaderMapDesc.HeapOffsetStart, CbvSrvDescriptorSize),
 		CD3DX12_GPU_DESCRIPTOR_HANDLE(CbvSrvHeap->GetGPUDescriptorHandleForHeapStart(), CurrentCbvSrvDesc.ShaderMapDesc.HeapOffsetStart, CbvSrvDescriptorSize),
@@ -816,7 +853,7 @@ void FD3D12DynamicRHI::CreatePipelineStateObject(FRHIPiplineStateInitializer& In
 	RootParameters[5].InitAsDescriptorTable(1, &Ranges[5], D3D12_SHADER_VISIBILITY_PIXEL);
 
 	// Allow input layout and deny uneccessary access to certain pipeline stages.
-	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(_countof(RootParameters), RootParameters, 0, nullptr,
+	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(_countof(RootParameters), RootParameters, (UINT)StaticSamplers.size(), StaticSamplers.data(),
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	ComPtr<ID3DBlob> Signature;

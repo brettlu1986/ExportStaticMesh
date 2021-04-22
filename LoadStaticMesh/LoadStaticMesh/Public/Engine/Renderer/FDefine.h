@@ -178,6 +178,7 @@ public:
 	DirectX::XMFLOAT3 EyePosW ;
 	float CbPerObjectPad1;
 	DirectX::XMFLOAT4X4 LightSpaceMatrix;
+	DirectX::XMFLOAT4X4 ShadowTransform;
 	DirectX::XMFLOAT4 AmbientLight;
 	FLight Lights[MaxLights];
 };
@@ -235,4 +236,6 @@ typedef struct FCbvSrvDesc
 
 const UINT RENDER_TARGET_COUNT = 3;
 const int FRAME_COUNT = 3;
+const UINT SHADOW_WIDTH = 2048;
+const UINT SHADOW_HEIGHT = 2048;
 

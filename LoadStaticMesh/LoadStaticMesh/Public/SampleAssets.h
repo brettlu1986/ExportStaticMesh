@@ -58,7 +58,7 @@ namespace SampleAssets
 	const FLight SampleLights[] = 
 	{
 		//     Strength      fallOffStart    Direction            FallOffEnd   Position      SpotPowner LightIndex
-		{ { 0.8f, 0.8f, 0.8f },  1.f, { -0.112f, -0.633f, -0.766f }, 10.f,  {1.6f, 13.7f, 8.7f}, 64.f,  0},
+		{ { 0.8f, 0.8f, 0.8f },  1.f, { 0.244f, -0.502f, -0.83f }, 10.f,  {-8.1f, 13.7f, 10.7f}, 64.f,  0},
 	};
 	
 }

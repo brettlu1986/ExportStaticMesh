@@ -70,6 +70,7 @@ private:
 	ComPtr<ID3D12DescriptorHeap> DsvHeap;
 	ComPtr<ID3D12DescriptorHeap> CbvSrvHeap;
 	ComPtr<ID3D12DescriptorHeap> SamplerHeap;
+	std::vector<CD3DX12_STATIC_SAMPLER_DESC> StaticSamplers;
 
 	ComPtr<ID3D12CommandQueue> CommandQueue;
 	ComPtr<ID3D12GraphicsCommandList> CommandList;
