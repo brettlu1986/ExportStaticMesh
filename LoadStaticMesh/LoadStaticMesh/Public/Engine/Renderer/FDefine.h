@@ -171,7 +171,6 @@ public:
 	FPassConstants()
 	:ViewProj(MathHelper::Identity4x4())
 	, EyePosW({ 0.0f, 0.0f, 0.0f })
-	, AmbientLight({ 0.0f, 0.0f, 0.0f, 1.0f })
 	, CbPerObjectPad1(0.f)
 	{};
 	DirectX::XMFLOAT4X4 ViewProj;
@@ -179,7 +178,6 @@ public:
 	float CbPerObjectPad1;
 	DirectX::XMFLOAT4X4 LightSpaceMatrix;
 	DirectX::XMFLOAT4X4 ShadowTransform;
-	DirectX::XMFLOAT4 AmbientLight;
 	FLight Lights[MaxLights];
 };
 

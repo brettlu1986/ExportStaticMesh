@@ -571,8 +571,8 @@ void FD3D12DynamicRHI::CreateSceneResources(FScene* Scene)
 		CurrentCbvSrvDesc.ShaderMapDesc = { ObjectNum * 2 + PassConNum + TextureMeshNum };
 		CreateD3DResources();
 
-		FShader* Vs = RHICreateShader(L"shader_vs.cso");
-		FShader* Ps = RHICreateShader(L"shader_ps.cso");
+		FShader* Vs = RHICreateShader(L"ShaderTexVs.cso");
+		FShader* Ps = RHICreateShader(L"ShaderTexPs.cso");
 		FRHIPiplineStateInitializer PsoInitializer = {
 		   "PsoUseTexture",
 		   StandardInputElementDescs,
@@ -587,8 +587,8 @@ void FD3D12DynamicRHI::CreateSceneResources(FScene* Scene)
 		};
 		CreatePipelineStateObject(PsoInitializer);
 
-		FShader* VsNoTex = RHICreateShader(L"shader_vs_notexture.cso");
-		FShader* PsNoTex = RHICreateShader(L"shader_ps_notexture.cso");
+		FShader* VsNoTex = RHICreateShader(L"ShaderVs.cso");
+		FShader* PsNoTex = RHICreateShader(L"ShaderPs.cso");
 		FRHIPiplineStateInitializer PsoInitializerNoTex = {
 		   "PsoNoTexture",
 		   StandardInputElementDescs,
@@ -723,11 +723,8 @@ void FD3D12DynamicRHI::UpdateScenePassConstants(FScene* RenderScene)
 	XMMATRIX ViewProj = Camera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
 	XMStoreFloat4x4(&PassConstant.ViewProj, XMMatrixTranspose(ViewProj));
 	PassConstant.EyePosW = Camera.GetCameraLocation();
-	//PassConstant.LightPos = {1.6f, 13.7f, 8.7f};//
-
 	FLight* Light = RenderScene->GetLight(0);
-	PassConstant.AmbientLight = { 0.8f, 0.8f, 0.8f, 1.0f };
-	PassConstant.Lights[0].Direction = Light->Direction; //{ 0.643f, -0.163f, -0.748f };
+	PassConstant.Lights[0].Direction = Light->Direction; 
 	PassConstant.Lights[0].Strength = Light->Strength;
 	PassConstant.Lights[0].Position = Light->Position;
 

@@ -1,4 +1,5 @@
 
+
 #ifndef NUM_DIR_LIGHTS
 #define NUM_DIR_LIGHTS 1
 #endif
@@ -21,6 +22,7 @@ struct Material
     float3 FresnelR0;
     float Shininess;
 };
+
 
 // Schlick gives an approximation to Fresnel reflectance (see pg. 233 "Real-Time Rendering 3rd Ed.").
 // R0 = ( (n-1)/(n+1) )^2, where n is the index of refraction.
@@ -80,5 +82,7 @@ float4 ComputeLighting(Light gLights[MaxLights], Material mat,
     }
     return float4(result, 0.0f);
 }
+
+
 
 

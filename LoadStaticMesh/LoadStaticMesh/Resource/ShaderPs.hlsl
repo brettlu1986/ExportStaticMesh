@@ -1,24 +1,6 @@
 
 #include "LightingUtil.hlsl"
-
-cbuffer cbMaterial : register(b1)
-{
-	float4 gDiffuseAlbedo;
-	float3 gFresnelR0;
-	float gRoughness;
-	float4x4 gMatTransform;
-}
-
-cbuffer cbPass : register(b2)
-{
-	float4x4 gViewProj;
-	float3 gEyePosW;
-	float cbPerObjectPad1;
-	float4x4 gLightSpaceMatrix;
-	float4x4 gShadowMatrix;
-	float4 gAimbientLight;
-	Light gLight[MaxLights];
-}
+#include "ShaderDef.hlsli"
 
 struct PSInput
 {
@@ -40,16 +22,12 @@ float ShadowCalculation(float4 shadowPosH)
 {
 	// Complete projection by doing division by w.
 	shadowPosH.xyz /= shadowPosH.w;
-
 	// Depth in NDC space.
 	float depth = shadowPosH.z;
-
 	uint width, height, numMips;
 	gShadowMap.GetDimensions(0, width, height, numMips);
-
 	// Texel size.
 	float dx = 1.0f / (float)width;
-
 	float percentLit = 0.0f;
 	const float2 offsets[9] =
 	{
@@ -57,66 +35,19 @@ float ShadowCalculation(float4 shadowPosH)
 		float2(-dx, 0.0f), float2(0.0f, 0.0f), float2(dx, 0.0f),
 		float2(-dx,  +dx), float2(0.0f,  +dx), float2(dx,  +dx)
 	};
-
 	[unroll]
 	for (int i = 0; i < 9; ++i)
 	{
 		percentLit += gShadowMap.SampleCmpLevelZero(gsamShadow,
 			shadowPosH.xy + offsets[i], depth).r;
 	}
-
 	return percentLit / 9.0f;
-
-	// Complete projection by doing division by w.
-	//float3 projCoords = positionLightSpace.xyz / positionLightSpace.w;
-	//projCoords = projCoords * 0.5 + 0.5;
-
-	// Depth in NDC space.
-	//float depth = projCoords.z;
-
-	//uint width, height, numMips;
-	//gShadowMap.GetDimensions(0, width, height, numMips);
-
-	//// Texel size.
-	//float dx = 1.0f / (float)width;
-
-	//float percentLit = 0.0f;
-	//const float2 offsets[9] =
-	//{
-	//	float2(-dx,  -dx), float2(0.0f,  -dx), float2(dx,  -dx),
-	//	float2(-dx, 0.0f), float2(0.0f, 0.0f), float2(dx, 0.0f),
-	//	float2(-dx,  +dx), float2(0.0f,  +dx), float2(dx,  +dx)
-	//};
-
-	//[unroll]
-	//for (int i = 0; i < 9; ++i)
-	//{
-	//	percentLit += gShadowMap.SampleCmpLevelZero(gsamShadow,
-	//		projCoords.xy + offsets[i], depth).r;
-	//}
-	//return percentLit / 9.0f;
-
-	
-	//float3 ProjCoords = positionLightSpace.xyz / positionLightSpace.w;
-	//ProjCoords = ProjCoords * 0.5 + 0.5;
-	//float ClosestDepth = gShadowMap.Sample(g_sampler, ProjCoords.xy);
-	//float CurrentDepth = ProjCoords.z;
-	//float Shadow = CurrentDepth > ClosestDepth ? 1.0 : 0.0;
-	//return Shadow;
-
-	//float CurrentDepth = projCoords.z;
-	//uint width, height, numMips;
-	//gShadowMap.GetDimensions(0, width, height, numMips);
-	//projCoords *= width;
-	//float DepthInMap = gShadowMap.Load(int3(projCoords.xy, 0)).r;
-	//float Shadow = CurrentDepth > DepthInMap ? 1.0 : 0.0;
-	//return Shadow;
 }
 
 float4 PsMain(PSInput input) : SV_TARGET
 {
 	float AmbientStrength = 0.2;
-	float3 DirectionalLightColor = gAimbientLight.xyz;
+	float3 DirectionalLightColor = gLight[0].Strength;
 	float3 AmbientColor = AmbientStrength * DirectionalLightColor;
 
 	float3 LightDirection = -gLight[0].Direction;

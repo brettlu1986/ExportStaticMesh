@@ -163,25 +163,25 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Resource\shader_vs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Resource\shader_ps.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Resource\shader_ps_notexture.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
     <FxCompile Include="Resource\LightingUtil.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Resource\shader_vs_notexture.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="Resource\SampleDepthShaderVs.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="Resource\SampleDepthShaderPs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\ShaderTexPs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\ShaderTexVs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\ShaderPs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\ShaderVs.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>
@@ -297,5 +297,10 @@
     <ClInclude Include="Public\Engine\Thread\FTaskThread.h">
       <Filter>Header Files\Engine\Thread</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resource\ShaderDef.hlsli">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
