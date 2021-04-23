@@ -234,6 +234,6 @@ typedef struct FCbvSrvDesc
 
 const UINT RENDER_TARGET_COUNT = 3;
 const int FRAME_COUNT = 3;
-const UINT SHADOW_WIDTH = 2048;
-const UINT SHADOW_HEIGHT = 2048;
+const UINT SHADOW_WIDTH = 4096;
+const UINT SHADOW_HEIGHT = 4096;
 

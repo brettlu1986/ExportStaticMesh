@@ -138,6 +138,9 @@ An index buffer contains a sequential set of 16-bit or 32-bit indices; each inde
 [光照初步](https://zhuanlan.zhihu.com/p/149991574)
 [实现场景光照](https://zhuanlan.zhihu.com/p/158068474)
 [光照算法实现](https://zhuanlan.zhihu.com/p/154487768)
+
+# shadow map
+[阴影概述](https://learnopengl-cn.readthedocs.io/zh/latest/05%20Advanced%20Lighting/03%20Shadows/01%20Shadow%20Mapping/)
 	
 	
 

@@ -81,7 +81,7 @@ void LCamera::OnResize()
 	AspectRatio = static_cast<float>(DeviceWindows->GetWidth()) / DeviceWindows->GetHeight();
 }
 
-void LCamera::UpdateForcusPosition(XMVECTOR UpdateVec)
+void LCamera::UpdateFocusPosition(XMVECTOR UpdateVec)
 {
 	FocusPosition.x = XMVectorGetX(UpdateVec);
 	FocusPosition.y = XMVectorGetY(UpdateVec);
@@ -123,14 +123,14 @@ void LCamera::Update()
 	if(IsKeyDown('W') || IsKeyDown('A') || IsKeyDown('E'))
 	{
 		CurFocusLoc = XMVectorAdd(XMLoadFloat3(&FocusPosition), MoveOffset);
-		UpdateForcusPosition(CurFocusLoc);
+		UpdateFocusPosition(CurFocusLoc);
 		bDirty = true;
 	}
 
 	if(IsKeyDown('S') || IsKeyDown('D') || IsKeyDown('Q'))
 	{
 		CurFocusLoc = XMVectorSubtract(XMLoadFloat3(&FocusPosition), MoveOffset);
-		UpdateForcusPosition(CurFocusLoc);
+		UpdateFocusPosition(CurFocusLoc);
 		bDirty = true;
 	}
 

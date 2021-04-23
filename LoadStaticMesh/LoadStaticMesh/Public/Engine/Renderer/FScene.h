@@ -60,4 +60,9 @@ private:
 	UINT MeshWithTextureCount;
 	UINT ConstantDirty;
 	LCamera Camera;
+
+	// temp use to rotate light
+	float Alpha;
+	float Theta;
+	float Radius;
 };

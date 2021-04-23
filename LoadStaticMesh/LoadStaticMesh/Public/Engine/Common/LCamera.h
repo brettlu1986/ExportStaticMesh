@@ -48,7 +48,7 @@ private:
 
 	bool IsKeyDown(char Key);
 	bool IsKeyUp(char Key);
-	void UpdateForcusPosition(XMVECTOR UpdateVec);
+	void UpdateFocusPosition(XMVECTOR UpdateVec);
 	void UpdateMoveOffset();
 
 	static const UINT KEY_SIZE = 256;
