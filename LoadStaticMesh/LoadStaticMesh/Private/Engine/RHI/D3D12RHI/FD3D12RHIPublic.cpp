@@ -606,7 +606,7 @@ void FD3D12DynamicRHI::CreateSceneResources(FScene* Scene)
 		FShader* ShadowPassVs = RHICreateShader(L"SampleDepthShaderVs.cso");
 		FShader* ShadowPassPs = RHICreateShader(L"SampleDepthShaderPs.cso");
 		FRHIRasterizerState State;
-		State.DepthBias = 25000;
+		State.DepthBias = 15000;
 		State.DepthBiasClamp = 0.f;
 		State.SlopeScaledDepthBias = 0.1f;
 		FRHIPiplineStateInitializer PsoInitializerShadowPass = {
