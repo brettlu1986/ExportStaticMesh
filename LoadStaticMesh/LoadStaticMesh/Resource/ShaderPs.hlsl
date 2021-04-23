@@ -42,6 +42,15 @@ float ShadowCalculation(float4 shadowPosH)
 			shadowPosH.xy + offsets[i], depth).r;
 	}
 	return percentLit / 9.0f;
+
+	//shadowPosH.xyz /= shadowPosH.w;
+	//// Depth in NDC space.
+	//float currentDepth = shadowPosH.z;
+	//uint width, height, numMips;
+	//gShadowMap.GetDimensions(0, width, height, numMips);
+	//float2 PiexlPos = shadowPosH.xy * width;
+	//float depthInMap = gShadowMap.Load(int3(PiexlPos, 0)).r;
+	//return currentDepth > depthInMap ? 1.0 : 0;
 }
 
 float4 PsMain(PSInput input) : SV_TARGET
@@ -61,7 +70,7 @@ float4 PsMain(PSInput input) : SV_TARGET
 	float3 SpecularColor = DirectionalLightColor * SpecularStrength;
 
 	float Shadow = ShadowCalculation(input.shadowPosH);
-	float3 color = ( AmbientColor + Shadow * (DiffuseColor + SpecularColor) ) * input.color.xyz;
+	float3 color = ( AmbientColor + (Shadow + 0.1) * (DiffuseColor + SpecularColor) ) * input.color.xyz;
 	color = color * 0.8;
 	float gamma = 2.2f;
 	color = pow(color, 1.0f / gamma);

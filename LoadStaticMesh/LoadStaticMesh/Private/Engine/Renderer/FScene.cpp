@@ -70,7 +70,7 @@ void FScene::Update()
 	Camera.Update();
 
 	FLight* Light = GetLight(0);
-	if(Light)
+	if (Light)
 	{
 		Theta -= 0.001f;
 		XMVECTOR V = DirectX::XMVectorSet(Radius * sinf(Alpha) * sinf(Theta),

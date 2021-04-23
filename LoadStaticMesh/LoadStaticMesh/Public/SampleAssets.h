@@ -15,7 +15,7 @@ namespace SampleAssets
 		"BP_Chair.bin",
 		"Linear_Stair_StaticMesh.bin",
 		"Sphere.bin",
-		"Floor2.bin",
+		"Floor.bin",
 		"Bump_StaticMesh.bin",
 		"LeftArm_StaticMesh.bin",
 		"Wall6.bin",

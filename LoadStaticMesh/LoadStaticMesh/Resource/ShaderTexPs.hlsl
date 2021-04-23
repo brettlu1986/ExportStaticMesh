@@ -44,6 +44,16 @@ float ShadowCalculation(float4 shadowPosH)
 			shadowPosH.xy + offsets[i], depth).r;
 	}
 	return percentLit / 9.0f;
+
+	//shadowPosH.xyz /= shadowPosH.w;
+	//// Depth in NDC space.
+	//float currentDepth = shadowPosH.z;
+	//uint width, height, numMips;
+	//gShadowMap.GetDimensions(0, width, height, numMips);
+	//float2 PiexlPos = shadowPosH.xy * width;
+	//float depthInMap = gShadowMap.Load(int3(PiexlPos, 0)).r;
+	//depthInMap += 0.01;
+	//return currentDepth > depthInMap ? 1.0 : 0;
 }
 
 float4 PSMain(PSInput input) : SV_TARGET

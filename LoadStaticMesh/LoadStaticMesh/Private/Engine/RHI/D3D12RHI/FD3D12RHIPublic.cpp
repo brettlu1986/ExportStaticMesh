@@ -606,9 +606,9 @@ void FD3D12DynamicRHI::CreateSceneResources(FScene* Scene)
 		FShader* ShadowPassVs = RHICreateShader(L"SampleDepthShaderVs.cso");
 		FShader* ShadowPassPs = RHICreateShader(L"SampleDepthShaderPs.cso");
 		FRHIRasterizerState State;
-		State.DepthBias = 100000;
+		State.DepthBias = 25000;
 		State.DepthBiasClamp = 0.f;
-		State.SlopeScaledDepthBias = 1.f;
+		State.SlopeScaledDepthBias = 0.1f;
 		FRHIPiplineStateInitializer PsoInitializerShadowPass = {
 		   "ShaderPass",
 		   StandardInputElementDescs,
@@ -619,7 +619,7 @@ void FD3D12DynamicRHI::CreateSceneResources(FScene* Scene)
 		   ShadowPassPs->GetDataLength(),
 		   0,
 		   FRtvFormat::FORMAT_UNKNOWN,
-		   State
+		  State
 		};
 		CreatePipelineStateObject(PsoInitializerShadowPass);
 
@@ -730,7 +730,7 @@ void FD3D12DynamicRHI::UpdateScenePassConstants(FScene* RenderScene)
 
 	XMFLOAT3 LightUp = {0, 0, 1};
 	XMMATRIX LightView = XMMatrixLookToLH(XMLoadFloat3(&Light->Position), XMLoadFloat3(&Light->Direction), XMLoadFloat3(&LightUp));
-	XMMATRIX LightProj = XMMatrixOrthographicLH((float)50, (float)50, 1.f, 50.f);
+	XMMATRIX LightProj = XMMatrixOrthographicLH((float)50, (float)50, 1.f, 100.f);
 	XMMATRIX LightSpaceMatrix = LightView * LightProj;
 
 	XMStoreFloat4x4(&PassConstant.LightSpaceMatrix, XMMatrixTranspose(LightSpaceMatrix));
