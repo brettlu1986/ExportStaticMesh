@@ -55,10 +55,5 @@ namespace SampleAssets
 		{ "Wall9", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.2f, 0.2f, 0.2f), 0.2f},
 	};
 
-	const FLight SampleLights[] = 
-	{
-		//     Strength      fallOffStart    Direction            FallOffEnd   Position      SpotPowner LightIndex
-		{ { 0.8f, 0.8f, 0.8f },  1.f, { 0.244f, -0.502f, -0.83f }, 10.f,  {-8.1f, 13.7f, 10.7f}, 64.f,  0},
-	};
-	
+	const std::string SceneLightsFile = "SceneLights.bin";
 }

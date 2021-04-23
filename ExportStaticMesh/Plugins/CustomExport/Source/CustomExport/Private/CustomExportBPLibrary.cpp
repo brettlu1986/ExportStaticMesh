@@ -7,6 +7,7 @@
 #include "Serialization/JsonSerializer.h"
 #include "Policies/PrettyJsonPrintPolicy.h"
 #include "Internationalization/Internationalization.h"
+#include "Components/DirectionalLightComponent.h"
 #include "JsonObjectConverter.h"
 #include "Misc/MessageDialog.h"
 
@@ -332,3 +333,58 @@ void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component, FCa
 }
 
 
+void UCustomExportBPLibrary::ExportDirectionLight(const TArray<ADirectionalLight*> DirectionLights, FLightData DataOut, FString FileName)
+{
+	for (ADirectionalLight* DirectionLight : DirectionLights)
+	{
+		const FVector& LightLocation = DirectionLight->GetActorLocation();
+		const FRotator& LightRot = DirectionLight->GetActorRotation();
+		FVector LightDirection = LightRot.Vector();
+		UDirectionalLightComponent* DirectionalLightComponent = DirectionLight->GetComponent();
+		float Intensity = DirectionalLightComponent->Intensity * 0.1f;
+		FVector Strength = FVector(Intensity, Intensity, Intensity);
+
+		FDirectionLightData Light = { Strength, LightDirection, LightLocation * POSITION_SCALE };
+		DataOut.DirectionLights.Add(Light);
+	}
+
+	//delete old files
+	FString LightFileName = FileName + ".json";
+	FString LightBinaryFileName = FileName + ".bin";
+	CheckFileExistAndDelete(LightFileName);
+	CheckFileExistAndDelete(LightBinaryFileName);
+
+	////save json
+	FString Json;
+	FJsonObjectConverter::UStructToJsonObjectString(DataOut, Json);
+	FString LightSaveFile = SavePath + LightFileName;
+	bool bSaveResult = FFileHelper::SaveStringToFile(Json, *LightSaveFile);
+	if (!bSaveResult)
+	{
+		ShowMessageDialog(FText::FromString(LightFileName), FText::FromString(Failed));
+	}
+
+	//save binary file
+	LightSaveFile = SavePath + LightBinaryFileName;
+	char* ResultName = TCHAR_TO_ANSI(*LightSaveFile);
+	ofstream Wf(ResultName, ios::out | ios::binary);
+	if (!Wf)
+	{
+		ShowMessageDialog(FText::FromString(LightBinaryFileName), FText::FromString(Failed));
+		return;
+	}
+
+	uint32  DirectionLightSize = DataOut.DirectionLights.Num();
+	Wf.write((char*)&DirectionLightSize, sizeof(uint32));
+	Wf.write((char*)DataOut.DirectionLights.GetData(), sizeof(FDirectionLightData) * DirectionLightSize);
+
+	Wf.close();
+	if (!Wf.good())
+	{
+		ShowMessageDialog(FText::FromString(LightBinaryFileName), FText::FromString(Failed));
+		return;
+	}
+
+	ShowMessageDialog(FText::FromString(LightFileName + " " + LightBinaryFileName), FText::FromString(Success));
+
+}

@@ -53,6 +53,7 @@ public:
 	{
 		return SceneLights[LightIndex];
 	}
+
 private: 
 	std::vector<FMesh*> Meshes;
 	std::vector<FLight*> SceneLights;

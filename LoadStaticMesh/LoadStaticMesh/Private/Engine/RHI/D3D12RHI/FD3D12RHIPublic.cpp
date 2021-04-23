@@ -730,7 +730,7 @@ void FD3D12DynamicRHI::UpdateScenePassConstants(FScene* RenderScene)
 
 	XMFLOAT3 LightUp = {0, 0, 1};
 	XMMATRIX LightView = XMMatrixLookToLH(XMLoadFloat3(&Light->Position), XMLoadFloat3(&Light->Direction), XMLoadFloat3(&LightUp));
-	XMMATRIX LightProj = XMMatrixOrthographicLH((float)100, (float)100, 1.f, 50.f);
+	XMMATRIX LightProj = XMMatrixOrthographicLH((float)50, (float)50, 1.f, 50.f);
 	XMMATRIX LightSpaceMatrix = LightView * LightProj;
 
 	XMStoreFloat4x4(&PassConstant.LightSpaceMatrix, XMMatrixTranspose(LightSpaceMatrix));

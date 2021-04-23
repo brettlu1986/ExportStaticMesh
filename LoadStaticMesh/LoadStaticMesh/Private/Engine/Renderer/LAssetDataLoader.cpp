@@ -128,6 +128,32 @@ void LAssetDataLoader::LoadCameraDataFromFile(std::string FileName, LCamera& Cam
 	}
 }
 
+void LAssetDataLoader::LoadSceneLights(std::string FileName, FScene* Scene)
+{
+	std::string FName = GetSaveDirectory() + FileName;
+	ifstream Rf(FName, ios::out | ios::binary);
+	if (!Rf) {
+		return;
+	}
+
+	UINT DirectionLightSize;
+	Rf.read((char*)&DirectionLightSize, sizeof(UINT));
+	
+	std::vector<DirectionLightData> DLights;
+	DLights.resize(DirectionLightSize);
+	Rf.read((char*)DLights.data(), DirectionLightSize * sizeof(DirectionLightData));
+
+	for(UINT i = 0; i < DirectionLightSize; i++)
+	{
+		FLight* Light = new FLight();
+		Light->Direction = DLights[i].Direction;
+		Light->Position = DLights[i].Position;
+		Light->Strength = DLights[i].Strength;
+		Light->LightIndex = i;
+		Scene->AddLightToScene(Light);
+	}
+}
+
 
 void LAssetDataLoader::LoadSampleScene(FScene* Scene)
 {
@@ -141,12 +167,7 @@ void LAssetDataLoader::LoadSampleScene(FScene* Scene)
 		Scene->AddMeshToScene(Mesh);
 	}
 
-	FLight* Light = new FLight();
-	Light->Direction = SampleAssets::SampleLights[0].Direction;
-	Light->Position = SampleAssets::SampleLights[0].Position;
-	Light->Strength = SampleAssets::SampleLights[0].Strength;
-	Light->LightIndex = 0;
-	Scene->AddLightToScene(Light);
+	LoadSceneLights(SampleAssets::SceneLightsFile, Scene);
 
 	LCamera& Camera = Scene->GetCamera();
 	LoadCameraDataFromFile(SampleAssets::CameraBin, Camera);

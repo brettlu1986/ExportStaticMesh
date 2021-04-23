@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include <vector>
 #include "Engine/StaticMeshActor.h"
+#include "Engine/DirectionalLight.h"
 #include "CustomExportBPLibrary.generated.h"
 
 /* 
@@ -160,6 +161,30 @@ struct FCameraData
 	float Aspect;
 };
 
+USTRUCT(BlueprintType)
+struct FDirectionLightData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FVector Strength;
+
+	UPROPERTY()
+	FVector Direction;
+
+	UPROPERTY()
+	FVector Position;
+};
+
+USTRUCT(BlueprintType)
+struct FLightData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<FDirectionLightData> DirectionLights;
+};
+
 #pragma pack(pop)
 
 UCLASS()
@@ -176,6 +201,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Static Mesh Actor"), Category = "CustomExportBPLibrary")
 	static void ExportStaticMeshActor(const AStaticMeshActor* MeshActor, FMeshDataJson MeshDataJson, FMeshDataBinary MeshDataBinary, FString FileName);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Direction Light"), Category = "CustomExportBPLibrary")
+	static void ExportDirectionLight(const TArray<ADirectionalLight*> DirectionLights, FLightData DataOut, FString FileName);
 
 
 	static void ExportStaticMesh(const UStaticMesh* Mesh, FMeshDataJson& MeshDataJson, FMeshDataBinary& MeshDataBinary, FString& FileName);
