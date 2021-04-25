@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "LDefine.h"
 #include "FScene.h"
+#include "LGameTimer.h"
 
 class ApplicationMain
 {
@@ -13,7 +14,7 @@ public:
 	bool Initialize(UINT Width, UINT Height, std::string WndName);
 	void Run();
 
-	void Update();
+	void Update(float DeltaTime);
 	void Destroy();
 	
 	static ApplicationMain* Get() { return Application; }
@@ -28,4 +29,5 @@ private:
 
 private: 
 	FScene Scene;
+	LGameTimer* Timer;
 };

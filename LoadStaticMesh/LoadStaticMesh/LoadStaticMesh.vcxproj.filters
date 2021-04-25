@@ -156,6 +156,9 @@
     <ClCompile Include="Private\Engine\Thread\FTaskThread.cpp">
       <Filter>Source Files\Engine\Thread</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Engine\Common\LGameTimer.cpp">
+      <Filter>Source Files\Engine\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds">
@@ -298,6 +301,9 @@
       <Filter>Header Files\Engine\Thread</Filter>
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\LLog.h">
+      <Filter>Header Files\Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\LGameTimer.h">
       <Filter>Header Files\Engine\Common</Filter>
     </ClInclude>
   </ItemGroup>

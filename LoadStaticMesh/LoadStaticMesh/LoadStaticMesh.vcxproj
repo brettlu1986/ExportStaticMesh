@@ -156,6 +156,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Private\ApplicationMain.cpp" />
     <ClCompile Include="Private\Engine\Common\LDevice.cpp" />
+    <ClCompile Include="Private\Engine\Common\LGameTimer.cpp" />
     <ClCompile Include="Private\Engine\Common\LInput.cpp" />
     <ClCompile Include="Private\Engine\Common\LCamera.cpp" />
     <ClCompile Include="Private\Engine\Common\Windows\LDeviceWindows.cpp" />
@@ -349,6 +350,7 @@
     <ClInclude Include="Public\Engine\Common\Event\LEvent.h" />
     <ClInclude Include="Public\Engine\Common\LDefine.h" />
     <ClInclude Include="Public\Engine\Common\LDevice.h" />
+    <ClInclude Include="Public\Engine\Common\LGameTimer.h" />
     <ClInclude Include="Public\Engine\Common\LInput.h" />
     <ClInclude Include="Public\Engine\Common\LCamera.h" />
     <ClInclude Include="Public\Engine\Common\LLog.h" />

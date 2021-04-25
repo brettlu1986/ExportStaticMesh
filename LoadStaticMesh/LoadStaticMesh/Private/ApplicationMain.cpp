@@ -21,6 +21,7 @@ ApplicationMain::~ApplicationMain()
 
 bool ApplicationMain::Initialize(UINT Width, UINT Height, std::string WndName)
 {
+	Timer = LGameTimer::Get();
 	LEngineDesc Desc = 
 	{
 		Width, 
@@ -46,7 +47,7 @@ void ApplicationMain::OnSceneInit()
 	FRenderThread::Get()->InitRenderThreadScene(&Scene);
 }
 
-void ApplicationMain::Update()
+void ApplicationMain::Update(float DeltaTime)
 {
 	//while(FRenderThread::Get()->ShouldWaitRender())
 	//{
@@ -59,14 +60,18 @@ void ApplicationMain::Update()
 
 void ApplicationMain::Run()
 {
+	
 	while (LEngine::GetEngine()->Run())
 	{
-		Update();
+		Timer->Tick();
+		Timer->Reset();
+		Update(Timer->GetDeltaTime());
 	}
 }
 
 void ApplicationMain::Destroy()
 {
+	Timer->Release();
 	LEngine::GetEngine()->Destroy();
 }
 
