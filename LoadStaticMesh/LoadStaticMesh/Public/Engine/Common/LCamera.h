@@ -48,33 +48,25 @@ private:
 
 	bool IsKeyDown(char Key);
 	bool IsKeyUp(char Key);
-	void UpdateFocusPosition(XMVECTOR UpdateVec);
-	void UpdateMoveOffset();
 
 	static const UINT KEY_SIZE = 256;
 	
 	FCameraData CameraDatas;
-	//use for reset
-	XMFLOAT3 InitialPosition;
 	XMFLOAT3 Position;
 	float Yaw;
 	float Pitch;
 	//we can use either look direction or focus position to calculate view matrix
+	float ArmLength;
 	XMFLOAT3 LookDirection;
 	XMFLOAT3 FocusPosition;
-
 	XMFLOAT3 UpDirection;
 
 	float Fov;
 	float AspectRatio;
 
-	//use to rotate camera
-	float Alpha;// Spherical coordinate, direction vector up angle to y
-	float Theta;// Spherical coordinate, direction shadow vector angle in x-z plain to x
-	float Radius;
-
 	POINT LastMousePoint;
 	bool Keys[KEY_SIZE];
 	XMVECTOR MoveOffset;
+	bool bUpdateDirty;
 
 };

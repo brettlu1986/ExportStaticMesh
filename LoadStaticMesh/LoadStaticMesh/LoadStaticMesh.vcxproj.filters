@@ -297,6 +297,9 @@
     <ClInclude Include="Public\Engine\Thread\FTaskThread.h">
       <Filter>Header Files\Engine\Thread</Filter>
     </ClInclude>
+    <ClInclude Include="Public\Engine\Common\LLog.h">
+      <Filter>Header Files\Engine\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resource\ShaderDef.hlsli">

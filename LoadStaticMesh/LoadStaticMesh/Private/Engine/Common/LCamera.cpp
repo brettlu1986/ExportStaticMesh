@@ -8,27 +8,28 @@
 #include "LEngine.h"
 #include "LDeviceWindows.h"
 #include "FRenderThread.h"
+#include "LLog.h"
 
 using namespace DirectX;
 using namespace std;
 
 static const float DirectionMoveOffset = 0.15f;
+static const float MAX_PITCH = XMConvertToRadians(89.99f);
+static const float MIN_PITCH = XMConvertToRadians(-89.99f);
 
 LCamera::LCamera()
 	:Position(0, 0, 0)
-	,InitialPosition(0,0,0)
 	,Yaw(0)
 	,Pitch(0.f)
+	,ArmLength(0.f)
 	,LookDirection(0, 0, 1)
 	,FocusPosition(0, 0, 1)
 	,UpDirection(0, 0, 1)
 	,Fov(XM_PI/2)
 	,AspectRatio(1.777f)
 	,CameraDatas(FCameraData())
-	,Radius(1.f)
-	,Alpha(0.f)
-	,Theta(0.f)
 	,LastMousePoint({ 0, 0 })
+	,bUpdateDirty(false)
 {
 	for (UINT i = 0; i < KEY_SIZE; i++)
 	{
@@ -43,8 +44,7 @@ LCamera::~LCamera()
 
 void LCamera::Init()
 {
-	InitialPosition = CameraDatas.Location;
-	Position = InitialPosition;
+	Position = CameraDatas.Location;
 
 	//{x, y, z} == {pitch , yaw, roll}
 	Pitch = XMConvertToRadians(CameraDatas.Rotator.x);
@@ -59,17 +59,8 @@ void LCamera::Init()
 	LookDirection.x = R * cosf(Yaw);
 
 	FocusPosition = CameraDatas.Target;
-
-	//change Cartesian coordinate to Spherical coordinate, so it will be easy to use mouse rotate camera
 	XMVECTOR Target = XMVector3Length(XMVectorSet(Position.x - FocusPosition.x, Position.y - FocusPosition.y, Position.z - FocusPosition.z, 1.f));
-	Radius = XMVectorGetX(Target);
-	// Spherical coordinate, direction vector up angle to z
-	Alpha = acosf( (Position.z - FocusPosition.z) / Radius);
-	// Spherical coordinate, direction shadow vector angle in x-y plain to y
-	Theta = atanf( (Position.x - FocusPosition.x) / (Position.y - FocusPosition.y));
-	//Theta range is [0, 2Pi]
-	if(Theta < 0.f)
-		Theta += XM_PI * 2;
+	ArmLength = XMVectorGetX(Target);
 
 	OnResize();
 }
@@ -81,62 +72,45 @@ void LCamera::OnResize()
 	AspectRatio = static_cast<float>(DeviceWindows->GetWidth()) / DeviceWindows->GetHeight();
 }
 
-void LCamera::UpdateFocusPosition(XMVECTOR UpdateVec)
+void LCamera::Update()
 {
-	FocusPosition.x = XMVectorGetX(UpdateVec);
-	FocusPosition.y = XMVectorGetY(UpdateVec);
-	FocusPosition.z = XMVectorGetZ(UpdateVec);
-}
+	bUpdateDirty = false;
+	MoveOffset = XMVectorSet(0, 0, 0, 1.f);
 
-void LCamera::UpdateMoveOffset()
-{
-	XMVECTOR MoveDirection;
 	if (IsKeyDown('W') || IsKeyDown('S'))
 	{
-		MoveDirection = XMVectorSubtract(XMLoadFloat3(&FocusPosition), XMLoadFloat3(&Position));
-		MoveDirection = XMVector3Normalize(MoveDirection);
-		MoveOffset = DirectionMoveOffset * MoveDirection;
+		XMVECTOR Offset = DirectionMoveOffset * XMLoadFloat3(&LookDirection);
+		if (IsKeyDown('S'))
+			Offset = -Offset;
+		MoveOffset += Offset;
+		bUpdateDirty = true;
 	}
 
 	if (IsKeyDown('A') || IsKeyDown('D'))
 	{
-		MoveDirection = XMVectorSubtract(XMLoadFloat3(&FocusPosition), XMLoadFloat3(&Position));
-		MoveDirection = XMVector3Normalize(MoveDirection);
-		MoveDirection = XMVector3Cross(MoveDirection, XMLoadFloat3(&UpDirection));
-		MoveDirection = XMVector3Normalize(MoveDirection); //left dir
-		MoveOffset = DirectionMoveOffset * MoveDirection;
-		XMVectorSetZ(MoveOffset, 0.f);
+		XMVECTOR MoveDirection = XMVector3Cross(XMLoadFloat3(&LookDirection), XMLoadFloat3(&UpDirection));
+		XMVECTOR Offset = DirectionMoveOffset * MoveDirection;
+		if (IsKeyDown('D'))
+			Offset = -Offset;
+		MoveOffset += Offset;
+		bUpdateDirty = true;
 	}
 
 	if (IsKeyDown('Q') || IsKeyDown('E'))
 	{
-		MoveDirection = XMLoadFloat3(&UpDirection);
-		MoveOffset = DirectionMoveOffset * MoveDirection;
-	}
-}
-
-void LCamera::Update()
-{
-	bool bDirty = false;
-
-	XMVECTOR CurFocusLoc;
-	if(IsKeyDown('W') || IsKeyDown('A') || IsKeyDown('E'))
-	{
-		CurFocusLoc = XMVectorAdd(XMLoadFloat3(&FocusPosition), MoveOffset);
-		UpdateFocusPosition(CurFocusLoc);
-		bDirty = true;
+		XMVECTOR Offset = DirectionMoveOffset * XMLoadFloat3(&UpDirection);
+		if (IsKeyDown('Q'))
+			Offset = -Offset;
+		MoveOffset += Offset;
+		bUpdateDirty = true;
 	}
 
-	if(IsKeyDown('S') || IsKeyDown('D') || IsKeyDown('Q'))
+	if (bUpdateDirty)
 	{
-		CurFocusLoc = XMVectorSubtract(XMLoadFloat3(&FocusPosition), MoveOffset);
-		UpdateFocusPosition(CurFocusLoc);
-		bDirty = true;
-	}
-
-
-	if(bDirty)
-	{
+		XMVECTOR FocusVec = XMVectorAdd(XMLoadFloat3(&FocusPosition), MoveOffset);
+		FocusPosition.x = XMVectorGetX(FocusVec);
+		FocusPosition.y = XMVectorGetY(FocusVec);
+		FocusPosition.z = XMVectorGetZ(FocusVec);
 		CalculateLocation();
 	}
 }
@@ -153,9 +127,9 @@ void LCamera::ProcessCameraMouseInput(FInputResult& MouseInput)
 		float dx = XMConvertToRadians(0.25f * static_cast<float>(MouseInput.X - LastMousePoint.x));
 		float dy = XMConvertToRadians(0.25f * static_cast<float>(MouseInput.Y - LastMousePoint.y));
 
-		Alpha -= dy;
-		Theta -= dx;
-		Alpha = MathHelper::Clamp(Alpha, 0.1f, MathHelper::Pi - 0.1f);
+		Pitch -= dy;
+		Yaw += dx;
+		Pitch = MathHelper::Clamp(Pitch, MIN_PITCH, MAX_PITCH);
 		CalculateLocation();
 
 		LastMousePoint.x = MouseInput.X;
@@ -165,10 +139,9 @@ void LCamera::ProcessCameraMouseInput(FInputResult& MouseInput)
 
 void LCamera::ProcessCameraKeyInput(FInputResult& KeyInput)
 {
-	if(KeyInput.TouchType == E_TOUCH_TYPE::KEY_DOWN)
+	if (KeyInput.TouchType == E_TOUCH_TYPE::KEY_DOWN)
 	{
 		Keys[KeyInput.KeyMapType] = true;
-		UpdateMoveOffset();
 	}
 	else if (KeyInput.TouchType == E_TOUCH_TYPE::KEY_UP)
 	{
@@ -179,22 +152,25 @@ void LCamera::ProcessCameraKeyInput(FInputResult& KeyInput)
 bool LCamera::IsKeyDown(char InKey)
 {
 	UINT8 Key = static_cast<UINT8>(InKey);
-	return Keys[Key];
+	return Keys[Key] == true;
 }
 
 bool LCamera::IsKeyUp(char InKey)
 {
 	UINT8 Key = static_cast<UINT8>(InKey);
-	return !Keys[Key];
+	return Keys[Key] == false;
 }
 
 void LCamera::CalculateLocation()
 {
-	XMVECTOR V = DirectX::XMVectorSet(Radius * sinf(Alpha) * sinf(Theta),
-		Radius * sinf(Alpha) * cosf(Theta),
-		Radius * cosf(Alpha),
-		1.f);
-	V += XMLoadFloat3(&FocusPosition);
+	float R = cosf(Pitch);
+	LookDirection.y = R * sinf(Yaw);
+	LookDirection.z = sinf(Pitch);
+	LookDirection.x = R * cosf(Yaw);
+
+	XMVECTOR Offset =  -ArmLength * XMLoadFloat3(&LookDirection);
+	XMVECTOR V = XMVectorAdd(XMLoadFloat3(&FocusPosition), Offset);
+
 	Position.x = XMVectorGetX(V);
 	Position.y = XMVectorGetY(V);
 	Position.z = XMVectorGetZ(V);

@@ -351,6 +351,7 @@
     <ClInclude Include="Public\Engine\Common\LDevice.h" />
     <ClInclude Include="Public\Engine\Common\LInput.h" />
     <ClInclude Include="Public\Engine\Common\LCamera.h" />
+    <ClInclude Include="Public\Engine\Common\LLog.h" />
     <ClInclude Include="Public\Engine\Common\LRingBuffer.h" />
     <ClInclude Include="Public\Engine\Common\Windows\LDeviceWindows.h" />
     <ClInclude Include="Public\Engine\Common\Windows\LInputWindows.h" />
