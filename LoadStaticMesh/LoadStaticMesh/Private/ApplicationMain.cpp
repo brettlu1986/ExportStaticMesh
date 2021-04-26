@@ -53,7 +53,7 @@ void ApplicationMain::Update(float DeltaTime)
 	//{
 	//	continue;
 	//}
-	Scene.Update();
+	Scene.Update(DeltaTime);
 	//FRenderThread::Get()->NotifyRenderThreadExcute();
 	FRenderThread::Get()->WaitForRenderThread();
 }

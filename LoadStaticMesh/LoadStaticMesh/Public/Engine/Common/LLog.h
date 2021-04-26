@@ -7,7 +7,7 @@ class LLog
 
 public:
 
-	static void LogA(const char* strOutputString, ...)
+	static void Log(const char* strOutputString, ...)
 	{
 #if defined(_DEBUG)
 		va_list vlArgs = NULL;
@@ -21,7 +21,7 @@ public:
 #endif
 	}
 
-	static void LogW(const wchar_t* strOutputString, ...)
+	static void Log(const wchar_t* strOutputString, ...)
 	{
 #if defined(_DEBUG)
 

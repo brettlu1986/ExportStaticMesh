@@ -20,7 +20,7 @@ public:
 
 	void ProcessCameraMouseInput(FInputResult& MouseInput);
 	void ProcessCameraKeyInput(FInputResult& KeyInput);
-	void Update();
+	void Update(float DeltaTime);
 
 	const XMFLOAT3& GetViewTargetLocation() {
 		return CameraDatas.Target;
@@ -60,6 +60,7 @@ private:
 	XMFLOAT3 LookDirection;
 	XMFLOAT3 FocusPosition;
 	XMFLOAT3 UpDirection;
+	XMVECTOR RightDirection;
 
 	float Fov;
 	float AspectRatio;
@@ -67,6 +68,7 @@ private:
 	POINT LastMousePoint;
 	bool Keys[KEY_SIZE];
 	XMVECTOR MoveOffset;
+
 	bool bUpdateDirty;
 
 };

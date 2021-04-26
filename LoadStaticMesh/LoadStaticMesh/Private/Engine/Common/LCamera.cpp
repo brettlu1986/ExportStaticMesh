@@ -72,9 +72,8 @@ void LCamera::OnResize()
 	AspectRatio = static_cast<float>(DeviceWindows->GetWidth()) / DeviceWindows->GetHeight();
 }
 
-void LCamera::Update()
+void LCamera::Update(float DeltaTime)
 {
-	bUpdateDirty = false;
 	MoveOffset = XMVectorSet(0, 0, 0, 1.f);
 
 	if (IsKeyDown('W') || IsKeyDown('S'))
@@ -88,8 +87,7 @@ void LCamera::Update()
 
 	if (IsKeyDown('A') || IsKeyDown('D'))
 	{
-		XMVECTOR MoveDirection = XMVector3Cross(XMLoadFloat3(&LookDirection), XMLoadFloat3(&UpDirection));
-		XMVECTOR Offset = DirectionMoveOffset * MoveDirection;
+		XMVECTOR Offset = DirectionMoveOffset * RightDirection;
 		if (IsKeyDown('D'))
 			Offset = -Offset;
 		MoveOffset += Offset;
@@ -112,29 +110,29 @@ void LCamera::Update()
 		FocusPosition.y = XMVectorGetY(FocusVec);
 		FocusPosition.z = XMVectorGetZ(FocusVec);
 		CalculateLocation();
+		bUpdateDirty = false;
 	}
 }
 
 void LCamera::ProcessCameraMouseInput(FInputResult& MouseInput)
 {
-	if (MouseInput.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_DOWN)
+	if (MouseInput.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_MOVE)
 	{
-		LastMousePoint.x = MouseInput.X;
-		LastMousePoint.y = MouseInput.Y;
-	}
-	else if (MouseInput.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_MOVE)
-	{
-		float dx = XMConvertToRadians(0.25f * static_cast<float>(MouseInput.X - LastMousePoint.x));
-		float dy = XMConvertToRadians(0.25f * static_cast<float>(MouseInput.Y - LastMousePoint.y));
-
+		float dx = XMConvertToRadians(0.25f * static_cast<float>(MouseInput.X - LastMousePoint.x)); //dx
+		float dy = XMConvertToRadians(0.25f * static_cast<float>(MouseInput.Y - LastMousePoint.y)); //dy
+		
 		Pitch -= dy;
 		Yaw += dx;
+
 		Pitch = MathHelper::Clamp(Pitch, MIN_PITCH, MAX_PITCH);
-		CalculateLocation();
+		bUpdateDirty = true;
 
 		LastMousePoint.x = MouseInput.X;
 		LastMousePoint.y = MouseInput.Y;
 	}
+
+	LastMousePoint.x = MouseInput.X;
+	LastMousePoint.y = MouseInput.Y;
 }
 
 void LCamera::ProcessCameraKeyInput(FInputResult& KeyInput)
@@ -167,6 +165,8 @@ void LCamera::CalculateLocation()
 	LookDirection.y = R * sinf(Yaw);
 	LookDirection.z = sinf(Pitch);
 	LookDirection.x = R * cosf(Yaw);
+	
+	RightDirection = XMVector3Cross(XMLoadFloat3(&LookDirection), XMLoadFloat3(&UpDirection));
 
 	XMVECTOR Offset =  -ArmLength * XMLoadFloat3(&LookDirection);
 	XMVECTOR V = XMVectorAdd(XMLoadFloat3(&FocusPosition), Offset);

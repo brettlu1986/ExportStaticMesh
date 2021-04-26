@@ -65,9 +65,9 @@ void FScene::InitSceneRenderResource()
 	}
 }
 
-void FScene::Update()
+void FScene::Update(float DeltaTime)
 {
-	Camera.Update();
+	Camera.Update(DeltaTime);
 
 	FLight* Light = GetLight(0);
 	if (Light)

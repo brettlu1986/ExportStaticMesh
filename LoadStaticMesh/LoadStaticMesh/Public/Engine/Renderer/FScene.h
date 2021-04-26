@@ -16,7 +16,7 @@ public:
 
 	void InitSceneRenderResource();
 
-	void Update();
+	void Update(float DeltaTime);
 	void Destroy();
 
 	UINT GetMeshCount()
