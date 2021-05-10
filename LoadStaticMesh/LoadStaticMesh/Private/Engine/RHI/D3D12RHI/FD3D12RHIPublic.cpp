@@ -372,9 +372,12 @@ void FD3D12DynamicRHI::BeginRenderScene()
 
 	ID3D12DescriptorHeap* ppHeaps[] = { CbvSrvHeap.Get(), SamplerHeap.Get() };
 	CommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+
+	const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	CommandList->ResourceBarrier(1, &Rb1);
 }
 
-void FD3D12DynamicRHI::DrawSceneToShaderMap(FScene* RenderScene)
+void FD3D12DynamicRHI::DrawSceneToShadowMap(FScene* RenderScene)
 {
 	CommandList->SetGraphicsRootSignature(PiplelineStateObjCache["ShaderPass"]->RootSignature.Get());
 	CommandList->SetPipelineState(PiplelineStateObjCache["ShaderPass"]->PipelineState.Get());
@@ -384,9 +387,9 @@ void FD3D12DynamicRHI::DrawSceneToShaderMap(FScene* RenderScene)
 	D3D12_RECT Rect = ShaderMap->ScissorRect();
 	CommandList->RSSetScissorRects(1, &Rect);
 
-	const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(ShaderMap->Resource(),
-		D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-	CommandList->ResourceBarrier(1, &Rb1);
+	//const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(ShaderMap->Resource(),
+	//	D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+	//CommandList->ResourceBarrier(1, &Rb1);
 
 	CommandList->ClearDepthStencilView(ShaderMap->Dsv(),
 		D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
@@ -404,7 +407,7 @@ void FD3D12DynamicRHI::DrawSceneToShaderMap(FScene* RenderScene)
 
 	// Change back to GENERIC_READ so we can read the texture in a shader.
 	const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(ShaderMap->Resource(),
-		D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
+		D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	CommandList->ResourceBarrier(1, &Rb2);
 }
 
@@ -412,9 +415,6 @@ void FD3D12DynamicRHI::RenderSceneObjects(FScene* Scene)
 {	
 	CommandList->RSSetViewports(1, &(ViewPort));
 	CommandList->RSSetScissorRects(1, &(ScissorRect));
-
-	const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(RenderTargets[FrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	CommandList->ResourceBarrier(1, &Rb1);
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE RtvHandle(RtvHeap->GetCPUDescriptorHandleForHeapStart(), FrameIndex, RtvDescriptorSize);
 	float Color[4] = { ClearColor.R, ClearColor.G, ClearColor.B, ClearColor.A };

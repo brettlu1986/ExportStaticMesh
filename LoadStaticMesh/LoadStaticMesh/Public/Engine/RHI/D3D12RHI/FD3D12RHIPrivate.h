@@ -39,7 +39,7 @@ public:
 	virtual void CreateSceneResources(FScene* RenderScene) override;
 	virtual void RenderSceneObjects(FScene* Scene) override;
 	virtual void EndCreateSceneResource() override;
-	virtual void DrawSceneToShaderMap(FScene* Scene) override;
+	virtual void DrawSceneToShadowMap(FScene* Scene) override;
 	
 private:
 	void UpdateSceneMtConstants(FScene* RenderScene);

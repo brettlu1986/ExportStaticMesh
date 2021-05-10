@@ -15,7 +15,7 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 {
 	GRHI->BeginRenderScene();
 
-	GRHI->DrawSceneToShaderMap(RenderScene);
+	GRHI->DrawSceneToShadowMap(RenderScene);
 
 	GRHI->RenderSceneObjects(RenderScene);
 	

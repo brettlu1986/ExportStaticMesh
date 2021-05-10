@@ -185,6 +185,21 @@ struct FLightData
 	TArray<FDirectionLightData> DirectionLights;
 };
 
+USTRUCT(BlueprintType)
+struct FSkeletalAnimData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	int32 NumFrames;
+
+	UPROPERTY()
+	TArray<struct FRawAnimSequenceTrack> RawAnimationData;
+
+	UPROPERTY()
+	TArray<struct FTrackToSkeletonMap> TrackToSkeletonMapTable;
+};
+
 #pragma pack(pop)
 
 UCLASS()
@@ -194,18 +209,24 @@ class UCustomExportBPLibrary : public UBlueprintFunctionLibrary
 
 public:
 	
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Show Message"), Category = "CustomExportBPLibrary")
+	static void ShowMessageDialog(const FText Target, const FText Result);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Camera"), Category = "CustomExportBPLibrary")
-	static void ExportCamera(const UCameraComponent* Component, FCameraData CameraData, FString FileName);
-
+	static bool ExportCamera(const UCameraComponent* Component, FCameraData CameraData, FString FileName);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Static Mesh Actor"), Category = "CustomExportBPLibrary")
-	static void ExportStaticMeshActor(const AStaticMeshActor* MeshActor, FMeshDataJson MeshDataJson, FMeshDataBinary MeshDataBinary, FString FileName);
+	static bool ExportStaticMeshActor(const AStaticMeshActor* MeshActor, FMeshDataJson MeshDataJson, FMeshDataBinary MeshDataBinary, FString FileName);
+	static bool ExportStaticMesh(const UStaticMesh* Mesh, FMeshDataJson& MeshDataJson, FMeshDataBinary& MeshDataBinary, FString& FileName);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Direction Light"), Category = "CustomExportBPLibrary")
-	static void ExportDirectionLight(const TArray<ADirectionalLight*> DirectionLights, FLightData DataOut, FString FileName);
+	static bool ExportDirectionLight(const TArray<ADirectionalLight*> DirectionLights, FLightData DataOut, FString FileName);
 
 
-	static void ExportStaticMesh(const UStaticMesh* Mesh, FMeshDataJson& MeshDataJson, FMeshDataBinary& MeshDataBinary, FString& FileName);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Skeletal AnimSequence"), Category = "CustomExportBPLibrary")
+	static bool ExportSkeletalMeshAnim(const UAnimSequence* Anim, FSkeletalAnimData DataOut, FString FileName);
 
+	/*UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Skeletal Mesh Actor"), Category = "CustomExportBPLibrary")
+	static bool ExportSkeletalMeshActor(const ACharacter* PlayerActor, const USkeletalMesh* Mesh, FSkeletalMeshDataJson MeshDataJson, FSkeletalMeshDataBinary MeshDataBinary, FString FileName);
+	static bool ExportSkeletalMesh(const USkeletalMesh* Mesh, FSkeletalMeshDataJson& MeshDataJson, FSkeletalMeshDataBinary& MeshDataBinary, FString& FileName);*/
 };

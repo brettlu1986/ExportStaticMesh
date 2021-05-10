@@ -10,6 +10,10 @@
 #include "Components/DirectionalLightComponent.h"
 #include "JsonObjectConverter.h"
 #include "Misc/MessageDialog.h"
+#include "Runtime/Core/Public/Templates/UnrealTemplate.h"
+#include "Runtime/Engine/Public/Rendering/SkeletalMeshRenderData.h"
+#include "Runtime/Engine/Classes/Engine/SkeletalMesh.h"
+#include "Runtime/Engine/Classes/GameFramework/Character.h"
 
 #include <iostream>
 #include <fstream>
@@ -31,14 +35,6 @@ UCustomExportBPLibrary::UCustomExportBPLibrary(const FObjectInitializer& ObjectI
 {
 
 }
-
-#define LOCTEXT_NAMESPACE "CustomExport"
-void ShowMessageDialog(const FText& Target, const FText& Result)
-{
-	const FText WarningMessage = FText::Format(LOCTEXT("CustomExport_Message", "{0} export {1}!"), Target, Result);
-	EAppReturnType::Type ReturnType = FMessageDialog::Open(EAppMsgType::Ok, WarningMessage);
-}
-#undef LOCTEXT_NAMESPACE
 
 void CheckFileExistAndDelete(const FString& FileName)
 {
@@ -140,7 +136,6 @@ bool SaveMeshJsonToFile(const FMeshDataJson& MeshJson, FString& FileName)
 	FJsonObjectConverter::UStructToJsonObjectString(MeshJson, Json);
 	FString MeshSaveFile = SavePath + FileName;
 	return FFileHelper::SaveStringToFile(Json, *MeshSaveFile);
-	return true;
 }
 
 bool SaveMeshBinaryToFile(const FMeshDataBinary& MeshBinOut, const TArray<uint32>& Indices, const bool& bUseHalfInt32, FString& FileName)
@@ -185,11 +180,17 @@ bool SaveMeshBinaryToFile(const FMeshDataBinary& MeshBinOut, const TArray<uint32
 
 	Wf.close();
 	return Wf.good();
-
-	return true;
 }
 
-void UCustomExportBPLibrary::ExportStaticMeshActor(const AStaticMeshActor* MeshActor, FMeshDataJson MeshDataJsonOut, FMeshDataBinary MeshDataBinaryOut, FString FileBaseName)
+#define LOCTEXT_NAMESPACE "CustomExport"
+void UCustomExportBPLibrary::ShowMessageDialog(const FText Target, const FText Result)
+{
+	const FText WarningMessage = FText::Format(LOCTEXT("CustomExport_Message", "{0} export {1}!"), Target, Result);
+	EAppReturnType::Type ReturnType = FMessageDialog::Open(EAppMsgType::Ok, WarningMessage);
+}
+#undef LOCTEXT_NAMESPACE
+
+bool UCustomExportBPLibrary::ExportStaticMeshActor(const AStaticMeshActor* MeshActor, FMeshDataJson MeshDataJsonOut, FMeshDataBinary MeshDataBinaryOut, FString FileBaseName)
 {
 	UStaticMeshComponent* MeshComponent = MeshActor->GetStaticMeshComponent();
 	FVector MeshLocation = MeshActor->GetActorLocation();
@@ -204,10 +205,10 @@ void UCustomExportBPLibrary::ExportStaticMeshActor(const AStaticMeshActor* MeshA
 	MeshDataBinaryOut.WorldLocation = MeshLocation;
 	MeshDataBinaryOut.WorldRotation = MeshRotation;
 	MeshDataBinaryOut.WorldScale = MeshScale;
-	ExportStaticMesh(MeshComponent->GetStaticMesh(), MeshDataJsonOut, MeshDataBinaryOut, FileBaseName);
+	return ExportStaticMesh(MeshComponent->GetStaticMesh(), MeshDataJsonOut, MeshDataBinaryOut, FileBaseName);
 }
 
-void UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh, FMeshDataJson& MeshDataJsonOut, FMeshDataBinary& MeshDataBinaryOut, FString& FileBaseName)
+bool UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh, FMeshDataJson& MeshDataJsonOut, FMeshDataBinary& MeshDataBinaryOut, FString& FileBaseName)
 {
 	const auto& LODResources = Mesh->RenderData->LODResources;
 	const FStaticMeshLODResources& StaticMeshResource = LODResources[LOD_LEVEL];
@@ -263,19 +264,17 @@ void UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh, FMeshData
 
 	if (!SaveMeshJsonToFile(MeshDataJsonOut, MeshFile))
 	{
-		ShowMessageDialog(FText::FromString(MeshFile), FText::FromString(Failed));
-		return;
+		return false;
 	}
 
 	if(!SaveMeshBinaryToFile(MeshDataBinaryOut, MeshDataJsonOut.Indices, bUseHalfInt, MeshBinFile))
 	{
-		ShowMessageDialog(FText::FromString(MeshBinFile), FText::FromString(Failed));
-		return;
+		return false;
 	}
-	ShowMessageDialog(FText::FromString(MeshFile + " " + MeshBinFile), FText::FromString(Success));
+	return true;
 }
 
-void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component, FCameraData CameraDataOut, FString FileName)
+bool UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component, FCameraData CameraDataOut, FString FileName)
 {
 	const FVector& CameraLocation = Component->GetComponentLocation();
 	const FRotator& CameraRot = Component->GetComponentRotation();
@@ -289,12 +288,11 @@ void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component, FCa
 	//in ue4: ue4x = Forward ue4y = Right ue4z = Up
 	//in direct x: use left hand coordinate, x = Right, y = Up, z = Forward
 	//we have the conversion: x = ue4y, y = ue4z, z = ue4x, Yaw Pitch Roll stay the same
-	FCameraData CameraData = {};
-	CameraData.Location = CameraLocation * POSITION_SCALE;//{ CameraLocation.Y, CameraLocation.Z, CameraLocation.X } ;
-	CameraData.Target = Target * POSITION_SCALE;//{ Target.Y, Target.Z, Target.X };
-	CameraData.Rotator = CameraRot;
-	CameraData.Fov = FOV;
-	CameraData.Aspect = AspectRatio;
+	CameraDataOut.Location = CameraLocation * POSITION_SCALE;//{ CameraLocation.Y, CameraLocation.Z, CameraLocation.X } ;
+	CameraDataOut.Target = Target * POSITION_SCALE;//{ Target.Y, Target.Z, Target.X };
+	CameraDataOut.Rotator = CameraRot;
+	CameraDataOut.Fov = FOV;
+	CameraDataOut.Aspect = AspectRatio;
 
 	//delete old files
 	FString CameraFileName = FileName + ".json";
@@ -304,12 +302,12 @@ void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component, FCa
 
 	//save json
 	FString Json;
-	FJsonObjectConverter::UStructToJsonObjectString(CameraData, Json);
+	FJsonObjectConverter::UStructToJsonObjectString(CameraDataOut, Json);
 	FString CameraSaveFile = SavePath + CameraFileName;
 	bool bSaveResult = FFileHelper::SaveStringToFile(Json, *CameraSaveFile);
 	if (!bSaveResult)
 	{
-		ShowMessageDialog(FText::FromString(CameraFileName), FText::FromString(Failed));
+		return false;
 	}
 
 	//save binary file
@@ -318,22 +316,18 @@ void UCustomExportBPLibrary::ExportCamera(const UCameraComponent* Component, FCa
 	ofstream Wf(ResultName, ios::out | ios::binary);
 	if (!Wf)
 	{
-		ShowMessageDialog(FText::FromString(CameraBinaryFileName), FText::FromString(Failed));
-		return;
+		return false;
 	}
-	Wf.write((char*)&CameraData, sizeof(FCameraData));
+	Wf.write((char*)&CameraDataOut, sizeof(FCameraData));
 	Wf.close();
 	if (!Wf.good())
 	{
-		ShowMessageDialog(FText::FromString(CameraBinaryFileName), FText::FromString(Failed));
-		return;
+		return false;
 	}
-
-	ShowMessageDialog(FText::FromString(CameraFileName + " " + CameraBinaryFileName), FText::FromString(Success));
+	return true;
 }
 
-
-void UCustomExportBPLibrary::ExportDirectionLight(const TArray<ADirectionalLight*> DirectionLights, FLightData DataOut, FString FileName)
+bool UCustomExportBPLibrary::ExportDirectionLight(const TArray<ADirectionalLight*> DirectionLights, FLightData DataOut, FString FileName)
 {
 	for (ADirectionalLight* DirectionLight : DirectionLights)
 	{
@@ -361,7 +355,7 @@ void UCustomExportBPLibrary::ExportDirectionLight(const TArray<ADirectionalLight
 	bool bSaveResult = FFileHelper::SaveStringToFile(Json, *LightSaveFile);
 	if (!bSaveResult)
 	{
-		ShowMessageDialog(FText::FromString(LightFileName), FText::FromString(Failed));
+		return false;
 	}
 
 	//save binary file
@@ -370,8 +364,7 @@ void UCustomExportBPLibrary::ExportDirectionLight(const TArray<ADirectionalLight
 	ofstream Wf(ResultName, ios::out | ios::binary);
 	if (!Wf)
 	{
-		ShowMessageDialog(FText::FromString(LightBinaryFileName), FText::FromString(Failed));
-		return;
+		return false;
 	}
 
 	uint32  DirectionLightSize = DataOut.DirectionLights.Num();
@@ -381,10 +374,133 @@ void UCustomExportBPLibrary::ExportDirectionLight(const TArray<ADirectionalLight
 	Wf.close();
 	if (!Wf.good())
 	{
-		ShowMessageDialog(FText::FromString(LightBinaryFileName), FText::FromString(Failed));
-		return;
+		return false;
+	}
+	return true;
+}
+
+bool UCustomExportBPLibrary::ExportSkeletalMeshAnim(const UAnimSequence* Anim, FSkeletalAnimData DataOut, FString FileName)
+{
+	DataOut.NumFrames = Anim->GetRawNumberOfFrames();
+
+	for (FRawAnimSequenceTrack RawData : Anim->GetRawAnimationData())
+	{
+		DataOut.RawAnimationData.Add(RawData);
+	}
+	
+	for (FTrackToSkeletonMap TrackData : Anim->GetRawTrackToSkeletonMapTable())
+	{
+		DataOut.TrackToSkeletonMapTable.Add(TrackData);
+	}
+	
+    FString FileNameBase = FileName + "_" + Anim->GetName();
+	FString AnimFile = FileNameBase + ".json";
+	FString AnimFileBin = FileNameBase + ".bin";
+	CheckFileExistAndDelete(AnimFile);
+	CheckFileExistAndDelete(AnimFileBin);
+
+	FString Json;
+	FJsonObjectConverter::UStructToJsonObjectString(DataOut, Json);
+	FString AnimSave = SavePath + AnimFile;
+	bool bSaveResult = FFileHelper::SaveStringToFile(Json, *AnimSave);
+	if (!bSaveResult)
+	{
+		return false;
+	}
+	 
+	//save binary file
+	AnimSave = SavePath + AnimFileBin;
+	char* ResultName = TCHAR_TO_ANSI(*AnimSave);
+	ofstream Wf(ResultName, ios::out | ios::binary);
+	if (!Wf)
+	{
+		return false;
 	}
 
-	ShowMessageDialog(FText::FromString(LightFileName + " " + LightBinaryFileName), FText::FromString(Success));
+	uint32 NumFrames = DataOut.NumFrames;
+	Wf.write((char*)&NumFrames, sizeof(uint32));
 
+	uint32 NumRawAnimData = DataOut.RawAnimationData.Num();
+	Wf.write((char*)&NumRawAnimData, sizeof(uint32));
+	Wf.write((char*)DataOut.RawAnimationData.GetData(), sizeof(FRawAnimSequenceTrack) * NumRawAnimData);
+
+	uint32 NumTrackSkeletalTable = DataOut.TrackToSkeletonMapTable.Num();
+	Wf.write((char*)&NumTrackSkeletalTable, sizeof(uint32));
+	Wf.write((char*)DataOut.TrackToSkeletonMapTable.GetData(), sizeof(FTrackToSkeletonMap) * NumTrackSkeletalTable);
+
+	Wf.close();
+	if (!Wf.good())
+	{
+		return false;
+	}
+	return true;
+ 
 }
+
+//bool UCustomExportBPLibrary::ExportSkeletalMeshActor(const ACharacter* PlayerActor, const USkeletalMesh* Mesh, FSkeletalMeshDataJson MeshDataJson, FSkeletalMeshDataBinary MeshDataBinary, FString FileName)
+//{
+	/*FVector MeshLocation = PlayerActor->GetActorLocation();
+	const FRotator& MeshRotation = PlayerActor->GetActorRotation();
+	const FVector& MeshScale = PlayerActor->GetActorScale();
+	MeshLocation = MeshLocation * POSITION_SCALE;
+
+	MeshDataJson.WorldLocation.Append({ MeshLocation.X , MeshLocation.Y , MeshLocation.Z });
+	MeshDataJson.WorldRotation.Append({ MeshRotation.Pitch, MeshRotation.Yaw, MeshRotation.Roll });
+	MeshDataJson.WorldScale.Append({ MeshScale.X, MeshScale.Y, MeshScale.Z });
+
+	MeshDataBinary.WorldLocation = MeshLocation;
+	MeshDataBinary.WorldRotation = MeshRotation;
+	MeshDataBinary.WorldScale = MeshScale;
+	return ExportSkeletalMesh(Mesh, MeshDataJson, MeshDataBinary, FileName);*/
+	/*return true;
+}*/
+//
+//bool UCustomExportBPLibrary::ExportSkeletalMesh(const USkeletalMesh* Mesh, FSkeletalMeshDataJson& MeshDataJsonOut, FSkeletalMeshDataBinary& MeshDataBinaryOut, FString& FileName)
+//{
+	 //const FStaticMeshVertexBuffers& VertexBuffers = StaticMeshResource.VertexBuffers;
+	//const FSkeletalMeshLODRenderData& SkeletalMeshResource = Mesh->GetResourceForRendering()->LODRenderData[LOD_LEVEL];
+	//const FStaticMeshVertexBuffers& VertexBuffers = SkeletalMeshResource.StaticVertexBuffers;
+
+	//TArray<bool> ValidFormat;
+	//ValidFormat.Init(false, (int32)EVsFormat::MAX);
+	//GetValidVsFormat(ValidFormat, VertexBuffers);
+
+	////insert format 
+	//UEnum* Enum = StaticEnum<EVsFormat>();
+	//for (uint32 i = 0; i < (int32)EVsFormat::MAX; i++)
+	//{
+	//	if (ValidFormat[i])
+	//	{
+	//		MeshDataJsonOut.VsFormat.Add(Enum->GetDisplayNameTextByValue(i).ToString());
+	//	}
+	//}
+
+	////insert json/binary data
+	//uint32 VertexNum = VertexBuffers.StaticMeshVertexBuffer.GetNumVertices();
+	//MeshDataBinaryOut.MeshVertexDatas.Reserve(VertexNum);
+	//for (uint32 i = 0; i < VertexNum; ++i)
+	//{
+	//	FVertexDatas MeshDataBin;
+	//	GetVertexPosition(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
+	//	GetVertexNormal(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
+	//	GetVertexTangent(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
+	//	GetVertexTex(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
+	//	GetVertexColor(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
+	//	MeshDataBinaryOut.MeshVertexDatas.Add(MeshDataBin);
+	//}
+
+	////insert indices
+	//const FRawStaticIndexBuffer& IndexBuffer = StaticMeshResource.IndexBuffer;
+	//uint32 IndicesCount = IndexBuffer.GetNumIndices();
+	//bool bUseHalfInt = true;
+	//for (uint32 Idx = 0; Idx < IndicesCount; ++Idx)
+	//{
+	//	uint32 Value = IndexBuffer.GetIndex(Idx);
+	//	if (bUseHalfInt && Value > MAX_UINT16)
+	//	{
+	//		bUseHalfInt = false;
+	//	}
+	//	MeshDataJsonOut.Indices.Add(Value);
+	//}
+	/*return true;
+}*/

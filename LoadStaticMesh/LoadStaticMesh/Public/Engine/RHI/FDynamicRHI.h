@@ -68,7 +68,7 @@ public:
 	virtual void RenderSceneObjects(FScene* Scene) = 0;
 	virtual void EndCreateSceneResource() = 0;
 
-	virtual void DrawSceneToShaderMap(FScene* Scene) = 0;
+	virtual void DrawSceneToShadowMap(FScene* Scene) = 0;
 };
 
 extern FDynamicRHI* GRHI;
