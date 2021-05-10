@@ -190,9 +190,8 @@ void UCustomExportBPLibrary::ShowMessageDialog(const FText Target, const FText R
 }
 #undef LOCTEXT_NAMESPACE
 
-bool UCustomExportBPLibrary::ExportStaticMeshActor(const AStaticMeshActor* MeshActor, FMeshDataJson MeshDataJsonOut, FMeshDataBinary MeshDataBinaryOut, FString FileBaseName)
+void ExportMeshWorld(const AActor* MeshActor, FMeshDataJson& MeshDataJsonOut, FMeshDataBinary& MeshDataBinaryOut)
 {
-	UStaticMeshComponent* MeshComponent = MeshActor->GetStaticMeshComponent();
 	FVector MeshLocation = MeshActor->GetActorLocation();
 	const FRotator& MeshRotation = MeshActor->GetActorRotation();
 	const FVector& MeshScale = MeshActor->GetActorScale();
@@ -205,15 +204,10 @@ bool UCustomExportBPLibrary::ExportStaticMeshActor(const AStaticMeshActor* MeshA
 	MeshDataBinaryOut.WorldLocation = MeshLocation;
 	MeshDataBinaryOut.WorldRotation = MeshRotation;
 	MeshDataBinaryOut.WorldScale = MeshScale;
-	return ExportStaticMesh(MeshComponent->GetStaticMesh(), MeshDataJsonOut, MeshDataBinaryOut, FileBaseName);
 }
 
-bool UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh, FMeshDataJson& MeshDataJsonOut, FMeshDataBinary& MeshDataBinaryOut, FString& FileBaseName)
+void ExportMeshVertexBuffer(const FStaticMeshVertexBuffers& VertexBuffers, FMeshDataJson& MeshDataJsonOut, FMeshDataBinary& MeshDataBinaryOut)
 {
-	const auto& LODResources = Mesh->RenderData->LODResources;
-	const FStaticMeshLODResources& StaticMeshResource = LODResources[LOD_LEVEL];
-	const FStaticMeshVertexBuffers& VertexBuffers = StaticMeshResource.VertexBuffers;
-
 	TArray<bool> ValidFormat;
 	ValidFormat.Init(false, (int32)EVsFormat::MAX);
 	GetValidVsFormat(ValidFormat, VertexBuffers);
@@ -241,20 +235,34 @@ bool UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh, FMeshData
 		GetVertexColor(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
 		MeshDataBinaryOut.MeshVertexDatas.Add(MeshDataBin);
 	}
+}
 
+void ExportStaticMeshIndices(const FRawStaticIndexBuffer& IndexBuffer, FMeshDataJson& MeshDataJsonOut, bool& bUseHalfInt)
+{
 	//insert indices
-	const FRawStaticIndexBuffer& IndexBuffer = StaticMeshResource.IndexBuffer;
 	uint32 IndicesCount = IndexBuffer.GetNumIndices();
-	bool bUseHalfInt = true;
 	for (uint32 Idx = 0; Idx < IndicesCount; ++Idx)
 	{
 		uint32 Value = IndexBuffer.GetIndex(Idx);
-		if(bUseHalfInt && Value > MAX_UINT16)
+		if (bUseHalfInt && Value > MAX_UINT16)
 		{
 			bUseHalfInt = false;
 		}
 		MeshDataJsonOut.Indices.Add(Value);
 	}
+}
+
+bool UCustomExportBPLibrary::ExportStaticMeshActor(const AStaticMeshActor* MeshActor, FMeshDataJson MeshDataJsonOut, FMeshDataBinary MeshDataBinaryOut, FString FileBaseName)
+{
+	ExportMeshWorld(MeshActor, MeshDataJsonOut, MeshDataBinaryOut);
+
+	UStaticMeshComponent* MeshComponent = MeshActor->GetStaticMeshComponent();
+	const auto& LODResources = MeshComponent->GetStaticMesh()->RenderData->LODResources;
+	const FStaticMeshLODResources& StaticMeshResource = LODResources[LOD_LEVEL];
+	const FStaticMeshVertexBuffers& VertexBuffers = StaticMeshResource.VertexBuffers;
+	ExportMeshVertexBuffer(VertexBuffers, MeshDataJsonOut, MeshDataBinaryOut);
+	bool bUseHalfInt = true;
+	ExportStaticMeshIndices(StaticMeshResource.IndexBuffer, MeshDataJsonOut, bUseHalfInt);
 
 	//delete old files
 	FString MeshFile = FileBaseName + ".json";
@@ -267,7 +275,7 @@ bool UCustomExportBPLibrary::ExportStaticMesh(const UStaticMesh* Mesh, FMeshData
 		return false;
 	}
 
-	if(!SaveMeshBinaryToFile(MeshDataBinaryOut, MeshDataJsonOut.Indices, bUseHalfInt, MeshBinFile))
+	if (!SaveMeshBinaryToFile(MeshDataBinaryOut, MeshDataJsonOut.Indices, bUseHalfInt, MeshBinFile))
 	{
 		return false;
 	}

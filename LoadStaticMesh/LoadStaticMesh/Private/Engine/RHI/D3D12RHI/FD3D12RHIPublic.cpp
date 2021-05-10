@@ -387,9 +387,9 @@ void FD3D12DynamicRHI::DrawSceneToShadowMap(FScene* RenderScene)
 	D3D12_RECT Rect = ShaderMap->ScissorRect();
 	CommandList->RSSetScissorRects(1, &Rect);
 
-	//const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(ShaderMap->Resource(),
-	//	D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-	//CommandList->ResourceBarrier(1, &Rb1);
+	const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(ShaderMap->Resource(),
+		D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+	CommandList->ResourceBarrier(1, &Rb1);
 
 	CommandList->ClearDepthStencilView(ShaderMap->Dsv(),
 		D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
@@ -405,9 +405,13 @@ void FD3D12DynamicRHI::DrawSceneToShadowMap(FScene* RenderScene)
 		DrawMesh(Meshes[i], nullptr);
 	}
 
+
 	// Change back to GENERIC_READ so we can read the texture in a shader.
 	const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(ShaderMap->Resource(),
-		D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+			D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+	//const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(ShaderMap->Resource(),
+	//	D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	CommandList->ResourceBarrier(1, &Rb2);
 }
 

@@ -79,6 +79,9 @@ struct FMeshDataJson
 
 	UPROPERTY()
 	TArray<uint32> Indices;
+
+	//UPROPERTY()
+	//TArray<uint32> AdjacencyIndices;
 };
 
 USTRUCT(BlueprintType)
@@ -217,11 +220,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Static Mesh Actor"), Category = "CustomExportBPLibrary")
 	static bool ExportStaticMeshActor(const AStaticMeshActor* MeshActor, FMeshDataJson MeshDataJson, FMeshDataBinary MeshDataBinary, FString FileName);
-	static bool ExportStaticMesh(const UStaticMesh* Mesh, FMeshDataJson& MeshDataJson, FMeshDataBinary& MeshDataBinary, FString& FileName);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Direction Light"), Category = "CustomExportBPLibrary")
 	static bool ExportDirectionLight(const TArray<ADirectionalLight*> DirectionLights, FLightData DataOut, FString FileName);
-
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Skeletal AnimSequence"), Category = "CustomExportBPLibrary")
 	static bool ExportSkeletalMeshAnim(const UAnimSequence* Anim, FSkeletalAnimData DataOut, FString FileName);
