@@ -7,6 +7,7 @@
 #include <vector>
 #include "Engine/StaticMeshActor.h"
 #include "Engine/DirectionalLight.h"
+#include "Runtime/Core/Public/Templates/UnrealTemplate.h"
 #include "CustomExportBPLibrary.generated.h"
 
 /* 
@@ -36,11 +37,132 @@ enum class EVsFormat : uint8
 	TEX0		 UMETA(DisplayName = "TEX0"),
 	TEX1		 UMETA(DisplayName = "TEX1"),
 	COLOR		 UMETA(DisplayName = "COLOR"),
+	SKINWEIGHT   UMETA(DisplayName = "SKINWEIGHT"),
 	MAX,
 };
 
 #pragma pack(push)
 #pragma pack(4)
+
+USTRUCT(BlueprintType)
+struct FSkinMeshWeightInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	uint16 InfluenceBones[4];
+
+	UPROPERTY()
+	uint8 InfluenceWeights[4];
+};
+
+USTRUCT(BlueprintType)
+struct FFullVertexDatas
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FVector Position;
+
+	UPROPERTY()
+	FVector Normal;
+
+	UPROPERTY()
+	FVector Tangent;
+
+	UPROPERTY()
+	FVector2D Tex0;
+
+	UPROPERTY()
+	FVector2D Tex1;
+
+	UPROPERTY()
+	FLinearColor Color;
+
+	UPROPERTY()
+	uint16 InfluenceBones[4];
+
+	UPROPERTY()
+	uint8 InfluenceWeights[4];
+
+	FFullVertexDatas()
+		:Position(FVector::ZeroVector)
+		, Normal(FVector::ZeroVector)
+		, Tangent(FVector::ZeroVector)
+		, Tex0(FVector2D::ZeroVector)
+		, Tex1(FVector2D::ZeroVector)
+		, Color(FLinearColor::White)
+	{
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FFullMeshDataJson
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<float> WorldLocation;
+
+	UPROPERTY()
+	TArray<float> WorldRotation;
+
+	UPROPERTY()
+	TArray<float> WorldScale;
+
+	UPROPERTY()
+	TArray<FString> VsFormat;
+
+	UPROPERTY()
+	TArray<float> Positions;
+
+	UPROPERTY()
+	TArray<float> Normals;
+
+	UPROPERTY()
+	TArray<float> Tangents;
+
+	UPROPERTY()
+	TArray<float> Tex0s;
+
+	UPROPERTY()
+	TArray<float> Tex1s;
+
+	UPROPERTY()
+	TArray<float> Colors;
+
+	UPROPERTY()
+	TArray<uint32> Indices;
+
+	UPROPERTY()
+	TArray<FSkinMeshWeightInfo> SkinMeshWeight0s;
+	
+};
+
+USTRUCT(BlueprintType)
+struct FFullMeshDataBinary
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FVector WorldLocation;
+
+	UPROPERTY()
+	FRotator WorldRotation;
+
+	UPROPERTY()
+	FVector WorldScale;
+
+	UPROPERTY()
+	TArray<FFullVertexDatas> MeshVertexDatas;
+
+	FFullMeshDataBinary()
+		:WorldLocation(FVector::ZeroVector)
+		, WorldRotation(FRotator::ZeroRotator)
+		, WorldScale(FVector::ZeroVector)
+	{
+	}
+};
 
 USTRUCT(BlueprintType)
 struct FMeshDataJson
@@ -80,8 +202,21 @@ struct FMeshDataJson
 	UPROPERTY()
 	TArray<uint32> Indices;
 
-	//UPROPERTY()
-	//TArray<uint32> AdjacencyIndices;
+	FMeshDataJson(){}
+	FMeshDataJson(const FFullMeshDataJson& FullData)
+	{
+		WorldLocation.Append(FullData.WorldLocation);
+		WorldRotation.Append(FullData.WorldRotation);
+		WorldScale.Append(FullData.WorldScale);
+		VsFormat.Append(FullData.VsFormat);
+		Positions.Append(FullData.Positions);
+		Normals.Append(FullData.Normals);
+		Tangents.Append(FullData.Tangents);
+		Tex0s.Append(FullData.Tex0s);
+		Tex1s.Append(FullData.Tex1s);
+		Colors.Append(FullData.Colors);
+		Indices.Append(FullData.Indices);
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -116,6 +251,16 @@ struct FVertexDatas
 		, Color(FLinearColor::White)
 	{
 	}
+
+	FVertexDatas(const FFullVertexDatas& FullVexData)
+	{
+		Position = FullVexData.Position;
+		Normal = FullVexData.Normal;
+		Tangent = FullVexData.Tangent;
+		Tex0 = FullVexData.Tex0;
+		Tex1 = FullVexData.Tex1;
+		Color = FullVexData.Color;
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -140,6 +285,20 @@ struct FMeshDataBinary
 		,WorldRotation(FRotator::ZeroRotator)
 		,WorldScale(FVector::ZeroVector)
 	{
+	}
+
+	FMeshDataBinary(const FFullMeshDataBinary& FullDataBin)
+	{
+		WorldLocation = FullDataBin.WorldLocation;
+		WorldRotation = FullDataBin.WorldRotation;
+		WorldScale = FullDataBin.WorldScale;
+
+		for(FFullVertexDatas FullVexData : FullDataBin.MeshVertexDatas)
+		{
+			FVertexDatas VData(FullVexData);
+			MeshVertexDatas.Add(VData);
+		}
+
 	}
 };
 
@@ -219,7 +378,7 @@ public:
 	static bool ExportCamera(const UCameraComponent* Component, FCameraData CameraData, FString FileName);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Static Mesh Actor"), Category = "CustomExportBPLibrary")
-	static bool ExportStaticMeshActor(const AStaticMeshActor* MeshActor, FMeshDataJson MeshDataJson, FMeshDataBinary MeshDataBinary, FString FileName);
+	static bool ExportStaticMeshActor(const AStaticMeshActor* MeshActor, FFullMeshDataJson MeshDataJson, FFullMeshDataBinary MeshDataBinary, FString FileName);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Direction Light"), Category = "CustomExportBPLibrary")
 	static bool ExportDirectionLight(const TArray<ADirectionalLight*> DirectionLights, FLightData DataOut, FString FileName);
@@ -227,7 +386,6 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Skeletal AnimSequence"), Category = "CustomExportBPLibrary")
 	static bool ExportSkeletalMeshAnim(const UAnimSequence* Anim, FSkeletalAnimData DataOut, FString FileName);
 
-	/*UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Skeletal Mesh Actor"), Category = "CustomExportBPLibrary")
-	static bool ExportSkeletalMeshActor(const ACharacter* PlayerActor, const USkeletalMesh* Mesh, FSkeletalMeshDataJson MeshDataJson, FSkeletalMeshDataBinary MeshDataBinary, FString FileName);
-	static bool ExportSkeletalMesh(const USkeletalMesh* Mesh, FSkeletalMeshDataJson& MeshDataJson, FSkeletalMeshDataBinary& MeshDataBinary, FString& FileName);*/
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Skeletal Mesh Actor"), Category = "CustomExportBPLibrary")
+	static bool ExportSkeletalMeshActor(const ACharacter* PlayerActor, const USkeletalMesh* Mesh, FFullMeshDataJson MeshDataJson, FFullMeshDataBinary MeshDataBinary, FString FileName);
 };

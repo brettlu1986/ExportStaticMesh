@@ -10,7 +10,7 @@
 #include "Components/DirectionalLightComponent.h"
 #include "JsonObjectConverter.h"
 #include "Misc/MessageDialog.h"
-#include "Runtime/Core/Public/Templates/UnrealTemplate.h"
+
 #include "Runtime/Engine/Public/Rendering/SkeletalMeshRenderData.h"
 #include "Runtime/Engine/Classes/Engine/SkeletalMesh.h"
 #include "Runtime/Engine/Classes/GameFramework/Character.h"
@@ -65,7 +65,7 @@ void GetValidVsFormat(TArray<bool>& VsFormat, const FStaticMeshVertexBuffers& Ve
 	VsFormat[(uint32)EVsFormat::COLOR] = ColorBuffers.GetNumVertices() > 0;
 }
 
-void GetVertexPosition(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FMeshDataJson& MeshDataJson, FVertexDatas& MeshDataBin)
+void GetVertexPosition(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FFullMeshDataJson& MeshDataJson, FFullVertexDatas& MeshDataBin)
 {
 	if (ValidFormat[(uint32)EVsFormat::POSITION])
 	{
@@ -77,7 +77,7 @@ void GetVertexPosition(const TArray<bool>& ValidFormat, uint32 Index, const FSta
 	}
 }
 
-void GetVertexNormal(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FMeshDataJson& MeshDataJson, FVertexDatas& MeshDataBin)
+void GetVertexNormal(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FFullMeshDataJson& MeshDataJson, FFullVertexDatas& MeshDataBin)
 {
 	if (ValidFormat[(uint32)EVsFormat::NORMAL])
 	{
@@ -88,7 +88,7 @@ void GetVertexNormal(const TArray<bool>& ValidFormat, uint32 Index, const FStati
 	}
 }
 
-void GetVertexTangent(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FMeshDataJson& MeshDataJson, FVertexDatas& MeshDataBin)
+void GetVertexTangent(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FFullMeshDataJson& MeshDataJson, FFullVertexDatas& MeshDataBin)
 {
 	if (ValidFormat[(uint32)EVsFormat::TANGENT])
 	{
@@ -99,7 +99,7 @@ void GetVertexTangent(const TArray<bool>& ValidFormat, uint32 Index, const FStat
 	}
 }
 
-void GetVertexTex(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FMeshDataJson& MeshDataJson, FVertexDatas& MeshDataBin)
+void GetVertexTex(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FFullMeshDataJson& MeshDataJson, FFullVertexDatas& MeshDataBin)
 {
 	const FStaticMeshVertexBuffer& VertexBuffers = VertexBuffer.StaticMeshVertexBuffer;
 	if (ValidFormat[(uint32)EVsFormat::TEX0])
@@ -118,7 +118,7 @@ void GetVertexTex(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMe
 
 }
 
-void GetVertexColor(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FMeshDataJson& MeshDataJson, FVertexDatas& MeshDataBin)
+void GetVertexColor(const TArray<bool>& ValidFormat, uint32 Index, const FStaticMeshVertexBuffers& VertexBuffer, FFullMeshDataJson& MeshDataJson, FFullVertexDatas& MeshDataBin)
 {
 	if (ValidFormat[(uint32)EVsFormat::COLOR])
 	{
@@ -190,7 +190,7 @@ void UCustomExportBPLibrary::ShowMessageDialog(const FText Target, const FText R
 }
 #undef LOCTEXT_NAMESPACE
 
-void ExportMeshWorld(const AActor* MeshActor, FMeshDataJson& MeshDataJsonOut, FMeshDataBinary& MeshDataBinaryOut)
+void ExportMeshWorld(const AActor* MeshActor, FFullMeshDataJson& MeshDataJsonOut, FFullMeshDataBinary& MeshDataBinaryOut)
 {
 	FVector MeshLocation = MeshActor->GetActorLocation();
 	const FRotator& MeshRotation = MeshActor->GetActorRotation();
@@ -206,11 +206,12 @@ void ExportMeshWorld(const AActor* MeshActor, FMeshDataJson& MeshDataJsonOut, FM
 	MeshDataBinaryOut.WorldScale = MeshScale;
 }
 
-void ExportMeshVertexBuffer(const FStaticMeshVertexBuffers& VertexBuffers, FMeshDataJson& MeshDataJsonOut, FMeshDataBinary& MeshDataBinaryOut)
+void ExportMeshVertexBuffer(const FStaticMeshVertexBuffers& VertexBuffers, FFullMeshDataJson& MeshDataJsonOut, FFullMeshDataBinary& MeshDataBinaryOut)
 {
 	TArray<bool> ValidFormat;
 	ValidFormat.Init(false, (int32)EVsFormat::MAX);
 	GetValidVsFormat(ValidFormat, VertexBuffers);
+	ValidFormat[(uint32)EVsFormat::SKINWEIGHT] = false;
 
 	//insert format 
 	UEnum* Enum = StaticEnum<EVsFormat>();
@@ -227,7 +228,7 @@ void ExportMeshVertexBuffer(const FStaticMeshVertexBuffers& VertexBuffers, FMesh
 	MeshDataBinaryOut.MeshVertexDatas.Reserve(VertexNum);
 	for (uint32 i = 0; i < VertexNum; ++i)
 	{
-		FVertexDatas MeshDataBin;
+		FFullVertexDatas MeshDataBin;
 		GetVertexPosition(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
 		GetVertexNormal(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
 		GetVertexTangent(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
@@ -235,9 +236,10 @@ void ExportMeshVertexBuffer(const FStaticMeshVertexBuffers& VertexBuffers, FMesh
 		GetVertexColor(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
 		MeshDataBinaryOut.MeshVertexDatas.Add(MeshDataBin);
 	}
+
 }
 
-void ExportStaticMeshIndices(const FRawStaticIndexBuffer& IndexBuffer, FMeshDataJson& MeshDataJsonOut, bool& bUseHalfInt)
+void ExportStaticMeshIndices(const FRawStaticIndexBuffer& IndexBuffer, FFullMeshDataJson& MeshDataJsonOut, bool& bUseHalfInt)
 {
 	//insert indices
 	uint32 IndicesCount = IndexBuffer.GetNumIndices();
@@ -252,7 +254,7 @@ void ExportStaticMeshIndices(const FRawStaticIndexBuffer& IndexBuffer, FMeshData
 	}
 }
 
-bool UCustomExportBPLibrary::ExportStaticMeshActor(const AStaticMeshActor* MeshActor, FMeshDataJson MeshDataJsonOut, FMeshDataBinary MeshDataBinaryOut, FString FileBaseName)
+bool UCustomExportBPLibrary::ExportStaticMeshActor(const AStaticMeshActor* MeshActor, FFullMeshDataJson MeshDataJsonOut, FFullMeshDataBinary MeshDataBinaryOut, FString FileBaseName)
 {
 	ExportMeshWorld(MeshActor, MeshDataJsonOut, MeshDataBinaryOut);
 
@@ -270,12 +272,14 @@ bool UCustomExportBPLibrary::ExportStaticMeshActor(const AStaticMeshActor* MeshA
 	CheckFileExistAndDelete(MeshFile);
 	CheckFileExistAndDelete(MeshBinFile);
 
-	if (!SaveMeshJsonToFile(MeshDataJsonOut, MeshFile))
+	FMeshDataJson DataJson(MeshDataJsonOut);
+	FMeshDataBinary DataBin(MeshDataBinaryOut);
+	if (!SaveMeshJsonToFile(DataJson, MeshFile))
 	{
 		return false;
 	}
 
-	if (!SaveMeshBinaryToFile(MeshDataBinaryOut, MeshDataJsonOut.Indices, bUseHalfInt, MeshBinFile))
+	if (!SaveMeshBinaryToFile(DataBin, DataJson.Indices, bUseHalfInt, MeshBinFile))
 	{
 		return false;
 	}
@@ -445,70 +449,131 @@ bool UCustomExportBPLibrary::ExportSkeletalMeshAnim(const UAnimSequence* Anim, F
  
 }
 
-//bool UCustomExportBPLibrary::ExportSkeletalMeshActor(const ACharacter* PlayerActor, const USkeletalMesh* Mesh, FSkeletalMeshDataJson MeshDataJson, FSkeletalMeshDataBinary MeshDataBinary, FString FileName)
-//{
-	/*FVector MeshLocation = PlayerActor->GetActorLocation();
-	const FRotator& MeshRotation = PlayerActor->GetActorRotation();
-	const FVector& MeshScale = PlayerActor->GetActorScale();
-	MeshLocation = MeshLocation * POSITION_SCALE;
+void GetVertexSkinWeightInfo(const TArray<bool>& ValidFormat, uint32 Index, TArray<FSkinWeightInfo>& SkinWeightInfos, FFullMeshDataJson& MeshDataJson, FFullVertexDatas& MeshDataBin)
+{
+	if (ValidFormat[(uint32)EVsFormat::SKINWEIGHT])
+	{
+		const FSkinWeightInfo& WeightInfo = SkinWeightInfos[Index];
 
-	MeshDataJson.WorldLocation.Append({ MeshLocation.X , MeshLocation.Y , MeshLocation.Z });
-	MeshDataJson.WorldRotation.Append({ MeshRotation.Pitch, MeshRotation.Yaw, MeshRotation.Roll });
-	MeshDataJson.WorldScale.Append({ MeshScale.X, MeshScale.Y, MeshScale.Z });
+		FSkinMeshWeightInfo Info;
+		for (int i = 0; i < 4; i++)
+		{
+			MeshDataBin.InfluenceBones[i] = WeightInfo.InfluenceBones[i];
+			MeshDataBin.InfluenceWeights[i] = WeightInfo.InfluenceWeights[i];
+			
+			Info.InfluenceBones[i] = WeightInfo.InfluenceBones[i];
+			Info.InfluenceWeights[i] = WeightInfo.InfluenceWeights[i];
+		}
+		MeshDataJson.SkinMeshWeight0s.Add(Info);
+	}
+}
 
-	MeshDataBinary.WorldLocation = MeshLocation;
-	MeshDataBinary.WorldRotation = MeshRotation;
-	MeshDataBinary.WorldScale = MeshScale;
-	return ExportSkeletalMesh(Mesh, MeshDataJson, MeshDataBinary, FileName);*/
-	/*return true;
-}*/
-//
-//bool UCustomExportBPLibrary::ExportSkeletalMesh(const USkeletalMesh* Mesh, FSkeletalMeshDataJson& MeshDataJsonOut, FSkeletalMeshDataBinary& MeshDataBinaryOut, FString& FileName)
-//{
-	 //const FStaticMeshVertexBuffers& VertexBuffers = StaticMeshResource.VertexBuffers;
-	//const FSkeletalMeshLODRenderData& SkeletalMeshResource = Mesh->GetResourceForRendering()->LODRenderData[LOD_LEVEL];
-	//const FStaticMeshVertexBuffers& VertexBuffers = SkeletalMeshResource.StaticVertexBuffers;
+void ExportSkeletalMeshVertexBuffer(const FStaticMeshVertexBuffers& VertexBuffers, const FSkinWeightVertexBuffer& SkinWeightBuffer, FFullMeshDataJson& MeshDataJsonOut, FFullMeshDataBinary& MeshDataBinaryOut)
+{
+	TArray<bool> ValidFormat;
+	ValidFormat.Init(false, (int32)EVsFormat::MAX);
+	GetValidVsFormat(ValidFormat, VertexBuffers);
+	ValidFormat[(uint32)EVsFormat::SKINWEIGHT] = true;
 
-	//TArray<bool> ValidFormat;
-	//ValidFormat.Init(false, (int32)EVsFormat::MAX);
-	//GetValidVsFormat(ValidFormat, VertexBuffers);
+	//insert format 
+	UEnum* Enum = StaticEnum<EVsFormat>();
+	for (uint32 i = 0; i < (int32)EVsFormat::MAX; i++)
+	{
+		if (ValidFormat[i])
+		{
+			MeshDataJsonOut.VsFormat.Add(Enum->GetDisplayNameTextByValue(i).ToString());
+		}
+	}
 
-	////insert format 
-	//UEnum* Enum = StaticEnum<EVsFormat>();
-	//for (uint32 i = 0; i < (int32)EVsFormat::MAX; i++)
-	//{
-	//	if (ValidFormat[i])
-	//	{
-	//		MeshDataJsonOut.VsFormat.Add(Enum->GetDisplayNameTextByValue(i).ToString());
-	//	}
-	//}
+	//insert json/binary data
+	uint32 VertexNum = VertexBuffers.StaticMeshVertexBuffer.GetNumVertices();
 
-	////insert json/binary data
-	//uint32 VertexNum = VertexBuffers.StaticMeshVertexBuffer.GetNumVertices();
-	//MeshDataBinaryOut.MeshVertexDatas.Reserve(VertexNum);
-	//for (uint32 i = 0; i < VertexNum; ++i)
-	//{
-	//	FVertexDatas MeshDataBin;
-	//	GetVertexPosition(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
-	//	GetVertexNormal(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
-	//	GetVertexTangent(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
-	//	GetVertexTex(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
-	//	GetVertexColor(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
-	//	MeshDataBinaryOut.MeshVertexDatas.Add(MeshDataBin);
-	//}
+	TArray<FSkinWeightInfo> OutVerticesWeightInfo;
+	SkinWeightBuffer.GetSkinWeights(OutVerticesWeightInfo);
 
-	////insert indices
-	//const FRawStaticIndexBuffer& IndexBuffer = StaticMeshResource.IndexBuffer;
-	//uint32 IndicesCount = IndexBuffer.GetNumIndices();
-	//bool bUseHalfInt = true;
-	//for (uint32 Idx = 0; Idx < IndicesCount; ++Idx)
-	//{
-	//	uint32 Value = IndexBuffer.GetIndex(Idx);
-	//	if (bUseHalfInt && Value > MAX_UINT16)
-	//	{
-	//		bUseHalfInt = false;
-	//	}
-	//	MeshDataJsonOut.Indices.Add(Value);
-	//}
-	/*return true;
-}*/
+	MeshDataBinaryOut.MeshVertexDatas.Reserve(VertexNum);
+	for (uint32 i = 0; i < VertexNum; ++i)
+	{
+		FFullVertexDatas MeshDataBin;
+		GetVertexPosition(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
+		GetVertexNormal(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
+		GetVertexTangent(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
+		GetVertexTex(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
+		GetVertexColor(ValidFormat, i, VertexBuffers, MeshDataJsonOut, MeshDataBin);
+		GetVertexSkinWeightInfo(ValidFormat, i, OutVerticesWeightInfo, MeshDataJsonOut, MeshDataBin);
+		MeshDataBinaryOut.MeshVertexDatas.Add(MeshDataBin);
+	}
+
+}
+
+void ExportSkeletalMeshIndices(const FMultiSizeIndexContainer& IndexContainer, FFullMeshDataJson& MeshDataJsonOut)
+{
+	//insert indices
+	IndexContainer.GetIndexBuffer(MeshDataJsonOut.Indices);
+}
+
+bool SaveSkeletalMeshJsonToFile(const FFullMeshDataJson& MeshJson, FString& FileName)
+{
+	//save json
+	FString Json;
+	FJsonObjectConverter::UStructToJsonObjectString(MeshJson, Json);
+	FString MeshSaveFile = SavePath + FileName;
+	return FFileHelper::SaveStringToFile(Json, *MeshSaveFile);
+}
+
+bool SaveSkeletalMeshBinaryToFile(const FFullMeshDataBinary& MeshBinOut, const TArray<uint32>& Indices, FString& FileName)
+{
+	FString MeshSaveFile = SavePath + FileName;
+	char* ResultName = TCHAR_TO_ANSI(*MeshSaveFile);
+	ofstream Wf(ResultName, ios::out | ios::binary);
+	if (!Wf)
+	{
+		return false;
+	}
+
+	Wf.write((char*)&(MeshBinOut.WorldLocation), sizeof(FVector));
+	Wf.write((char*)&(MeshBinOut.WorldRotation), sizeof(FRotator));
+	Wf.write((char*)&(MeshBinOut.WorldScale), sizeof(FVector));
+
+	uint32  VertexsSize = MeshBinOut.MeshVertexDatas.Num();
+	Wf.write((char*)&VertexsSize, sizeof(uint32));
+	Wf.write((char*)MeshBinOut.MeshVertexDatas.GetData(), sizeof(FFullVertexDatas) * VertexsSize);
+
+	uint32 IndicesSize = Indices.Num();
+	Wf.write((char*)&IndicesSize, sizeof(uint32));
+	Wf.write((char*)Indices.GetData(), IndicesSize * sizeof(uint32));
+
+	Wf.close();
+	return Wf.good();
+}
+
+bool UCustomExportBPLibrary::ExportSkeletalMeshActor(const ACharacter* PlayerActor, const USkeletalMesh* Mesh, FFullMeshDataJson MeshDataJsonOut, FFullMeshDataBinary MeshDataBinaryOut, FString FileBaseName)
+{
+	ExportMeshWorld(PlayerActor, MeshDataJsonOut, MeshDataBinaryOut);
+	
+	const FSkeletalMeshLODRenderData& MeshResource = Mesh->GetResourceForRendering()->LODRenderData[LOD_LEVEL];
+	const FStaticMeshVertexBuffers& VertexBuffers = MeshResource.StaticVertexBuffers;
+	const FSkinWeightVertexBuffer& VertexSkinWeightBuffer = MeshResource.SkinWeightVertexBuffer;
+	ExportSkeletalMeshVertexBuffer(VertexBuffers, VertexSkinWeightBuffer, MeshDataJsonOut, MeshDataBinaryOut);
+
+	const FMultiSizeIndexContainer& IndexBufferContainer = MeshResource.MultiSizeIndexContainer;
+	ExportSkeletalMeshIndices(IndexBufferContainer, MeshDataJsonOut);
+
+	//delete old files
+	FString MeshFile = FileBaseName + ".json";
+	FString MeshBinFile = FileBaseName + ".bin";
+	CheckFileExistAndDelete(MeshFile);
+	CheckFileExistAndDelete(MeshBinFile);
+
+	if (!SaveSkeletalMeshJsonToFile(MeshDataJsonOut, MeshFile))
+	{
+		return false;
+	}
+
+	if (!SaveSkeletalMeshBinaryToFile(MeshDataBinaryOut, MeshDataJsonOut.Indices, MeshBinFile))
+	{
+		return false;
+	}
+	return true;
+}
+

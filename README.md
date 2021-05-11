@@ -141,6 +141,28 @@ An index buffer contains a sequential set of 16-bit or 32-bit indices; each inde
 
 # shadow map
 [阴影概述](https://learnopengl-cn.readthedocs.io/zh/latest/05%20Advanced%20Lighting/03%20Shadows/01%20Shadow%20Mapping/)
+
+# skeletal mesh
+1. 建立Character 概念， 包含 SkeletalMesh和Animator
+2. 建立SkeletalMesh, 放到场景里,通过导出的StaticVertexBuffer IndexBuffer 基本绘制信息，绘制SkeletalMesh
+3. 建立Animator， Tick sequence求 Pose出来， Pose求出来 给到SkeletalMesh,  SkeletalMesh给Shader
+
+# 蒙皮矩阵计算
+1. 在绑定姿势下的模型空间顶点转换至关节空间, 通过乘以 该关节转换至模型空间矩阵的逆矩阵实现
+2. 移动绑定姿势下的关节到 当前姿势下 关节位置
+3. 新的关节位置再转换回 模型空间  2跟3其实就是通过再乘以关在在 当前姿势下关节空间至模型空间的变换矩阵
+   
+详见下图：
+
+![](md-image/skinmesh_matrix1.png)
+
+![](md-image/skinmesh_matrix2.png)
+
+![](md-image/skinmesh_matrix3.png)
+
+![](md-image/skinmesh_matrix4.png)
+
+![](md-image/skinmesh_matrix5.png)
 	
 	
 
