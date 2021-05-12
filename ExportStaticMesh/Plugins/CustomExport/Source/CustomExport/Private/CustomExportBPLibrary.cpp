@@ -577,3 +577,85 @@ bool UCustomExportBPLibrary::ExportSkeletalMeshActor(const ACharacter* PlayerAct
 	return true;
 }
 
+bool UCustomExportBPLibrary::ExportSkeleton(const USkeleton* Skeleton, FSkeletonData DataOut, FString FileName)
+{
+	const FReferenceSkeleton& RefSkeleton = Skeleton->GetReferenceSkeleton();
+
+	const TArray<FMeshBoneInfo>& RefBoneInfos = RefSkeleton.GetRawRefBoneInfo();
+	TArray<FSkeletonBoneInfo> BinBoneInfos;
+	for(FMeshBoneInfo BoneInfo : RefBoneInfos)
+	{
+		FSkeletalBoneInfoJson InfoJson;
+		InfoJson.Name = BoneInfo.Name;
+		InfoJson.ParentIndex = BoneInfo.ParentIndex;
+		DataOut.RawRefBoneInfo.Add(InfoJson);
+
+		FSkeletonBoneInfo BinBoneInfo;
+		char* CName = TCHAR_TO_ANSI(*BoneInfo.Name.ToString());
+		strcpy_s(BinBoneInfo.Name, CName);
+		BinBoneInfo.ParentIndex = BoneInfo.ParentIndex;
+		BinBoneInfos.Add(BinBoneInfo);
+	}
+
+	const TArray<FTransform>& RefBoneTrans = RefSkeleton.GetRawRefBonePose();
+	for (FTransform BoneTrans : RefBoneTrans)
+	{
+		FSkeletonBonePose BonePose;
+		BonePose.Scale = BoneTrans.GetScale3D();
+		BonePose.Rotate = BoneTrans.Rotator();
+		BonePose.Translate = BoneTrans.GetTranslation();
+		DataOut.RawRefBonePose.Add(BonePose);
+	}
+
+	TArray<FSkeletonNameIndex> BinNameIndexs;
+	for (FMeshBoneInfo BoneInfo : RefBoneInfos)
+	{
+		int32 Index = RefSkeleton.FindBoneIndex(BoneInfo.Name);
+		DataOut.RawNameToIndexMap.Add(BoneInfo.Name, Index);
+
+		FSkeletonNameIndex NameIndex;
+		char* CName = TCHAR_TO_ANSI(*BoneInfo.Name.ToString());
+		strcpy_s(NameIndex.Name, CName);
+		NameIndex.Index = Index;
+		BinNameIndexs.Add(NameIndex);
+	}
+
+	//delete old files
+	FString SkeletonFile = FileName + ".json";
+	FString SkeletonBinFile = FileName + ".bin";
+	CheckFileExistAndDelete(SkeletonFile);
+	CheckFileExistAndDelete(SkeletonBinFile);
+
+	//save json
+	FString Json;
+	FJsonObjectConverter::UStructToJsonObjectString(DataOut, Json);
+	FString SaveFile = SavePath + SkeletonFile;
+	bool bSaveResult = FFileHelper::SaveStringToFile(Json, *SaveFile);
+	if (!bSaveResult)
+	{
+		return false;
+	}
+
+	SaveFile = SavePath + SkeletonBinFile;
+	char* ResultName = TCHAR_TO_ANSI(*SaveFile);
+	ofstream Wf(ResultName, ios::out | ios::binary);
+	if (!Wf)
+	{
+		return false;
+	}
+
+	uint32 BonInfosNum = BinBoneInfos.Num();
+	Wf.write((char*)&BonInfosNum, sizeof(uint32));
+	Wf.write((char*)BinBoneInfos.GetData(), sizeof(FSkeletonBoneInfo) * BonInfosNum);
+
+	uint32 BonePosesNum = DataOut.RawRefBonePose.Num();
+	Wf.write((char*)&BonePosesNum, sizeof(uint32));
+	Wf.write((char*)DataOut.RawRefBonePose.GetData(), sizeof(FSkeletonBonePose) * BonePosesNum);
+
+	uint32 NameIndexNum = BinNameIndexs.Num();
+	Wf.write((char*)&NameIndexNum, sizeof(uint32));
+	Wf.write((char*)BinNameIndexs.GetData(), sizeof(FSkeletonNameIndex) * NameIndexNum);
+
+	Wf.close();
+	return Wf.good();
+}

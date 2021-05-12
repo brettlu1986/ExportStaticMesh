@@ -362,6 +362,61 @@ struct FSkeletalAnimData
 	TArray<struct FTrackToSkeletonMap> TrackToSkeletonMapTable;
 };
 
+//use to export bin
+struct FSkeletonBoneInfo
+{
+	char Name[64];
+	int32 ParentIndex;
+};
+
+USTRUCT(BlueprintType)
+struct FSkeletonBonePose
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FVector Scale;
+
+	UPROPERTY()
+	FRotator Rotate;
+
+	UPROPERTY()
+	FVector Translate;
+};
+
+struct FSkeletonNameIndex
+{
+	char Name[64];
+	int32 Index;
+};
+
+USTRUCT(BlueprintType)
+struct FSkeletalBoneInfoJson
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FName Name;
+
+	UPROPERTY()
+	int32 ParentIndex;
+};
+
+USTRUCT(BlueprintType)
+struct FSkeletonData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<FSkeletalBoneInfoJson> RawRefBoneInfo;
+
+	UPROPERTY()
+	TArray<FSkeletonBonePose> RawRefBonePose;
+
+	UPROPERTY()
+	TMap<FName, int32> RawNameToIndexMap;
+};
+
 #pragma pack(pop)
 
 UCLASS()
@@ -388,4 +443,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Skeletal Mesh Actor"), Category = "CustomExportBPLibrary")
 	static bool ExportSkeletalMeshActor(const ACharacter* PlayerActor, const USkeletalMesh* Mesh, FFullMeshDataJson MeshDataJson, FFullMeshDataBinary MeshDataBinary, FString FileName);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Skeleton"), Category = "CustomExportBPLibrary")
+	static bool ExportSkeleton(const USkeleton* Skeleton, FSkeletonData DataOut, FString FileName);
 };
