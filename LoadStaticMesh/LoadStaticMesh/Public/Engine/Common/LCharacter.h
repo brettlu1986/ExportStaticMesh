@@ -10,6 +10,11 @@ public:
 	LCharacter();
 	~LCharacter();
 
+	void SetSkeletalMesh(FSkeletalMesh* Mesh)
+	{
+		SkeletalMesh= Mesh;
+	}
+
 	FSkeletalMesh* SkeletalMesh;
 	LAnimator* Animator;
 };

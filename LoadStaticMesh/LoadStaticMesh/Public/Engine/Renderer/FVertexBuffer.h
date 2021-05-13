@@ -14,12 +14,12 @@ public:
 
 	virtual void Destroy() override;
 	virtual void Initialize() override;
-	void Init(const char* DataSource, UINT DataSize, UINT DataCount);
+	void Init(const char* DataSource, UINT DataSize, UINT DataCount, bool bInSKM = false);
 
 protected: 
-
+	bool bSKMVertex;
 	UINT VertexCount;
 	UINT VertexDataSize;
 	std::vector<FVertexData> VertexData;
-	
+	std::vector<FSkeletalVertexData> SKMVertexData;
 };

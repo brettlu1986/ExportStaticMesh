@@ -2,7 +2,8 @@
 #include "stdafx.h"
 #include "LAssetDataLoader.h"
 #include "SampleAssets.h"
-
+#include "LCharacter.h"
+#include "FRHI.h"
 
 using namespace std;
 
@@ -43,6 +44,7 @@ std::wstring LAssetDataLoader::GetAssetFullPath(LPCWSTR AssetName)
 	AssetsPath = AssetsPathChar;
 	return AssetsPath + AssetName;
 }
+
 
 
 void LAssetDataLoader::LoadMeshVertexDataFromFile(std::string FileName, FMesh* Mesh)
@@ -154,6 +156,96 @@ void LAssetDataLoader::LoadSceneLights(std::string FileName, FScene* Scene)
 	}
 }
 
+void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(std::string FileName, FSkeletalMesh* SkeletalMesh)
+{
+	std::string FName = GetSaveDirectory() + FileName;
+	ifstream Rf(FName, ios::out | ios::binary);
+	if (!Rf) {
+		return;
+	}
+	XMFLOAT3 Location;
+	Rf.read((char*)&Location, sizeof(XMFLOAT3));
+	SkeletalMesh->SetModelLocation(Location);
+
+	XMFLOAT3 Rotation;
+	Rf.read((char*)&Rotation, sizeof(XMFLOAT3));
+	SkeletalMesh->SetModelRotation(Rotation);
+
+	XMFLOAT3 Scale;
+	Rf.read((char*)&Scale, sizeof(XMFLOAT3));
+	SkeletalMesh->SetModelScale(Scale);
+
+	UINT VertexCount;
+	Rf.read((char*)&VertexCount, sizeof(UINT));
+
+	std::vector<FSkeletalVertexData> VertexDatas;
+	VertexDatas.resize(VertexCount);
+	Rf.read((char*)VertexDatas.data(), VertexCount * sizeof(FSkeletalVertexData));
+
+	FVertexBuffer* VBuffer = GRHI->RHICreateVertexBuffer();
+	VBuffer->Init((char*)VertexDatas.data(), VertexCount * sizeof(FSkeletalVertexData), VertexCount, true);
+
+	UINT IndicesCount;
+	Rf.read((char*)&IndicesCount, sizeof(UINT));
+
+	vector<UINT32> Indices;
+	Indices.resize(IndicesCount);
+	Rf.read((char*)Indices.data(), IndicesCount * sizeof(UINT32));
+
+	FIndexBuffer* IBuffer = GRHI->RHICreateIndexBuffer();
+	IBuffer->Init(IndicesCount, IndicesCount * sizeof(UINT32), E_INDEX_TYPE::TYPE_UINT_32, reinterpret_cast<void*>(Indices.data()));
+
+	SkeletalMesh->SetVertexAndIndexBuffer(VBuffer, IBuffer);
+}
+
+void LAssetDataLoader::LoadSkeletonFromFile(std::string FileName, LSkeleton* Skeleton)
+{
+	std::string FName = GetSaveDirectory() + FileName;
+	ifstream Rf(FName, ios::out | ios::binary);
+	if (!Rf) {
+		return;
+	}
+
+	UINT BoneNum;
+	Rf.read((char*)&BoneNum, sizeof(UINT));
+	Skeleton->SetBoneCount(BoneNum);
+
+	std::vector<BoneInfo> BoneInfos;
+	BoneInfos.resize(BoneNum);
+	Rf.read((char*)BoneInfos.data(), BoneNum * sizeof(BoneInfo));
+	for(size_t i = 0; i < BoneInfos.size(); ++i)
+	{
+		LBoneInfo Info;
+		Info.BoneName = BoneInfos[i].Name;
+		Info.ParentIndex = BoneInfos[i].ParentIndex;
+		Skeleton->AddBoneInfo(Info);
+	}
+
+	UINT BonePoseNum;
+	Rf.read((char*)&BonePoseNum, sizeof(UINT));
+	std::vector<BonePose> BonePoses;
+	BonePoses.resize(BonePoseNum);
+	Rf.read((char*)BonePoses.data(), BonePoseNum * sizeof(BonePose));
+	for (size_t i = 0; i < BonePoses.size(); ++i)
+	{
+		LBonePose Pose;
+		Pose.Scale = BonePoses[i].Scale;
+		XMFLOAT3 Rot = { -BonePoses[i].Rotate.x, BonePoses[i].Rotate.y, -BonePoses[i].Rotate.z };
+		Pose.Quat = MathHelper::EulerToQuaternion(Rot);
+		Pose.Translate = BonePoses[i].Translate;
+		Skeleton->AddBonePose(Pose);
+	}
+
+	UINT BoneNameIdxNum;
+	Rf.read((char*)&BoneNameIdxNum, sizeof(UINT));
+	std::vector<BoneNameIndex> BoneNameIdxs;
+	BoneNameIdxs.resize(BoneNameIdxNum);
+	Rf.read((char*)BoneNameIdxs.data(), BoneNameIdxNum * sizeof(BoneNameIndex));
+	for (size_t i = 0; i < BoneNameIdxs.size(); ++i)
+	{
+		Skeleton->SetNameToIndexValue(BoneNameIdxs[i].Name, BoneNameIdxs[i].Index);
+	}
+}
 
 void LAssetDataLoader::LoadSampleScene(FScene* Scene)
 {
@@ -165,6 +257,20 @@ void LAssetDataLoader::LoadSampleScene(FScene* Scene)
 		Mesh->InitMaterial(SampleAssets::SampeMats[i].Name, SampleAssets::SampeMats[i].DiffuseAlbedo, SampleAssets::SampeMats[i].FresnelR0,
 			SampleAssets::SampeMats[i].Roughness);
 		Scene->AddMeshToScene(Mesh);
+	}
+
+	for(UINT i = 0; i < SampleAssets::SampleSkeletalMeshCount; i++)
+	{
+		LCharacter* Character = new LCharacter();
+		FSkeletalMesh* SkeletalMesh = new FSkeletalMesh();
+		LoadSkeletalMeshVertexDataFromFile(SampleAssets::SkeletalMeshResource[i], SkeletalMesh);
+		LSkeleton* Skeleton = new LSkeleton();
+		LoadSkeletonFromFile(SampleAssets::SkeletonResource, Skeleton);
+		SkeletalMesh->SetSkeleton(Skeleton);
+
+		Character->SetSkeletalMesh(SkeletalMesh);
+
+		Scene->AddCharacterToScene(Character);
 	}
 
 	LoadSceneLights(SampleAssets::SceneLightsFile, Scene);

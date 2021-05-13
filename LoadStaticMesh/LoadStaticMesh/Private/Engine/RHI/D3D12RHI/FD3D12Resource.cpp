@@ -82,7 +82,14 @@ void FD3D12VertexBuffer::Initialize()
 
 void FD3D12VertexBuffer::InitGPUVertexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList)
 {
-	CreateBuffer(Device, CommandList, VertexData.data(), VertexDataSize, VertexBuffer, VertexUploadBuffer);
+	if(bSKMVertex)
+	{
+		CreateBuffer(Device, CommandList, SKMVertexData.data(), VertexDataSize, VertexBuffer, VertexUploadBuffer);
+	}
+	else 
+	{
+		CreateBuffer(Device, CommandList, VertexData.data(), VertexDataSize, VertexBuffer, VertexUploadBuffer);
+	}
 	NAME_D3D12_OBJECT(VertexBuffer);
 	NAME_D3D12_OBJECT(VertexUploadBuffer);
 

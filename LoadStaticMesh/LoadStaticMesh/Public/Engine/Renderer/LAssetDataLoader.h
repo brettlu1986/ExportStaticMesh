@@ -4,6 +4,7 @@
 #include "FMesh.h"
 #include "LCamera.h"
 #include "FScene.h"
+#include "FSkeletalMesh.h"
 
 class LAssetDataLoader
 {
@@ -16,10 +17,31 @@ private:
 		XMFLOAT3 Position;
 	};
 
+	struct BoneInfo
+	{
+		char Name[64];
+		INT32 ParentIndex;
+	};
 
+	struct BonePose
+	{
+		XMFLOAT3 Scale;
+		XMFLOAT3 Rotate;
+		XMFLOAT3 Translate;
+	};
+
+	struct BoneNameIndex
+	{
+		char Name[64];
+		INT32 Index;
+	};
 public:
 
 	static void LoadMeshVertexDataFromFile(std::string FileName, FMesh* Mesh);
+
+	static void LoadSkeletalMeshVertexDataFromFile(std::string FileName, FSkeletalMesh* SkeletalMesh);
+
+	static void LoadSkeletonFromFile(std::string FileName, LSkeleton* Skeleton);
 
 	static void LoadCameraDataFromFile(std::string FileName, LCamera& Camera);
 

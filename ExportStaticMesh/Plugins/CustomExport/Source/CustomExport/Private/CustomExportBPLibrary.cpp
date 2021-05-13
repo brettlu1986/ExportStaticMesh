@@ -472,11 +472,14 @@ void GetVertexSkinWeightInfo(const TArray<bool>& ValidFormat, uint32 Index, TArr
 		for (int i = 0; i < 4; i++)
 		{
 			MeshDataBin.InfluenceBones[i] = WeightInfo.InfluenceBones[i];
-			MeshDataBin.InfluenceWeights[i] = WeightInfo.InfluenceWeights[i];
-			
 			Info.InfluenceBones[i] = WeightInfo.InfluenceBones[i];
-			Info.InfluenceWeights[i] = WeightInfo.InfluenceWeights[i];
 		}
+		Info.InfluenceWeights = FVector(
+			WeightInfo.InfluenceWeights[0] / 255.f, 
+			WeightInfo.InfluenceWeights[1] / 255.f, 
+			WeightInfo.InfluenceWeights[2] / 255.f
+		);
+		MeshDataBin.InfluenceWeights = Info.InfluenceWeights;
 		MeshDataJson.SkinMeshWeight0s.Add(Info);
 	}
 }

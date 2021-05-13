@@ -48,8 +48,10 @@ typedef struct FSkeletalVertexData
 	XMFLOAT3 Normal;
 	XMFLOAT3 Tangent;
 	XMFLOAT2 Tex0;
+	XMFLOAT2 Tex1;
+	XMFLOAT4 Color;
+	XMFLOAT3 InfluenceWeights;
 	UINT16  InfluenceBones[4];
-	UINT8 InfluenceWeights[4];
 }FSkeletalVertexData;
 
 typedef struct FCameraData {

@@ -16,9 +16,32 @@ public:
 	virtual void Destroy();
 	virtual void Initialize();
 
+	void SetModelLocation(XMFLOAT3 Location);
+	void SetModelRotation(XMFLOAT3 Rotator);
+	void SetModelScale(XMFLOAT3 Scale);
+
+	void SetVertexAndIndexBuffer(FVertexBuffer* VBuffer, FIndexBuffer* IBuffer);
+
+	XMMATRIX& GetModelMatrix()
+	{
+		return ModelMatrix;
+	}
+
+	void SetSkeleton(LSkeleton* Ske)
+	{
+		Skeleton = Ske;
+	}
+
 private:
+	void UpdateModelMatrix();
+
 	FVertexBuffer* VertexBuffer;
 	FIndexBuffer* IndexBuffer;
 	FTexture* DiffuseTex;
 	LSkeleton* Skeleton;
+
+	XMFLOAT3 ModelLocation;
+	XMFLOAT3 ModelRotation;
+	XMFLOAT3 ModelScale;
+	XMMATRIX ModelMatrix;
 };

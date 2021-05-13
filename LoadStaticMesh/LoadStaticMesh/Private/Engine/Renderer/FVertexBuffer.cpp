@@ -14,6 +14,7 @@ FVertexBuffer::FVertexBuffer(E_RESOURCE_TYPE Type)
 :FRenderResource(Type)
 ,VertexCount(0)
 ,VertexDataSize(0)
+, bSKMVertex(false)
 {
 
 }
@@ -25,12 +26,21 @@ FVertexBuffer::FVertexBuffer(const char* DataSource, UINT DataSize, UINT DataCou
 	Init(DataSource, DataSize, DataCount);
 }
 
-void FVertexBuffer::Init(const char* DataSource, UINT DataSize, UINT DataCount)
+void FVertexBuffer::Init(const char* DataSource, UINT DataSize, UINT DataCount, bool bInSKM)
 {
+	bSKMVertex = bInSKM;
 	VertexCount = DataCount;
 	VertexDataSize = DataSize;
-	VertexData.resize(DataCount);
-	memcpy(VertexData.data(), DataSource, DataSize);
+	if(bInSKM)
+	{
+		SKMVertexData.resize(DataCount);
+		memcpy(SKMVertexData.data(), DataSource, DataSize);
+	}
+	else 
+	{
+		VertexData.resize(DataCount);
+		memcpy(VertexData.data(), DataSource, DataSize);
+	}
 }
 
 FVertexBuffer::~FVertexBuffer()

@@ -40,6 +40,11 @@ void FScene::AddMeshToScene(FMesh* Mesh)
 	MeshCount++;
 }
 
+void FScene::AddCharacterToScene(LCharacter* Character)
+{
+	Players.push_back(Character);
+}
+
 void FScene::AddLightToScene(FLight* Light)
 {
 	SceneLights.push_back(Light);

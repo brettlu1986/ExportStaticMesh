@@ -50,10 +50,10 @@ struct FSkinMeshWeightInfo
 	GENERATED_BODY()
 
 	UPROPERTY()
-	uint16 InfluenceBones[4];
+	FVector InfluenceWeights;
 
 	UPROPERTY()
-	uint8 InfluenceWeights[4];
+	uint16 InfluenceBones[4];
 };
 
 USTRUCT(BlueprintType)
@@ -80,10 +80,10 @@ struct FFullVertexDatas
 	FLinearColor Color;
 
 	UPROPERTY()
-	uint16 InfluenceBones[4];
+	FVector InfluenceWeights;
 
 	UPROPERTY()
-	uint8 InfluenceWeights[4];
+	uint16 InfluenceBones[4];
 
 	FFullVertexDatas()
 		:Position(FVector::ZeroVector)
@@ -92,6 +92,7 @@ struct FFullVertexDatas
 		, Tex0(FVector2D::ZeroVector)
 		, Tex1(FVector2D::ZeroVector)
 		, Color(FLinearColor::White)
+		, InfluenceWeights(FVector::ZeroVector)
 	{
 	}
 };

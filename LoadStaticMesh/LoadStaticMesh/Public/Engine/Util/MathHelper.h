@@ -91,6 +91,11 @@ public:
 	static DirectX::XMVECTOR RandUnitVec3();
 	static DirectX::XMVECTOR RandHemisphereUnitVec3(DirectX::XMVECTOR n);
 
+	//XMFLOAT4 Quat:x, y, z, w  XMFLOAT3 Rotate:Pitch, Yaw, Roll
+	static DirectX::XMFLOAT4 EulerToQuaternion(DirectX::XMFLOAT3 CurrentRotation);
+	static DirectX::XMFLOAT3 QuaternionToEuler(DirectX::XMFLOAT4 Quat);
+	
+
 	static const float Infinity;
 	static const float Pi;
 

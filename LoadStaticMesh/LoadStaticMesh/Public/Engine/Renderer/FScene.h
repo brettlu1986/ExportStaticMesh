@@ -5,6 +5,7 @@
 
 class FMesh;
 class LCamera;
+class LCharacter;
 class FScene
 {
 public: 
@@ -12,6 +13,7 @@ public:
 	~FScene();
 
 	void AddMeshToScene(FMesh* Mesh);
+	void AddCharacterToScene(LCharacter* Character);
 	void AddLightToScene(FLight* Light);
 
 	void InitSceneRenderResource();
@@ -55,6 +57,7 @@ public:
 	}
 
 private: 
+	std::vector<LCharacter*> Players;
 	std::vector<FMesh*> Meshes;
 	std::vector<FLight*> SceneLights;
 	UINT MeshCount;
