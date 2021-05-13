@@ -3,6 +3,7 @@
 #include "LAssetDataLoader.h"
 #include "SampleAssets.h"
 #include "LCharacter.h"
+#include "LAnimator.h"
 #include "FRHI.h"
 
 using namespace std;
@@ -247,6 +248,22 @@ void LAssetDataLoader::LoadSkeletonFromFile(std::string FileName, LSkeleton* Ske
 	}
 }
 
+void LAssetDataLoader::LoadAnimationSquence(std::string SequenceName, LAnimationSequence& Seq)
+{
+	std::string FName = GetSaveDirectory() + SequenceName;
+	ifstream Rf(FName, ios::out | ios::binary);
+	if (!Rf) {
+		return;
+	}
+
+	UINT FrameNum;
+	Rf.read((char*)&FrameNum, sizeof(UINT));
+	Seq.SetFrameCount(FrameNum);
+	//TODO: load animation
+
+
+}
+
 void LAssetDataLoader::LoadSampleScene(FScene* Scene)
 {
 	for (UINT i = 0; i < SampleAssets::SamepleCount; i++)
@@ -268,8 +285,17 @@ void LAssetDataLoader::LoadSampleScene(FScene* Scene)
 		LoadSkeletonFromFile(SampleAssets::SkeletonResource, Skeleton);
 		SkeletalMesh->SetSkeleton(Skeleton);
 
-		Character->SetSkeletalMesh(SkeletalMesh);
+		LAnimator* Animator = new LAnimator();
+		for(UINT i = 0; i< SampleAssets::SkeletalAnimCount; ++i)
+		{
+			LAnimationSequence AnimSequence;
+			LoadAnimationSquence(SampleAssets::SkeletalAnim[i], AnimSequence);
+			Animator->AddAnimSequence(SampleAssets::SkeletalAnim[i], AnimSequence);
+		}
+		Animator->SetSkeleton(Skeleton);
 
+		Character->SetSkeletalMesh(SkeletalMesh);
+		Character->SetAnimator(Animator);
 		Scene->AddCharacterToScene(Character);
 	}
 

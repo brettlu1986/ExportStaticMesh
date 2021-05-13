@@ -63,6 +63,8 @@ namespace SampleAssets
 		"ThirdPersonCharacter_SKM.bin",
 	};
 	const std::string SkeletonResource = "ThirdPersonCharacter_SK.bin";
+
+	const UINT SkeletalAnimCount = 2;
 	const std::string SkeletalAnim[] = 
 	{	
 		"ThirdPersonCharacter_ThirdPersonRun.bin",

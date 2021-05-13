@@ -3,7 +3,7 @@
 
 LCharacter::LCharacter()
 :SkeletalMesh(nullptr)
-,Animator(nullptr)
+,AnimatorIns(nullptr)
 {
 
 }

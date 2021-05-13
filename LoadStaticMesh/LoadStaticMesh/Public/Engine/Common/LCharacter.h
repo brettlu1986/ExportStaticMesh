@@ -15,6 +15,13 @@ public:
 		SkeletalMesh= Mesh;
 	}
 
+	void SetAnimator(LAnimator* Animator)
+	{
+		AnimatorIns = Animator;
+	}
+
+private: 
+
 	FSkeletalMesh* SkeletalMesh;
-	LAnimator* Animator;
+	LAnimator* AnimatorIns;
 };

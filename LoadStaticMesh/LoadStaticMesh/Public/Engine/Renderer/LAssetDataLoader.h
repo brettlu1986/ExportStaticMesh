@@ -5,6 +5,7 @@
 #include "LCamera.h"
 #include "FScene.h"
 #include "FSkeletalMesh.h"
+#include "LAnimationSequence.h"
 
 class LAssetDataLoader
 {
@@ -42,6 +43,8 @@ public:
 	static void LoadSkeletalMeshVertexDataFromFile(std::string FileName, FSkeletalMesh* SkeletalMesh);
 
 	static void LoadSkeletonFromFile(std::string FileName, LSkeleton* Skeleton);
+
+	static void LoadAnimationSquence(std::string SequenceName, LAnimationSequence& Seq);
 
 	static void LoadCameraDataFromFile(std::string FileName, LCamera& Camera);
 
