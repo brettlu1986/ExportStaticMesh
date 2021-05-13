@@ -347,6 +347,26 @@ struct FLightData
 	TArray<FDirectionLightData> DirectionLights;
 };
 
+
+USTRUCT(BlueprintType)
+struct FAnimSequenceTrack 
+{
+	GENERATED_BODY()
+
+	/** Position keys. */
+	UPROPERTY()
+	TArray<FVector> PosKeys;
+
+	/** Rotation keys. */
+	UPROPERTY()
+	TArray<FRotator> RotKeys;
+
+	/** Scale keys. */
+	UPROPERTY()
+	TArray<FVector> ScaleKeys;
+};
+
+
 USTRUCT(BlueprintType)
 struct FSkeletalAnimData
 {
@@ -356,7 +376,7 @@ struct FSkeletalAnimData
 	int32 NumFrames;
 
 	UPROPERTY()
-	TArray<struct FRawAnimSequenceTrack> RawAnimationData;
+	TArray<struct FAnimSequenceTrack> RawAnimationData;
 
 	UPROPERTY()
 	TArray<struct FTrackToSkeletonMap> TrackToSkeletonMapTable;

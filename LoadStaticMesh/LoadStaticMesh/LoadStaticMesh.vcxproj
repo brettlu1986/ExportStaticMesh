@@ -72,20 +72,20 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread</IncludePath>
+    <IncludePath>$(IncludePath);$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -155,6 +155,12 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Private\ApplicationMain.cpp" />
+    <ClCompile Include="Private\Engine\Common\Animation\LAnimationSequence.cpp" />
+    <ClCompile Include="Private\Engine\Common\Animation\LAnimationTrack.cpp" />
+    <ClCompile Include="Private\Engine\Common\Animation\LAnimationTrackFrame.cpp" />
+    <ClCompile Include="Private\Engine\Common\Animation\LAnimator.cpp" />
+    <ClCompile Include="Private\Engine\Common\Animation\LSkeleton.cpp" />
+    <ClCompile Include="Private\Engine\Common\LCharacter.cpp" />
     <ClCompile Include="Private\Engine\Common\LDevice.cpp" />
     <ClCompile Include="Private\Engine\Common\LGameTimer.cpp" />
     <ClCompile Include="Private\Engine\Common\LInput.cpp" />
@@ -170,6 +176,7 @@
     <ClCompile Include="Private\Engine\Renderer\FRenderer.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FScene.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FShader.cpp" />
+    <ClCompile Include="Private\Engine\Renderer\FSkeletalMesh.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FTexture.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FVertexBuffer.cpp" />
     <ClCompile Include="Private\Engine\Renderer\LAssetDataLoader.cpp" />
@@ -192,6 +199,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds" />
+    <Image Include="Resource\T_Male_Mask.dds" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resource\LightingUtil.hlsl">
@@ -347,7 +355,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\ApplicationMain.h" />
+    <ClInclude Include="Public\Engine\Common\Animation\LAnimationSequence.h" />
+    <ClInclude Include="Public\Engine\Common\Animation\LAnimationTrack.h" />
+    <ClInclude Include="Public\Engine\Common\Animation\LAnimationTrackFrame.h" />
+    <ClInclude Include="Public\Engine\Common\Animation\LAnimator.h" />
+    <ClInclude Include="Public\Engine\Common\Animation\LSkeleton.h" />
     <ClInclude Include="Public\Engine\Common\Event\LEvent.h" />
+    <ClInclude Include="Public\Engine\Common\LCharacter.h" />
     <ClInclude Include="Public\Engine\Common\LDefine.h" />
     <ClInclude Include="Public\Engine\Common\LDevice.h" />
     <ClInclude Include="Public\Engine\Common\LGameTimer.h" />
@@ -366,6 +380,7 @@
     <ClInclude Include="Public\Engine\Renderer\FRenderResource.h" />
     <ClInclude Include="Public\Engine\Renderer\FScene.h" />
     <ClInclude Include="Public\Engine\Renderer\FShader.h" />
+    <ClInclude Include="Public\Engine\Renderer\FSkeletalMesh.h" />
     <ClInclude Include="Public\Engine\Renderer\FTexture.h" />
     <ClInclude Include="Public\Engine\Renderer\FVertexBuffer.h" />
     <ClInclude Include="Public\Engine\Renderer\LAssetDataLoader.h" />

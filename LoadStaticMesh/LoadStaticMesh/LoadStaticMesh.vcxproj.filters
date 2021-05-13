@@ -64,6 +64,12 @@
     <Filter Include="Source Files\Engine\Thread">
       <UniqueIdentifier>{bf26e770-928a-4a87-a607-3cdf516f7e4f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Common\Animation">
+      <UniqueIdentifier>{6ad586d6-b764-4db9-9d92-e6aa02d1e0d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Common\Animation">
+      <UniqueIdentifier>{9835f9ef-7fd8-4c9b-af54-5ebaa92f8256}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -159,9 +165,33 @@
     <ClCompile Include="Private\Engine\Common\LGameTimer.cpp">
       <Filter>Source Files\Engine\Common</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Engine\Common\LCharacter.cpp">
+      <Filter>Source Files\Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\FSkeletalMesh.cpp">
+      <Filter>Source Files\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\Animation\LAnimationSequence.cpp">
+      <Filter>Source Files\Engine\Common\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\Animation\LAnimationTrack.cpp">
+      <Filter>Source Files\Engine\Common\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\Animation\LAnimationTrackFrame.cpp">
+      <Filter>Source Files\Engine\Common\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\Animation\LAnimator.cpp">
+      <Filter>Source Files\Engine\Common\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\Animation\LSkeleton.cpp">
+      <Filter>Source Files\Engine\Common\Animation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resource\T_Male_Mask.dds">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
@@ -305,6 +335,27 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\LGameTimer.h">
       <Filter>Header Files\Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\LCharacter.h">
+      <Filter>Header Files\Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\FSkeletalMesh.h">
+      <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Animation\LAnimationSequence.h">
+      <Filter>Header Files\Engine\Common\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Animation\LAnimationTrack.h">
+      <Filter>Header Files\Engine\Common\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Animation\LAnimationTrackFrame.h">
+      <Filter>Header Files\Engine\Common\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Animation\LAnimator.h">
+      <Filter>Header Files\Engine\Common\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Animation\LSkeleton.h">
+      <Filter>Header Files\Engine\Common\Animation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

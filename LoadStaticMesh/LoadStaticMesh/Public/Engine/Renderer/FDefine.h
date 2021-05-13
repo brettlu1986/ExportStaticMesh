@@ -42,6 +42,16 @@ typedef struct FVertexData
 	XMFLOAT4 Color = {0.66f, 0.66f, 0.66f, 1.0};
 }FVertexData;
 
+typedef struct FSkeletalVertexData
+{
+	XMFLOAT3 Position;
+	XMFLOAT3 Normal;
+	XMFLOAT3 Tangent;
+	XMFLOAT2 Tex0;
+	UINT16  InfluenceBones[4];
+	UINT8 InfluenceWeights[4];
+}FSkeletalVertexData;
+
 typedef struct FCameraData {
 	XMFLOAT3 Location;
 	XMFLOAT3 Target;

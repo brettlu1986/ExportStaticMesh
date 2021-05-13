@@ -11,9 +11,9 @@
 #include "JsonObjectConverter.h"
 #include "Misc/MessageDialog.h"
 
-#include "Runtime/Engine/Public/Rendering/SkeletalMeshRenderData.h"
-#include "Runtime/Engine/Classes/Engine/SkeletalMesh.h"
-#include "Runtime/Engine/Classes/GameFramework/Character.h"
+#include "Rendering/SkeletalMeshRenderData.h"
+#include "Engine/SkeletalMesh.h"
+#include "GameFramework/Character.h"
 
 #include <iostream>
 #include <fstream>
@@ -397,7 +397,20 @@ bool UCustomExportBPLibrary::ExportSkeletalMeshAnim(const UAnimSequence* Anim, F
 
 	for (FRawAnimSequenceTrack RawData : Anim->GetRawAnimationData())
 	{
-		DataOut.RawAnimationData.Add(RawData);
+		FAnimSequenceTrack TrackData;
+		for(FVector Pos : RawData.PosKeys)
+		{
+			FVector _Pos = Pos * POSITION_SCALE;
+			TrackData.PosKeys.Add(_Pos);
+		}
+
+		for(FQuat Qua : RawData.RotKeys)
+		{
+			TrackData.RotKeys.Add(Qua.Rotator());
+		}
+		TrackData.ScaleKeys.Append(RawData.ScaleKeys);
+		
+		DataOut.RawAnimationData.Add(TrackData);
 	}
 	
 	for (FTrackToSkeletonMap TrackData : Anim->GetRawTrackToSkeletonMapTable())
@@ -434,7 +447,7 @@ bool UCustomExportBPLibrary::ExportSkeletalMeshAnim(const UAnimSequence* Anim, F
 
 	uint32 NumRawAnimData = DataOut.RawAnimationData.Num();
 	Wf.write((char*)&NumRawAnimData, sizeof(uint32));
-	Wf.write((char*)DataOut.RawAnimationData.GetData(), sizeof(FRawAnimSequenceTrack) * NumRawAnimData);
+	Wf.write((char*)DataOut.RawAnimationData.GetData(), sizeof(FAnimSequenceTrack) * NumRawAnimData);
 
 	uint32 NumTrackSkeletalTable = DataOut.TrackToSkeletonMapTable.Num();
 	Wf.write((char*)&NumTrackSkeletalTable, sizeof(uint32));
