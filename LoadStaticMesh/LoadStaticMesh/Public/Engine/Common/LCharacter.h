@@ -1,9 +1,9 @@
 #pragma once
 
 #include "stdafx.h"
+#include "LAnimator.h"
 
 class FSkeletalMesh;
-class LAnimator;
 class LCharacter
 {
 public:

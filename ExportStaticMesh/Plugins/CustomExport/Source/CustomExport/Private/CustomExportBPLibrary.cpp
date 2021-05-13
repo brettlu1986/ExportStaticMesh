@@ -447,11 +447,27 @@ bool UCustomExportBPLibrary::ExportSkeletalMeshAnim(const UAnimSequence* Anim, F
 
 	uint32 NumRawAnimData = DataOut.RawAnimationData.Num();
 	Wf.write((char*)&NumRawAnimData, sizeof(uint32));
-	Wf.write((char*)DataOut.RawAnimationData.GetData(), sizeof(FAnimSequenceTrack) * NumRawAnimData);
 
-	uint32 NumTrackSkeletalTable = DataOut.TrackToSkeletonMapTable.Num();
-	Wf.write((char*)&NumTrackSkeletalTable, sizeof(uint32));
-	Wf.write((char*)DataOut.TrackToSkeletonMapTable.GetData(), sizeof(FTrackToSkeletonMap) * NumTrackSkeletalTable);
+	for(UINT i = 0; i < NumRawAnimData; i++)
+	{
+		FAnimSequenceTrack& Tr = DataOut.RawAnimationData[i];
+
+		uint32 Num = Tr.PosKeys.Num();
+		Wf.write((char*)&Num, sizeof(uint32));
+		Wf.write((char*)Tr.PosKeys.GetData(), sizeof(FVector) * Num);
+
+	    Num = Tr.RotKeys.Num();
+		Wf.write((char*)&Num, sizeof(uint32));
+		Wf.write((char*)Tr.RotKeys.GetData(), sizeof(FRotator) * Num);
+
+		Num = Tr.ScaleKeys.Num();
+		Wf.write((char*)&Num, sizeof(uint32));
+		Wf.write((char*)Tr.ScaleKeys.GetData(), sizeof(FVector) * Num);
+
+		uint32 TrackToBoneIndex = DataOut.TrackToSkeletonMapTable[i].BoneTreeIndex;
+		Wf.write((char*)&TrackToBoneIndex, sizeof(uint32));
+
+	}
 
 	Wf.close();
 	if (!Wf.good())

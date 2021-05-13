@@ -14,6 +14,11 @@ public:
 		SequenceFrameCount = Count;
 	}
 
+	void AddAnimationTrack(LAnimationTrack AnimTrack)
+	{
+		SequenceTracks.push_back(AnimTrack);
+	}
+
 private:
 
 	UINT SequenceFrameCount;

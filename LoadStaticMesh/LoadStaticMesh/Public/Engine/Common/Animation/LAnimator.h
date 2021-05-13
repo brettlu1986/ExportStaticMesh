@@ -20,6 +20,8 @@ public:
 		AnimSequences[AnimName] = Seq;
 	}
 
+private: 
+
 	std::map<std::string, LAnimationSequence> AnimSequences;
 	LSkeleton* Skeleton;
 };

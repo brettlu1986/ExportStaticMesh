@@ -157,7 +157,6 @@
     <ClCompile Include="Private\ApplicationMain.cpp" />
     <ClCompile Include="Private\Engine\Common\Animation\LAnimationSequence.cpp" />
     <ClCompile Include="Private\Engine\Common\Animation\LAnimationTrack.cpp" />
-    <ClCompile Include="Private\Engine\Common\Animation\LAnimationTrackFrame.cpp" />
     <ClCompile Include="Private\Engine\Common\Animation\LAnimator.cpp" />
     <ClCompile Include="Private\Engine\Common\Animation\LSkeleton.cpp" />
     <ClCompile Include="Private\Engine\Common\LCharacter.cpp" />
@@ -357,7 +356,7 @@
     <ClInclude Include="Public\ApplicationMain.h" />
     <ClInclude Include="Public\Engine\Common\Animation\LAnimationSequence.h" />
     <ClInclude Include="Public\Engine\Common\Animation\LAnimationTrack.h" />
-    <ClInclude Include="Public\Engine\Common\Animation\LAnimationTrackFrame.h" />
+    <ClInclude Include="Public\Engine\Common\Animation\LAnimationTrackChannel.h" />
     <ClInclude Include="Public\Engine\Common\Animation\LAnimator.h" />
     <ClInclude Include="Public\Engine\Common\Animation\LSkeleton.h" />
     <ClInclude Include="Public\Engine\Common\Event\LEvent.h" />

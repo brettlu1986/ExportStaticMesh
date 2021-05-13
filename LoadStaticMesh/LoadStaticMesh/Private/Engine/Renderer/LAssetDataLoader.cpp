@@ -259,9 +259,55 @@ void LAssetDataLoader::LoadAnimationSquence(std::string SequenceName, LAnimation
 	UINT FrameNum;
 	Rf.read((char*)&FrameNum, sizeof(UINT));
 	Seq.SetFrameCount(FrameNum);
-	//TODO: load animation
 
+	UINT TrackNum;
+	Rf.read((char*)&TrackNum, sizeof(UINT));
 
+	for(UINT i = 0; i < TrackNum; i++)
+	{
+		LAnimationTrack Track;
+
+		UINT Num;
+		Rf.read((char*)&Num, sizeof(UINT));
+		std::vector<XMFLOAT3> Poss;
+		Poss.resize(Num);
+		Rf.read((char*)Poss.data(), Num * sizeof(XMFLOAT3));
+		for(size_t i = 0; i < Poss.size(); ++i)
+		{
+			LAnimationTranslateChannel T;
+			T.Translate = Poss[i];
+			Track.AddTranslateChannelFrame(T);
+		}
+
+		Rf.read((char*)&Num, sizeof(UINT));
+		std::vector<XMFLOAT3> Rots;
+		Rots.resize(Num);
+		Rf.read((char*)Rots.data(), Num * sizeof(XMFLOAT3));
+		for (size_t i = 0; i < Rots.size(); ++i)
+		{
+			LAnimationQuatChannel Q;
+			Q.Rot = Rots[i];
+
+			XMFLOAT3 Rot = { -Rots[i].x, Rots[i].y, -Rots[i].z };
+			Q.Quat = MathHelper::EulerToQuaternion(Rot);
+			Track.AddQuatChannelFrame(Q);
+		}
+
+		Rf.read((char*)&Num, sizeof(UINT));
+		std::vector<XMFLOAT3> Scales;
+		Scales.resize(Num);
+		Rf.read((char*)Scales.data(), Num * sizeof(XMFLOAT3));
+		for (size_t i = 0; i < Scales.size(); ++i)
+		{
+			LAnimationScaleChannel S;
+			S.Scale = Scales[i];
+			Track.AddScaleChannelFrame(S);
+		}
+
+		Rf.read((char*)&Num, sizeof(UINT));
+		Track.TrackToBoneIndex = Num;
+		Seq.AddAnimationTrack(Track);
+	}
 }
 
 void LAssetDataLoader::LoadSampleScene(FScene* Scene)

@@ -14,12 +14,30 @@ FSkeletalMesh::FSkeletalMesh()
 
 FSkeletalMesh::~FSkeletalMesh()
 {
-
+	Destroy();
 }
 
 void FSkeletalMesh::Destroy()
 {
-	
+	if (VertexBuffer)
+	{
+		VertexBuffer->Destroy();
+		delete VertexBuffer;
+		VertexBuffer = nullptr;
+	}
+
+	if (IndexBuffer)
+	{
+		IndexBuffer->Destroy();
+		delete IndexBuffer;
+		IndexBuffer = nullptr;
+	}
+
+	if(Skeleton)
+	{
+		delete Skeleton;
+		Skeleton = nullptr;
+	}
 }
 
 void FSkeletalMesh::Initialize()

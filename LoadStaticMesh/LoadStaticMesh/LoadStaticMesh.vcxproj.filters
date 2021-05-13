@@ -177,9 +177,6 @@
     <ClCompile Include="Private\Engine\Common\Animation\LAnimationTrack.cpp">
       <Filter>Source Files\Engine\Common\Animation</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Engine\Common\Animation\LAnimationTrackFrame.cpp">
-      <Filter>Source Files\Engine\Common\Animation</Filter>
-    </ClCompile>
     <ClCompile Include="Private\Engine\Common\Animation\LAnimator.cpp">
       <Filter>Source Files\Engine\Common\Animation</Filter>
     </ClCompile>
@@ -348,13 +345,13 @@
     <ClInclude Include="Public\Engine\Common\Animation\LAnimationTrack.h">
       <Filter>Header Files\Engine\Common\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="Public\Engine\Common\Animation\LAnimationTrackFrame.h">
-      <Filter>Header Files\Engine\Common\Animation</Filter>
-    </ClInclude>
     <ClInclude Include="Public\Engine\Common\Animation\LAnimator.h">
       <Filter>Header Files\Engine\Common\Animation</Filter>
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\Animation\LSkeleton.h">
+      <Filter>Header Files\Engine\Common\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Animation\LAnimationTrackChannel.h">
       <Filter>Header Files\Engine\Common\Animation</Filter>
     </ClInclude>
   </ItemGroup>
