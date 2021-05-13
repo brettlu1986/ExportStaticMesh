@@ -603,7 +603,7 @@ bool UCustomExportBPLibrary::ExportSkeleton(const USkeleton* Skeleton, FSkeleton
 		FSkeletonBonePose BonePose;
 		BonePose.Scale = BoneTrans.GetScale3D();
 		BonePose.Rotate = BoneTrans.Rotator();
-		BonePose.Translate = BoneTrans.GetTranslation();
+		BonePose.Translate = BoneTrans.GetTranslation() * POSITION_SCALE;
 		DataOut.RawRefBonePose.Add(BonePose);
 	}
 
