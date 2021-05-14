@@ -63,7 +63,7 @@ namespace SampleAssets
 		"ThirdPersonCharacter_SKM.bin",
 	};
 	const std::string SkeletonResource = "ThirdPersonCharacter_SK.bin";
-
+	const std::string SkeletonTexture = "Resource/T_Male_Mask.dds";
 	const UINT SkeletalAnimCount = 2;
 	const std::string SkeletalAnim[] = 
 	{	

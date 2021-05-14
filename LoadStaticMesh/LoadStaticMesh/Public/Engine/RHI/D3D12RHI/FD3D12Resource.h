@@ -6,7 +6,6 @@
 #include "FVertexBuffer.h"
 #include "FTexture.h"
 #include "FRenderResource.h"
-#include "FTexture.h"
 #include "FDDSTextureLoader.h"
 
 using namespace Microsoft::WRL;
@@ -67,6 +66,8 @@ public:
 	virtual void InitializeTexture(const std::string& Name) override;
 
 	void InitGPUTextureView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, UINT CbvSrvUavDescriptorSize, ID3D12DescriptorHeap* CbvSrvHeap, FCbvSrvDesc& Desc);
+
+	void InitGPUTextureView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle);
 private:
 
 	ComPtr<ID3D12Resource> TextureResource;

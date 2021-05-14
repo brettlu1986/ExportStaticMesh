@@ -6,6 +6,7 @@
 #include "FIndexBuffer.h"
 #include "FTexture.h"
 #include "LSkeleton.h"
+#include "FResourceViewCreater.h"
 
 class FSkeletalMesh : public FRenderResource
 {
@@ -21,7 +22,9 @@ public:
 	void SetModelScale(XMFLOAT3 Scale);
 
 	void SetVertexAndIndexBuffer(FVertexBuffer* VBuffer, FIndexBuffer* IBuffer);
+	void SetDiffuseTexture(FTexture* Tex);
 
+	void InitRenderResource();
 	XMMATRIX& GetModelMatrix()
 	{
 		return ModelMatrix;
@@ -37,7 +40,11 @@ private:
 
 	FVertexBuffer* VertexBuffer;
 	FIndexBuffer* IndexBuffer;
+
+	//TODO: move to material
 	FTexture* DiffuseTex;
+	FResourceView* ShaderResView;
+
 	LSkeleton* Skeleton;
 
 	XMFLOAT3 ModelLocation;

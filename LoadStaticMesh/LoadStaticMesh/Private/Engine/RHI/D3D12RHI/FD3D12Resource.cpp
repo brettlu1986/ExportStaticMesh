@@ -157,6 +157,20 @@ void FD3D12Texture::InitGPUTextureView(ID3D12Device* Device, ID3D12GraphicsComma
 	Device->CreateShaderResourceView(TextureResource.Get(), &srvDesc, CbvSrvHandle);
 }
 
+void FD3D12Texture::InitGPUTextureView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle)
+{
+	DirectX::CreateTextureFromDDS12(Device, CommandList, Header, BitData, BitSize, 0, false, TextureResource, TextureResourceUpload);
+	NAME_D3D12_OBJECT(TextureResource);
+	NAME_D3D12_OBJECT(TextureResourceUpload);
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Format = TextureResource->GetDesc().Format;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = TextureResource->GetDesc().MipLevels;
+	Device->CreateShaderResourceView(TextureResource.Get(), &srvDesc, CpuHandle);
+}
+
 
 FD3DConstantBuffer::FD3DConstantBuffer()
 	:FRenderResource(E_RESOURCE_TYPE::TYPE_CONSTANT_BUFFER)

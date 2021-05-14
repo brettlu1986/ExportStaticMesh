@@ -331,6 +331,10 @@ void LAssetDataLoader::LoadSampleScene(FScene* Scene)
 		LoadSkeletonFromFile(SampleAssets::SkeletonResource, Skeleton);
 		SkeletalMesh->SetSkeleton(Skeleton);
 
+		FTexture* Tex = GRHI->RHICreateTexture();
+		Tex->InitializeTexture(SampleAssets::SkeletonTexture);
+		SkeletalMesh->SetDiffuseTexture(Tex);
+
 		LAnimator* Animator = new LAnimator();
 		for(UINT i = 0; i< SampleAssets::SkeletalAnimCount; ++i)
 		{

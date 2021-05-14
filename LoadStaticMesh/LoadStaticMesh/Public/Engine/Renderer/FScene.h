@@ -36,6 +36,11 @@ public:
 		return Meshes;
 	}
 
+	const std::vector<LCharacter*>& GetCharacters()
+	{
+		return Players;
+	}
+
 	LCamera& GetCamera()
 	{
 		return Camera;

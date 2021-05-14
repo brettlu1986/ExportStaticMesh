@@ -10,6 +10,7 @@
 #include "LEngine.h"
 #include "d3dx12.h"
 #include "LDeviceWindows.h"
+#include "FD3D12ResourceViewCreater.h"
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
@@ -941,5 +942,33 @@ void FD3D12DynamicRHI::CreatePipelineStateObject(FRHIPiplineStateInitializer& In
 	PiplelineStateObjCache[Initializer.KeyName] = PsoObj;
 }
 
+void FD3D12DynamicRHI::CreateResourceViewCreater(UINT CbvCount, UINT SrvCount, UINT UavCount, UINT DsvCount, UINT RtvCount, UINT SamplerCount)
+{
+	ResourceViewCreater = new FD3D12ResourceViewCreater(D3DDevice.Get());
+	ResourceViewCreater->OnCreate(CbvCount, SrvCount, UavCount, DsvCount, RtvCount, SamplerCount);
+}
 
+void FD3D12DynamicRHI::CreateVertexAndIndexBufferView(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer)
+{
+	FD3D12IndexBuffer* D3DIndexBuffer = dynamic_cast<FD3D12IndexBuffer*>(IndexBuffer);
+	FD3D12VertexBuffer* D3DVertexBuffer = dynamic_cast<FD3D12VertexBuffer*>(VertexBuffer);
+	D3DIndexBuffer->InitGPUIndexBufferView(D3DDevice.Get(), CommandList.Get());
+	D3DVertexBuffer->InitGPUVertexBufferView(D3DDevice.Get(), CommandList.Get());
+}
 
+FResourceView* FD3D12DynamicRHI::CreateResourceView(FTexture** Texture, E_RESOURCE_VIEW_TYPE ViewType, UINT ViewCount) 
+{
+	FResourceView* ResView = new FD3D12ResourceView();
+
+	FD3D12ResourceViewCreater* ViewCreater = dynamic_cast<FD3D12ResourceViewCreater*>(ResourceViewCreater);
+	ViewCreater->AllocDescriptor(ViewCount, ViewType, ResView);
+	for (UINT i = 0; i < ViewCount; i++)
+	{
+		FD3D12Texture* D3DTex = dynamic_cast<FD3D12Texture*>(*(Texture + i));
+
+		FD3D12ResourceView* View = dynamic_cast<FD3D12ResourceView*>(ResView);
+		D3DTex->InitGPUTextureView(D3DDevice.Get(), CommandList.Get(), View->GetCpu(i));
+	}
+
+	return ResView;
+}

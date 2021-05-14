@@ -7,6 +7,7 @@ FSkeletalMesh::FSkeletalMesh()
 :VertexBuffer(nullptr)
 ,IndexBuffer(nullptr)
 ,DiffuseTex(nullptr)
+,ShaderResView(nullptr)
 ,Skeleton(nullptr)
 {
 	Initialize();
@@ -33,6 +34,13 @@ void FSkeletalMesh::Destroy()
 		IndexBuffer = nullptr;
 	}
 
+	if (DiffuseTex)
+	{
+		DiffuseTex->Destroy();
+		delete DiffuseTex;
+		DiffuseTex = nullptr;
+	}
+
 	if(Skeleton)
 	{
 		delete Skeleton;
@@ -47,6 +55,17 @@ void FSkeletalMesh::SetVertexAndIndexBuffer(FVertexBuffer* VBuffer, FIndexBuffer
 {
 	VertexBuffer = VBuffer;
 	IndexBuffer = IBuffer;
+}
+
+void FSkeletalMesh::SetDiffuseTexture(FTexture* Tex)
+{
+	DiffuseTex = Tex;
+}
+
+void FSkeletalMesh::InitRenderResource()
+{
+	GRHI->CreateVertexAndIndexBufferView(IndexBuffer, VertexBuffer);
+	ShaderResView = GRHI->CreateResourceView(&DiffuseTex, E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBVSRVUAV);
 }
 
 void FSkeletalMesh::SetModelLocation(XMFLOAT3 Location)

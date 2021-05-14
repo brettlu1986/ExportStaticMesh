@@ -12,12 +12,17 @@ public:
 
 	void SetSkeletalMesh(FSkeletalMesh* Mesh)
 	{
-		SkeletalMesh= Mesh;
+		SkeletalMesh = Mesh;
 	}
 
 	void SetAnimator(LAnimator* Animator)
 	{
 		AnimatorIns = Animator;
+	}
+
+	FSkeletalMesh* GetSkeletalMesh()
+	{
+		return SkeletalMesh;
 	}
 
 private: 

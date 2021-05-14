@@ -59,7 +59,7 @@ void FRenderThread::InitRenderThreadScene(FScene* Scene)
 	AddTask([this, Scene] {
 		RenderScene = Scene;
 		GRHI->BeginCreateSceneResource();
-		GRHI->CreateSceneResources(RenderScene);
+		Renderer.Initialize(RenderScene);
 		GRHI->EndCreateSceneResource();
 	});
 }

@@ -11,6 +11,7 @@
 #include "FScene.h"
 #include "FD3D12Resource.h"
 #include <map>
+#include "FResourceViewCreater.h"
 
 struct FRHIViewPort
 {
@@ -50,8 +51,6 @@ public:
 
 	virtual void ShutDown() = 0;
 
-	
-
 	virtual void UpdateSceneResources(FScene* RenderScene) = 0;
 	virtual void BeginRenderScene() = 0;
 	virtual void EndRenderScene() = 0;
@@ -69,6 +68,20 @@ public:
 	virtual void EndCreateSceneResource() = 0;
 
 	virtual void DrawSceneToShadowMap(FScene* Scene) = 0;
+
+	//
+	virtual void CreateResourceViewCreater(UINT CbvCount, UINT SrvCount, UINT UavCount, UINT DsvCount, UINT RtvCount, UINT SamplerCount) = 0;
+	virtual void CreateVertexAndIndexBufferView(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) = 0;
+	//the Texuture**  is the texture array start pointer, it can create and bind more than one texture onece
+	virtual FResourceView* CreateResourceView(FTexture** Texture, E_RESOURCE_VIEW_TYPE ViewType, UINT ViewCount = 1) = 0;
+
+public: 
+	FResourceViewCreater* GetResourceViewCreater()
+	{
+		return ResourceViewCreater;
+	}
+protected:
+	FResourceViewCreater* ResourceViewCreater = nullptr;
 };
 
 extern FDynamicRHI* GRHI;

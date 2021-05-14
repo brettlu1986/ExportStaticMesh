@@ -180,6 +180,7 @@
     <ClCompile Include="Private\Engine\Renderer\FVertexBuffer.cpp" />
     <ClCompile Include="Private\Engine\Renderer\LAssetDataLoader.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Resource.cpp" />
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12ResourceViewCreater.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12RHIPublic.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FDDSTextureLoader.cpp" />
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\stdafx.cpp">
@@ -377,6 +378,7 @@
     <ClInclude Include="Public\Engine\Renderer\FMesh.h" />
     <ClInclude Include="Public\Engine\Renderer\FRenderer.h" />
     <ClInclude Include="Public\Engine\Renderer\FRenderResource.h" />
+    <ClInclude Include="Public\Engine\Renderer\FResourceViewCreater.h" />
     <ClInclude Include="Public\Engine\Renderer\FScene.h" />
     <ClInclude Include="Public\Engine\Renderer\FShader.h" />
     <ClInclude Include="Public\Engine\Renderer\FSkeletalMesh.h" />
@@ -386,6 +388,7 @@
     <ClInclude Include="Public\Engine\Renderer\FSceneRenderer.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Helper.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Resource.h" />
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12ResourceViewCreater.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12RHIPrivate.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\d3dx12.h" />
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FDDSTextureLoader.h" />

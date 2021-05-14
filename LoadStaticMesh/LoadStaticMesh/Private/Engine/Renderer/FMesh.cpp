@@ -68,6 +68,7 @@ void FMesh::Destroy()
 
 void FMesh::Initialize()
 {
+	//game thread read data from file
 	VertexBuffer = GRHI->RHICreateVertexBuffer();
 	IndexBuffer = GRHI->RHICreateIndexBuffer();
 	LAssetDataLoader::LoadMeshVertexDataFromFile(MeshFileName, this);
@@ -87,6 +88,7 @@ XMMATRIX FMesh::GetModelMatrix()
 
 void FMesh::InitRenderResource()
 {
+	//render thread init gpu resource
 	GRHI->RHIInitMeshGPUResource(IndexBuffer, VertexBuffer, DiffuseTex);
 }
 

@@ -9,11 +9,11 @@ public:
 	virtual ~FResourceView() = default;
 };
 
-class FResourceViewHeaps
+class FResourceViewCreater
 {
 public:
-	FResourceViewHeaps() {};
-	virtual ~FResourceViewHeaps() = default;
+	FResourceViewCreater() {};
+	virtual ~FResourceViewCreater() = default;
 
 	virtual void OnCreate(UINT CbvCount, UINT SrvCount, UINT UavCount, UINT DsvCount, UINT RtvCount, UINT SamplerCount) = 0;
 	virtual void OnDestroy() = 0;

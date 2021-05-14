@@ -183,6 +183,9 @@
     <ClCompile Include="Private\Engine\Common\Animation\LSkeleton.cpp">
       <Filter>Source Files\Engine\Common\Animation</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12ResourceViewCreater.cpp">
+      <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds">
@@ -353,6 +356,12 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\Animation\LAnimationTrackChannel.h">
       <Filter>Header Files\Engine\Common\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\FResourceViewCreater.h">
+      <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12ResourceViewCreater.h">
+      <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

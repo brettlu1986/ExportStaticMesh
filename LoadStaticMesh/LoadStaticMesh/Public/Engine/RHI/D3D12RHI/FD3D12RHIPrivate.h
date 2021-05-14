@@ -40,7 +40,11 @@ public:
 	virtual void RenderSceneObjects(FScene* Scene) override;
 	virtual void EndCreateSceneResource() override;
 	virtual void DrawSceneToShadowMap(FScene* Scene) override;
-	
+
+	//
+	virtual void CreateResourceViewCreater(UINT CbvCount, UINT SrvCount, UINT UavCount, UINT DsvCount, UINT RtvCount, UINT SamplerCount) override;
+	virtual void CreateVertexAndIndexBufferView(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) override;
+	virtual FResourceView* CreateResourceView(FTexture** Texture, E_RESOURCE_VIEW_TYPE ViewType, UINT ViewCount = 1) override;
 private:
 	void UpdateSceneMtConstants(FScene* RenderScene);
 	void UpdateSceneMatConstants(FScene* RenderScene);
