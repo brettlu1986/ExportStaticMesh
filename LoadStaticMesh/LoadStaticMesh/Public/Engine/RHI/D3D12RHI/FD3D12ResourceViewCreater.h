@@ -4,6 +4,8 @@
 #include "FResourceViewCreater.h"
 #include "FDefine.h"
 
+using namespace Microsoft::WRL;
+
 class FD3D12ResourceView : public FResourceView
 {
 public: 
@@ -13,7 +15,7 @@ public:
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGpu(UINT i = 0);
 	
 	void SetResourceView(UINT InCount, UINT DesSize, D3D12_CPU_DESCRIPTOR_HANDLE CpuDes, D3D12_GPU_DESCRIPTOR_HANDLE GpuDes);
-private: 
+protected: 
 	
 	//resource count, may be more than one
 	UINT Count = 0;
@@ -21,6 +23,17 @@ private:
 
 	D3D12_CPU_DESCRIPTOR_HANDLE CpuDescriptor;
 	D3D12_GPU_DESCRIPTOR_HANDLE GpuDescriptor;
+};
+
+class FD3D12CbvResourceView : public FD3D12ResourceView
+{
+public: 
+	void SetConstantBufferViewInfo(ID3D12Device* Device, UINT InBufferSize);
+	void UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSize);
+private: 
+	UINT BufferSize;
+	UINT8* pCbvDataBegin;
+	ComPtr<ID3D12Resource> ConstantBuffer;
 };
 
 class FD3D12ResourceViewHeap

@@ -65,7 +65,7 @@ void FSkeletalMesh::SetDiffuseTexture(FTexture* Tex)
 void FSkeletalMesh::InitRenderResource()
 {
 	GRHI->CreateVertexAndIndexBufferView(IndexBuffer, VertexBuffer);
-	ShaderResView = GRHI->CreateResourceView(&DiffuseTex, E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBVSRVUAV);
+	ShaderResView = GRHI->CreateResourceView({E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV, 1, &DiffuseTex, 0});
 }
 
 void FSkeletalMesh::SetModelLocation(XMFLOAT3 Location)

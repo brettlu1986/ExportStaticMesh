@@ -714,7 +714,6 @@ void FD3D12DynamicRHI::UpdateSceneMatConstants(FScene* RenderScene)
 
 void FD3D12DynamicRHI::UpdateScenePassConstants(FScene* RenderScene)
 {
-	const std::vector<FMesh*>& Meshes = RenderScene->GetDrawMeshes();
 	FBufferObject* BufferObj = new FBufferObject();
 	BufferObj->Type = E_CONSTANT_BUFFER_TYPE::TYPE_CB_PASSCONSTANT;
 	BufferObj->DataSize = CurrentCbvSrvDesc.CbConstant.BufferSize;
@@ -893,6 +892,7 @@ void FD3D12DynamicRHI::CreatePipelineStateObject(FRHIPiplineStateInitializer& In
 		case ERHI_DATA_FORMAT::FORMAT_R32G32B32_FLOAT: { return DXGI_FORMAT_R32G32B32_FLOAT; }
 		case ERHI_DATA_FORMAT::FORMAT_R32G32_FLOAT: { return DXGI_FORMAT_R32G32_FLOAT; }
 		case ERHI_DATA_FORMAT::FORMAT_R32G32B32A32_FLOAT: { return DXGI_FORMAT_R32G32B32A32_FLOAT; }
+		case ERHI_DATA_FORMAT::FORMAT_R16G16B16A16_UINT: { return DXGI_FORMAT_R16G16B16A16_UINT;}
 		default: {return DXGI_FORMAT_UNKNOWN; }
 		}
 	};
@@ -942,6 +942,128 @@ void FD3D12DynamicRHI::CreatePipelineStateObject(FRHIPiplineStateInitializer& In
 	PiplelineStateObjCache[Initializer.KeyName] = PsoObj;
 }
 
+/// 
+void FD3D12DynamicRHI::CreatePipelineStateObject(FPiplineStateInitializer Initializer)
+{
+	if (PiplelineStateObjCache.find(Initializer.KeyName) != PiplelineStateObjCache.end())
+		return;
+
+	FD3DGraphicPipline* PsoObj = new FD3DGraphicPipline();
+
+	CD3DX12_ROOT_PARAMETER RootParameters[6];
+	ZeroMemory(RootParameters, sizeof(RootParameters));
+	CD3DX12_DESCRIPTOR_RANGE Ranges[6];
+	ZeroMemory(Ranges, sizeof(Ranges));
+	Ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+	Ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
+	Ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);
+	Ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); //shadow map
+	Ranges[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1); //object diffuse texture
+	Ranges[5].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
+
+	RootParameters[0].InitAsDescriptorTable(1, &Ranges[0], D3D12_SHADER_VISIBILITY_ALL);
+	RootParameters[1].InitAsDescriptorTable(1, &Ranges[1], D3D12_SHADER_VISIBILITY_ALL);
+	RootParameters[2].InitAsDescriptorTable(1, &Ranges[2], D3D12_SHADER_VISIBILITY_ALL);
+	RootParameters[3].InitAsDescriptorTable(1, &Ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
+	RootParameters[4].InitAsDescriptorTable(1, &Ranges[4], D3D12_SHADER_VISIBILITY_PIXEL);
+	RootParameters[5].InitAsDescriptorTable(1, &Ranges[5], D3D12_SHADER_VISIBILITY_PIXEL);
+
+	// Allow input layout and deny uneccessary access to certain pipeline stages.
+	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(_countof(RootParameters), RootParameters, (UINT)StaticSamplers.size(), StaticSamplers.data(),
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+	ComPtr<ID3DBlob> Signature;
+	ComPtr<ID3DBlob> Error;
+
+	ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &Signature, &Error));
+	ThrowIfFailed(D3DDevice.Get()->CreateRootSignature(0, Signature->GetBufferPointer(), Signature->GetBufferSize(), IID_PPV_ARGS(&PsoObj->RootSignature)));
+	NAME_D3D12_OBJECT(PsoObj->RootSignature);
+
+	CD3DX12_RASTERIZER_DESC rasterizerStateDesc(D3D12_DEFAULT);
+	rasterizerStateDesc.FrontCounterClockwise = Initializer.RasterizerStat.FrontCounterClockwise;
+	rasterizerStateDesc.DepthBias = Initializer.RasterizerStat.DepthBias;
+	rasterizerStateDesc.DepthBiasClamp = Initializer.RasterizerStat.DepthBiasClamp;
+	rasterizerStateDesc.SlopeScaledDepthBias = Initializer.RasterizerStat.SlopeScaledDepthBias;
+	auto ConvCullMode = [](FCullMode Mode) -> D3D12_CULL_MODE
+	{
+		switch (Mode)
+		{
+		case FCullMode::CULL_MODE_NONE: { return D3D12_CULL_MODE_NONE; }
+		case FCullMode::CULL_MODE_FRONT: { return D3D12_CULL_MODE_FRONT; }
+		case FCullMode::CULL_MODE_BACK: { return D3D12_CULL_MODE_BACK; }
+		default: {return D3D12_CULL_MODE_NONE; }
+		}
+	};
+	rasterizerStateDesc.CullMode = ConvCullMode(Initializer.RasterizerStat.CullMode);
+
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC PsoDesc = {};
+	ZeroMemory(&PsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
+
+	std::vector<D3D12_INPUT_ELEMENT_DESC> InputElementDescs;
+	auto ConvertRHIFormatToD3DFormat = [](ERHI_DATA_FORMAT InFormat) -> DXGI_FORMAT
+	{
+		switch (InFormat)
+		{
+		case ERHI_DATA_FORMAT::FORMAT_R32G32B32_FLOAT: { return DXGI_FORMAT_R32G32B32_FLOAT; }
+		case ERHI_DATA_FORMAT::FORMAT_R32G32_FLOAT: { return DXGI_FORMAT_R32G32_FLOAT; }
+		case ERHI_DATA_FORMAT::FORMAT_R32G32B32A32_FLOAT: { return DXGI_FORMAT_R32G32B32A32_FLOAT; }
+		case ERHI_DATA_FORMAT::FORMAT_R16G16B16A16_UINT: { return DXGI_FORMAT_R16G16B16A16_UINT; }
+		default: {return DXGI_FORMAT_UNKNOWN; }
+		}
+	};
+
+	auto ConvertRHIClassificationToD3D = [](ERHI_INPUT_CLASSIFICATION InClassify) ->D3D12_INPUT_CLASSIFICATION
+	{
+		switch (InClassify)
+		{
+		case ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_VERTEX_DATA: { return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA; }
+		case ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_INSTANCE_DATA: { return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA; }
+		default: { return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA; }
+		}
+	};
+
+	for (UINT i = 0; i < Initializer.NumElements; i++)
+	{
+		FRHIInputElement* RHIDesc = (FRHIInputElement*)(Initializer.pInputElement + i);
+		D3D12_INPUT_ELEMENT_DESC D3DInputDesc;
+		D3DInputDesc.SemanticName = RHIDesc->SemanticName.c_str();
+		D3DInputDesc.SemanticIndex = RHIDesc->SemanticIndex;
+		D3DInputDesc.Format = ConvertRHIFormatToD3DFormat(RHIDesc->Format);
+		D3DInputDesc.InputSlot = RHIDesc->InputSlot;
+		D3DInputDesc.AlignedByteOffset = RHIDesc->AlignedByteOffset;
+		D3DInputDesc.InputSlotClass = ConvertRHIClassificationToD3D(RHIDesc->InputSlotClass);
+		D3DInputDesc.InstanceDataStepRate = RHIDesc->InstanceDataStepRate;
+		InputElementDescs.push_back(D3DInputDesc);
+	}
+
+	FShader* Vs = RHICreateShader(Initializer.VsResource);
+	FShader* Ps = RHICreateShader(Initializer.PsResource);
+
+	PsoDesc.InputLayout = { InputElementDescs.data(), Initializer.NumElements };
+	PsoDesc.pRootSignature = PsoObj->RootSignature.Get();
+	PsoDesc.VS = CD3DX12_SHADER_BYTECODE(Vs->GetShaderByteCode(), Vs->GetDataLength());
+	PsoDesc.PS = CD3DX12_SHADER_BYTECODE(Ps->GetShaderByteCode(), Ps->GetDataLength());
+	PsoDesc.RasterizerState = rasterizerStateDesc;
+	PsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	PsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	PsoDesc.SampleMask = UINT_MAX;
+	PsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	PsoDesc.NumRenderTargets = Initializer.NumRenderTargets;
+	PsoDesc.RTVFormats[0] = Initializer.RtvFormat == FRtvFormat::FORMAT_UNKNOWN ? DXGI_FORMAT_UNKNOWN : DXGI_FORMAT_R8G8B8A8_UNORM;
+	PsoDesc.SampleDesc.Count = 1;
+	PsoDesc.SampleDesc.Quality = 0;	////not use 4XMSAA
+	PsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;//DXGI_FORMAT_D32_FLOAT;// DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	ComPtr<ID3D12PipelineState> PipelineState;
+	ThrowIfFailed(D3DDevice.Get()->CreateGraphicsPipelineState(&PsoDesc, IID_PPV_ARGS(&PsoObj->PipelineState)));
+	NAME_D3D12_OBJECT(PsoObj->PipelineState);
+	PiplelineStateObjCache[Initializer.KeyName] = PsoObj;
+
+	delete Vs;
+	delete Ps;
+}
+//////////////////
+
 void FD3D12DynamicRHI::CreateResourceViewCreater(UINT CbvCount, UINT SrvCount, UINT UavCount, UINT DsvCount, UINT RtvCount, UINT SamplerCount)
 {
 	ResourceViewCreater = new FD3D12ResourceViewCreater(D3DDevice.Get());
@@ -956,19 +1078,30 @@ void FD3D12DynamicRHI::CreateVertexAndIndexBufferView(FIndexBuffer* IndexBuffer,
 	D3DVertexBuffer->InitGPUVertexBufferView(D3DDevice.Get(), CommandList.Get());
 }
 
-FResourceView* FD3D12DynamicRHI::CreateResourceView(FTexture** Texture, E_RESOURCE_VIEW_TYPE ViewType, UINT ViewCount) 
+FResourceView* FD3D12DynamicRHI::CreateResourceView(FResourceViewInfo ViewInfo)
 {
-	FResourceView* ResView = new FD3D12ResourceView();
-
 	FD3D12ResourceViewCreater* ViewCreater = dynamic_cast<FD3D12ResourceViewCreater*>(ResourceViewCreater);
-	ViewCreater->AllocDescriptor(ViewCount, ViewType, ResView);
-	for (UINT i = 0; i < ViewCount; i++)
+	if (ViewInfo.ViewType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV)
 	{
-		FD3D12Texture* D3DTex = dynamic_cast<FD3D12Texture*>(*(Texture + i));
+		FResourceView* ResView = new FD3D12ResourceView();
+		ViewCreater->AllocDescriptor(ViewInfo.ViewCount, ViewInfo.ViewType, ResView);
+		for (UINT i = 0; i < ViewInfo.ViewCount; i++)
+		{
+			FD3D12Texture* D3DTex = dynamic_cast<FD3D12Texture*>(*(ViewInfo.TexResource + i));
+			FD3D12ResourceView* View = dynamic_cast<FD3D12ResourceView*>(ResView);
+			D3DTex->InitGPUTextureView(D3DDevice.Get(), CommandList.Get(), View->GetCpu(i));
+		}
+		return ResView;
+	}
+	else// default is E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV
+	{
+		FResourceView* CbResView = new FD3D12CbvResourceView();
+		ViewCreater->AllocDescriptor(ViewInfo.ViewCount, ViewInfo.ViewType, CbResView);
 
-		FD3D12ResourceView* View = dynamic_cast<FD3D12ResourceView*>(ResView);
-		D3DTex->InitGPUTextureView(D3DDevice.Get(), CommandList.Get(), View->GetCpu(i));
+		FD3D12CbvResourceView* View = dynamic_cast<FD3D12CbvResourceView*>(CbResView);
+		View->SetConstantBufferViewInfo(D3DDevice.Get(), ViewInfo.DataSize);
 	}
 
-	return ResView;
+	assert(!"not valid resource view type");
+	return new FResourceView();
 }

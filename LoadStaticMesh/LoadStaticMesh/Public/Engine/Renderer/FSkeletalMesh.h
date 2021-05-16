@@ -35,6 +35,15 @@ public:
 		Skeleton = Ske;
 	}
 
+	void SetPsoKey(std::string InKey)
+	{
+		UsePsoKey = InKey;
+	}
+
+	const std::string& GetPsoKey()
+	{
+		return UsePsoKey;
+	}
 private:
 	void UpdateModelMatrix();
 
@@ -51,4 +60,6 @@ private:
 	XMFLOAT3 ModelRotation;
 	XMFLOAT3 ModelScale;
 	XMMATRIX ModelMatrix;
+
+	std::string UsePsoKey;
 };

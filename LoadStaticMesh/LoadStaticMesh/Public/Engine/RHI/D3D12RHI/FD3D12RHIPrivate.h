@@ -44,7 +44,9 @@ public:
 	//
 	virtual void CreateResourceViewCreater(UINT CbvCount, UINT SrvCount, UINT UavCount, UINT DsvCount, UINT RtvCount, UINT SamplerCount) override;
 	virtual void CreateVertexAndIndexBufferView(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) override;
-	virtual FResourceView* CreateResourceView(FTexture** Texture, E_RESOURCE_VIEW_TYPE ViewType, UINT ViewCount = 1) override;
+	virtual FResourceView* CreateResourceView(FResourceViewInfo ViewInfo) override;
+	virtual void CreatePipelineStateObject(FPiplineStateInitializer Initializer) override;
+
 private:
 	void UpdateSceneMtConstants(FScene* RenderScene);
 	void UpdateSceneMatConstants(FScene* RenderScene);

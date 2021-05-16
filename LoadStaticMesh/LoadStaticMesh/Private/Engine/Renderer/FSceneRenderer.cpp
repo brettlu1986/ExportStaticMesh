@@ -27,10 +27,14 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 	GRHI->CreateResourceViewCreater(CbvCount, SrvCount, UavCount, DsvCount, RtvCount, SamplerCount);
 
 	const std::vector<LCharacter*>& Players = RenderScene->GetCharacters();
+	GRHI->CreatePipelineStateObject({"SKMPso", SkeletalInputElementDescs, _countof(SkeletalInputElementDescs), L"SkeletalVs.cso",
+		L"SkeletalPs.cso", 1, FRtvFormat::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState()});
+
 	for(LCharacter* Player : Players)
 	{
 		FSkeletalMesh* Mesh = Player->GetSkeletalMesh();
 		Mesh->InitRenderResource();
+		Mesh->SetPsoKey("SKMPso");
 	}
 }
 

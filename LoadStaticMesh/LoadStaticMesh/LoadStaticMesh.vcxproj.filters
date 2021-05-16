@@ -217,6 +217,12 @@
     <FxCompile Include="Resource\ShaderVs.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="Resource\SkeletalVs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\SkeletalPs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\ApplicationMain.h">

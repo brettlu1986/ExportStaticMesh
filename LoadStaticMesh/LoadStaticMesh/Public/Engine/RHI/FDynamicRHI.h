@@ -41,6 +41,14 @@ public:
 	LONG Bottom;
 };
 
+struct FResourceViewInfo
+{
+	E_RESOURCE_VIEW_TYPE ViewType;
+	UINT ViewCount;
+	FTexture** TexResource;// this is an array pointer, for one just use the tex pointer address
+	UINT DataSize;//use for constant buffer
+};
+
 class FDynamicRHI
 {
 public:
@@ -66,14 +74,14 @@ public:
 	virtual void CreateSceneResources(FScene* Scene) = 0;
 	virtual void RenderSceneObjects(FScene* Scene) = 0;
 	virtual void EndCreateSceneResource() = 0;
-
 	virtual void DrawSceneToShadowMap(FScene* Scene) = 0;
 
 	//
 	virtual void CreateResourceViewCreater(UINT CbvCount, UINT SrvCount, UINT UavCount, UINT DsvCount, UINT RtvCount, UINT SamplerCount) = 0;
 	virtual void CreateVertexAndIndexBufferView(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) = 0;
 	//the Texuture**  is the texture array start pointer, it can create and bind more than one texture onece
-	virtual FResourceView* CreateResourceView(FTexture** Texture, E_RESOURCE_VIEW_TYPE ViewType, UINT ViewCount = 1) = 0;
+	virtual FResourceView* CreateResourceView(FResourceViewInfo ViewInfo) = 0;
+	virtual void CreatePipelineStateObject(FPiplineStateInitializer Initializer) = 0;
 
 public: 
 	FResourceViewCreater* GetResourceViewCreater()

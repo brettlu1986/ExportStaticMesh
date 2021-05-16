@@ -94,7 +94,7 @@ void FD3D12VertexBuffer::InitGPUVertexBufferView(ID3D12Device* Device, ID3D12Gra
 	NAME_D3D12_OBJECT(VertexUploadBuffer);
 
 	VertexBufferView.BufferLocation = VertexBuffer->GetGPUVirtualAddress();
-	VertexBufferView.StrideInBytes = StandardInputStride;
+	VertexBufferView.StrideInBytes = bSKMVertex ? sizeof(FSkeletalVertexData) : sizeof(FVertexData);
 	VertexBufferView.SizeInBytes = VertexDataSize;
 }
 

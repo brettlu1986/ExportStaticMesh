@@ -33,3 +33,14 @@ struct VSInput
 	float4 color     : COLOR;
 };
 
+struct SkmVSInput
+{
+	float3 position    : POSITION;
+	float3 normal     : NORMAL;
+	float3 tangent   : TANGENT;
+	float2 uv0        : TEXCOORD0;
+	float2 uv1        : TEXCOORD1;
+	float4 color     : COLOR;
+	float3 BoneWeights : WEIGHTS;
+	uint4 BoneIndices : BONEINDICES;
+};

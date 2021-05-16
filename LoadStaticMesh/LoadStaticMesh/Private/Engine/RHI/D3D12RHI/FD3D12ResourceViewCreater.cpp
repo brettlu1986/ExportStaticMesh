@@ -32,6 +32,38 @@ void FD3D12ResourceView::SetResourceView(UINT InCount, UINT DesSize, D3D12_CPU_D
 	GpuDescriptor = GpuDes;
 }
 
+void FD3D12CbvResourceView::SetConstantBufferViewInfo(ID3D12Device* Device, UINT InBufferSize)
+{
+	BufferSize = InBufferSize;
+	const CD3DX12_HEAP_PROPERTIES ConstantProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	const CD3DX12_RESOURCE_DESC ConstantDesc = CD3DX12_RESOURCE_DESC::Buffer(BufferSize);
+
+	ThrowIfFailed(Device->CreateCommittedResource(
+		&ConstantProp,
+		D3D12_HEAP_FLAG_NONE,
+		&ConstantDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&ConstantBuffer)));
+	ThrowIfFailed(ConstantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&pCbvDataBegin)));
+	memset(pCbvDataBegin, 0, InBufferSize);
+	SetName(ConstantBuffer.Get(), L"FD3D12CbvResourceView");
+
+	UINT64 CbOffset = 0;
+	for (UINT i = 0; i < Count; i++)
+	{
+		D3D12_CONSTANT_BUFFER_VIEW_DESC CbvDesc = {};
+		CbvDesc.BufferLocation = ConstantBuffer->GetGPUVirtualAddress() + CbOffset;
+		CbvDesc.SizeInBytes = BufferSize / Count;
+		CbOffset += CbvDesc.SizeInBytes;
+		Device->CreateConstantBufferView(&CbvDesc, GetCpu(i));
+	}
+}
+
+void FD3D12CbvResourceView::UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSize)
+{
+	memcpy(pCbvDataBegin, pDataUpdate, BufferSize);
+}
 /// //
 void FD3D12ResourceViewHeap::OnCreate(ID3D12Device* Device, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, UINT InDescriptorCount)
 {
@@ -133,7 +165,8 @@ bool FD3D12ResourceViewCreater::AllocDescriptor(UINT Count, E_RESOURCE_VIEW_TYPE
 	{
 		return RtvHeap.AllocDescriptor(Count, ResView);
 	}
-	else if(HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBVSRVUAV)
+	else if(HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV || HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV ||
+		HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_UAV)
 	{
 		return CbvSrvUavHeap.AllocDescriptor(Count, ResView);
 	}
