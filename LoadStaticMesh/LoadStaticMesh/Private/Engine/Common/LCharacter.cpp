@@ -11,7 +11,12 @@ LCharacter::LCharacter()
 
 LCharacter::~LCharacter()
 {
-	if(SkeletalMesh)
+	Destroy();
+}
+
+void LCharacter::Destroy()
+{
+	if (SkeletalMesh)
 	{
 		SkeletalMesh->Destroy();
 		delete SkeletalMesh;

@@ -60,44 +60,71 @@ void FD3D12CbvResourceView::SetConstantBufferViewInfo(ID3D12Device* Device, UINT
 	}
 }
 
-void FD3D12CbvResourceView::UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSize)
+void FD3D12CbvResourceView::UpdateConstantBufferInfo(void* pDataUpdate)
 {
 	memcpy(pCbvDataBegin, pDataUpdate, BufferSize);
 }
+
 /// //
-void FD3D12ResourceViewHeap::OnCreate(ID3D12Device* Device, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, UINT InDescriptorCount)
+FD3D12ResourceViewHeap::FD3D12ResourceViewHeap()
+{
+}
+
+FD3D12ResourceViewHeap::~FD3D12ResourceViewHeap()
+{
+}
+
+void FD3D12ResourceViewHeap::OnCreate(ID3D12Device* Device, UINT HeapType, UINT InDescriptorCount)
 {
 	DescripterNum = InDescriptorCount;
 	Index = 0;
-	DescripterElementSize = Device->GetDescriptorHandleIncrementSize(HeapType);
+
+	D3D12_DESCRIPTOR_HEAP_TYPE D3DHeapType = GetD3DHeapType(HeapType);
+	DescripterElementSize = Device->GetDescriptorHandleIncrementSize(D3DHeapType);
 
 	D3D12_DESCRIPTOR_HEAP_DESC DescHeap;
 	DescHeap.NumDescriptors = DescripterNum;
-	DescHeap.Type = HeapType;
-	DescHeap.Flags = ( (HeapType == D3D12_DESCRIPTOR_HEAP_TYPE_RTV) || (HeapType == D3D12_DESCRIPTOR_HEAP_TYPE_DSV) ) ?
+	DescHeap.Type = D3DHeapType;
+	DescHeap.Flags = ((D3DHeapType == D3D12_DESCRIPTOR_HEAP_TYPE_RTV) || (D3DHeapType == D3D12_DESCRIPTOR_HEAP_TYPE_DSV)) ?
 		D3D12_DESCRIPTOR_HEAP_FLAG_NONE : D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	DescHeap.NodeMask = 0;
 
 	ThrowIfFailed(Device->CreateDescriptorHeap(&DescHeap, IID_PPV_ARGS(&Heap)));
 
-	SetNameByType(HeapType);
+	SetNameByType(D3DHeapType);
+}
+
+D3D12_DESCRIPTOR_HEAP_TYPE FD3D12ResourceViewHeap::GetD3DHeapType(UINT Type)
+{
+	if (Type == static_cast<UINT>(E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_RTV))
+		return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+	else if (Type == static_cast<UINT>(E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_DSV))
+		return D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	else if (Type == static_cast<UINT>(E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SAMPLER))
+		return D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+	else if (Type == (static_cast<UINT>(E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV) |
+		static_cast<UINT>(E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV) | static_cast<UINT>(E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_UAV)))
+		return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+
+	assert(!"invalid heap type");
+	return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 }
 
 void FD3D12ResourceViewHeap::SetNameByType(D3D12_DESCRIPTOR_HEAP_TYPE HeapType)
 {
 	if(HeapType == D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
-		SetName(Heap, L"HeapDsv");
+		SetName(Heap.Get(), L"HeapDsv");
 	else if (HeapType == D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
-		SetName(Heap, L"HeapRTV");
+		SetName(Heap.Get(), L"HeapRTV");
 	else if (HeapType == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
-		SetName(Heap, L"HeapSampler");
+		SetName(Heap.Get(), L"HeapSampler");
 	else if (HeapType == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
-		SetName(Heap, L"HeapCbvSrvUav");
+		SetName(Heap.Get(), L"HeapCbvSrvUav");
 }
 
 void FD3D12ResourceViewHeap::OnDestroy()
 {
-	Heap->Release();
+	Heap.Reset();
 }
 
 bool FD3D12ResourceViewHeap::AllocDescriptor(UINT Count, FResourceView* Rv)
@@ -124,63 +151,86 @@ bool FD3D12ResourceViewHeap::AllocDescriptor(UINT Count, FResourceView* Rv)
 /// 
 FD3D12ResourceViewCreater::FD3D12ResourceViewCreater()
 :ParentDevice(nullptr)
-, DsvHeap(FD3D12ResourceViewHeap())
-, RtvHeap(FD3D12ResourceViewHeap())
-, SamplerHeap(FD3D12ResourceViewHeap())
-, CbvSrvUavHeap(FD3D12ResourceViewHeap())
 {
 
 }
 
 FD3D12ResourceViewCreater::FD3D12ResourceViewCreater(ID3D12Device* Device)
 :ParentDevice(Device)
-, DsvHeap(FD3D12ResourceViewHeap())
-, RtvHeap(FD3D12ResourceViewHeap())
-, SamplerHeap(FD3D12ResourceViewHeap())
-, CbvSrvUavHeap(FD3D12ResourceViewHeap())
 {
 
 }
 
 FD3D12ResourceViewCreater::~FD3D12ResourceViewCreater()
 {
-	OnDestroy();
 }
 
 void FD3D12ResourceViewCreater::OnCreate(UINT CbvCount, UINT SrvCount, UINT UavCount, UINT DsvCount, UINT RtvCount, UINT SamplerCount)
 {
-	DsvHeap.OnCreate(ParentDevice, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, DsvCount);
-	RtvHeap.OnCreate(ParentDevice, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, RtvCount);
-	SamplerHeap.OnCreate(ParentDevice, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, SamplerCount);
-	CbvSrvUavHeap.OnCreate(ParentDevice, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, CbvCount + SrvCount + UavCount);
+	DsvHeap = new FD3D12ResourceViewHeap();
+	DsvHeap->OnCreate(ParentDevice, static_cast<UINT>(E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_DSV), DsvCount);
+
+	RtvHeap = new FD3D12ResourceViewHeap();
+	RtvHeap->OnCreate(ParentDevice, static_cast<UINT>(E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_RTV), RtvCount);
+
+	SamplerHeap = new FD3D12ResourceViewHeap();
+	SamplerHeap->OnCreate(ParentDevice, static_cast<UINT>(E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SAMPLER), SamplerCount);
+
+	CbvSrvUavHeap = new FD3D12ResourceViewHeap();
+	CbvSrvUavHeap->OnCreate(ParentDevice, static_cast<UINT>(E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV) | 
+		static_cast<UINT>(E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV) | static_cast<UINT>(E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_UAV)
+		, CbvCount + SrvCount + UavCount);
 }
 
 bool FD3D12ResourceViewCreater::AllocDescriptor(UINT Count, E_RESOURCE_VIEW_TYPE HeapType, FResourceView* ResView)
 {
-	if(HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_DSV)
+	if (HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_DSV)
 	{
-		return DsvHeap.AllocDescriptor(Count, ResView);
+		return DsvHeap->AllocDescriptor(Count, ResView);
 	}
-	else if(HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_RTV)
+	else if (HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_RTV)
 	{
-		return RtvHeap.AllocDescriptor(Count, ResView);
+		return RtvHeap->AllocDescriptor(Count, ResView);
 	}
-	else if(HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV || HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV ||
+	else if (HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV || HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV ||
 		HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_UAV)
 	{
-		return CbvSrvUavHeap.AllocDescriptor(Count, ResView);
+		return CbvSrvUavHeap->AllocDescriptor(Count, ResView);
 	}
-	else if(HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SAMPLER)
+	else if (HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SAMPLER)
 	{
-		return SamplerHeap.AllocDescriptor(Count, ResView);
+		return SamplerHeap->AllocDescriptor(Count, ResView);
 	}
 	return false;
 }
 
 void FD3D12ResourceViewCreater::OnDestroy()
 {
-	DsvHeap.OnDestroy();
-	RtvHeap.OnDestroy();
-	SamplerHeap.OnDestroy();
-	CbvSrvUavHeap.OnDestroy();
+	if(DsvHeap)
+	{	
+		DsvHeap->OnDestroy();
+		delete DsvHeap; 
+		DsvHeap = nullptr;
+	}
+
+	if (RtvHeap)
+	{
+		RtvHeap->OnDestroy();
+		delete RtvHeap;
+		RtvHeap = nullptr;
+	}
+
+	if (SamplerHeap)
+	{
+		SamplerHeap->OnDestroy();
+		delete SamplerHeap;
+		SamplerHeap = nullptr;
+	}
+
+	if (CbvSrvUavHeap)
+	{
+		CbvSrvUavHeap->OnDestroy();
+		delete CbvSrvUavHeap;
+		CbvSrvUavHeap = nullptr;
+	}
 }

@@ -47,6 +47,14 @@ public:
 	virtual FResourceView* CreateResourceView(FResourceViewInfo ViewInfo) override;
 	virtual void CreatePipelineStateObject(FPiplineStateInitializer Initializer) override;
 
+	virtual void SetResourceHeaps(std::vector<FResourceHeap*>& Heaps) override;
+	virtual void SetVertexAndIndexBuffers(FVertexBuffer* VertexBuffer, FIndexBuffer* IndexBuffer) override;
+	virtual void SetPiplineStateObject(FD3DGraphicPipline* PsoObj) override;
+	virtual void SetResourceParams(UINT Index, FResourceView* ResView) override;
+	virtual void DrawTriangleList(FIndexBuffer* IndexBuffer) override;
+
+	virtual void BeginEvent(const char* Name) override;
+	virtual void EndEvent() override;
 private:
 	void UpdateSceneMtConstants(FScene* RenderScene);
 	void UpdateSceneMatConstants(FScene* RenderScene);
@@ -84,7 +92,7 @@ private:
 
 	CD3DX12_VIEWPORT ViewPort;
 	CD3DX12_RECT ScissorRect;
-	std::map<std::string, FD3DGraphicPipline*> PiplelineStateObjCache;
+	
 
 	UINT RtvDescriptorSize;
 	UINT DsvDescriptorSize;

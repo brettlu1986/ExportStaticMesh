@@ -9,6 +9,8 @@ using namespace Microsoft::WRL;
 class FD3D12ResourceView : public FResourceView
 {
 public: 
+	FD3D12ResourceView() {};
+	virtual ~FD3D12ResourceView() {};
 	UINT GetCount() { return Count;}
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCpu(UINT i = 0);
@@ -28,31 +30,45 @@ protected:
 class FD3D12CbvResourceView : public FD3D12ResourceView
 {
 public: 
+	FD3D12CbvResourceView() {};
+	virtual ~FD3D12CbvResourceView()
+	{
+		if (ConstantBuffer)
+		{
+			ConstantBuffer->Unmap(0, nullptr);
+			ConstantBuffer.Reset();
+		}
+	}
 	void SetConstantBufferViewInfo(ID3D12Device* Device, UINT InBufferSize);
-	void UpdateConstantBufferInfo(void* pDataUpdate, UINT DataSize);
+	void UpdateConstantBufferInfo(void* pDataUpdate);
+
+	UINT GetBufferSize() { return BufferSize;}
 private: 
 	UINT BufferSize;
 	UINT8* pCbvDataBegin;
 	ComPtr<ID3D12Resource> ConstantBuffer;
 };
 
-class FD3D12ResourceViewHeap
+class FD3D12ResourceViewHeap : public FResourceHeap
 {
 public:
-	void OnCreate(ID3D12Device* Device, D3D12_DESCRIPTOR_HEAP_TYPE HeapType, UINT InDescriptorCount);
-	void OnDestroy();
-	bool AllocDescriptor(UINT Count, FResourceView* Rv);
+	FD3D12ResourceViewHeap();
+	virtual ~FD3D12ResourceViewHeap();
 
-	ID3D12DescriptorHeap* GetHeap() {  return Heap; }
+	virtual void OnCreate(ID3D12Device* Device, UINT HeapType, UINT InDescriptorCount) override;
+	virtual void OnDestroy() override;
+	virtual bool AllocDescriptor(UINT Count, FResourceView* Rv) override;
+
+	ID3D12DescriptorHeap* GetHeap() {  return Heap.Get(); }
 private:
+	D3D12_DESCRIPTOR_HEAP_TYPE GetD3DHeapType(UINT Type);
 	void SetNameByType(D3D12_DESCRIPTOR_HEAP_TYPE HeapType);
 
 	UINT Index; 
 	UINT DescripterNum;
 	UINT DescripterElementSize;
 
-	ID3D12DescriptorHeap* Heap;
-
+	ComPtr<ID3D12DescriptorHeap> Heap;
 };
 
 class FD3D12ResourceViewCreater : public FResourceViewCreater
@@ -69,9 +85,4 @@ public:
 
 private:
 	ID3D12Device* ParentDevice;
-
-	FD3D12ResourceViewHeap DsvHeap;
-	FD3D12ResourceViewHeap RtvHeap;
-	FD3D12ResourceViewHeap SamplerHeap;
-	FD3D12ResourceViewHeap CbvSrvUavHeap;
 };

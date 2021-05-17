@@ -8,6 +8,7 @@
 #include "FTexture.h"
 #include "FShader.h"
 #include "FMesh.h"
+#include "FSkeletalMesh.h"
 #include "FScene.h"
 #include "FD3D12Resource.h"
 #include <map>
@@ -83,13 +84,28 @@ public:
 	virtual FResourceView* CreateResourceView(FResourceViewInfo ViewInfo) = 0;
 	virtual void CreatePipelineStateObject(FPiplineStateInitializer Initializer) = 0;
 
+	virtual void SetResourceHeaps(std::vector<FResourceHeap*>& Heaps ) = 0;
+	virtual void SetVertexAndIndexBuffers(FVertexBuffer* VertexBuffer, FIndexBuffer* IndexBuffer) = 0;
+	virtual void SetPiplineStateObject(FD3DGraphicPipline* PsoObj) = 0;
+	virtual void SetResourceParams(UINT Index, FResourceView* ResView) = 0;
+	virtual void DrawTriangleList(FIndexBuffer* IndexBuffer) = 0;
+
+	virtual void BeginEvent(const char* Name) = 0;
+	virtual void EndEvent() = 0;
+
 public: 
 	FResourceViewCreater* GetResourceViewCreater()
 	{
 		return ResourceViewCreater;
 	}
+	FD3DGraphicPipline* GetPsoObject(std::string KeyName)
+	{
+		return PiplelineStateObjCache[KeyName];
+	}
+
 protected:
 	FResourceViewCreater* ResourceViewCreater = nullptr;
+	std::map<std::string, FD3DGraphicPipline*> PiplelineStateObjCache;
 };
 
 extern FDynamicRHI* GRHI;
@@ -103,3 +119,16 @@ public:
 	virtual FDynamicRHI* CreateRHI() = 0;
 };
 
+
+class FUserMarker
+{
+public:
+	FUserMarker(const char* Name)
+	{
+		GRHI->BeginEvent(Name);
+	}
+	~FUserMarker()
+	{
+		GRHI->EndEvent();
+	}
+};

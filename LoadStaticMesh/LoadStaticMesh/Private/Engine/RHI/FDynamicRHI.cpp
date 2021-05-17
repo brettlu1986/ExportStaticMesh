@@ -28,3 +28,4 @@ void RHIExit()
 	delete GRHI;
 	GRHI = nullptr;
 }
+

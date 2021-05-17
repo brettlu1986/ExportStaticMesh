@@ -47,8 +47,6 @@ struct FD3D12AdapterDesc
 	UINT NumDeviceNodes;
 };
 
-
-
 static UINT CalcConstantBufferByteSize(UINT byteSize)
 {
 	// Constant buffers must be a multiple of the minimum hardware

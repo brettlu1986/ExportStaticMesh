@@ -10,6 +10,8 @@ public:
 	LCharacter();
 	~LCharacter();
 
+	void Destroy();
+
 	void SetSkeletalMesh(FSkeletalMesh* Mesh)
 	{
 		SkeletalMesh = Mesh;

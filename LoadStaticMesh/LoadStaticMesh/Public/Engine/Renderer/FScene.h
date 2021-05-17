@@ -2,10 +2,12 @@
 
 #include "stdafx.h"
 #include "LCamera.h"
+#include "FResourceViewCreater.h"
+#include "LCharacter.h"
+#include "FSkeletalMesh.h"
 
 class FMesh;
 class LCamera;
-class LCharacter;
 class FScene
 {
 public: 
@@ -36,6 +38,11 @@ public:
 		return Meshes;
 	}
 
+	const std::vector<FSkeletalMesh*>& GetDrawSkeletalMeshes() 
+	{
+		return SkmMeshes;
+	}
+
 	const std::vector<LCharacter*>& GetCharacters()
 	{
 		return Players;
@@ -61,10 +68,14 @@ public:
 		return SceneLights[LightIndex];
 	}
 
+	FResourceView* PassContantView;
+
 private: 
 	std::vector<LCharacter*> Players;
+	std::vector<FSkeletalMesh*> SkmMeshes;
 	std::vector<FMesh*> Meshes;
 	std::vector<FLight*> SceneLights;
+
 	UINT MeshCount;
 	UINT MeshWithTextureCount;
 	UINT ConstantDirty;

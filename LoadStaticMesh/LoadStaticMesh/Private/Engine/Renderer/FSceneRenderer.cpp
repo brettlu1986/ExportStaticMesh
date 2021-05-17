@@ -15,9 +15,6 @@ FSceneRenderer::~FSceneRenderer()
 
 void FSceneRenderer::Initialize(FScene* RenderScene)
 {
-	//TODO: Create Scene Resource will move here
-	GRHI->CreateSceneResources(RenderScene);
-
 	const UINT CbvCount = 50;
 	const UINT SrvCount = 100;
 	const UINT UavCount = 10;
@@ -36,6 +33,9 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 		Mesh->InitRenderResource();
 		Mesh->SetPsoKey("SKMPso");
 	}
+
+	//TODO: Create Scene Resource will move here
+	GRHI->CreateSceneResources(RenderScene);
 }
 
 void FSceneRenderer::RenderScene(FScene* RenderScene)
@@ -46,7 +46,28 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 
 	GRHI->RenderSceneObjects(RenderScene);
 
+	// draw skeletal mesh 
+	{
+		FUserMarker UserMarker("Draw Skeletal Mesh");
+		
+		std::vector<FResourceHeap*> Heaps; 
+		FResourceViewCreater* ResViewCreater = GRHI->GetResourceViewCreater();
+		Heaps.push_back(ResViewCreater->GetCbvSrvUavHeap());
+		GRHI->SetResourceHeaps(Heaps);
 
+		const std::vector<FSkeletalMesh*>& SkmMeshes = RenderScene->GetDrawSkeletalMeshes();
+		for (size_t i = 0; i < SkmMeshes.size(); i++)
+		{	
+			FD3DGraphicPipline* Pso = GRHI->GetPsoObject(SkmMeshes[i]->GetPsoKey());
+			GRHI->SetVertexAndIndexBuffers(SkmMeshes[i]->GetVertexBuffer(), SkmMeshes[i]->GetIndexBuffer());
+			GRHI->SetPiplineStateObject(Pso);
+			GRHI->SetResourceParams(0, SkmMeshes[i]->MtConstantBufferView);
+			GRHI->SetResourceParams(2, RenderScene->PassContantView);
+			GRHI->SetResourceParams(3, SkmMeshes[i]->ShaderResView);
+			GRHI->DrawTriangleList(SkmMeshes[i]->GetIndexBuffer());
+		}
+	}
+	//
 	
 	GRHI->EndRenderScene();
 }

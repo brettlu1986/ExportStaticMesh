@@ -10,9 +10,5 @@ LAnimator::LAnimator()
 
 LAnimator::~LAnimator()
 {
-	if(Skeleton)
-	{
-		delete Skeleton;
-		Skeleton = nullptr;
-	}
+	
 }

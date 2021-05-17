@@ -44,22 +44,33 @@ public:
 	{
 		return UsePsoKey;
 	}
+
+	FVertexBuffer* GetVertexBuffer()
+	{
+		return VertexBuffer;
+	}
+
+	FIndexBuffer* GetIndexBuffer()
+	{
+		return IndexBuffer;
+	}
+
+	FResourceView* MtConstantBufferView;
+	//TODO: move to material
+	FResourceView* ShaderResView;
+
 private:
 	void UpdateModelMatrix();
 
 	FVertexBuffer* VertexBuffer;
 	FIndexBuffer* IndexBuffer;
-
-	//TODO: move to material
+	
 	FTexture* DiffuseTex;
-	FResourceView* ShaderResView;
-
 	LSkeleton* Skeleton;
 
 	XMFLOAT3 ModelLocation;
 	XMFLOAT3 ModelRotation;
 	XMFLOAT3 ModelScale;
 	XMMATRIX ModelMatrix;
-
 	std::string UsePsoKey;
 };

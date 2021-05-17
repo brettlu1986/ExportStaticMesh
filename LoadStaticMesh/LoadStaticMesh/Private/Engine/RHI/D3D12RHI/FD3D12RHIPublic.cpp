@@ -11,6 +11,7 @@
 #include "d3dx12.h"
 #include "LDeviceWindows.h"
 #include "FD3D12ResourceViewCreater.h"
+#include "pix.h"
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
@@ -210,7 +211,7 @@ void FD3D12DynamicRHI::CreateSampler()
 	D3DDevice.Get()->CreateSampler(&SamplerDesc, SamplerHeap->GetCPUDescriptorHandleForHeapStart());
 
 
-	CD3DX12_STATIC_SAMPLER_DESC shadow(
+	CD3DX12_STATIC_SAMPLER_DESC ShadowSampler(
 		1, // shaderRegister
 		D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT, // filter
 		D3D12_TEXTURE_ADDRESS_MODE_BORDER,  // addressU
@@ -220,9 +221,21 @@ void FD3D12DynamicRHI::CreateSampler()
 		16,                                 // maxAnisotropy
 		D3D12_COMPARISON_FUNC_LESS_EQUAL,
 		D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK);
-	StaticSamplers.push_back(shadow);
-}
 
+	CD3DX12_STATIC_SAMPLER_DESC TexSampler 
+	{
+		2,  
+		D3D12_FILTER_ANISOTROPIC,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP, 
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP, 
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,  
+		0.f,  
+		8, 
+		D3D12_COMPARISON_FUNC_LESS_EQUAL, 
+	};
+	StaticSamplers.push_back(ShadowSampler);
+	StaticSamplers.push_back(TexSampler);
+}
 
 void FD3D12DynamicRHI::InitWindow(UINT Width, UINT Height, void* InWindow)
 {
@@ -318,6 +331,7 @@ void FD3D12DynamicRHI::ShutDown()
 	DepthStencilBuffer.Reset();
 	SwapChain.Reset();
 
+	
 	for (auto Pso : PiplelineStateObjCache)
 	{
 		Pso.second->Destroy();
@@ -341,6 +355,10 @@ void FD3D12DynamicRHI::ShutDown()
 		ShaderMap->Destroy();
 		ShaderMap = nullptr;
 	}
+
+	ResourceViewCreater->OnDestroy();
+	delete ResourceViewCreater;
+	ResourceViewCreater = nullptr;
 
 	CommandAllocator.Reset();
 	CommandList.Reset();
@@ -405,8 +423,6 @@ void FD3D12DynamicRHI::DrawSceneToShadowMap(FScene* RenderScene)
 	{
 		DrawMesh(Meshes[i], nullptr);
 	}
-
-
 	// Change back to GENERIC_READ so we can read the texture in a shader.
 	const D3D12_RESOURCE_BARRIER Rb2 = CD3DX12_RESOURCE_BARRIER::Transition(ShaderMap->Resource(),
 			D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ);
@@ -433,7 +449,6 @@ void FD3D12DynamicRHI::RenderSceneObjects(FScene* Scene)
 	{
 		DrawMesh(Meshes[i], PiplelineStateObjCache[Meshes[i]->GetPsoKey()]);
 	}
-	
 }
 
 void FD3D12DynamicRHI::DrawMesh(FMesh* Mesh, FD3DGraphicPipline* Pso)
@@ -476,7 +491,34 @@ void FD3D12DynamicRHI::DrawMesh(FMesh* Mesh, FD3DGraphicPipline* Pso)
 		CommandList->SetGraphicsRootDescriptorTable(3, TexHandle);
 		CommandList->SetGraphicsRootDescriptorTable(5, SamplerHeap->GetGPUDescriptorHandleForHeapStart());
 	}
+	CommandList->DrawIndexedInstanced(D3DIndexBuffer->GetIndicesCount(), 1, 0, 0, 0);
+}
 
+
+void FD3D12DynamicRHI::SetVertexAndIndexBuffers(FVertexBuffer* VertexBuffer, FIndexBuffer* IndexBuffer) 
+{
+	FD3D12IndexBuffer* D3DIndexBuffer = dynamic_cast<FD3D12IndexBuffer*>(IndexBuffer);
+	FD3D12VertexBuffer* D3DVertexBuffer = dynamic_cast<FD3D12VertexBuffer*>(VertexBuffer);
+	CommandList->IASetVertexBuffers(0, 1, &(D3DVertexBuffer->GetVertexBufferView()));
+	CommandList->IASetIndexBuffer(&(D3DIndexBuffer->GetIndexBufferView()));
+}
+
+void FD3D12DynamicRHI::SetPiplineStateObject(FD3DGraphicPipline* PsoObj) 
+{
+	CommandList->SetGraphicsRootSignature(PsoObj->RootSignature.Get());
+	CommandList->SetPipelineState(PsoObj->PipelineState.Get());
+}
+
+void FD3D12DynamicRHI::SetResourceParams(UINT Index, FResourceView* ResView)
+{
+	FD3D12ResourceView* View = dynamic_cast<FD3D12ResourceView*>(ResView);
+	CommandList->SetGraphicsRootDescriptorTable(Index, View->GetGpu());
+}
+
+void FD3D12DynamicRHI::DrawTriangleList(FIndexBuffer* IndexBuffer)
+{
+	FD3D12IndexBuffer* D3DIndexBuffer = dynamic_cast<FD3D12IndexBuffer*>(IndexBuffer);
+	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	CommandList->DrawIndexedInstanced(D3DIndexBuffer->GetIndicesCount(), 1, 0, 0, 0);
 }
 
@@ -653,7 +695,6 @@ void FD3D12DynamicRHI::UpdateSceneResources(FScene* RenderScene)
 	}
 }
 
-
 void FD3D12DynamicRHI::UpdateSceneMtConstants(FScene* RenderScene)
 {
 	const std::vector<FMesh*>& Meshes = RenderScene->GetDrawMeshes();
@@ -678,6 +719,22 @@ void FD3D12DynamicRHI::UpdateSceneMtConstants(FScene* RenderScene)
 		Cb->UpdateConstantBufferInfo(ObjConsBuffer->BufferData, ObjConsBuffer->DataSize);
 	}
 	delete ObjConsBuffer;
+
+	// for skeletal mesh update
+	const std::vector<FSkeletalMesh*>& SkmMeshes = RenderScene->GetDrawSkeletalMeshes();
+	for (size_t i = 0; i < SkmMeshes.size(); i++)
+	{
+		FObjectConstants ObjConstants;
+		XMStoreFloat4x4(&ObjConstants.World, XMMatrixTranspose(SkmMeshes[i]->GetModelMatrix()));
+		XMFLOAT4X4 TexMat = MathHelper::Identity4x4();
+		XMStoreFloat4x4(&ObjConstants.TexTransform, XMMatrixTranspose(XMLoadFloat4x4(&TexMat)));
+		FD3D12CbvResourceView* CbvResView = dynamic_cast<FD3D12CbvResourceView*>(SkmMeshes[i]->MtConstantBufferView);
+
+		int8_t* BufferData = new int8_t[CbvResView->GetBufferSize()];
+		memcpy(BufferData, &ObjConstants, sizeof(ObjConstants));
+		CbvResView->UpdateConstantBufferInfo(BufferData);
+		delete BufferData;
+	}
 }
 
 void FD3D12DynamicRHI::UpdateSceneMatConstants(FScene* RenderScene)
@@ -755,6 +812,11 @@ void FD3D12DynamicRHI::UpdateScenePassConstants(FScene* RenderScene)
 	{
 		Cb->UpdateConstantBufferInfo(BufferObj->BufferData, BufferObj->DataSize);
 	}
+
+	//TODO: the static mesh will use  ResourceView to update, the code above need to change 
+	FD3D12CbvResourceView* CbvResView = dynamic_cast<FD3D12CbvResourceView*>(RenderScene->PassContantView);
+	CbvResView->UpdateConstantBufferInfo(BufferObj->BufferData);
+
 	delete BufferObj;
 }
 
@@ -1093,15 +1155,37 @@ FResourceView* FD3D12DynamicRHI::CreateResourceView(FResourceViewInfo ViewInfo)
 		}
 		return ResView;
 	}
-	else// default is E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV
+	else if(ViewInfo.ViewType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV)
 	{
 		FResourceView* CbResView = new FD3D12CbvResourceView();
 		ViewCreater->AllocDescriptor(ViewInfo.ViewCount, ViewInfo.ViewType, CbResView);
 
 		FD3D12CbvResourceView* View = dynamic_cast<FD3D12CbvResourceView*>(CbResView);
 		View->SetConstantBufferViewInfo(D3DDevice.Get(), ViewInfo.DataSize);
+		return CbResView;
 	}
 
 	assert(!"not valid resource view type");
 	return new FResourceView();
+}
+
+void FD3D12DynamicRHI::SetResourceHeaps(std::vector<FResourceHeap*>& Heaps)
+{
+	std::vector < ID3D12DescriptorHeap*> _Heaps;
+	for(size_t i = 0; i < Heaps.size(); i++)
+	{
+		FD3D12ResourceViewHeap* Heap = dynamic_cast<FD3D12ResourceViewHeap*>(Heaps[i]);
+		_Heaps.push_back(Heap->GetHeap());
+	}
+	CommandList->SetDescriptorHeaps((UINT)_Heaps.size(), _Heaps.data());
+}
+
+void FD3D12DynamicRHI::BeginEvent(const char* Name)
+{
+	PIXBeginEvent(CommandList.Get(), 0, Name);
+}
+
+void FD3D12DynamicRHI::EndEvent()
+{
+	PIXEndEvent(CommandList.Get());
 }
