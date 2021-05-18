@@ -56,6 +56,7 @@ public:
 	}
 
 	FResourceView* MtConstantBufferView;
+	FResourceView* SkeletalConstantBufferView;
 	//TODO: move to material
 	FResourceView* ShaderResView;
 

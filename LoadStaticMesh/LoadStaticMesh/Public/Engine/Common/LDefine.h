@@ -66,4 +66,6 @@ public:
 	
 }FInputResult;
 
+static const float AnimFrameRate = 1 / 30.f;
+
 

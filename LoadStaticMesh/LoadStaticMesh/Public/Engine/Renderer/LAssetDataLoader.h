@@ -37,6 +37,7 @@ private:
 		INT32 Index;
 	};
 	
+	
 public:
 
 	static void LoadMeshVertexDataFromFile(std::string FileName, FMesh* Mesh);

@@ -53,4 +53,6 @@ float LGameTimer::GetTimeScale()
 void LGameTimer::Tick()
 {
 	DeltaTime = std::chrono::system_clock::now() - StartTime;
+
+	float value = DeltaTime.count();
 }

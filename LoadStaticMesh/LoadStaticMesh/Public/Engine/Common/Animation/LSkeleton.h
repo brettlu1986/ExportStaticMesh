@@ -66,6 +66,15 @@ public:
 		return RefRootToBoneTransforms;
 	}
 	 
+	const std::vector<LBoneInfo>& GetBoneInfos()
+	{
+		return RefBoneInfos;
+	}
+
+	const std::vector<UINT16>& GetBoneMap()
+	{
+		return CurrentBoneMap;
+	}
 private:
 
 	UINT BoneNum;

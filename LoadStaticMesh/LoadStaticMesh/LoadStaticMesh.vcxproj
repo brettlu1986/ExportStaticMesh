@@ -393,7 +393,6 @@
     <ClInclude Include="Public\ApplicationMain.h" />
     <ClInclude Include="Public\Engine\Common\Animation\LAnimationSequence.h" />
     <ClInclude Include="Public\Engine\Common\Animation\LAnimationTrack.h" />
-    <ClInclude Include="Public\Engine\Common\Animation\LAnimationTrackChannel.h" />
     <ClInclude Include="Public\Engine\Common\Animation\LAnimator.h" />
     <ClInclude Include="Public\Engine\Common\Animation\LSkeleton.h" />
     <ClInclude Include="Public\Engine\Common\Event\LEvent.h" />

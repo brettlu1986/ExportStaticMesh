@@ -692,6 +692,31 @@ void FD3D12DynamicRHI::UpdateSceneResources(FScene* RenderScene)
 			RenderScene->DecreaseDirtyCount();
 		}
 		UpdateScenePassConstants(RenderScene);
+		UpdateSceneSkeletalConstants(RenderScene);
+	}
+}
+
+void FD3D12DynamicRHI::UpdateSceneSkeletalConstants(FScene* RenderScene)
+{
+	
+	for (size_t i = 0; i < RenderScene->GetCharacters().size(); i++)
+	{
+		LCharacter* Character = RenderScene->GetCharacters()[i];
+		int8_t* BufferData = new int8_t[CalcConstantBufferByteSize(sizeof(FSkeletalConstants))];
+
+		FSkeletalMesh* Mesh = Character->GetSkeletalMesh();
+		LAnimator* Animator = Character->GetAnimator();
+
+		FSkeletalConstants SkeCon;
+		std::copy(std::begin(Animator->GetBoneMapFinalTransforms()),
+			std::end(Animator->GetBoneMapFinalTransforms()), &SkeCon.BoneMapBoneTransforms[0]);
+
+		memcpy(BufferData, &SkeCon, sizeof(FSkeletalConstants));
+
+		FD3D12CbvResourceView* CbvResView = dynamic_cast<FD3D12CbvResourceView*>(Mesh->SkeletalConstantBufferView);
+		CbvResView->UpdateConstantBufferInfo(BufferData);
+
+		delete BufferData;
 	}
 }
 

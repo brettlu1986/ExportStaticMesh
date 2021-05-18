@@ -54,7 +54,6 @@ void FScene::AddCharacterToScene(LCharacter* Character)
 {
 	Players.push_back(Character);
 	SkmMeshes.push_back(Character->GetSkeletalMesh());
-
 	Character->PlayAnimation("Walk", true);
 }
 
@@ -89,6 +88,11 @@ void FScene::InitSceneRenderResource()
 void FScene::Update(float DeltaTime)
 {
 	Camera.Update(DeltaTime);
+
+	for(LCharacter* Ch : Players)
+	{
+		Ch->Update(DeltaTime);
+	}
 
 	FLight* Light = GetLight(0);
 	if (Light)

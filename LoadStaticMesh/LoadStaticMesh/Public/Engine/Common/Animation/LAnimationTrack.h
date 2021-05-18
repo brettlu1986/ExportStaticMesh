@@ -1,7 +1,8 @@
 #pragma once
 
 #include "stdafx.h"
-#include "LAnimationTrackChannel.h"
+
+using namespace DirectX;
 
 class LAnimationTrack
 {
@@ -12,24 +13,23 @@ public:
 	//this track with which bone
 	UINT TrackToBoneIndex;
 
-	void AddScaleChannelFrame(LAnimationScaleChannel S)
+	void AddScaleChannelFrame(XMFLOAT3 S)
 	{
 		ScaleChannelFrames.push_back(S);
 	}
 
-	void AddQuatChannelFrame(LAnimationQuatChannel Q)
+	void AddQuatChannelFrame(XMFLOAT4 Q)
 	{
 		QuatChannelFrames.push_back(Q);
 	}
 
-	void AddTranslateChannelFrame(LAnimationTranslateChannel T)
+	void AddTranslateChannelFrame(XMFLOAT3 T)
 	{
 		TranslateChannelFrames.push_back(T);
 	}
 
-private:
 	//this size is 1 or frame size, 1 means this bone has no change
-	std::vector<struct LAnimationScaleChannel> ScaleChannelFrames;
-	std::vector<struct LAnimationQuatChannel> QuatChannelFrames;
-	std::vector<struct LAnimationTranslateChannel> TranslateChannelFrames;
+	std::vector<XMFLOAT3> ScaleChannelFrames;
+	std::vector<XMFLOAT4> QuatChannelFrames;
+	std::vector<XMFLOAT3> TranslateChannelFrames;
 };

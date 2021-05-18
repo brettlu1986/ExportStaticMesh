@@ -52,6 +52,9 @@ void FSkeletalMesh::Destroy()
 
 	delete MtConstantBufferView;
 	MtConstantBufferView = nullptr;
+
+	delete SkeletalConstantBufferView;
+	SkeletalConstantBufferView = nullptr;
 }
 
 void FSkeletalMesh::Initialize()
@@ -73,6 +76,7 @@ void FSkeletalMesh::InitRenderResource()
 	GRHI->CreateVertexAndIndexBufferView(IndexBuffer, VertexBuffer);
 	ShaderResView = GRHI->CreateResourceView({E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV, 1, &DiffuseTex, 0});
 	MtConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FObjectConstants)) });
+	SkeletalConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FSkeletalConstants)) });
 }
 
 void FSkeletalMesh::SetModelLocation(XMFLOAT3 Location)

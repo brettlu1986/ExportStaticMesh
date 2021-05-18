@@ -59,6 +59,7 @@ private:
 	void UpdateSceneMtConstants(FScene* RenderScene);
 	void UpdateSceneMatConstants(FScene* RenderScene);
 	void UpdateScenePassConstants(FScene* RenderScene);
+	void UpdateSceneSkeletalConstants(FScene* RenderScene);
 
 	void FindAdapter();
 	void InitWindow(UINT Width, UINT Height, void* Window);

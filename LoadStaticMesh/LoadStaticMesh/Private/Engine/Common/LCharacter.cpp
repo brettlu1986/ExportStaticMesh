@@ -29,3 +29,11 @@ void LCharacter::Destroy()
 		AnimatorIns = nullptr;
 	}
 }
+
+void LCharacter::Update(float dt)
+{
+	if (AnimatorIns)
+	{
+		AnimatorIns->Update(dt);
+	}
+}

@@ -62,6 +62,7 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 			GRHI->SetVertexAndIndexBuffers(SkmMeshes[i]->GetVertexBuffer(), SkmMeshes[i]->GetIndexBuffer());
 			GRHI->SetPiplineStateObject(Pso);
 			GRHI->SetResourceParams(0, SkmMeshes[i]->MtConstantBufferView);
+			GRHI->SetResourceParams(1, SkmMeshes[i]->SkeletalConstantBufferView);
 			GRHI->SetResourceParams(2, RenderScene->PassContantView);
 			GRHI->SetResourceParams(3, SkmMeshes[i]->ShaderResView);
 			GRHI->DrawTriangleList(SkmMeshes[i]->GetIndexBuffer());

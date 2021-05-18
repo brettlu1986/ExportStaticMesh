@@ -360,9 +360,6 @@
     <ClInclude Include="Public\Engine\Common\Animation\LSkeleton.h">
       <Filter>Header Files\Engine\Common\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="Public\Engine\Common\Animation\LAnimationTrackChannel.h">
-      <Filter>Header Files\Engine\Common\Animation</Filter>
-    </ClInclude>
     <ClInclude Include="Public\Engine\Renderer\FResourceViewCreater.h">
       <Filter>Header Files\Engine\Renderer</Filter>
     </ClInclude>

@@ -5,6 +5,7 @@
 #include "LCharacter.h"
 #include "LAnimator.h"
 #include "FRHI.h"
+#include "LDefine.h"
 
 using namespace std;
 
@@ -45,8 +46,6 @@ std::wstring LAssetDataLoader::GetAssetFullPath(LPCWSTR AssetName)
 	AssetsPath = AssetsPathChar;
 	return AssetsPath + AssetName;
 }
-
-
 
 void LAssetDataLoader::LoadMeshVertexDataFromFile(std::string FileName, FMesh* Mesh)
 {
@@ -271,6 +270,11 @@ void LAssetDataLoader::LoadAnimationSquence(std::string SequenceName, LAnimation
 	Rf.read((char*)&FrameNum, sizeof(UINT));
 	Seq.SetFrameCount(FrameNum);
 
+	for(UINT i = 0; i< FrameNum; i++)
+	{
+		Seq.GetFrameTimes().push_back(i * AnimFrameRate);
+	}
+
 	UINT TrackNum;
 	Rf.read((char*)&TrackNum, sizeof(UINT));
 
@@ -285,9 +289,7 @@ void LAssetDataLoader::LoadAnimationSquence(std::string SequenceName, LAnimation
 		Rf.read((char*)Poss.data(), Num * sizeof(XMFLOAT3));
 		for(size_t i = 0; i < Poss.size(); ++i)
 		{
-			LAnimationTranslateChannel T;
-			T.Translate = Poss[i];
-			Track.AddTranslateChannelFrame(T);
+			Track.AddTranslateChannelFrame(Poss[i]);
 		}
 
 		Rf.read((char*)&Num, sizeof(UINT));
@@ -296,12 +298,9 @@ void LAssetDataLoader::LoadAnimationSquence(std::string SequenceName, LAnimation
 		Rf.read((char*)Rots.data(), Num * sizeof(XMFLOAT3));
 		for (size_t i = 0; i < Rots.size(); ++i)
 		{
-			LAnimationQuatChannel Q;
-			Q.Rot = Rots[i];
-
 			XMFLOAT3 Rot = { -Rots[i].x, Rots[i].y, -Rots[i].z };
-			Q.Quat = MathHelper::EulerToQuaternion(Rot);
-			Track.AddQuatChannelFrame(Q);
+			XMFLOAT4 Quat = MathHelper::EulerToQuaternion(Rot);
+			Track.AddQuatChannelFrame(Quat);
 		}
 
 		Rf.read((char*)&Num, sizeof(UINT));
@@ -310,15 +309,15 @@ void LAssetDataLoader::LoadAnimationSquence(std::string SequenceName, LAnimation
 		Rf.read((char*)Scales.data(), Num * sizeof(XMFLOAT3));
 		for (size_t i = 0; i < Scales.size(); ++i)
 		{
-			LAnimationScaleChannel S;
-			S.Scale = Scales[i];
-			Track.AddScaleChannelFrame(S);
+			Track.AddScaleChannelFrame(Scales[i]);
 		}
 
 		Rf.read((char*)&Num, sizeof(UINT));
 		Track.TrackToBoneIndex = Num;
 		Seq.AddAnimationTrack(Track);
 	}
+
+	Seq.GetCurrentAnimPoseToParentTrans().resize(Seq.GetSequenceTracks().size());
 }
 
 void LAssetDataLoader::LoadSampleScene(FScene* Scene)
@@ -347,13 +346,13 @@ void LAssetDataLoader::LoadSampleScene(FScene* Scene)
 		SkeletalMesh->SetDiffuseTexture(Tex);
 
 		LAnimator* Animator = new LAnimator();
+		Animator->SetSkeleton(Skeleton);
 		for(UINT i = 0; i< SampleAssets::SkeletalAnimCount; ++i)
 		{
 			LAnimationSequence AnimSequence;
 			LoadAnimationSquence(SampleAssets::SkeletalAnim[i], AnimSequence);
 			Animator->AddAnimSequence(SampleAssets::SkeletalAnimName[i], AnimSequence);
 		}
-		Animator->SetSkeleton(Skeleton);
 
 		Character->SetSkeletalMesh(SkeletalMesh);
 		Character->SetAnimator(Animator);

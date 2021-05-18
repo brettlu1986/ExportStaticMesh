@@ -1,6 +1,3 @@
-#include "LightingUtil.hlsl"
-#include "ShaderDef.hlsli"
-
 
 Texture2D       g_txDiffuse : register(t0);
 SamplerState    g_sampler : register(s2);

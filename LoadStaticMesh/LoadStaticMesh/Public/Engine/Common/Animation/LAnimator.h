@@ -10,10 +10,8 @@ public:
 	LAnimator();
 	~LAnimator();
 
-	void SetSkeleton(LSkeleton* Ske)
-	{
-		Skeleton = Ske;
-	}
+	void SetSkeleton(LSkeleton* Ske);
+	
 
 	void AddAnimSequence(std::string AnimName, LAnimationSequence Seq)
 	{
@@ -24,10 +22,17 @@ public:
 	void Stop();
 	void Update(float dt);
 
+	std::vector<XMFLOAT4X4>& GetBoneMapFinalTransforms()
+	{
+		return BoneMapFinalTransforms;
+	}
 private: 
 
 	std::map<std::string, LAnimationSequence> AnimSequences;
 	LSkeleton* Skeleton;
 	bool IsPlaying;
 	std::string CurrentPlay;
+
+	std::vector<XMFLOAT4X4> AllBoneFinalTransforms;
+	std::vector<XMFLOAT4X4> BoneMapFinalTransforms; //use to constant buffer
 };

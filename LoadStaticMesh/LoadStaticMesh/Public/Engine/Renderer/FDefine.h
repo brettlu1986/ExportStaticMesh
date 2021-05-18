@@ -235,6 +235,12 @@ public:
 	FLight Lights[MaxLights];
 };
 
+static const UINT MAX_BONE_TRANS = 80;
+struct FSkeletalConstants
+{
+	DirectX::XMFLOAT4X4 BoneMapBoneTransforms[MAX_BONE_TRANS];
+};
+
 struct FBufferObject
 {
 public: 

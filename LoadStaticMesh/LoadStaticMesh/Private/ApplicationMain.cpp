@@ -60,11 +60,11 @@ void ApplicationMain::Update(float DeltaTime)
 
 void ApplicationMain::Run()
 {
-	
 	while (LEngine::GetEngine()->Run())
 	{
 		Timer->Tick();
 		Timer->Reset();
+
 		Update(Timer->GetDeltaTime());
 	}
 }
