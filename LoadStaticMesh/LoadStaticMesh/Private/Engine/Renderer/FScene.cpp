@@ -54,6 +54,8 @@ void FScene::AddCharacterToScene(LCharacter* Character)
 {
 	Players.push_back(Character);
 	SkmMeshes.push_back(Character->GetSkeletalMesh());
+
+	Character->PlayAnimation("Walk", true);
 }
 
 void FScene::AddLightToScene(FLight* Light)

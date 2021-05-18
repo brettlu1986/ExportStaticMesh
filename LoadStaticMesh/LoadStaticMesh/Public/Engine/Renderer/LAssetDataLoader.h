@@ -41,7 +41,7 @@ public:
 
 	static void LoadMeshVertexDataFromFile(std::string FileName, FMesh* Mesh);
 
-	static void LoadSkeletalMeshVertexDataFromFile(std::string FileName, FSkeletalMesh* SkeletalMesh);
+	static void LoadSkeletalMeshVertexDataFromFile(std::string FileName, FSkeletalMesh* SkeletalMesh, LSkeleton* Skeleton);
 
 	static void LoadSkeletonFromFile(std::string FileName, LSkeleton* Skeleton);
 

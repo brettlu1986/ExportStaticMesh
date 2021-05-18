@@ -29,6 +29,8 @@ public class CustomExport : ModuleRules
 				"RawMesh",
 				"Engine",
 				"Json",
+				"RenderCore",
+				"RHI", 
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -43,7 +45,8 @@ public class CustomExport : ModuleRules
 				"SlateCore",
 				"Json",
 				"JsonUtilities",
-				"Core"
+				"Core",
+				"RenderCore"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

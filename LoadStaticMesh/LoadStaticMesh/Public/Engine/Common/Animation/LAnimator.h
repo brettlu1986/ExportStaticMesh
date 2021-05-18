@@ -20,8 +20,14 @@ public:
 		AnimSequences[AnimName] = Seq;
 	}
 
+	void Play(std::string AnimName, bool bLoop);
+	void Stop();
+	void Update(float dt);
+
 private: 
 
 	std::map<std::string, LAnimationSequence> AnimSequences;
 	LSkeleton* Skeleton;
+	bool IsPlaying;
+	std::string CurrentPlay;
 };

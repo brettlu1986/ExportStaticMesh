@@ -98,6 +98,21 @@ struct FFullVertexDatas
 };
 
 USTRUCT(BlueprintType)
+struct FSkeRenderSection
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	uint32 BaseVertexIndex; 
+
+	UPROPERTY() 
+	uint32 NumVertices;
+
+	UPROPERTY() 
+	TArray<uint16> BoneMap;
+};
+
+USTRUCT(BlueprintType)
 struct FFullMeshDataJson
 {
 	GENERATED_BODY()
@@ -137,6 +152,9 @@ struct FFullMeshDataJson
 
 	UPROPERTY()
 	TArray<FSkinMeshWeightInfo> SkinMeshWeight0s;
+
+	UPROPERTY() 
+	TArray<FSkeRenderSection> SkeRenderSections;
 	
 };
 
@@ -156,6 +174,9 @@ struct FFullMeshDataBinary
 
 	UPROPERTY()
 	TArray<FFullVertexDatas> MeshVertexDatas;
+
+	UPROPERTY()
+	TArray<uint16> BoneMap;
 
 	FFullMeshDataBinary()
 		:WorldLocation(FVector::ZeroVector)

@@ -157,7 +157,7 @@ void LAssetDataLoader::LoadSceneLights(std::string FileName, FScene* Scene)
 	}
 }
 
-void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(std::string FileName, FSkeletalMesh* SkeletalMesh)
+void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(std::string FileName, FSkeletalMesh* SkeletalMesh, LSkeleton* Skeleton)
 {
 	std::string FName = GetSaveDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
@@ -197,6 +197,16 @@ void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(std::string FileName, 
 	IBuffer->Init(IndicesCount, IndicesCount * sizeof(UINT32), E_INDEX_TYPE::TYPE_UINT_32, reinterpret_cast<void*>(Indices.data()));
 
 	SkeletalMesh->SetVertexAndIndexBuffer(VBuffer, IBuffer);
+
+	std::vector<UINT16> BoneMap;
+
+	UINT BoneMapSize;
+	Rf.read((char*)&BoneMapSize, sizeof(UINT));
+
+	BoneMap.resize(BoneMapSize);
+	Rf.read((char*)BoneMap.data(), BoneMapSize * sizeof(UINT16));
+
+	Skeleton->SetCurrentBoneMap(BoneMap);
 }
 
 void LAssetDataLoader::LoadSkeletonFromFile(std::string FileName, LSkeleton* Skeleton)
@@ -236,6 +246,7 @@ void LAssetDataLoader::LoadSkeletonFromFile(std::string FileName, LSkeleton* Ske
 		Pose.Translate = BonePoses[i].Translate;
 		Skeleton->AddBonePose(Pose);
 	}
+	Skeleton->CalculateRefPoseGlobalToLocal();
 
 	UINT BoneNameIdxNum;
 	Rf.read((char*)&BoneNameIdxNum, sizeof(UINT));
@@ -326,8 +337,8 @@ void LAssetDataLoader::LoadSampleScene(FScene* Scene)
 	{
 		LCharacter* Character = new LCharacter();
 		FSkeletalMesh* SkeletalMesh = new FSkeletalMesh();
-		LoadSkeletalMeshVertexDataFromFile(SampleAssets::SkeletalMeshResource[i], SkeletalMesh);
 		LSkeleton* Skeleton = new LSkeleton();
+		LoadSkeletalMeshVertexDataFromFile(SampleAssets::SkeletalMeshResource[i], SkeletalMesh, Skeleton);
 		LoadSkeletonFromFile(SampleAssets::SkeletonResource, Skeleton);
 		SkeletalMesh->SetSkeleton(Skeleton);
 
@@ -340,7 +351,7 @@ void LAssetDataLoader::LoadSampleScene(FScene* Scene)
 		{
 			LAnimationSequence AnimSequence;
 			LoadAnimationSquence(SampleAssets::SkeletalAnim[i], AnimSequence);
-			Animator->AddAnimSequence(SampleAssets::SkeletalAnim[i], AnimSequence);
+			Animator->AddAnimSequence(SampleAssets::SkeletalAnimName[i], AnimSequence);
 		}
 		Animator->SetSkeleton(Skeleton);
 

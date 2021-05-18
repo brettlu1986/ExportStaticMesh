@@ -27,6 +27,11 @@ public:
 		return SkeletalMesh;
 	}
 
+	void PlayAnimation(std::string AnimName, bool bLoop)
+	{
+		AnimatorIns->Play(AnimName, bLoop);
+	}
+
 private: 
 
 	FSkeletalMesh* SkeletalMesh;

@@ -1,5 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+
 #include "CustomExportBPLibrary.h"
 #include "CustomExport.h"
 #include "Runtime/RawMesh/Public/RawMesh.h"
@@ -484,12 +485,34 @@ void GetVertexSkinWeightInfo(const TArray<bool>& ValidFormat, uint32 Index, TArr
 	{
 		const FSkinWeightInfo& WeightInfo = SkinWeightInfos[Index];
 
+		int32 BoneMapSectionId = 0; 
+		for(int32 i = 0 ; i < MeshDataJson.SkeRenderSections.Num(); i++)
+		{
+			if(Index >= MeshDataJson.SkeRenderSections[i].BaseVertexIndex && Index < 
+				MeshDataJson.SkeRenderSections[i].BaseVertexIndex + MeshDataJson.SkeRenderSections[i].NumVertices)
+			{
+				BoneMapSectionId = i;
+				break;
+			}
+		}
+
+		int32 BoneMapNum = BoneMapSectionId = BoneMapSectionId - 1 < 0 ? 0 : MeshDataJson.SkeRenderSections[BoneMapSectionId - 1].BoneMap.Num();
+
 		FSkinMeshWeightInfo Info;
 		for (int i = 0; i < 4; i++)
 		{
-			MeshDataBin.InfluenceBones[i] = WeightInfo.InfluenceBones[i];
-			Info.InfluenceBones[i] = WeightInfo.InfluenceBones[i];
+			if(WeightInfo.InfluenceWeights[i] != 0)
+			{
+				MeshDataBin.InfluenceBones[i] = BoneMapSectionId > 0 ? BoneMapNum + WeightInfo.InfluenceBones[i] : WeightInfo.InfluenceBones[i];
+				Info.InfluenceBones[i] = MeshDataBin.InfluenceBones[i];
+			}
+			else 
+			{
+				MeshDataBin.InfluenceBones[i] = WeightInfo.InfluenceBones[i];
+				Info.InfluenceBones[i] = MeshDataBin.InfluenceBones[i];
+			}
 		}
+
 		Info.InfluenceWeights = FVector(
 			WeightInfo.InfluenceWeights[0] / 255.f, 
 			WeightInfo.InfluenceWeights[1] / 255.f, 
@@ -575,6 +598,10 @@ bool SaveSkeletalMeshBinaryToFile(const FFullMeshDataBinary& MeshBinOut, const T
 	Wf.write((char*)&IndicesSize, sizeof(uint32));
 	Wf.write((char*)Indices.GetData(), IndicesSize * sizeof(uint32));
 
+	uint32 BoneMapSize = MeshBinOut.BoneMap.Num();
+	Wf.write((char*)&BoneMapSize, sizeof(uint32));
+	Wf.write((char*)MeshBinOut.BoneMap.GetData(), BoneMapSize * sizeof(uint16));
+
 	Wf.close();
 	return Wf.good();
 }
@@ -582,15 +609,31 @@ bool SaveSkeletalMeshBinaryToFile(const FFullMeshDataBinary& MeshBinOut, const T
 bool UCustomExportBPLibrary::ExportSkeletalMeshActor(const ACharacter* PlayerActor, const USkeletalMesh* Mesh, FFullMeshDataJson MeshDataJsonOut, FFullMeshDataBinary MeshDataBinaryOut, FString FileBaseName)
 {
 	ExportMeshWorld(PlayerActor, MeshDataJsonOut, MeshDataBinaryOut);
-	
+
+	//IMPORTANT: export bone map before, it will use in export vertex weight
 	const FSkeletalMeshLODRenderData& MeshResource = Mesh->GetResourceForRendering()->LODRenderData[LOD_LEVEL];
+	for (int32 i = 0; i < MeshResource.RenderSections.Num(); i++)
+	{
+		FSkeRenderSection SkeSection;
+		SkeSection.BaseVertexIndex = MeshResource.RenderSections[i].BaseVertexIndex;
+		SkeSection.NumVertices = MeshResource.RenderSections[i].NumVertices;
+		for (FBoneIndexType Index : MeshResource.RenderSections[i].BoneMap)
+		{
+			SkeSection.BoneMap.Add(Index);
+		}
+		MeshDataJsonOut.SkeRenderSections.Add(SkeSection);
+		MeshDataBinaryOut.BoneMap.Append(SkeSection.BoneMap);
+	}
+	
 	const FStaticMeshVertexBuffers& VertexBuffers = MeshResource.StaticVertexBuffers;
 	const FSkinWeightVertexBuffer& VertexSkinWeightBuffer = MeshResource.SkinWeightVertexBuffer;
 	ExportSkeletalMeshVertexBuffer(VertexBuffers, VertexSkinWeightBuffer, MeshDataJsonOut, MeshDataBinaryOut);
 
 	const FMultiSizeIndexContainer& IndexBufferContainer = MeshResource.MultiSizeIndexContainer;
+
 	ExportSkeletalMeshIndices(IndexBufferContainer, MeshDataJsonOut);
 
+	
 	//delete old files
 	FString MeshFile = FileBaseName + ".json";
 	FString MeshBinFile = FileBaseName + ".bin";

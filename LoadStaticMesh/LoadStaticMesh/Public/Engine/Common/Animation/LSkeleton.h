@@ -52,10 +52,28 @@ public:
 	{
 		BoneNameToIndex[Name] = Value;
 	}
+
+	void SetCurrentBoneMap(std::vector<UINT16>& BoneMap)
+	{
+		CurrentBoneMap.resize(BoneMap.size());
+		std::copy(BoneMap.begin(), BoneMap.end(), CurrentBoneMap.begin());
+	}
+
+	void CalculateRefPoseGlobalToLocal();
+
+	const std::vector<XMFLOAT4X4>& GetRefPoseRootToBoneTransform()
+	{
+		return RefRootToBoneTransforms;
+	}
+	 
 private:
 
 	UINT BoneNum;
 	std::map<std::string, INT32> BoneNameToIndex;
 	std::vector<LBonePose> RefBonePoses; // root -> last child
 	std::vector<LBoneInfo> RefBoneInfos; // root -> last child
+
+	std::vector<UINT16> CurrentBoneMap;// real bone index used in this skeletal, it is associate with the vertex.InfluenceBones Index
+
+	std::vector<XMFLOAT4X4> RefRootToBoneTransforms;
 };
