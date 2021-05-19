@@ -57,10 +57,12 @@ namespace SampleAssets
 
 	const std::string SceneLightsFile = "SceneLights.bin";
 
-	const UINT SampleSkeletalMeshCount = 1;
+	const UINT SampleSkeletalMeshCount = 3;
 	const std::string SkeletalMeshResource[] =
 	{
 		"ThirdPersonCharacter_SKM.bin",
+		"ThirdPersonCharacter2_SKM.bin",
+		"ThirdPersonCharacter3_SKM.bin",
 	};
 	const std::string SkeletonResource = "ThirdPersonCharacter_SK.bin";
 	const std::string SkeletonTexture = "Resource/T_Male_Mask.dds";

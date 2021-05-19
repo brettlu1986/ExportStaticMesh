@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "FDefine.h"
 #include "LDefine.h"
+#include "LActor.h"
 
 using namespace DirectX;
 
@@ -21,6 +22,7 @@ public:
 	void ProcessCameraMouseInput(FInputResult& MouseInput);
 	void ProcessCameraKeyInput(FInputResult& KeyInput);
 	void Update(float DeltaTime);
+
 
 	const XMFLOAT3& GetViewTargetLocation() {
 		return CameraDatas.Target;
@@ -44,7 +46,12 @@ public:
 	}
 
 	void CalculateLocation();
+
+	void SetViewTarget(LActor* Target);
 private:
+
+	void UpdateInput(float dt);
+	void UpdateViewTarget(float dt);
 
 	bool IsKeyDown(char Key);
 	bool IsKeyUp(char Key);

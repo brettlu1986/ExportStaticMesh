@@ -186,6 +186,12 @@
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12ResourceViewCreater.cpp">
       <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Engine\Common\LPlayerController.cpp">
+      <Filter>Source Files\Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\LCharacterMovement.cpp">
+      <Filter>Source Files\Engine\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds">
@@ -365,6 +371,15 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12ResourceViewCreater.h">
       <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\LPlayerController.h">
+      <Filter>Header Files\Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\LCharacterMovement.h">
+      <Filter>Header Files\Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\LActor.h">
+      <Filter>Header Files\Engine\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -359,6 +359,8 @@ void LAssetDataLoader::LoadSampleScene(FScene* Scene)
 		Scene->AddCharacterToScene(Character);
 	}
 
+	Scene->InitCharacters();
+
 	LoadSceneLights(SampleAssets::SceneLightsFile, Scene);
 
 	LCamera& Camera = Scene->GetCamera();

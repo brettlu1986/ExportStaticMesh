@@ -55,6 +55,11 @@ public:
 		return IndexBuffer;
 	}
 
+	XMFLOAT3 GetRotation()
+	{
+		return ModelRotation;
+	}
+
 	FResourceView* MtConstantBufferView;
 	FResourceView* SkeletalConstantBufferView;
 	//TODO: move to material

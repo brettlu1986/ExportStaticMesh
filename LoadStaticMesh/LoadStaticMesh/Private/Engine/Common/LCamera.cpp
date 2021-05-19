@@ -72,7 +72,7 @@ void LCamera::OnResize()
 	AspectRatio = static_cast<float>(DeviceWindows->GetWidth()) / DeviceWindows->GetHeight();
 }
 
-void LCamera::Update(float DeltaTime)
+void LCamera::UpdateInput(float dt)
 {
 	MoveOffset = XMVectorSet(0, 0, 0, 1.f);
 
@@ -112,6 +112,22 @@ void LCamera::Update(float DeltaTime)
 		CalculateLocation();
 		bUpdateDirty = false;
 	}
+}
+
+void LCamera::UpdateViewTarget(float dt)
+{
+
+}
+
+void LCamera::SetViewTarget(LActor* Target)
+{
+
+}
+
+void LCamera::Update(float DeltaTime)
+{
+	UpdateInput(DeltaTime);
+	UpdateViewTarget(DeltaTime);
 }
 
 void LCamera::ProcessCameraMouseInput(FInputResult& MouseInput)

@@ -2,9 +2,12 @@
 
 #include "stdafx.h"
 #include "LAnimator.h"
+#include "LActor.h"
 
+class LPlayerController;
 class FSkeletalMesh;
-class LCharacter
+class LCharacterMovement;
+class LCharacter : public LActor
 {
 public:
 	LCharacter();
@@ -37,9 +40,24 @@ public:
 		AnimatorIns->Play(AnimName, bLoop);
 	}
 
+	void SetPlayerController(LPlayerController* InController)
+	{
+		Controller = InController;
+		IsLocalControlled = true;
+	}
+
+	bool IsLocalControlledPlayer()
+	{
+		return IsLocalControlled;
+	}
+
 	void Update(float dt);
 private: 
 
 	FSkeletalMesh* SkeletalMesh;
 	LAnimator* AnimatorIns;
+
+	LPlayerController* Controller;
+	LCharacterMovement* ChaMovement;
+	bool IsLocalControlled;
 };

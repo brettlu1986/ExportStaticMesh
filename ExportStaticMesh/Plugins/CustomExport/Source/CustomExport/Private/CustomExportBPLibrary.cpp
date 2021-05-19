@@ -191,12 +191,17 @@ void UCustomExportBPLibrary::ShowMessageDialog(const FText Target, const FText R
 }
 #undef LOCTEXT_NAMESPACE
 
-void ExportMeshWorld(const AActor* MeshActor, FFullMeshDataJson& MeshDataJsonOut, FFullMeshDataBinary& MeshDataBinaryOut)
+void ExportMeshWorld(const AActor* MeshActor, FFullMeshDataJson& MeshDataJsonOut, FFullMeshDataBinary& MeshDataBinaryOut, bool bSke)
 {
 	FVector MeshLocation = MeshActor->GetActorLocation();
 	const FRotator& MeshRotation = MeshActor->GetActorRotation();
 	const FVector& MeshScale = MeshActor->GetActorScale();
 	MeshLocation = MeshLocation * POSITION_SCALE;
+	//Special Export, always set the ske z = 0
+	if(bSke)
+	{
+		MeshLocation.Z = 0.f;
+	}
 
 	MeshDataJsonOut.WorldLocation.Append({ MeshLocation.X , MeshLocation.Y , MeshLocation.Z });
 	MeshDataJsonOut.WorldRotation.Append({ MeshRotation.Pitch, MeshRotation.Yaw, MeshRotation.Roll });
@@ -257,7 +262,7 @@ void ExportStaticMeshIndices(const FRawStaticIndexBuffer& IndexBuffer, FFullMesh
 
 bool UCustomExportBPLibrary::ExportStaticMeshActor(const AStaticMeshActor* MeshActor, FFullMeshDataJson MeshDataJsonOut, FFullMeshDataBinary MeshDataBinaryOut, FString FileBaseName)
 {
-	ExportMeshWorld(MeshActor, MeshDataJsonOut, MeshDataBinaryOut);
+	ExportMeshWorld(MeshActor, MeshDataJsonOut, MeshDataBinaryOut, false);
 
 	UStaticMeshComponent* MeshComponent = MeshActor->GetStaticMeshComponent();
 	const auto& LODResources = MeshComponent->GetStaticMesh()->RenderData->LODResources;
@@ -608,7 +613,7 @@ bool SaveSkeletalMeshBinaryToFile(const FFullMeshDataBinary& MeshBinOut, const T
 
 bool UCustomExportBPLibrary::ExportSkeletalMeshActor(const ACharacter* PlayerActor, const USkeletalMesh* Mesh, FFullMeshDataJson MeshDataJsonOut, FFullMeshDataBinary MeshDataBinaryOut, FString FileBaseName)
 {
-	ExportMeshWorld(PlayerActor, MeshDataJsonOut, MeshDataBinaryOut);
+	ExportMeshWorld(PlayerActor, MeshDataJsonOut, MeshDataBinaryOut, true);
 
 	//IMPORTANT: export bone map before, it will use in export vertex weight
 	const FSkeletalMeshLODRenderData& MeshResource = Mesh->GetResourceForRendering()->LODRenderData[LOD_LEVEL];
