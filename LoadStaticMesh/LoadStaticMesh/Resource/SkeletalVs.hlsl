@@ -73,12 +73,11 @@ PSInput VsMain(SkmVSInput vin)
 	float4 posW = mul(float4(vin.position, 1.0f), gWorld);
 	vout.posW = posW.xyz;
 
-	vout.normal = normalize((float3)(mul(vin.normal, gWorld)));
+	vout.normal = mul(vin.normal, (float3x3)gWorld);
+	vout.tangent = mul(vin.tangent, (float3x3)gWorld);
 	vout.position = mul(posW, gViewProj);
 
 	vout.shadowPosH = mul(posW, gShadowMatrix);
-
-	vout.tangent = vin.tangent;
 	vout.uv0 = vin.uv0;
 	vout.uv1 = vin.uv1;
 	vout.color = vin.color;
