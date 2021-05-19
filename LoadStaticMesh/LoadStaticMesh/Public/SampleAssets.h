@@ -64,15 +64,19 @@ namespace SampleAssets
 	};
 	const std::string SkeletonResource = "ThirdPersonCharacter_SK.bin";
 	const std::string SkeletonTexture = "Resource/T_Male_Mask.dds";
-	const UINT SkeletalAnimCount = 2;
+	const UINT SkeletalAnimCount = 6;
 
 	const std::string SkeletalAnimName[]
 	{
-		"Run", "Walk"
+		"Idle", "Run", "Walk", "JumpStart", "JumpLoop", "JumpEnd"
 	};
 	const std::string SkeletalAnim[] = 
 	{	
+		"ThirdPersonCharacter_ThirdPersonIdle.bin",
 		"ThirdPersonCharacter_ThirdPersonRun.bin",
 		"ThirdPersonCharacter_ThirdPersonWalk.bin",
+		"ThirdPersonCharacter_ThirdPersonJump_Start.bin",
+		"ThirdPersonCharacter_ThirdPersonJump_Loop.bin",
+		"ThirdPersonCharacter_ThirdPerson_Jump.bin",
 	};
 }
