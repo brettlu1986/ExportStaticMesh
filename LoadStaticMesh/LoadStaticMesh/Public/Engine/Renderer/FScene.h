@@ -80,6 +80,11 @@ public:
 		return SceneLights[LightIndex];
 	}
 
+	LCharacter* GetLocalControlPlayer()
+	{
+		return Players[0];
+	}
+
 	FResourceView* PassContantView;
 
 	void ActiveCamera(UINT CameraIndex);

@@ -27,16 +27,19 @@ public:
 	void CalculateLocation();
 
 private:
+	void ProcessInput();
+
 	void UpdateInput(float dt);
 	bool IsKeyDown(char Key);
 	bool IsKeyUp(char Key);
 
 	static const UINT KEY_SIZE = 256;
-	XMVECTOR RightDirection;
-
-	POINT LastMousePoint;
 	bool Keys[KEY_SIZE];
-	XMVECTOR MoveOffset;
 
+	XMVECTOR RightDirection;
+	POINT LastMousePoint;
+	XMVECTOR MoveOffset;
 	bool bUpdateDirty;
+
+	XMVECTOR MoveDirection;
 };

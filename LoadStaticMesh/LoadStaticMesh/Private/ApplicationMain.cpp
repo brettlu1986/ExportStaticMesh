@@ -96,12 +96,14 @@ void ApplicationMain::ProcessKeyInput(FInputResult& Input)
 	{
 		UINT8 Key = static_cast<UINT8>(Input.KeyMapType);
 		if(Key == 96) //num key board 0
-		{
+		{ 
 			Scene.ActiveCamera(0);//scene camera
+			return;
 		}
 		else if(Key == 97)//num key board 1
 		{
 			Scene.ActiveCamera(1);
+			return;
 		}
 	}
 
@@ -109,6 +111,11 @@ void ApplicationMain::ProcessKeyInput(FInputResult& Input)
 	{
 		LSceneCamera* Camera = dynamic_cast<LSceneCamera*>(Scene.GetActiveCamera());
 		Camera->ProcessCameraKeyInput(Input);
+	}
+	else if(Scene.GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_THIRD_PERSON)
+	{
+		LCharacter* LocalPlayer = Scene.GetLocalControlPlayer();
+		LocalPlayer->ProcessKeyInput(Input);
 	}
 }
 
@@ -119,6 +126,11 @@ void ApplicationMain::ProcessMouseInput(FInputResult& Input)
 	{
 		LSceneCamera* Camera = dynamic_cast<LSceneCamera*>(Scene.GetActiveCamera());
 		Camera->ProcessCameraMouseInput(Input);
+	}
+	else if (Scene.GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_THIRD_PERSON)
+	{
+		LCharacter* LocalPlayer = Scene.GetLocalControlPlayer();
+		LocalPlayer->ProcessMouseInput(Input);
 	}
 }
 

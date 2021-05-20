@@ -47,6 +47,9 @@ void LThirdPersonCamera::SetSocketOffset(XMFLOAT3 Offset)
 
 void LThirdPersonCamera::Update(float DeltaTime)
 {
+	if(!bActive)
+		return;
+	LCamera::Update(DeltaTime);
 	UpdateViewTarget(DeltaTime);
 }
 
@@ -60,6 +63,7 @@ void LThirdPersonCamera::UpdateViewTarget(float dt)
 {
 	if (ViewTarget)
 	{
+
 		Position = XMFLOAT3(ViewTarget->GetLocation().x + SocketOffset.x,
 			ViewTarget->GetLocation().y + SocketOffset.y,
 			ViewTarget->GetLocation().z + SocketOffset.z);

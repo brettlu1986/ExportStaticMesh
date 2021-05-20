@@ -45,51 +45,70 @@ void LSceneCamera::OnResize()
 	LCamera::OnResize();
 }
 
+void LSceneCamera::ProcessInput()
+{
+	bUpdateDirty = false; 
+	
+	XMFLOAT3 Zero = XMFLOAT3(0.f, 0.f, 0.f);
+	MoveDirection = XMLoadFloat3(&Zero);
+
+	if(IsKeyDown('W'))
+	{
+		MoveDirection += XMLoadFloat3(&LookDirection);
+		bUpdateDirty = true;
+	}
+
+	if(IsKeyDown('S'))
+	{
+		MoveDirection += -1.f * XMLoadFloat3(&LookDirection);
+		bUpdateDirty = true;
+	}
+
+	RightDirection = XMVector3Cross(XMLoadFloat3(&LookDirection), XMLoadFloat3(&UpDirection));
+
+	if(IsKeyDown('A'))
+	{
+		MoveDirection += RightDirection;
+		bUpdateDirty = true;
+	}
+
+	if (IsKeyDown('D'))
+	{
+		MoveDirection = MoveDirection + (-1 * RightDirection);
+		bUpdateDirty = true;
+	}
+
+	if (IsKeyDown('E'))
+	{
+		MoveDirection += XMLoadFloat3(&UpDirection);
+		bUpdateDirty = true;
+	}
+
+	if (IsKeyDown('Q'))
+	{
+		MoveDirection = MoveDirection + (-1 * XMLoadFloat3(&UpDirection));
+		bUpdateDirty = true;
+	}
+}
+
 void LSceneCamera::UpdateInput(float dt)
 {
-	MoveOffset = XMVectorSet(0, 0, 0, 1.f);
-
-	if (IsKeyDown('W') || IsKeyDown('S'))
-	{
-		XMVECTOR Offset = DirectionMoveOffset * XMLoadFloat3(&LookDirection);
-		if (IsKeyDown('S'))
-			Offset = -Offset;
-		MoveOffset += Offset;
-		bUpdateDirty = true;
-	}
-
-	if (IsKeyDown('A') || IsKeyDown('D'))
-	{
-		XMVECTOR Offset = DirectionMoveOffset * RightDirection;
-		if (IsKeyDown('D'))
-			Offset = -Offset;
-		MoveOffset += Offset;
-		bUpdateDirty = true;
-	}
-
-	if (IsKeyDown('Q') || IsKeyDown('E'))
-	{
-		XMVECTOR Offset = DirectionMoveOffset * XMLoadFloat3(&UpDirection);
-		if (IsKeyDown('Q'))
-			Offset = -Offset;
-		MoveOffset += Offset;
-		bUpdateDirty = true;
-	}
-
 	if (bUpdateDirty)
 	{
-		XMVECTOR FocusVec = XMVectorAdd(XMLoadFloat3(&FocusPosition), MoveOffset);
+		float MoveSpeed = 15.f;
+		XMVECTOR UnitDir = XMVector3Normalize(MoveDirection);
+		XMVECTOR FocusVec = XMLoadFloat3(&FocusPosition) +  MoveSpeed * dt * UnitDir;
 		FocusPosition.x = XMVectorGetX(FocusVec);
 		FocusPosition.y = XMVectorGetY(FocusVec);
 		FocusPosition.z = XMVectorGetZ(FocusVec);
 		CalculateLocation();
-		bUpdateDirty = false;
 	}
 }
 
-
 void LSceneCamera::Update(float DeltaTime)
 {
+	if(!bActive)
+		return;
 	LCamera::Update(DeltaTime);
 	UpdateInput(DeltaTime);
 }
@@ -125,6 +144,7 @@ void LSceneCamera::ProcessCameraKeyInput(FInputResult& KeyInput)
 	{
 		Keys[KeyInput.KeyMapType] = false;
 	}
+	ProcessInput();
 }
 
 bool LSceneCamera::IsKeyDown(char InKey)

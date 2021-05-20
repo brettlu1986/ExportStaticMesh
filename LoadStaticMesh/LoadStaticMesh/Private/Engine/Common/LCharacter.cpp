@@ -10,8 +10,11 @@ LCharacter::LCharacter()
 ,Controller(nullptr)
 ,IsLocalControlled(false)
 ,ChaMovement(nullptr)
+,MoveSpeed(2.f)
+,bUpdateMove(false)
 {
 	ChaMovement = new LCharacterMovement();
+	ChaMovement->SetOwner(this);
 }
 
 LCharacter::~LCharacter()
@@ -44,12 +47,117 @@ void LCharacter::Destroy()
 	ChaMovement = nullptr;
 }
 
+void LCharacter::ProcessMouseInput(FInputResult& MouseInput)
+{
+	if (MouseInput.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_MOVE)
+	{
+		float dx = XMConvertToRadians(0.25f * static_cast<float>(MouseInput.X - LastMousePoint.x)); //dx
+		float dy = XMConvertToRadians(0.25f * static_cast<float>(MouseInput.Y - LastMousePoint.y)); //dy
+
+		LastMousePoint.x = MouseInput.X;
+		LastMousePoint.y = MouseInput.Y;
+	}
+
+	LastMousePoint.x = MouseInput.X;
+	LastMousePoint.y = MouseInput.Y;
+}
+
+void LCharacter::ProcessKeyInput(FInputResult& KeyInput)
+{
+	if (KeyInput.TouchType == E_TOUCH_TYPE::KEY_DOWN)
+	{
+		Keys[KeyInput.KeyMapType] = true;
+	}
+	else if (KeyInput.TouchType == E_TOUCH_TYPE::KEY_UP)
+	{
+		Keys[KeyInput.KeyMapType] = false;
+	}
+
+	ProcessMoveInput();
+}
+
+bool LCharacter::IsKeyDown(char InKey)
+{
+	UINT8 Key = static_cast<UINT8>(InKey);
+	return Keys[Key] == true;
+}
+
+bool LCharacter::IsKeyUp(char InKey)
+{
+	UINT8 Key = static_cast<UINT8>(InKey);
+	return Keys[Key] == false;
+}
+
+void LCharacter::ProcessMoveInput()
+{
+	bUpdateMove = false;
+
+	XMFLOAT3 Zero = XMFLOAT3(0.f, 0.f, 0.f);
+	XMVECTOR MoveDirection = XMLoadFloat3(&Zero);
+	if(IsKeyDown('W'))
+	{
+		MoveDirection += GetMoveForwardVector();
+		bUpdateMove = true;
+	}
+
+	if (IsKeyDown('S'))
+	{
+		MoveDirection -= GetMoveForwardVector();
+		bUpdateMove = true;
+	}
+
+	if (IsKeyDown('A'))
+	{
+		MoveDirection += GetMoveRightVector();
+		bUpdateMove = true;
+	}
+
+	if (IsKeyDown('D'))
+	{
+		MoveDirection -= GetMoveRightVector();
+		bUpdateMove = true;
+	}
+
+	if(bUpdateMove)
+	{
+		ChaMovement->AddMoveInput(MoveDirection, MoveSpeed);
+	}
+	else 
+	{
+		ChaMovement->AddMoveInput(XMLoadFloat3(&Zero), 0.f);
+	}
+}
+
 void LCharacter::Update(float dt)
 {
+	ChaMovement->Update(dt);
 	if (AnimatorIns)
 	{
 		AnimatorIns->Update(dt);
 	}
+}
+
+XMVECTOR LCharacter::GetMoveForwardVector()
+{
+	XMFLOAT3 Rot = GetRotation();
+
+	float Pitch = XMConvertToRadians(Rot.x);
+	float Yaw = XMConvertToRadians(Rot.y);
+
+	XMFLOAT3 Direction;
+	float R = cosf(Pitch);
+	Direction.y = R * sinf(Yaw);
+	Direction.z = sinf(Pitch);
+	Direction.x = R * cosf(Yaw);
+
+	return XMLoadFloat3(&Direction);
+}
+
+XMVECTOR LCharacter::GetMoveRightVector()
+{
+	XMFLOAT3 Up = XMFLOAT3(0,0,1);
+	XMVECTOR UpDir = XMLoadFloat3(&Up);
+	return XMVector3Cross(GetMoveForwardVector(), UpDir);
 }
 
 void LCharacter::SetLocation(XMFLOAT3 Location)

@@ -59,8 +59,22 @@ public:
 	virtual XMFLOAT3 GetRotation() override;
 	virtual XMFLOAT3 GetScale3D() override;
 
+	XMVECTOR GetMoveForwardVector();
+	XMVECTOR GetMoveRightVector();
+
+	void ProcessMouseInput(FInputResult& MouseInput);
+	void ProcessKeyInput(FInputResult& KeyInput);
+
 	void Update(float dt);
+	void ProcessMoveInput();
 private: 
+
+	bool IsKeyDown(char Key);
+	bool IsKeyUp(char Key);
+
+	static const UINT KEY_SIZE = 256;
+	bool Keys[KEY_SIZE];
+	POINT LastMousePoint;
 
 	FSkeletalMesh* SkeletalMesh;
 	LAnimator* AnimatorIns;
@@ -68,4 +82,7 @@ private:
 	LPlayerController* Controller;
 	LCharacterMovement* ChaMovement;
 	bool IsLocalControlled;
+
+	float MoveSpeed;
+	bool bUpdateMove;
 };
