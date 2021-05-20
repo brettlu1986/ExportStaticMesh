@@ -7,6 +7,8 @@
 #include "LAssetDataLoader.h"
 #include "FRenderThread.h"
 
+#include "LSceneCamera.h"
+
 ApplicationMain* ApplicationMain::Application = nullptr;
 
 ApplicationMain::ApplicationMain()
@@ -88,14 +90,35 @@ void ApplicationMain::ProcessInput(FInputResult Input)
 }
 
 void ApplicationMain::ProcessKeyInput(FInputResult& Input)
-{
-	//LCamera& Camera = Scene.GetCamera();
-	//Camera.ProcessCameraKeyInput(Input);
+{	
+
+	if (Input.TouchType == E_TOUCH_TYPE::KEY_DOWN)
+	{
+		UINT8 Key = static_cast<UINT8>(Input.KeyMapType);
+		if(Key == 96) //num key board 0
+		{
+			Scene.ActiveCamera(0);//scene camera
+		}
+		else if(Key == 97)//num key board 1
+		{
+			Scene.ActiveCamera(1);
+		}
+	}
+
+	if(Scene.GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_SCENE)
+	{
+		LSceneCamera* Camera = dynamic_cast<LSceneCamera*>(Scene.GetActiveCamera());
+		Camera->ProcessCameraKeyInput(Input);
+	}
 }
 
 void ApplicationMain::ProcessMouseInput(FInputResult& Input)
 {
-	//LCamera& Camera = Scene.GetCamera();
-	//Camera.ProcessCameraMouseInput(Input);
+
+	if (Scene.GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_SCENE)
+	{
+		LSceneCamera* Camera = dynamic_cast<LSceneCamera*>(Scene.GetActiveCamera());
+		Camera->ProcessCameraMouseInput(Input);
+	}
 }
 

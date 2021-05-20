@@ -48,7 +48,7 @@ public:
 
 	static void LoadAnimationSquence(std::string SequenceName, LAnimationSequence& Seq);
 
-	static void LoadCameraDataFromFile(std::string FileName, LCamera& Camera);
+	static void LoadCameraDataFromFile(std::string FileName, LCamera* Camera);
 
 	static void LoadSceneLights(std::string FileName, FScene* Scene);
 

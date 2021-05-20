@@ -803,12 +803,12 @@ void FD3D12DynamicRHI::UpdateScenePassConstants(FScene* RenderScene)
 	BufferObj->BufferData = new int8_t[CurrentCbvSrvDesc.CbConstant.BufferSize];
 	memset(BufferObj->BufferData, 0, CurrentCbvSrvDesc.CbConstant.BufferSize);
 
-	LCamera& Camera = RenderScene->GetCamera();
+	LCamera* Camera = RenderScene->GetActiveCamera();
 	XMFLOAT4X4 MtProj;
-	XMStoreFloat4x4(&MtProj, Camera.GetProjectionMatrix());
-	XMMATRIX ViewProj = Camera.GetViewMarix() * XMLoadFloat4x4(&MtProj);
+	XMStoreFloat4x4(&MtProj, Camera->GetProjectionMatrix());
+	XMMATRIX ViewProj = Camera->GetViewMarix() * XMLoadFloat4x4(&MtProj);
 	XMStoreFloat4x4(&PassConstant.ViewProj, XMMatrixTranspose(ViewProj));
-	PassConstant.EyePosW = Camera.GetCameraLocation();
+	PassConstant.EyePosW = Camera->GetCameraLocation();
 	FLight* Light = RenderScene->GetLight(0);
 	PassConstant.Lights[0].Direction = Light->Direction; 
 	PassConstant.Lights[0].Strength = Light->Strength;

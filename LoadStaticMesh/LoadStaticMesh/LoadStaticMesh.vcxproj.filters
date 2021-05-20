@@ -70,6 +70,12 @@
     <Filter Include="Source Files\Engine\Common\Animation">
       <UniqueIdentifier>{9835f9ef-7fd8-4c9b-af54-5ebaa92f8256}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Common\Camera">
+      <UniqueIdentifier>{0d4a6668-ce63-4619-81c6-72e863f777a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Common\Camera">
+      <UniqueIdentifier>{432afcb0-e6c5-4164-8db4-2a364e9288ab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -77,9 +83,6 @@
     </ClCompile>
     <ClCompile Include="Private\ApplicationMain.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Engine\Common\LCamera.cpp">
-      <Filter>Source Files\Engine\Common</Filter>
     </ClCompile>
     <ClCompile Include="Private\Engine\Util\MathHelper.cpp">
       <Filter>Source Files\Engine\Util</Filter>
@@ -192,6 +195,15 @@
     <ClCompile Include="Private\Engine\Common\LCharacterMovement.cpp">
       <Filter>Source Files\Engine\Common</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Engine\Common\Camera\LCamera.cpp">
+      <Filter>Source Files\Engine\Common\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\Camera\LSceneCamera.cpp">
+      <Filter>Source Files\Engine\Common\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\Camera\LThirdPersonCamera.cpp">
+      <Filter>Source Files\Engine\Common\Camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds">
@@ -236,9 +248,6 @@
     </ClInclude>
     <ClInclude Include="Public\stdafx.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\Common\LCamera.h">
-      <Filter>Header Files\Engine\Common</Filter>
     </ClInclude>
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\d3dx12.h">
       <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
@@ -380,6 +389,15 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\LActor.h">
       <Filter>Header Files\Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Camera\LCamera.h">
+      <Filter>Header Files\Engine\Common\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Camera\LSceneCamera.h">
+      <Filter>Header Files\Engine\Common\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Camera\LThirdPersonCamera.h">
+      <Filter>Header Files\Engine\Common\Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

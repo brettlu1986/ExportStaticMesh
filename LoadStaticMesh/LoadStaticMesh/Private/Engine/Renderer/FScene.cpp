@@ -1,9 +1,12 @@
-
+﻿
 #include "stdafx.h"
 #include "FScene.h"
 #include "FMesh.h"
 #include "FRHI.h"
 #include "LCamera.h"
+#include "LSceneCamera.h"
+
+#include "LThirdPersonCamera.h"
 #include "LPlayerController.h"
 
 FScene::FScene()
@@ -11,12 +14,25 @@ FScene::FScene()
 ,MeshWithTextureCount(0)
 ,ConstantDirty(1)
 {
-
+	
 }
 
 FScene::~FScene()
 {
 	Destroy();
+}
+
+void FScene::ActiveCamera(UINT CameraIndex)
+{
+	if(CameraIndex > Cameras.size() -1)
+	{
+		assert(!"camera index should not above camera size");
+	}
+
+	for(UINT i = 0 ; i < Cameras.size(); i++)
+	{
+		Cameras[i]->SetActive(CameraIndex == i);
+	}
 }
 
 void FScene::Destroy()
@@ -35,6 +51,14 @@ void FScene::Destroy()
 		Players[i]->Destroy();
 	}
 	Players.clear();
+
+	std::vector<LCamera*>::iterator it = Cameras.begin();
+	for(; it < Cameras.end(); it++)
+	{
+		LCamera* Ca = *it;
+		delete Ca;
+	}
+	Cameras.clear();
 }
 
 void FScene::AddMeshToScene(FMesh* Mesh)
@@ -69,9 +93,9 @@ void FScene::InitCharacters()
 	Players[0]->SetPlayerController(PlayerController);
 	Players[0]->PlayAnimation("Idle", true);
 
-	Camera.SetSocketOffset(XMFLOAT3(-2.f, 0.3f, 2.2f));
-	Camera.SetViewTarget(Players[0]);
-	
+	LThirdPersonCamera* Ca = dynamic_cast<LThirdPersonCamera*>(GetThirdPersonCamera());
+	Ca->SetSocketOffset(XMFLOAT3(-2.f, 0.3f, 2.2f));
+	Ca->SetViewTarget(Players[0]);
 
 	Players[1]->PlayAnimation("Walk", true);
 	Players[2]->PlayAnimation("Run", true);
@@ -100,7 +124,7 @@ void FScene::InitSceneRenderResource()
 
 void FScene::Update(float DeltaTime)
 {
-	Camera.Update(DeltaTime);
+	GetActiveCamera()->Update(DeltaTime);
 
 	for(LCharacter* Ch : Players)
 	{

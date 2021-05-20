@@ -6,6 +6,8 @@
 #include "LAnimator.h"
 #include "FRHI.h"
 #include "LDefine.h"
+#include "LSceneCamera.h"
+#include "LThirdPersonCamera.h"
 
 using namespace std;
 
@@ -109,9 +111,9 @@ void LAssetDataLoader::LoadMeshVertexDataFromFile(std::string FileName, FMesh* M
 	}
 }
 
-void LAssetDataLoader::LoadCameraDataFromFile(std::string FileName, LCamera& Camera)
+void LAssetDataLoader::LoadCameraDataFromFile(std::string FileName, LCamera* Camera)
 {
-	FCameraData& CameraDatas = Camera.GetCameraData();
+	FCameraData& CameraDatas = Camera->GetCameraData();
 	std::string FName = GetSaveDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
@@ -361,12 +363,17 @@ void LAssetDataLoader::LoadSampleScene(FScene* Scene)
 		Character->SetAnimator(Animator);
 		Scene->AddCharacterToScene(Character);
 	}
-
-	Scene->InitCharacters();
-
 	LoadSceneLights(SampleAssets::SceneLightsFile, Scene);
 
-	LCamera& Camera = Scene->GetCamera();
-	LoadCameraDataFromFile(SampleAssets::CameraBin, Camera);
-	Camera.Init();
+	LCamera* Camera0 = new LSceneCamera();
+	LCamera* Camera1 = new LThirdPersonCamera();
+	LoadCameraDataFromFile(SampleAssets::CameraBin, Camera0);
+	LoadCameraDataFromFile(SampleAssets::CameraBin, Camera1);
+	Camera0->Init();
+	Camera1->Init();
+	Scene->AddCamera(Camera0);
+	Scene->AddCamera(Camera1);
+
+	Scene->InitCharacters();
+	Scene->ActiveCamera(0);
 }

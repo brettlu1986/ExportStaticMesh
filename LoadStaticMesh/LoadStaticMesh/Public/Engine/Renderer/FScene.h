@@ -49,9 +49,20 @@ public:
 		return Players;
 	}
 
-	LCamera& GetCamera()
+	LCamera* GetActiveCamera()
 	{
-		return Camera;
+		for(LCamera* Camera : Cameras)
+		{
+			if(Camera->IsActive())
+				return Camera;
+		}
+		assert(!"must have one active camera");
+		return Cameras[0];
+	}
+
+	void AddCamera(LCamera* Ca)
+	{
+		Cameras.push_back(Ca);
 	}
 	
 	bool IsConstantDirty()
@@ -71,7 +82,19 @@ public:
 
 	FResourceView* PassContantView;
 
+	void ActiveCamera(UINT CameraIndex);
+
+	LCamera* GetThirdPersonCamera()
+	{
+		for (LCamera* Camera : Cameras)
+		{
+			if (Camera->GetCameraType() == E_CAMERA_TYPE::CAMERA_THIRD_PERSON)
+				return Camera;
+		}
+		return nullptr;
+	}
 private: 
+	
 	std::vector<LCharacter*> Players;
 	std::vector<FSkeletalMesh*> SkmMeshes;
 	std::vector<FMesh*> Meshes;
@@ -80,5 +103,6 @@ private:
 	UINT MeshCount;
 	UINT MeshWithTextureCount;
 	UINT ConstantDirty;
-	LCamera Camera;
+
+	std::vector<LCamera*> Cameras;
 };

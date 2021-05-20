@@ -37,6 +37,12 @@ typedef enum class E_TOUCH_TYPE : UINT8
 	INPUT_UNKNOWN,
 }E_TOUCH_TYPE;
 
+typedef enum class E_CAMERA_TYPE : UINT8
+{
+	CAMERA_SCENE,
+	CAMERA_THIRD_PERSON,
+}E_CAMERA_TYPE;
+
 typedef struct FInputResult
 {
 public:

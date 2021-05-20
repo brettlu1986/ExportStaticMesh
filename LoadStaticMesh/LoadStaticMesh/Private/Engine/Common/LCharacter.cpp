@@ -72,9 +72,10 @@ XMFLOAT3 LCharacter::GetLocation()
 	return SkeletalMesh->GetLocation();
 }
  
+//in ue4, the character MeshComponent is -90 yaw to parent
 XMFLOAT3 LCharacter::GetRotation()
 {
-	return SkeletalMesh->GetRotation();
+	return XMFLOAT3(SkeletalMesh->GetRotation().x, SkeletalMesh->GetRotation().y + 90, SkeletalMesh->GetRotation().z);
 }
 
 XMFLOAT3 LCharacter::GetScale3D()
