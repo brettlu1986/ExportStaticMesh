@@ -18,7 +18,7 @@ void LCharacterMovement::SetOwner(LCharacter* PawnOwner)
 
 void LCharacterMovement::Update(float dt)
 {
-	if(MoveSpeed > 0)
+	if(bActive)
 	{
 		XMFLOAT3 CurLocation = Owner->GetLocation();
 		XMVECTOR UnitDir = XMVector3Normalize(MoveDirection);

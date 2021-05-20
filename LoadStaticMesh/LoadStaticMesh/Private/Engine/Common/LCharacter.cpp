@@ -4,14 +4,17 @@
 #include "LPlayerController.h"
 #include "LCharacterMovement.h"
 
+#include "LLog.h"
+
 LCharacter::LCharacter()
 :SkeletalMesh(nullptr)
 ,AnimatorIns(nullptr)
 ,Controller(nullptr)
 ,IsLocalControlled(false)
 ,ChaMovement(nullptr)
-,MoveSpeed(2.f)
+,MoveSpeed(3.0f)
 ,bUpdateMove(false)
+
 {
 	ChaMovement = new LCharacterMovement();
 	ChaMovement->SetOwner(this);
@@ -54,12 +57,26 @@ void LCharacter::ProcessMouseInput(FInputResult& MouseInput)
 		float dx = XMConvertToRadians(0.25f * static_cast<float>(MouseInput.X - LastMousePoint.x)); //dx
 		float dy = XMConvertToRadians(0.25f * static_cast<float>(MouseInput.Y - LastMousePoint.y)); //dy
 
+		if(IsLocalControlled)
+		{
+			Controller->AddYawInput(dx);
+			Controller->AddPitchInput(0);
+		}
+
 		LastMousePoint.x = MouseInput.X;
 		LastMousePoint.y = MouseInput.Y;
 	}
 
 	LastMousePoint.x = MouseInput.X;
 	LastMousePoint.y = MouseInput.Y;
+
+	if(MouseInput.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_UP)
+	{
+		if (IsLocalControlled)
+		{
+			Controller->Reset();
+		}
+	}
 }
 
 void LCharacter::ProcessKeyInput(FInputResult& KeyInput)
@@ -67,10 +84,12 @@ void LCharacter::ProcessKeyInput(FInputResult& KeyInput)
 	if (KeyInput.TouchType == E_TOUCH_TYPE::KEY_DOWN)
 	{
 		Keys[KeyInput.KeyMapType] = true;
+		//LLog::Log("key down");
 	}
 	else if (KeyInput.TouchType == E_TOUCH_TYPE::KEY_UP)
 	{
 		Keys[KeyInput.KeyMapType] = false;
+		//LLog::Log("key up");
 	}
 
 	ProcessMoveInput();
@@ -118,19 +137,22 @@ void LCharacter::ProcessMoveInput()
 		bUpdateMove = true;
 	}
 
+	ChaMovement->SetActive(bUpdateMove);
 	if(bUpdateMove)
 	{
 		ChaMovement->AddMoveInput(MoveDirection, MoveSpeed);
-	}
-	else 
-	{
-		ChaMovement->AddMoveInput(XMLoadFloat3(&Zero), 0.f);
 	}
 }
 
 void LCharacter::Update(float dt)
 {
 	ChaMovement->Update(dt);
+
+	if (IsLocalControlled)
+	{
+		Controller->Update(dt);
+	}
+	
 	if (AnimatorIns)
 	{
 		AnimatorIns->Update(dt);

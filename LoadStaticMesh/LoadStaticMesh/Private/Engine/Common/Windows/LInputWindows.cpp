@@ -5,7 +5,11 @@
 #include "LEvent.h"
 #include "LDefine.h"
 #include "LDeviceWindows.h"
+#include "LLog.h"
 #include <windowsx.h>
+
+#define KEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000) ? 1 : 0)
+#define KEYUP(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000) ? 0 : 1)
 
 LInputWindows::LInputWindows()
 {
@@ -30,6 +34,23 @@ inline EventDispatcher& GetDispather()
 inline LDeviceWindows* GetWindowsDevice()
 {
 	return static_cast<LDeviceWindows*>(LEngine::GetEngine()->GetPlatformDevice());
+}
+
+bool LInputWindows::Update() 
+{
+	LInput::Update();
+	//'A' ¨C 'Z'  A - Z 0x41 - 0x5A
+	//if (KEYDOWN('A') || KEYDOWN('S') || KEYDOWN('W') || KEYDOWN('D'))
+	//{
+	//	LLog::Log("ASWD down \n");
+	//}
+
+	//if (KEYUP('A') || KEYUP('S') || KEYUP('W') || KEYUP('D'))
+	//{
+	//	LLog::Log("ASWD UP \n");
+	//}
+
+	return true;
 }
 
 LRESULT CALLBACK LInputWindows::MessageHandler(HWND Hwnd, UINT Umsg, WPARAM Wparam, LPARAM Lparam)

@@ -14,4 +14,7 @@ public:
 	virtual XMFLOAT3 GetLocation() = 0;
 	virtual XMFLOAT3 GetRotation() = 0;
 	virtual XMFLOAT3 GetScale3D() = 0;
+
+	virtual XMVECTOR GetMoveForwardVector() = 0;
+	virtual XMVECTOR GetMoveRightVector() = 0;
 };

@@ -87,6 +87,7 @@ bool LDeviceWindows::Run()
 		DispatchMessage(&Msg);
 	}
 
+	LInput::GetInput()->Update();
 	return Msg.message != WM_QUIT;
 }
 

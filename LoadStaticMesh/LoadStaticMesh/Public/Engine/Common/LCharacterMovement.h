@@ -15,8 +15,13 @@ public:
 	void Update(float dt);
 	void AddMoveInput(XMVECTOR Direction, float Speed);
 
+	void SetActive(bool bActivate)
+	{
+		bActive = bActivate;
+	}
 private: 
 	float MoveSpeed;
 	XMVECTOR MoveDirection;
 	LCharacter* Owner;
+	bool bActive;
 };

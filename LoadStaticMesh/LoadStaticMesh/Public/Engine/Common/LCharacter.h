@@ -59,8 +59,8 @@ public:
 	virtual XMFLOAT3 GetRotation() override;
 	virtual XMFLOAT3 GetScale3D() override;
 
-	XMVECTOR GetMoveForwardVector();
-	XMVECTOR GetMoveRightVector();
+	virtual XMVECTOR GetMoveForwardVector() override;
+	virtual XMVECTOR GetMoveRightVector() override;
 
 	void ProcessMouseInput(FInputResult& MouseInput);
 	void ProcessKeyInput(FInputResult& KeyInput);

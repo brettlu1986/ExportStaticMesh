@@ -63,11 +63,6 @@ void LThirdPersonCamera::UpdateViewTarget(float dt)
 {
 	if (ViewTarget)
 	{
-
-		Position = XMFLOAT3(ViewTarget->GetLocation().x + SocketOffset.x,
-			ViewTarget->GetLocation().y + SocketOffset.y,
-			ViewTarget->GetLocation().z + SocketOffset.z);
-
 		XMFLOAT3 Rotator = ViewTarget->GetRotation();
 		Pitch = XMConvertToRadians(Rotator.x);
 		Yaw = XMConvertToRadians(Rotator.y);
@@ -76,6 +71,21 @@ void LThirdPersonCamera::UpdateViewTarget(float dt)
 		LookDirection.y = R * sinf(Yaw);
 		LookDirection.z = sinf(Pitch);
 		LookDirection.x = R * cosf(Yaw);
+
+		XMFLOAT3 Loc = ViewTarget->GetLocation();
+
+		//socket offset x is -2, so it will move to backward dir
+		XMVECTOR ForwardDir = ViewTarget->GetMoveForwardVector();
+		ForwardDir = XMVector3Normalize(ForwardDir);
+
+		XMVECTOR RightDir = XMVector3Cross(XMLoadFloat3(&LookDirection), XMLoadFloat3(&UpDirection));
+		RightDir = -1.f * XMVector3Normalize(RightDir);
+
+		XMVECTOR FinalVec = XMLoadFloat3(&Loc) + ForwardDir * SocketOffset.x + RightDir * SocketOffset.y +
+			XMLoadFloat3(&UpDirection) * SocketOffset.z;
+		Position = XMFLOAT3(XMVectorGetX(FinalVec),
+			XMVectorGetY(FinalVec),
+			XMVectorGetZ(FinalVec));
 	}
 }
 
