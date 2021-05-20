@@ -58,6 +58,12 @@ void ApplicationMain::Update(float DeltaTime)
 	Scene.Update(DeltaTime);
 	//FRenderThread::Get()->NotifyRenderThreadExcute();
 	FRenderThread::Get()->WaitForRenderThread();
+	FRenderThread::Get()->UpdateRenderSceneResource(&Scene);
+}
+
+void ApplicationMain::OnRender()
+{
+	FRenderThread::Get()->OnRenderScene(&Scene);
 }
 
 void ApplicationMain::Run()
@@ -68,11 +74,13 @@ void ApplicationMain::Run()
 		Timer->Reset();
 
 		Update(Timer->GetDeltaTime());
+		OnRender();
 	}
 }
 
 void ApplicationMain::Destroy()
 {
+	FRenderThread::Get()->DestroyRenderScene(&Scene);
 	Timer->Release();
 	LEngine::GetEngine()->Destroy();
 }

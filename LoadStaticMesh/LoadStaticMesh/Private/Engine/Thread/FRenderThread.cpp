@@ -8,7 +8,7 @@ FRenderThread* FRenderThread::RenderThread = nullptr;
 
 FRenderThread::FRenderThread()
 	:FTaskThread("RenderThread")
-	, RenderScene(nullptr)
+	//, RenderScene(nullptr)
 {
 
 }
@@ -25,12 +25,13 @@ void FRenderThread::Run()
 
 		DoTasks();
 
-		GRHI->UpdateSceneResources(RenderScene);
-		Renderer.RenderScene(RenderScene);
+		//GRHI->UpdateSceneResources(RenderScene);
+		//Renderer.RenderScene(RenderScene);
 		
 		//NotifyGameExcute();
-		--FrameTaskNum;
-		RenderCV.notify_all();
+		
+		//--FrameTaskNum;
+		//RenderCV.notify_all();
 	}
 	Clear();
 	RHIExit();
@@ -57,10 +58,35 @@ FRenderThread* FRenderThread::Get()
 void FRenderThread::InitRenderThreadScene(FScene* Scene)
 {
 	AddTask([this, Scene] {
-		RenderScene = Scene;
 		GRHI->BeginCreateSceneResource();
-		Renderer.Initialize(RenderScene);
+		Renderer.Initialize(Scene);
 		GRHI->EndCreateSceneResource();
+	});
+}
+
+void FRenderThread::UpdateRenderSceneResource(FScene* Scene)
+{
+	AddTask([this, Scene]
+	{
+		GRHI->UpdateSceneResources(Scene);
+	});
+}
+
+void FRenderThread::OnRenderScene(FScene* Scene)
+{
+	AddTask([this, Scene]
+	{
+		Renderer.RenderScene(Scene);
+		--FrameTaskNum;
+		RenderCV.notify_all();
+	});
+}
+
+void FRenderThread::DestroyRenderScene(FScene* Scene)
+{
+	AddTask([this, Scene]
+	{
+		Scene->Destroy();
 	});
 }
 
@@ -90,8 +116,8 @@ void FRenderThread::InitRenderThreadScene(FScene* Scene)
 
 void FRenderThread::Clear()
 {
-	RenderScene->Destroy();
-	RenderScene = nullptr;
+	//RenderScene->Destroy();
+	//RenderScene = nullptr;
 	ClearTask();
 
 	//lock_guard<mutex> Lock(Mutex);

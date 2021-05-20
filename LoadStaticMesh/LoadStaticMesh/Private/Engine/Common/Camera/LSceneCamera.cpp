@@ -124,8 +124,8 @@ void LSceneCamera::ProcessCameraMouseInput(FInputResult& MouseInput)
 		Yaw += dx;
 
 		Pitch = MathHelper::Clamp(Pitch, MIN_PITCH, MAX_PITCH);
-		bUpdateDirty = true;
 
+		CalculateLocation();
 		LastMousePoint.x = MouseInput.X;
 		LastMousePoint.y = MouseInput.Y;
 	}

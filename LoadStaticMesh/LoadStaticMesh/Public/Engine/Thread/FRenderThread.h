@@ -19,17 +19,15 @@ public:
 	atomic_int FrameTaskNum;
 
 	void InitRenderThreadScene(FScene* Scene);
+	void UpdateRenderSceneResource(FScene* Scene);
 
+	void OnRenderScene(FScene* Scene);
+	void DestroyRenderScene(FScene* Scene);
 	/*void NotifyRenderThreadExcute();
 	void NotifyGameExcute();
 	bool ShouldWaitRender();
 	bool ShouldWaitGame();*/
 	void Clear();
-
-	FScene* GetRenderScene()
-	{
-		return RenderScene;
-	}
 	
 	void WaitForRenderThread();
 
@@ -37,7 +35,7 @@ private:
 	static FRenderThread* RenderThread;
 	static const UINT CPU_MAX_AHEAD = 3;
 	FSceneRenderer Renderer;
-	FScene* RenderScene;
+	//FScene* RenderScene;
 	
 	//UINT SyncCount = 0;
 };

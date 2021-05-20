@@ -15,6 +15,7 @@ public:
 	void Run();
 
 	void Update(float DeltaTime);
+	void OnRender();
 	void Destroy();
 	
 	static ApplicationMain* Get() { return Application; }
