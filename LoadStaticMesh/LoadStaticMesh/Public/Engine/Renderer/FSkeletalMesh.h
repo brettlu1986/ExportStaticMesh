@@ -60,6 +60,16 @@ public:
 		return ModelRotation;
 	}
 
+	XMFLOAT3 GetLocation()
+	{
+		return ModelLocation;
+	}
+
+	XMFLOAT3 GetScale3D()
+	{
+		return ModelLocation;
+	}
+
 	FResourceView* MtConstantBufferView;
 	FResourceView* SkeletalConstantBufferView;
 	//TODO: move to material

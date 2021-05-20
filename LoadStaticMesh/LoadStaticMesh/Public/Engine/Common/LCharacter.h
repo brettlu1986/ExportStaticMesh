@@ -11,7 +11,7 @@ class LCharacter : public LActor
 {
 public:
 	LCharacter();
-	~LCharacter();
+	virtual ~LCharacter();
 
 	void Destroy();
 
@@ -50,6 +50,14 @@ public:
 	{
 		return IsLocalControlled;
 	}
+
+	virtual void SetLocation(XMFLOAT3 Location) override;
+	virtual void SetRotation(XMFLOAT3 Rotator) override;
+	virtual void SetScale3D(XMFLOAT3 Scale) override;
+
+	virtual XMFLOAT3 GetLocation() override;
+	virtual XMFLOAT3 GetRotation() override;
+	virtual XMFLOAT3 GetScale3D() override;
 
 	void Update(float dt);
 private: 

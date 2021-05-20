@@ -89,13 +89,13 @@ void ApplicationMain::ProcessInput(FInputResult Input)
 
 void ApplicationMain::ProcessKeyInput(FInputResult& Input)
 {
-	LCamera& Camera = Scene.GetCamera();
-	Camera.ProcessCameraKeyInput(Input);
+	//LCamera& Camera = Scene.GetCamera();
+	//Camera.ProcessCameraKeyInput(Input);
 }
 
 void ApplicationMain::ProcessMouseInput(FInputResult& Input)
 {
-	LCamera& Camera= Scene.GetCamera();
-	Camera.ProcessCameraMouseInput(Input);
+	//LCamera& Camera = Scene.GetCamera();
+	//Camera.ProcessCameraMouseInput(Input);
 }
 

@@ -30,6 +30,7 @@ LCamera::LCamera()
 	,CameraDatas(FCameraData())
 	,LastMousePoint({ 0, 0 })
 	,bUpdateDirty(false)
+	,ViewTarget(nullptr)
 {
 	for (UINT i = 0; i < KEY_SIZE; i++)
 	{
@@ -114,14 +115,9 @@ void LCamera::UpdateInput(float dt)
 	}
 }
 
-void LCamera::UpdateViewTarget(float dt)
+void LCamera::SetSocketOffset(XMFLOAT3 Offset)
 {
-
-}
-
-void LCamera::SetViewTarget(LActor* Target)
-{
-
+	SocketOffset = Offset;
 }
 
 void LCamera::Update(float DeltaTime)
@@ -194,8 +190,8 @@ void LCamera::CalculateLocation()
 
 XMMATRIX LCamera::GetViewMarix()
 {
-	return XMMatrixLookAtLH(XMLoadFloat3(&Position), XMLoadFloat3(&FocusPosition), XMLoadFloat3(&UpDirection));
-	 //XMMatrixLookToLH(XMLoadFloat3(&Position), XMLoadFloat3(&LookDirection), XMLoadFloat3(&UpDirection));
+	return //XMMatrixLookAtLH(XMLoadFloat3(&Position), XMLoadFloat3(&FocusPosition), XMLoadFloat3(&UpDirection));
+	 XMMatrixLookToLH(XMLoadFloat3(&Position), XMLoadFloat3(&LookDirection), XMLoadFloat3(&UpDirection));
 }
 
 XMMATRIX LCamera::GetProjectionMatrix(float NearPlane /*= 1.0f*/, float FarPlane /*= 1000.0f*/)
@@ -203,4 +199,29 @@ XMMATRIX LCamera::GetProjectionMatrix(float NearPlane /*= 1.0f*/, float FarPlane
 	return XMMatrixPerspectiveFovLH(Fov, AspectRatio, NearPlane, FarPlane);
 }
 
+// camera target 
+void LCamera::UpdateViewTarget(float dt)
+{
+	if (ViewTarget)
+	{
+		Position = XMFLOAT3(ViewTarget->GetLocation().x + SocketOffset.x, 
+			ViewTarget->GetLocation().y + SocketOffset.y,
+			ViewTarget->GetLocation().z + SocketOffset.z)  ;
+
+		XMFLOAT3 Rotator = ViewTarget->GetRotation();
+		Pitch = XMConvertToRadians(Rotator.x);
+		Yaw = XMConvertToRadians(Rotator.y + 90.f);
+
+		float R = cosf(Pitch);
+		LookDirection.y = R * sinf(Yaw);
+		LookDirection.z = sinf(Pitch);
+		LookDirection.x = R * cosf(Yaw);
+	}
+}
+
+void LCamera::SetViewTarget(LActor* Target)
+{
+	ViewTarget = Target;
+	UpdateViewTarget(0.f);
+}
 

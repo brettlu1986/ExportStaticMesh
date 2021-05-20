@@ -69,6 +69,10 @@ void FScene::InitCharacters()
 	Players[0]->SetPlayerController(PlayerController);
 	Players[0]->PlayAnimation("Idle", true);
 
+	Camera.SetSocketOffset(XMFLOAT3(-2.f, 0.3f, 2.2f));
+	Camera.SetViewTarget(Players[0]);
+	
+
 	Players[1]->PlayAnimation("Walk", true);
 	Players[2]->PlayAnimation("Run", true);
 }

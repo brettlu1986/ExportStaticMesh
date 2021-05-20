@@ -23,11 +23,6 @@ public:
 	void ProcessCameraKeyInput(FInputResult& KeyInput);
 	void Update(float DeltaTime);
 
-
-	const XMFLOAT3& GetViewTargetLocation() {
-		return CameraDatas.Target;
-	}
-
 	FCameraData& GetCameraData()
 	{
 		return CameraDatas;
@@ -48,22 +43,25 @@ public:
 	void CalculateLocation();
 
 	void SetViewTarget(LActor* Target);
+	void SetSocketOffset(XMFLOAT3 Offset);
 private:
-
-	void UpdateInput(float dt);
 	void UpdateViewTarget(float dt);
 
+	void UpdateInput(float dt);
 	bool IsKeyDown(char Key);
 	bool IsKeyUp(char Key);
 
 	static const UINT KEY_SIZE = 256;
 	
 	FCameraData CameraDatas;
+	LActor* ViewTarget;
 	XMFLOAT3 Position;
 	float Yaw;
 	float Pitch;
 	//we can use either look direction or focus position to calculate view matrix
 	float ArmLength;
+
+	XMFLOAT3 SocketOffset;
 	XMFLOAT3 LookDirection;
 	XMFLOAT3 FocusPosition;
 	XMFLOAT3 UpDirection;

@@ -51,3 +51,33 @@ void LCharacter::Update(float dt)
 		AnimatorIns->Update(dt);
 	}
 }
+
+void LCharacter::SetLocation(XMFLOAT3 Location)
+{
+	SkeletalMesh->SetModelLocation(Location);
+}	
+
+void LCharacter::SetRotation(XMFLOAT3 Rotator)
+{
+	SkeletalMesh->SetModelRotation(Rotator);
+}
+
+void LCharacter::SetScale3D(XMFLOAT3 Scale)
+{
+	SkeletalMesh->SetModelScale(Scale);
+}
+
+XMFLOAT3 LCharacter::GetLocation()
+{
+	return SkeletalMesh->GetLocation();
+}
+ 
+XMFLOAT3 LCharacter::GetRotation()
+{
+	return SkeletalMesh->GetRotation();
+}
+
+XMFLOAT3 LCharacter::GetScale3D()
+{
+	return SkeletalMesh->GetScale3D();
+}

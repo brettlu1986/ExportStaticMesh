@@ -169,6 +169,8 @@ void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(std::string FileName, 
 
 	XMFLOAT3 Rotation;
 	Rf.read((char*)&Rotation, sizeof(XMFLOAT3));
+	//TODO: the skeletal has yaw 90 degree offset , dont know why ????
+	Rotation.y -= 90.f;
 	SkeletalMesh->SetModelRotation(Rotation);
 
 	XMFLOAT3 Scale;
@@ -240,6 +242,7 @@ void LAssetDataLoader::LoadSkeletonFromFile(std::string FileName, LSkeleton* Ske
 	{
 		LBonePose Pose;
 		Pose.Scale = BonePoses[i].Scale;
+						//Pitch                          Yaw                Roll
 		XMFLOAT3 Rot = { -BonePoses[i].Rotate.x, BonePoses[i].Rotate.y, -BonePoses[i].Rotate.z };
 		Pose.Quat = MathHelper::EulerToQuaternion(Rot);
 		Pose.Translate = BonePoses[i].Translate;
