@@ -6,6 +6,10 @@
 #include "LInput.h"
 #include "LAssetDataLoader.h"
 #include "FRenderThread.h"
+#include <chrono>
+#include <thread> 
+
+#include "LLog.h"
 
 #include "LSceneCamera.h"
 
@@ -68,6 +72,8 @@ void ApplicationMain::OnRender()
 
 void ApplicationMain::Run()
 {
+	//const UINT FrameRate = 60;
+	//std::chrono::duration<float> FrameLen = std::chrono::duration<float>(1.f/60);
 	while (LEngine::GetEngine()->Run())
 	{
 		Timer->Tick();
@@ -75,6 +81,7 @@ void ApplicationMain::Run()
 
 		Update(Timer->GetDeltaTime());
 		OnRender();
+	//	this_thread::sleep_for(FrameLen - Timer->GetChronoDeltaTime());
 	}
 }
 

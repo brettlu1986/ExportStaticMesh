@@ -156,6 +156,9 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Private\ApplicationMain.cpp" />
     <ClCompile Include="Private\Engine\Common\Animation\LAnimationSequence.cpp" />
+    <ClCompile Include="Private\Engine\Common\Animation\LAnimationState.cpp" />
+    <ClCompile Include="Private\Engine\Common\Animation\LAnimationStateMachine.cpp" />
+    <ClCompile Include="Private\Engine\Common\Animation\LAnimationStateTransition.cpp" />
     <ClCompile Include="Private\Engine\Common\Animation\LAnimationTrack.cpp" />
     <ClCompile Include="Private\Engine\Common\Animation\LAnimator.cpp" />
     <ClCompile Include="Private\Engine\Common\Animation\LSkeleton.cpp" />
@@ -396,6 +399,9 @@
   <ItemGroup>
     <ClInclude Include="Public\ApplicationMain.h" />
     <ClInclude Include="Public\Engine\Common\Animation\LAnimationSequence.h" />
+    <ClInclude Include="Public\Engine\Common\Animation\LAnimationState.h" />
+    <ClInclude Include="Public\Engine\Common\Animation\LAnimationStateMachine.h" />
+    <ClInclude Include="Public\Engine\Common\Animation\LAnimationStateTransition.h" />
     <ClInclude Include="Public\Engine\Common\Animation\LAnimationTrack.h" />
     <ClInclude Include="Public\Engine\Common\Animation\LAnimator.h" />
     <ClInclude Include="Public\Engine\Common\Animation\LSkeleton.h" />

@@ -204,6 +204,15 @@
     <ClCompile Include="Private\Engine\Common\Camera\LThirdPersonCamera.cpp">
       <Filter>Source Files\Engine\Common\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Engine\Common\Animation\LAnimationStateMachine.cpp">
+      <Filter>Source Files\Engine\Common\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\Animation\LAnimationState.cpp">
+      <Filter>Source Files\Engine\Common\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\Animation\LAnimationStateTransition.cpp">
+      <Filter>Source Files\Engine\Common\Animation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds">
@@ -398,6 +407,15 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\Camera\LThirdPersonCamera.h">
       <Filter>Header Files\Engine\Common\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Animation\LAnimationStateMachine.h">
+      <Filter>Header Files\Engine\Common\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Animation\LAnimationState.h">
+      <Filter>Header Files\Engine\Common\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Animation\LAnimationStateTransition.h">
+      <Filter>Header Files\Engine\Common\Animation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

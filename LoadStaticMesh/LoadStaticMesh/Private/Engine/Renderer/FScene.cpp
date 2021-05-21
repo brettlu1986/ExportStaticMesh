@@ -89,16 +89,15 @@ void FScene::InitCharacters()
 
 	LPlayerController* PlayerController = new LPlayerController();
 	PlayerController->Possess(Players[0]);
-
 	Players[0]->SetPlayerController(PlayerController);
-	Players[0]->PlayAnimation("Idle", true);
+	//Players[0]->PlayAnimation("Idle", true);
 
 	LThirdPersonCamera* Ca = dynamic_cast<LThirdPersonCamera*>(GetThirdPersonCamera());
 	Ca->SetSocketOffset(XMFLOAT3(-2.f, 0.3f, 2.2f));
 	Ca->SetViewTarget(Players[0]);
 
-	Players[1]->PlayAnimation("Walk", true);
-	Players[2]->PlayAnimation("Run", true);
+	//Players[1]->PlayAnimation("Walk", true);
+	//Players[2]->PlayAnimation("Run", true);
 }
 
 void FScene::AddLightToScene(FLight* Light)

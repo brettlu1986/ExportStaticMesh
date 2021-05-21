@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "LSkeleton.h"
 #include "LAnimationSequence.h"
+#include "LAnimationStateMachine.h"
 
 class LAnimator
 {
@@ -11,28 +12,29 @@ public:
 	~LAnimator();
 
 	void SetSkeleton(LSkeleton* Ske);
-	
 
 	void AddAnimSequence(std::string AnimName, LAnimationSequence Seq)
 	{
 		AnimSequences[AnimName] = Seq;
 	}
 
-	void Play(std::string AnimName, bool bLoop);
-	void Stop();
 	void Update(float dt);
 
 	std::vector<XMFLOAT4X4>& GetBoneMapFinalTransforms()
 	{
 		return BoneMapFinalTransforms;
 	}
+
+	void InitStateMachines();
+
 private: 
+	void CreateDefaultStateMachine();
 
 	std::map<std::string, LAnimationSequence> AnimSequences;
 	LSkeleton* Skeleton;
-	bool IsPlaying;
-	std::string CurrentPlay;
 
 	std::vector<XMFLOAT4X4> AllBoneFinalTransforms;
 	std::vector<XMFLOAT4X4> BoneMapFinalTransforms; //use to constant buffer
+
+	LAnimationStateMachine* DefaultStateMachine;
 };

@@ -7,7 +7,7 @@ LPlayerController::LPlayerController()
 :ControlledCharacter(nullptr)
 , RotationYawInput(0.f)
 , RotationPitchInput(0.f)
-, Scale(2.2f)
+, Scale(3.f)
 {
 
 }

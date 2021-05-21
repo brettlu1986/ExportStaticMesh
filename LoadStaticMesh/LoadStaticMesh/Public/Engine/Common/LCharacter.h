@@ -20,11 +20,8 @@ public:
 		SkeletalMesh = Mesh;
 	}
 
-	void SetAnimator(LAnimator* Animator)
-	{
-		AnimatorIns = Animator;
-	}
-
+	void SetAnimator(LAnimator* Animator);
+	
 	FSkeletalMesh* GetSkeletalMesh()
 	{
 		return SkeletalMesh;
@@ -35,10 +32,10 @@ public:
 		return AnimatorIns;
 	}
 
-	void PlayAnimation(std::string AnimName, bool bLoop)
-	{
-		AnimatorIns->Play(AnimName, bLoop);
-	}
+	//void PlayAnimation(std::string AnimName, bool bLoop)
+	//{
+	//	AnimatorIns->Play(AnimName, bLoop);
+	//}
 
 	void SetPlayerController(LPlayerController* InController)
 	{
@@ -84,5 +81,7 @@ private:
 	bool IsLocalControlled;
 
 	float MoveSpeed;
+	float BaseSpeed;
 	bool bUpdateMove;
+	bool bJump;
 };

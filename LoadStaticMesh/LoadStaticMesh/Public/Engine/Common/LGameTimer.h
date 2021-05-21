@@ -12,6 +12,11 @@ public:
 	void SetTimeScale(float Time = 1.0f);
 	float GetTimeScale();
 
+	std::chrono::duration<float> GetChronoDeltaTime()
+	{
+		return DeltaTime;
+	}
+
 	float GetDeltaTime();
 	void Tick();
 

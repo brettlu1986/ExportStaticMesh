@@ -12,7 +12,8 @@ LCharacter::LCharacter()
 ,Controller(nullptr)
 ,IsLocalControlled(false)
 ,ChaMovement(nullptr)
-,MoveSpeed(3.0f)
+,MoveSpeed(0.0f)
+,BaseSpeed(3.f)
 ,bUpdateMove(false)
 
 {
@@ -50,6 +51,12 @@ void LCharacter::Destroy()
 	ChaMovement = nullptr;
 }
 
+void LCharacter::SetAnimator(LAnimator* Animator)
+{
+	AnimatorIns = Animator;
+	AnimatorIns->InitStateMachines();
+}
+
 void LCharacter::ProcessMouseInput(FInputResult& MouseInput)
 {
 	if (MouseInput.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_MOVE)
@@ -84,12 +91,10 @@ void LCharacter::ProcessKeyInput(FInputResult& KeyInput)
 	if (KeyInput.TouchType == E_TOUCH_TYPE::KEY_DOWN)
 	{
 		Keys[KeyInput.KeyMapType] = true;
-		//LLog::Log("key down");
 	}
 	else if (KeyInput.TouchType == E_TOUCH_TYPE::KEY_UP)
 	{
 		Keys[KeyInput.KeyMapType] = false;
-		//LLog::Log("key up");
 	}
 
 	ProcessMoveInput();
@@ -113,6 +118,7 @@ void LCharacter::ProcessMoveInput()
 
 	XMFLOAT3 Zero = XMFLOAT3(0.f, 0.f, 0.f);
 	XMVECTOR MoveDirection = XMLoadFloat3(&Zero);
+	MoveSpeed = BaseSpeed;
 	if(IsKeyDown('W'))
 	{
 		MoveDirection += GetMoveForwardVector();
@@ -135,6 +141,17 @@ void LCharacter::ProcessMoveInput()
 	{
 		MoveDirection -= GetMoveRightVector();
 		bUpdateMove = true;
+	}
+
+	if(IsKeyDown(VK_SHIFT) && IsKeyDown('W'))
+	{
+		MoveSpeed = BaseSpeed * 2;
+		bUpdateMove = true;
+	}
+
+	if(IsKeyDown(VK_SPACE))
+	{
+		bJump = true;
 	}
 
 	ChaMovement->SetActive(bUpdateMove);
