@@ -90,6 +90,7 @@ void FScene::InitCharacters()
 	LPlayerController* PlayerController = new LPlayerController();
 	PlayerController->Possess(Players[0]);
 	Players[0]->SetPlayerController(PlayerController);
+	Players[0]->RegisterAnimationStateEvent();
 	//Players[0]->PlayAnimation("Idle", true);
 
 	LThirdPersonCamera* Ca = dynamic_cast<LThirdPersonCamera*>(GetThirdPersonCamera());

@@ -3,7 +3,7 @@
 #include "FSkeletalMesh.h"
 #include "LPlayerController.h"
 #include "LCharacterMovement.h"
-
+#include "LEngine.h"
 #include "LLog.h"
 
 LCharacter::LCharacter()
@@ -161,8 +161,23 @@ void LCharacter::ProcessMoveInput()
 	}
 }
 
+void LCharacter::RegisterAnimationStateEvent()
+{
+	if(IsLocalControlled)
+	{
+		EventDispatcher& EventDisp = LEngine::GetEngine()->GetEventDispacher();
+		std::function<void(std::string)> Func = std::bind(&LAnimator::ProcessDefaultStateMachineChange, AnimatorIns, std::placeholders::_1);
+		EventDisp.RegisterEvent(new LEvent<std::string>(E_EVENT_KEY::EVENT_ANIM_MACHINE_STATE, Func));
+	}
+}
+
+/*EventDispatcher& EventDisp = LEngine::GetEngine()->GetEventDispacher();
+EventDisp.DispatchEvent(E_EVENT_KEY::EVENT_ANIM_MACHINE_STATE, "Walk");*/
+
+
 void LCharacter::Update(float dt)
 {
+
 	ChaMovement->Update(dt);
 
 	if (IsLocalControlled)

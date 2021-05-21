@@ -26,10 +26,9 @@ public:
 	}
 
 	void InitStateMachines();
-
+	void ProcessDefaultStateMachineChange(std::string name);
 private: 
 	void CreateDefaultStateMachine();
-
 	std::map<std::string, LAnimationSequence> AnimSequences;
 	LSkeleton* Skeleton;
 

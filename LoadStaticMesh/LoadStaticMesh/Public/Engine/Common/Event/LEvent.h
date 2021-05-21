@@ -6,7 +6,7 @@
 enum class E_EVENT_KEY : int
 {
 	EVENT_INPUT = 0,
-
+	EVENT_ANIM_MACHINE_STATE,
 };
 
 class IEvent

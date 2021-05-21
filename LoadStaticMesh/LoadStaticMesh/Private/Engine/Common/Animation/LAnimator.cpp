@@ -2,6 +2,9 @@
 
 #include "LAnimator.h"
 #include "LAnimationState.h"
+#include "LEngine.h"
+#include "LLog.h"
+//#include <functional>
 
 LAnimator::LAnimator()
 :Skeleton(nullptr)
@@ -84,4 +87,17 @@ void LAnimator::CreateDefaultStateMachine()
 	Stats["JumpLoop"] = new LAnimationState("JumpLoop", false, &AnimSequences["JumpLoop"]);
 	Stats["JumpEnd"] = new LAnimationState("JumpEnd", false, &AnimSequences["JumpEnd"]);
 	DefaultStateMachine->OnCreate(Stats, "Idle");
+
+	//EventDispatcher& EventDisp = LEngine::GetEngine()->GetEventDispacher();
+	//std::function<void(std::string)> Func = std::bind(&LAnimator::ProcessDefaultStateMachineChange, this, std::placeholders::_1);
+	//EventDisp.RegisterEvent(new LEvent<std::string>(E_EVENT_KEY::EVENT_ANIM_MACHINE_STATE, Func));
+}
+
+void LAnimator::ProcessDefaultStateMachineChange(std::string name)
+{
+	if(name == "Walk")
+	{
+		LLog::Log("change to walk \n");
+		//DefaultStateMachine->SetCurrentAnimState()
+	}
 }
