@@ -6,6 +6,8 @@
 #include "LEngine.h"
 #include "LLog.h"
 
+using namespace std;
+
 LCharacter::LCharacter()
 :SkeletalMesh(nullptr)
 ,AnimatorIns(nullptr)
@@ -90,14 +92,21 @@ void LCharacter::ProcessKeyInput(FInputResult& KeyInput)
 {
 	if (KeyInput.TouchType == E_TOUCH_TYPE::KEY_DOWN)
 	{
-		Keys[KeyInput.KeyMapType] = true;
+		if(!Keys[KeyInput.KeyMapType])
+		{
+			Keys[KeyInput.KeyMapType] = true;
+			ProcessMoveInput();
+		}
 	}
 	else if (KeyInput.TouchType == E_TOUCH_TYPE::KEY_UP)
 	{
-		Keys[KeyInput.KeyMapType] = false;
+		if(Keys[KeyInput.KeyMapType])
+		{
+			Keys[KeyInput.KeyMapType] = false;
+			ProcessMoveInput();
+		}
 	}
-
-	ProcessMoveInput();
+	
 }
 
 bool LCharacter::IsKeyDown(char InKey)
@@ -119,39 +128,50 @@ void LCharacter::ProcessMoveInput()
 	XMFLOAT3 Zero = XMFLOAT3(0.f, 0.f, 0.f);
 	XMVECTOR MoveDirection = XMLoadFloat3(&Zero);
 	MoveSpeed = BaseSpeed;
+
 	if(IsKeyDown('W'))
 	{
 		MoveDirection += GetMoveForwardVector();
 		bUpdateMove = true;
+		LEngine::GetEngine()->GetEventDispacher().DispatchEvent(E_EVENT_KEY::EVENT_ANIM_MACHINE_STATE, string("Walk"));
 	}
 
 	if (IsKeyDown('S'))
 	{
 		MoveDirection -= GetMoveForwardVector();
 		bUpdateMove = true;
+		LEngine::GetEngine()->GetEventDispacher().DispatchEvent(E_EVENT_KEY::EVENT_ANIM_MACHINE_STATE, string("Walk"));
 	}
 
 	if (IsKeyDown('A'))
 	{
 		MoveDirection += GetMoveRightVector();
 		bUpdateMove = true;
+		LEngine::GetEngine()->GetEventDispacher().DispatchEvent(E_EVENT_KEY::EVENT_ANIM_MACHINE_STATE, string("Walk"));
 	}
 
 	if (IsKeyDown('D'))
 	{
 		MoveDirection -= GetMoveRightVector();
 		bUpdateMove = true;
+		LEngine::GetEngine()->GetEventDispacher().DispatchEvent(E_EVENT_KEY::EVENT_ANIM_MACHINE_STATE, string("Walk"));
 	}
 
 	if(IsKeyDown(VK_SHIFT) && IsKeyDown('W'))
 	{
 		MoveSpeed = BaseSpeed * 2;
 		bUpdateMove = true;
+		LEngine::GetEngine()->GetEventDispacher().DispatchEvent(E_EVENT_KEY::EVENT_ANIM_MACHINE_STATE, string("Run"));
 	}
 
 	if(IsKeyDown(VK_SPACE))
 	{
-		bJump = true;
+		LEngine::GetEngine()->GetEventDispacher().DispatchEvent(E_EVENT_KEY::EVENT_ANIM_MACHINE_STATE, string("Jump"));
+	}
+
+	if (!bUpdateMove && IsKeyUp(VK_SPACE))
+	{
+		LEngine::GetEngine()->GetEventDispacher().DispatchEvent(E_EVENT_KEY::EVENT_ANIM_MACHINE_STATE, string("Idle"));
 	}
 
 	ChaMovement->SetActive(bUpdateMove);
@@ -170,10 +190,6 @@ void LCharacter::RegisterAnimationStateEvent()
 		EventDisp.RegisterEvent(new LEvent<std::string>(E_EVENT_KEY::EVENT_ANIM_MACHINE_STATE, Func));
 	}
 }
-
-/*EventDispatcher& EventDisp = LEngine::GetEngine()->GetEventDispacher();
-EventDisp.DispatchEvent(E_EVENT_KEY::EVENT_ANIM_MACHINE_STATE, "Walk");*/
-
 
 void LCharacter::Update(float dt)
 {

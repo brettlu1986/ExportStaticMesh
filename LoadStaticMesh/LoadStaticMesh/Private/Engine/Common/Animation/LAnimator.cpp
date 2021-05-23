@@ -86,18 +86,16 @@ void LAnimator::CreateDefaultStateMachine()
 	Stats["JumpStart"] = new LAnimationState("JumpStart", false, &AnimSequences["JumpStart"]);
 	Stats["JumpLoop"] = new LAnimationState("JumpLoop", false, &AnimSequences["JumpLoop"]);
 	Stats["JumpEnd"] = new LAnimationState("JumpEnd", false, &AnimSequences["JumpEnd"]);
-	DefaultStateMachine->OnCreate(Stats, "Idle");
+	DefaultStateMachine->OnCreate(Stats, "Walk");
 
-	//EventDispatcher& EventDisp = LEngine::GetEngine()->GetEventDispacher();
-	//std::function<void(std::string)> Func = std::bind(&LAnimator::ProcessDefaultStateMachineChange, this, std::placeholders::_1);
-	//EventDisp.RegisterEvent(new LEvent<std::string>(E_EVENT_KEY::EVENT_ANIM_MACHINE_STATE, Func));
 }
 
 void LAnimator::ProcessDefaultStateMachineChange(std::string name)
 {
-	if(name == "Walk")
+	if(name == DefaultStateMachine->GetCurrentAnimStateName())
 	{
-		LLog::Log("change to walk \n");
-		//DefaultStateMachine->SetCurrentAnimState()
+		return;
 	}
+
+	DefaultStateMachine->SetTransitionToState(name, 0.2f);
 }

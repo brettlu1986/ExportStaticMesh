@@ -61,6 +61,21 @@ public:
 	{
 		return SequenceTracks;
 	}
+
+	XMVECTOR GetCurrentS()
+	{
+		return S;
+	}
+
+	XMVECTOR GetCurrentQ()
+	{
+		return Q;
+	}
+
+	XMVECTOR GetCurrentT()
+	{
+		return T;
+	}
 private:
 	
 	float TimeElapsed;
@@ -73,4 +88,8 @@ private:
 	std::vector<LAnimationTrack> SequenceTracks;
 	std::vector<float> FrameTimes;
 	std::vector<XMFLOAT4X4> CurrentPoseToParentsTrans;
+
+	XMVECTOR S;
+	XMVECTOR Q;
+	XMVECTOR T;
 };

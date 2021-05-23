@@ -50,16 +50,16 @@ void LAnimationSequence::Update(float dt)
 
 		if(TimeElapsed <= FrameTimes.front())
 		{
-			XMVECTOR S = ScaleSize > 0 ? XMLoadFloat3(&Track.ScaleChannelFrames.front()) : XMLoadFloat3(&NO_S);
-			XMVECTOR Q = QuatSize > 0 ? XMLoadFloat4(&Track.QuatChannelFrames.front()) : XMLoadFloat4(&NO_Q);
-			XMVECTOR T = TranslateSize > 0 ? XMLoadFloat3(&Track.TranslateChannelFrames.front()) : XMLoadFloat3(&NO_T);
+			S = ScaleSize > 0 ? XMLoadFloat3(&Track.ScaleChannelFrames.front()) : XMLoadFloat3(&NO_S);
+			Q = QuatSize > 0 ? XMLoadFloat4(&Track.QuatChannelFrames.front()) : XMLoadFloat4(&NO_Q);
+			T = TranslateSize > 0 ? XMLoadFloat3(&Track.TranslateChannelFrames.front()) : XMLoadFloat3(&NO_T);
 			XMStoreFloat4x4(&CurrentPoseToParentsTrans[i], XMMatrixAffineTransformation(S, Zero, Q, T));
 		}
 		else if (TimeElapsed >= FrameTimes.back())
 		{
-			XMVECTOR S = ScaleSize > 0 ? XMLoadFloat3(&Track.ScaleChannelFrames.back()) : XMLoadFloat3(&NO_S);
-			XMVECTOR Q = QuatSize > 0 ? XMLoadFloat4(&Track.QuatChannelFrames.back()) : XMLoadFloat4(&NO_Q);
-			XMVECTOR T = TranslateSize > 0 ? XMLoadFloat3(&Track.TranslateChannelFrames.back()) : XMLoadFloat3(&NO_T);
+			 S = ScaleSize > 0 ? XMLoadFloat3(&Track.ScaleChannelFrames.back()) : XMLoadFloat3(&NO_S);
+			 Q = QuatSize > 0 ? XMLoadFloat4(&Track.QuatChannelFrames.back()) : XMLoadFloat4(&NO_Q);
+			 T = TranslateSize > 0 ? XMLoadFloat3(&Track.TranslateChannelFrames.back()) : XMLoadFloat3(&NO_T);
 			XMStoreFloat4x4(&CurrentPoseToParentsTrans[i], XMMatrixAffineTransformation(S, Zero, Q, T));
 		}
 		else 
@@ -70,7 +70,7 @@ void LAnimationSequence::Update(float dt)
 				{
 					float LerpPercent = (TimeElapsed - FrameTimes[j]) / (FrameTimes[j + 1] - FrameTimes[j]);
 					XMVECTOR s0, s1, q0, q1, t0, t1;
-					XMVECTOR S, Q, T;
+					
 
 					s0 = s1 = XMLoadFloat3(&NO_S);
 					q0 = q1 = XMLoadFloat4(&NO_Q);

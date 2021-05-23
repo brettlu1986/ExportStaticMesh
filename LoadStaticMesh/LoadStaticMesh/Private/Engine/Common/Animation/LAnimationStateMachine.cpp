@@ -29,6 +29,18 @@ void LAnimationStateMachine::SetCurrentAnimState(std::string StateName)
 	MachineState = E_MACHINE_STATE::STATE_UPDATE;
 }
 
+void LAnimationStateMachine::SetTransitionToState(std::string TargetStateName, float Time)
+{
+	if(Transition)
+	{
+		delete Transition;
+		Transition = nullptr;
+	}
+	Transition = new LAnimationStateTransition();
+	Transition->OnCreate(CurrentAnimState->GetAnimSeq(), States[TargetStateName]->GetAnimSeq(), Time);
+	MachineState = E_MACHINE_STATE::STATE_TRANSITION;
+}
+
 void LAnimationStateMachine::Update(float dt)
 {
 	if(MachineState == E_MACHINE_STATE::STATE_UPDATE)
