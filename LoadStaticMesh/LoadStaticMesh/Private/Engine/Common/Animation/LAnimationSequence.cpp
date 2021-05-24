@@ -1,5 +1,6 @@
 
 #include "LAnimationSequence.h"
+#include "LLog.h"
 
 static const XMFLOAT3 NO_S = XMFLOAT3(1.f, 1.f, 1.f);
 static const XMFLOAT4 NO_Q = XMFLOAT4(0.f, 0.f, 0.f, 1.f);
@@ -52,56 +53,52 @@ void LAnimationSequence::Update(float dt)
 		{
 			S = ScaleSize > 0 ? XMLoadFloat3(&Track.ScaleChannelFrames.front()) : XMLoadFloat3(&NO_S);
 			Q = QuatSize > 0 ? XMLoadFloat4(&Track.QuatChannelFrames.front()) : XMLoadFloat4(&NO_Q);
-			T = TranslateSize > 0 ? XMLoadFloat3(&Track.TranslateChannelFrames.front()) : XMLoadFloat3(&NO_T);
+			T = TranslateSize > 0 ? XMLoadFloat3(&RefBonePoses[i].Translate) : XMLoadFloat3(&NO_T);
 			XMStoreFloat4x4(&CurrentPoseToParentsTrans[i], XMMatrixAffineTransformation(S, Zero, Q, T));
 		}
 		else if (TimeElapsed >= FrameTimes.back())
 		{
 			 S = ScaleSize > 0 ? XMLoadFloat3(&Track.ScaleChannelFrames.back()) : XMLoadFloat3(&NO_S);
 			 Q = QuatSize > 0 ? XMLoadFloat4(&Track.QuatChannelFrames.back()) : XMLoadFloat4(&NO_Q);
-			 T = TranslateSize > 0 ? XMLoadFloat3(&Track.TranslateChannelFrames.back()) : XMLoadFloat3(&NO_T);
+			 T = TranslateSize > 0 ? XMLoadFloat3(&RefBonePoses[i].Translate) : XMLoadFloat3(&NO_T);
 			XMStoreFloat4x4(&CurrentPoseToParentsTrans[i], XMMatrixAffineTransformation(S, Zero, Q, T));
 		}
 		else 
 		{
-			for (UINT j = 0; j < FrameTimes.size() - 1; ++j)
+			float IntPart;
+			std::modf(TimeElapsed/ AnimFrameRate, &IntPart);
+			UINT j = (UINT)IntPart;
+			
+			float LerpPercent = (TimeElapsed - FrameTimes[j]) / AnimFrameRate;
+			XMVECTOR s0, s1, q0, q1, t0, t1;
+
+			s0 = s1 = XMLoadFloat3(&NO_S);
+			q0 = q1 = XMLoadFloat4(&NO_Q);
+			t0 = t1 = XMLoadFloat3(&NO_T);
+
+			if (ScaleSize > 0)
 			{
-				if (TimeElapsed >= FrameTimes[j] && TimeElapsed <= FrameTimes[j + 1])
-				{
-					float LerpPercent = (TimeElapsed - FrameTimes[j]) / (FrameTimes[j + 1] - FrameTimes[j]);
-					XMVECTOR s0, s1, q0, q1, t0, t1;
-					
-
-					s0 = s1 = XMLoadFloat3(&NO_S);
-					q0 = q1 = XMLoadFloat4(&NO_Q);
-					t0 = t1 = XMLoadFloat3(&NO_T);
-
-					if(ScaleSize > 0)
-					{
-						s0 = XMLoadFloat3(ScaleSize == 1 ? &Track.ScaleChannelFrames[0] :&Track.ScaleChannelFrames[j]);
-					    s1 = XMLoadFloat3(ScaleSize == 1 ? &Track.ScaleChannelFrames[0] :&Track.ScaleChannelFrames[j + 1]);
-					}
-
-					if(QuatSize > 0)
-					{
-						q0 = XMLoadFloat4(QuatSize == 1 ? &Track.QuatChannelFrames[0] : &Track.QuatChannelFrames[j]);
-						q1 = XMLoadFloat4(QuatSize == 1 ? &Track.QuatChannelFrames[0] : &Track.QuatChannelFrames[j + 1]);
-					}
-
-					if (TranslateSize > 0)
-					{
-						t0 = XMLoadFloat3(TranslateSize == 1 ? &Track.TranslateChannelFrames[0] : &Track.TranslateChannelFrames[j]);
-						t1 = XMLoadFloat3(TranslateSize == 1 ? &Track.TranslateChannelFrames[0] : &Track.TranslateChannelFrames[j + 1]);
-					}
-
-					S = XMVectorLerp(s0, s1, LerpPercent);
-					Q = XMQuaternionSlerp(q0, q1, LerpPercent);
-					T = XMVectorLerp(t0, t1, LerpPercent);
-					XMStoreFloat4x4(&CurrentPoseToParentsTrans[i], XMMatrixAffineTransformation(S, Zero, Q, T));
-
-					break;
-				}
+				s0 = XMLoadFloat3(ScaleSize == 1 ? &Track.ScaleChannelFrames[0] : &Track.ScaleChannelFrames[j]);
+				s1 = XMLoadFloat3(ScaleSize == 1 ? &Track.ScaleChannelFrames[0] : &Track.ScaleChannelFrames[j + 1]);
 			}
+
+			if (QuatSize > 0)
+			{
+				q0 = XMLoadFloat4(QuatSize == 1 ? &Track.QuatChannelFrames[0] : &Track.QuatChannelFrames[j]);
+				q1 = XMLoadFloat4(QuatSize == 1 ? &Track.QuatChannelFrames[0] : &Track.QuatChannelFrames[j + 1]);
+			}
+
+			if (TranslateSize > 0)
+			{
+				t0 = XMLoadFloat3(TranslateSize == 1 ? &Track.TranslateChannelFrames[0] : &Track.TranslateChannelFrames[j]);
+				t1 = XMLoadFloat3(TranslateSize == 1 ? &Track.TranslateChannelFrames[0] : &Track.TranslateChannelFrames[j + 1]);
+			}
+
+			S = XMVectorLerp(s0, s1, LerpPercent);
+			Q = XMQuaternionSlerp(q0, q1, LerpPercent);
+			T = XMLoadFloat3(&RefBonePoses[i].Translate);//XMVectorLerp(t0, t1, LerpPercent); 
+			XMStoreFloat4x4(&CurrentPoseToParentsTrans[i], XMMatrixAffineTransformation(S, Zero, Q, T));
+
 		}
 	}
 }

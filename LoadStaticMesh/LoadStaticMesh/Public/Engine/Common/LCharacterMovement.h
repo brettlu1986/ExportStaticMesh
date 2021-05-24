@@ -19,6 +19,7 @@ public:
 	{
 		bActive = bActivate;
 	}
+	
 private: 
 	float MoveSpeed;
 	XMVECTOR MoveDirection;

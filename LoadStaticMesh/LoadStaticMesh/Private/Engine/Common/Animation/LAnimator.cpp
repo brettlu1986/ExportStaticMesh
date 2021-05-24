@@ -34,6 +34,31 @@ void LAnimator::Update(float dt)
 	//default state machine update
 	{
 		DefaultStateMachine->Update(dt);
+		if(!DefaultStateMachine->IsTransition())
+		{
+			LAnimationState* AnimState = DefaultStateMachine->GetCurrentAnimState();
+			if (AnimState->GetName() == "JumpStart")
+			{
+				if(AnimState->IsFinished())
+				{
+					DefaultStateMachine->SetTransitionToState("JumpLoop", 0.2f);
+				}
+			}
+			else if(AnimState->GetName() == "JumpLoop")
+			{
+				if (AnimState->IsFinished())
+				{
+					DefaultStateMachine->SetTransitionToState("JumpEnd", 0.2f);
+				}
+			}
+			else if(AnimState->GetName() == "JumpEnd")
+			{
+				if (AnimState->IsFinished())
+				{
+					DefaultStateMachine->SetTransitionToState("Idle", 0.2f);
+				}
+			}
+		}
 	}
 
 	// calculate bone map final transforms according to current pose
@@ -86,16 +111,24 @@ void LAnimator::CreateDefaultStateMachine()
 	Stats["JumpStart"] = new LAnimationState("JumpStart", false, &AnimSequences["JumpStart"]);
 	Stats["JumpLoop"] = new LAnimationState("JumpLoop", false, &AnimSequences["JumpLoop"]);
 	Stats["JumpEnd"] = new LAnimationState("JumpEnd", false, &AnimSequences["JumpEnd"]);
-	DefaultStateMachine->OnCreate(Stats, "Walk");
+	DefaultStateMachine->OnCreate(Stats, "Run");
 
 }
 
-void LAnimator::ProcessDefaultStateMachineChange(std::string name)
+void LAnimator::ProcessDefaultStateMachineChange(std::string Name)
 {
-	if(name == DefaultStateMachine->GetCurrentAnimStateName())
+	
+	if(Name == DefaultStateMachine->GetCurrentAnimStateName())
 	{
 		return;
 	}
 
-	DefaultStateMachine->SetTransitionToState(name, 0.2f);
+	if(Name == "Idle" && (DefaultStateMachine->GetCurrentAnimStateName() == "JumpStart" ||
+		DefaultStateMachine->GetCurrentAnimStateName() == "JumpLoop" || 
+		DefaultStateMachine->GetCurrentAnimStateName() == "JumpEnd"))
+	{
+		return;
+	}
+
+	DefaultStateMachine->SetTransitionToState(Name, 0.2f);
 }

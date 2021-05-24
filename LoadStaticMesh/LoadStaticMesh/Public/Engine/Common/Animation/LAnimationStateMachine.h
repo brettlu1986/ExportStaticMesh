@@ -28,14 +28,20 @@ public:
 		return CurrentAnimState->GetName();
 	}
 
-	LAnimationState* GetAnimationState(std::string& Name) 
+	LAnimationState* GetCurrentAnimState()
 	{
-		return States[Name];
+		return CurrentAnimState;
+	}
+
+	bool IsTransition()
+	{
+		return MachineState == E_MACHINE_STATE::STATE_TRANSITION;
 	}
 
 private:
 	std::map<std::string, LAnimationState*> States;
 	LAnimationState* CurrentAnimState;
+	std::string PendingAnimStateName;
 	LAnimationStateTransition* Transition;
 	E_MACHINE_STATE MachineState;
 };

@@ -17,7 +17,7 @@ LCharacter::LCharacter()
 ,MoveSpeed(0.0f)
 ,BaseSpeed(3.f)
 ,bUpdateMove(false)
-
+,bJump(false)
 {
 	ChaMovement = new LCharacterMovement();
 	ChaMovement->SetOwner(this);
@@ -166,7 +166,7 @@ void LCharacter::ProcessMoveInput()
 
 	if(IsKeyDown(VK_SPACE))
 	{
-		LEngine::GetEngine()->GetEventDispacher().DispatchEvent(E_EVENT_KEY::EVENT_ANIM_MACHINE_STATE, string("Jump"));
+		LEngine::GetEngine()->GetEventDispacher().DispatchEvent(E_EVENT_KEY::EVENT_ANIM_MACHINE_STATE, string("JumpStart"));
 	}
 
 	if (!bUpdateMove && IsKeyUp(VK_SPACE))
@@ -178,6 +178,10 @@ void LCharacter::ProcessMoveInput()
 	if(bUpdateMove)
 	{
 		ChaMovement->AddMoveInput(MoveDirection, MoveSpeed);
+	}
+	else 
+	{
+		MoveSpeed = 0.f;
 	}
 }
 
@@ -193,7 +197,6 @@ void LCharacter::RegisterAnimationStateEvent()
 
 void LCharacter::Update(float dt)
 {
-
 	ChaMovement->Update(dt);
 
 	if (IsLocalControlled)

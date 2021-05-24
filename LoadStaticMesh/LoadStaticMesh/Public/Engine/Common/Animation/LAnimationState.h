@@ -23,6 +23,11 @@ public:
 	{
 		return StateAnim;
 	}
+
+	bool IsFinished()
+	{
+		return !bLoop && StateAnim->IsAnimationSequenceFinished();
+	}
 private:
 	std::string Name; 
 	LAnimationSequence* StateAnim;

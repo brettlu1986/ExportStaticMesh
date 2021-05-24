@@ -355,9 +355,11 @@ void LAssetDataLoader::LoadSampleScene(FScene* Scene)
 		for(UINT i = 0; i< SampleAssets::SkeletalAnimCount; ++i)
 		{
 			LAnimationSequence AnimSequence;
+			AnimSequence.SetRefBonePoses(Skeleton->GetRefBonPoses());
 			LoadAnimationSquence(SampleAssets::SkeletalAnim[i], AnimSequence);
 			Animator->AddAnimSequence(SampleAssets::SkeletalAnimName[i], AnimSequence);
 		}
+		Animator->SetOwner(Character);
 
 		Character->SetSkeletalMesh(SkeletalMesh);
 		Character->SetAnimator(Animator);

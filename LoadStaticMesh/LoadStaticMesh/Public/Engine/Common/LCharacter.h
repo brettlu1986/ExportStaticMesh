@@ -66,6 +66,7 @@ public:
 
 	void Update(float dt);
 	void ProcessMoveInput();
+	
 private: 
 	bool IsKeyDown(char Key);
 	bool IsKeyUp(char Key);

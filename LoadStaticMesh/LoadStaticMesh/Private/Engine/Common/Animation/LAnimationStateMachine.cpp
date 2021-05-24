@@ -3,6 +3,7 @@
 
 LAnimationStateMachine::LAnimationStateMachine()
 :CurrentAnimState(nullptr)
+,Transition(nullptr)
 ,MachineState(E_MACHINE_STATE::STATE_NONE)
 {
 
@@ -36,6 +37,7 @@ void LAnimationStateMachine::SetTransitionToState(std::string TargetStateName, f
 		delete Transition;
 		Transition = nullptr;
 	}
+	PendingAnimStateName = TargetStateName;
 	Transition = new LAnimationStateTransition();
 	Transition->OnCreate(CurrentAnimState->GetAnimSeq(), States[TargetStateName]->GetAnimSeq(), Time);
 	MachineState = E_MACHINE_STATE::STATE_TRANSITION;
@@ -49,7 +51,14 @@ void LAnimationStateMachine::Update(float dt)
 	}
 	else if (MachineState == E_MACHINE_STATE::STATE_TRANSITION)
 	{
-
+		if(Transition)
+		{
+			Transition->Update(dt);
+			if (Transition->IsTransitionComplete())
+			{
+				SetCurrentAnimState(PendingAnimStateName);
+			}
+		}
 	}
 }
 

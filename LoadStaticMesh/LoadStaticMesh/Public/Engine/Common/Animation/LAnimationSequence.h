@@ -62,6 +62,12 @@ public:
 		return SequenceTracks;
 	}
 
+	void SetRefBonePoses(const std::vector<LBonePose>& Poses)
+	{
+		RefBonePoses.resize(Poses.size());
+		std::copy(Poses.begin(), Poses.end(), RefBonePoses.begin());
+	}
+
 	XMVECTOR GetCurrentS()
 	{
 		return S;
@@ -92,4 +98,6 @@ private:
 	XMVECTOR S;
 	XMVECTOR Q;
 	XMVECTOR T;
+
+	std::vector<LBonePose> RefBonePoses;
 };

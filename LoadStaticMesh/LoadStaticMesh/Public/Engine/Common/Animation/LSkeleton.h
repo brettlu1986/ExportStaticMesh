@@ -75,6 +75,11 @@ public:
 	{
 		return CurrentBoneMap;
 	}
+
+	const std::vector<LBonePose>& GetRefBonPoses()
+	{
+		return RefBonePoses;
+	}
 private:
 
 	UINT BoneNum;
