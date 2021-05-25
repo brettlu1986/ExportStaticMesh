@@ -35,6 +35,11 @@ public:
 		Skeleton = Ske;
 	}
 
+	LSkeleton* GetSkeleton()
+	{
+		return Skeleton;
+	}
+
 	void SetPsoKey(std::string InKey)
 	{
 		UsePsoKey = InKey;
@@ -70,6 +75,17 @@ public:
 		return ModelLocation;
 	}
 
+	void SetCurrentBoneMap(std::vector<UINT16>& BoneMap)
+	{
+		CurrentBoneMap.resize(BoneMap.size());
+		std::copy(BoneMap.begin(), BoneMap.end(), CurrentBoneMap.begin());
+	}
+
+	const std::vector<UINT16>& GetBoneMap()
+	{
+		return CurrentBoneMap;
+	}
+
 	FResourceView* MtConstantBufferView;
 	FResourceView* SkeletalConstantBufferView;
 	//TODO: move to material
@@ -89,4 +105,6 @@ private:
 	XMFLOAT3 ModelScale;
 	XMMATRIX ModelMatrix;
 	std::string UsePsoKey;
+
+	std::vector<UINT16> CurrentBoneMap;// real bone index used in this skeletal, it is associate with the vertex.InfluenceBones Index
 };

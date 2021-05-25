@@ -76,6 +76,12 @@
     <Filter Include="Source Files\Engine\Common\Camera">
       <UniqueIdentifier>{432afcb0-e6c5-4164-8db4-2a364e9288ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine\Common\Character">
+      <UniqueIdentifier>{da1ee213-9337-44b9-8e66-f8705c8710ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Common\Character">
+      <UniqueIdentifier>{7494c295-f52d-4374-b995-a1cd7616ae36}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -168,9 +174,6 @@
     <ClCompile Include="Private\Engine\Common\LGameTimer.cpp">
       <Filter>Source Files\Engine\Common</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Engine\Common\LCharacter.cpp">
-      <Filter>Source Files\Engine\Common</Filter>
-    </ClCompile>
     <ClCompile Include="Private\Engine\Renderer\FSkeletalMesh.cpp">
       <Filter>Source Files\Engine\Renderer</Filter>
     </ClCompile>
@@ -189,12 +192,6 @@
     <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12ResourceViewCreater.cpp">
       <Filter>Source Files\Engine\RHI\D3D12RHI</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Engine\Common\LPlayerController.cpp">
-      <Filter>Source Files\Engine\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Private\Engine\Common\LCharacterMovement.cpp">
-      <Filter>Source Files\Engine\Common</Filter>
-    </ClCompile>
     <ClCompile Include="Private\Engine\Common\Camera\LCamera.cpp">
       <Filter>Source Files\Engine\Common\Camera</Filter>
     </ClCompile>
@@ -212,6 +209,18 @@
     </ClCompile>
     <ClCompile Include="Private\Engine\Common\Animation\LAnimationStateTransition.cpp">
       <Filter>Source Files\Engine\Common\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\Character\LCharacter.cpp">
+      <Filter>Source Files\Engine\Common\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\Character\LCharacterMovement.cpp">
+      <Filter>Source Files\Engine\Common\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\Character\LPlayerController.cpp">
+      <Filter>Source Files\Engine\Common\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\SampleAssets.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -366,9 +375,6 @@
     <ClInclude Include="Public\Engine\Common\LGameTimer.h">
       <Filter>Header Files\Engine\Common</Filter>
     </ClInclude>
-    <ClInclude Include="Public\Engine\Common\LCharacter.h">
-      <Filter>Header Files\Engine\Common</Filter>
-    </ClInclude>
     <ClInclude Include="Public\Engine\Renderer\FSkeletalMesh.h">
       <Filter>Header Files\Engine\Renderer</Filter>
     </ClInclude>
@@ -390,12 +396,6 @@
     <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12ResourceViewCreater.h">
       <Filter>Header Files\Engine\RHI\D3D12RHI</Filter>
     </ClInclude>
-    <ClInclude Include="Public\Engine\Common\LPlayerController.h">
-      <Filter>Header Files\Engine\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\Engine\Common\LCharacterMovement.h">
-      <Filter>Header Files\Engine\Common</Filter>
-    </ClInclude>
     <ClInclude Include="Public\Engine\Common\LActor.h">
       <Filter>Header Files\Engine\Common</Filter>
     </ClInclude>
@@ -416,6 +416,15 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\Animation\LAnimationStateTransition.h">
       <Filter>Header Files\Engine\Common\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Character\LCharacter.h">
+      <Filter>Header Files\Engine\Common\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Character\LCharacterMovement.h">
+      <Filter>Header Files\Engine\Common\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\Character\LPlayerController.h">
+      <Filter>Header Files\Engine\Common\Character</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

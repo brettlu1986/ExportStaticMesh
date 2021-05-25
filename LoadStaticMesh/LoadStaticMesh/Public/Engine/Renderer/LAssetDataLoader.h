@@ -7,16 +7,16 @@
 #include "FSkeletalMesh.h"
 #include "LAnimationSequence.h"
 
+struct DirectionLightData
+{
+	XMFLOAT3 Strength;
+	XMFLOAT3 Direction;
+	XMFLOAT3 Position;
+};
+
 class LAssetDataLoader
 {
 private:
-
-	struct DirectionLightData
-	{
-		XMFLOAT3 Strength;
-		XMFLOAT3 Direction;
-		XMFLOAT3 Position;
-	};
 
 	struct BoneInfo
 	{
@@ -42,7 +42,7 @@ public:
 
 	static void LoadMeshVertexDataFromFile(std::string FileName, FMesh* Mesh);
 
-	static void LoadSkeletalMeshVertexDataFromFile(std::string FileName, FSkeletalMesh* SkeletalMesh, LSkeleton* Skeleton);
+	static void LoadSkeletalMeshVertexDataFromFile(std::string FileName, FSkeletalMesh* SkeletalMesh);
 
 	static void LoadSkeletonFromFile(std::string FileName, LSkeleton* Skeleton);
 
@@ -50,9 +50,8 @@ public:
 
 	static void LoadCameraDataFromFile(std::string FileName, LCamera* Camera);
 
-	static void LoadSceneLights(std::string FileName, FScene* Scene);
+	static void LoadDirectionLights(std::string FileName, std::vector<DirectionLightData>&LightsData);
 
 	static std::wstring GetAssetFullPath(LPCWSTR AssetName);
 
-	static void LoadSampleScene(FScene* Scene);
 };

@@ -32,11 +32,6 @@ public:
 		return AnimatorIns;
 	}
 
-	//void PlayAnimation(std::string AnimName, bool bLoop)
-	//{
-	//	AnimatorIns->Play(AnimName, bLoop);
-	//}
-
 	void SetPlayerController(LPlayerController* InController)
 	{
 		Controller = InController;

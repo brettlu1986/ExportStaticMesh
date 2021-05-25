@@ -20,11 +20,6 @@ public:
 	virtual XMMATRIX GetViewMarix() = 0;
 	XMMATRIX GetProjectionMatrix(float NearPlane = 1.0f, float FarPlane = 1000.0f);
 
-	FCameraData& GetCameraData()
-	{
-		return CameraDatas;
-	}
-
 	const XMFLOAT3& GetCameraLocation()
 	{
 		return Position;
@@ -50,6 +45,11 @@ public:
 	void SetActive(bool bActivate)
 	{
 		bActive = bActivate;
+	}
+
+	void SetCameraData(FCameraData Data)
+	{
+		CameraDatas = Data;
 	}
 protected:
 	bool bActive;

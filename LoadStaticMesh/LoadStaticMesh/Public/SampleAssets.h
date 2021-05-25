@@ -2,7 +2,8 @@
 
 #include "stdafx.h"
 #include "DirectXColors.h"
-using namespace DirectX;
+#include "FScene.h"
+
 
 namespace SampleAssets
 {
@@ -76,4 +77,9 @@ namespace SampleAssets
 		"ThirdPersonCharacter_ThirdPersonJump_Loop.bin",
 		"ThirdPersonCharacter_ThirdPerson_Jump.bin",
 	};
+
+	void ReleaseAssets();
+	void LoadSampleScene(FScene* Scene);
+	
+	
 }

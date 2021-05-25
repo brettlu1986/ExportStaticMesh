@@ -113,7 +113,7 @@ void LAssetDataLoader::LoadMeshVertexDataFromFile(std::string FileName, FMesh* M
 
 void LAssetDataLoader::LoadCameraDataFromFile(std::string FileName, LCamera* Camera)
 {
-	FCameraData& CameraDatas = Camera->GetCameraData();
+	FCameraData CameraData;
 	std::string FName = GetSaveDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
@@ -123,8 +123,10 @@ void LAssetDataLoader::LoadCameraDataFromFile(std::string FileName, LCamera* Cam
 	char* CameraBuffer = new char[sizeof(FCameraData)];
 	memset(CameraBuffer, '\0', sizeof(FCameraData));
 	Rf.read(CameraBuffer, sizeof(FCameraData));
-	CameraDatas = *(FCameraData*)(CameraBuffer);
+	CameraData = *(FCameraData*)(CameraBuffer);
 
+	Camera->SetCameraData(CameraData);
+	Camera->Init();
 	delete[] CameraBuffer;
 	Rf.close();
 	if (!Rf.good()) {
@@ -132,7 +134,7 @@ void LAssetDataLoader::LoadCameraDataFromFile(std::string FileName, LCamera* Cam
 	}
 }
 
-void LAssetDataLoader::LoadSceneLights(std::string FileName, FScene* Scene)
+void LAssetDataLoader::LoadDirectionLights(std::string FileName, std::vector<DirectionLightData>& LightsData)
 {
 	std::string FName = GetSaveDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
@@ -143,22 +145,11 @@ void LAssetDataLoader::LoadSceneLights(std::string FileName, FScene* Scene)
 	UINT DirectionLightSize;
 	Rf.read((char*)&DirectionLightSize, sizeof(UINT));
 	
-	std::vector<DirectionLightData> DLights;
-	DLights.resize(DirectionLightSize);
-	Rf.read((char*)DLights.data(), DirectionLightSize * sizeof(DirectionLightData));
-
-	for(UINT i = 0; i < DirectionLightSize; i++)
-	{
-		FLight* Light = new FLight();
-		Light->Direction = DLights[i].Direction;
-		Light->Position = DLights[i].Position;
-		Light->Strength = DLights[i].Strength;
-		Light->LightIndex = i;
-		Scene->AddLightToScene(Light);
-	}
+	LightsData.resize(DirectionLightSize);
+	Rf.read((char*)LightsData.data(), DirectionLightSize * sizeof(DirectionLightData));
 }
 
-void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(std::string FileName, FSkeletalMesh* SkeletalMesh, LSkeleton* Skeleton)
+void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(std::string FileName, FSkeletalMesh* SkeletalMesh)
 {
 	std::string FName = GetSaveDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
@@ -209,7 +200,7 @@ void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(std::string FileName, 
 	BoneMap.resize(BoneMapSize);
 	Rf.read((char*)BoneMap.data(), BoneMapSize * sizeof(UINT16));
 
-	Skeleton->SetCurrentBoneMap(BoneMap);
+	SkeletalMesh->SetCurrentBoneMap(BoneMap);
 }
 
 void LAssetDataLoader::LoadSkeletonFromFile(std::string FileName, LSkeleton* Skeleton)
@@ -323,60 +314,4 @@ void LAssetDataLoader::LoadAnimationSquence(std::string SequenceName, LAnimation
 	}
 
 	Seq.GetCurrentAnimPoseToParentTrans().resize(Seq.GetSequenceTracks().size());
-}
-
-void LAssetDataLoader::LoadSampleScene(FScene* Scene)
-{
-	for (UINT i = 0; i < SampleAssets::SamepleCount; i++)
-	{
-		FMesh* Mesh = new FMesh(SampleAssets::SampleResources[i], SampleAssets::SampleResourceTexture[i],
-			SampleAssets::SampleResourceTexture[i] != "" ? SampleAssets::PsoUseTexture : SampleAssets::PsoNoTexture);
-
-		Mesh->InitMaterial(SampleAssets::SampeMats[i].Name, SampleAssets::SampeMats[i].DiffuseAlbedo, SampleAssets::SampeMats[i].FresnelR0,
-			SampleAssets::SampeMats[i].Roughness);
-		Scene->AddMeshToScene(Mesh);
-	}
-
-	for(UINT i = 0; i < SampleAssets::SampleSkeletalMeshCount; i++)
-	{
-		LCharacter* Character = new LCharacter();
-		FSkeletalMesh* SkeletalMesh = new FSkeletalMesh();
-		LSkeleton* Skeleton = new LSkeleton();
-		LoadSkeletalMeshVertexDataFromFile(SampleAssets::SkeletalMeshResource[i], SkeletalMesh, Skeleton);
-		LoadSkeletonFromFile(SampleAssets::SkeletonResource, Skeleton);
-		SkeletalMesh->SetSkeleton(Skeleton);
-
-		FTexture* Tex = GRHI->RHICreateTexture();
-		Tex->InitializeTexture(SampleAssets::SkeletonTexture);
-		SkeletalMesh->SetDiffuseTexture(Tex);
-
-		LAnimator* Animator = new LAnimator();
-		Animator->SetSkeleton(Skeleton);
-
-		for(UINT i = 0; i < (UINT)E_ANIM_STATE::STATE_COUNT; i++)
-		{
-			LAnimationSequence AnimSequence;
-			LoadAnimationSquence(SampleAssets::SkeletalAnim[i], AnimSequence);
-			Animator->AddAnimSequence(static_cast<E_ANIM_STATE>(i), AnimSequence);
-		}
-
-		Animator->SetOwner(Character);
-
-		Character->SetSkeletalMesh(SkeletalMesh);
-		Character->SetAnimator(Animator);
-		Scene->AddCharacterToScene(Character);
-	}
-	LoadSceneLights(SampleAssets::SceneLightsFile, Scene);
-
-	LCamera* Camera0 = new LSceneCamera();
-	LCamera* Camera1 = new LThirdPersonCamera();
-	LoadCameraDataFromFile(SampleAssets::CameraBin, Camera0);
-	LoadCameraDataFromFile(SampleAssets::CameraBin, Camera1);
-	Camera0->Init();
-	Camera1->Init();
-	Scene->AddCamera(Camera0);
-	Scene->AddCamera(Camera1);
-
-	Scene->InitCharacters();
-	Scene->ActiveCamera(0);
 }

@@ -7,10 +7,11 @@
 //#include <functional>
 #include "LCharacter.h"
 #include "LCharacterMovement.h"
+#include "FSkeletalMesh.h"
+#include "LSkeleton.h"
 
 LAnimator::LAnimator()
-:Skeleton(nullptr)
-,DefaultStateMachine(nullptr)
+:DefaultStateMachine(nullptr)
 ,OwnerCharacter(nullptr)
 ,Speed(0.f)
 {
@@ -26,11 +27,12 @@ LAnimator::~LAnimator()
 	}
 }
 
-void LAnimator::SetSkeleton(LSkeleton* Ske)
+void LAnimator::SetOwner(LCharacter* Owner)
 {
-	Skeleton = Ske;
+	OwnerCharacter = Owner;
+	LSkeleton* Skeleton = OwnerCharacter->GetSkeletalMesh()->GetSkeleton();
 	AllBoneFinalTransforms.resize(Skeleton->GetBoneCount());
-	BoneMapFinalTransforms.resize(Skeleton->GetBoneMap().size());
+	BoneMapFinalTransforms.resize(OwnerCharacter->GetSkeletalMesh()->GetBoneMap().size());
 }
 
 void LAnimator::Update(float dt)
@@ -92,6 +94,7 @@ void LAnimator::Update(float dt)
 	{
 		std::vector<LAnimBonePose>& CurrentAnimPoseToParentTrans = DefaultStateMachine->GetCurrentAnimPoseToParentTrans();
 
+		LSkeleton* Skeleton = OwnerCharacter->GetSkeletalMesh()->GetSkeleton();
 		UINT BoneCount = Skeleton->GetBoneCount();
 		std::vector<XMFLOAT4X4> CurrentAnimPoseToRootTrans(BoneCount);
 		//root
@@ -125,7 +128,7 @@ void LAnimator::Update(float dt)
 			XMStoreFloat4x4(&AllBoneFinalTransforms[i], XMMatrixTranspose(finalTransform));
 		}
 
-		const std::vector<UINT16>& BoneMap = Skeleton->GetBoneMap();
+		const std::vector<UINT16>& BoneMap = OwnerCharacter->GetSkeletalMesh()->GetBoneMap();
 		for (size_t i = 0; i < BoneMap.size(); i++)
 		{
 			UINT BoneIndex = BoneMap[i];

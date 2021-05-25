@@ -58,7 +58,6 @@ void FScene::Destroy()
 		LCamera* Ca = *it;
 		delete Ca;
 	}
-	Cameras.clear();
 }
 
 void FScene::AddMeshToScene(FMesh* Mesh)
@@ -90,7 +89,6 @@ void FScene::InitCharacters()
 	LPlayerController* PlayerController = new LPlayerController();
 	PlayerController->Possess(Players[0]);
 	Players[0]->SetPlayerController(PlayerController);
-	//Players[0]->RegisterAnimationStateEvent();
 
 	LThirdPersonCamera* Ca = dynamic_cast<LThirdPersonCamera*>(GetThirdPersonCamera());
 	Ca->SetSocketOffset(XMFLOAT3(-2.f, 0.3f, 2.2f));
@@ -113,7 +111,6 @@ void FScene::InitSceneRenderResource()
 		Meshes[i]->InitRenderResource();
 		Meshes[i]->SetPsoKey(Meshes[i]->GetDiffuseTexture() != nullptr ? "PsoUseTexture" : "PsoNoTexture");
 	}
-
 	//TODO:move to Scene Render Init
 	PassContantView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FPassConstants)) });
 }

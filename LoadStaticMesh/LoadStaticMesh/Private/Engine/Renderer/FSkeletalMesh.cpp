@@ -41,12 +41,6 @@ void FSkeletalMesh::Destroy()
 		DiffuseTex = nullptr;
 	}
 
-	if(Skeleton)
-	{
-		delete Skeleton;
-		Skeleton = nullptr;
-	}
-
 	delete ShaderResView;
 	ShaderResView = nullptr;
 

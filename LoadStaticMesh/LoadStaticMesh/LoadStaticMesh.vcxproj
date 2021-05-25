@@ -72,20 +72,20 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation;$(ProjectDir)\Public\Engine\Common\Camera</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation;$(ProjectDir)\Public\Engine\Common\Camera;$(ProjectDir)\Public\Engine\Common\Character</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation;$(ProjectDir)\Public\Engine\Common\Camera</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation;$(ProjectDir)\Public\Engine\Common\Camera;$(ProjectDir)\Public\Engine\Common\Character</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation;$(ProjectDir)\Public\Engine\Common\Camera</IncludePath>
+    <IncludePath>$(IncludePath);$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation;$(ProjectDir)\Public\Engine\Common\Camera;$(ProjectDir)\Public\Engine\Common\Character</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation;$(ProjectDir)\Public\Engine\Common\Camera</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation;$(ProjectDir)\Public\Engine\Common\Camera;$(ProjectDir)\Public\Engine\Common\Character</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -165,12 +165,12 @@
     <ClCompile Include="Private\Engine\Common\Camera\LCamera.cpp" />
     <ClCompile Include="Private\Engine\Common\Camera\LSceneCamera.cpp" />
     <ClCompile Include="Private\Engine\Common\Camera\LThirdPersonCamera.cpp" />
-    <ClCompile Include="Private\Engine\Common\LCharacter.cpp" />
-    <ClCompile Include="Private\Engine\Common\LCharacterMovement.cpp" />
+    <ClCompile Include="Private\Engine\Common\Character\LCharacter.cpp" />
+    <ClCompile Include="Private\Engine\Common\Character\LCharacterMovement.cpp" />
+    <ClCompile Include="Private\Engine\Common\Character\LPlayerController.cpp" />
     <ClCompile Include="Private\Engine\Common\LDevice.cpp" />
     <ClCompile Include="Private\Engine\Common\LGameTimer.cpp" />
     <ClCompile Include="Private\Engine\Common\LInput.cpp" />
-    <ClCompile Include="Private\Engine\Common\LPlayerController.cpp" />
     <ClCompile Include="Private\Engine\Common\Windows\LDeviceWindows.cpp" />
     <ClCompile Include="Private\Engine\Common\Windows\LInputWindows.cpp" />
     <ClCompile Include="Private\Engine\LEngine.cpp" />
@@ -203,6 +203,7 @@
     <ClCompile Include="Private\Engine\Thread\FThread.cpp" />
     <ClCompile Include="Private\Engine\Thread\FTaskThread.cpp" />
     <ClCompile Include="Private\Engine\Util\MathHelper.cpp" />
+    <ClCompile Include="Private\SampleAssets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds" />
@@ -408,16 +409,16 @@
     <ClInclude Include="Public\Engine\Common\Camera\LCamera.h" />
     <ClInclude Include="Public\Engine\Common\Camera\LSceneCamera.h" />
     <ClInclude Include="Public\Engine\Common\Camera\LThirdPersonCamera.h" />
+    <ClInclude Include="Public\Engine\Common\Character\LCharacter.h" />
+    <ClInclude Include="Public\Engine\Common\Character\LCharacterMovement.h" />
+    <ClInclude Include="Public\Engine\Common\Character\LPlayerController.h" />
     <ClInclude Include="Public\Engine\Common\Event\LEvent.h" />
     <ClInclude Include="Public\Engine\Common\LActor.h" />
-    <ClInclude Include="Public\Engine\Common\LCharacter.h" />
-    <ClInclude Include="Public\Engine\Common\LCharacterMovement.h" />
     <ClInclude Include="Public\Engine\Common\LDefine.h" />
     <ClInclude Include="Public\Engine\Common\LDevice.h" />
     <ClInclude Include="Public\Engine\Common\LGameTimer.h" />
     <ClInclude Include="Public\Engine\Common\LInput.h" />
     <ClInclude Include="Public\Engine\Common\LLog.h" />
-    <ClInclude Include="Public\Engine\Common\LPlayerController.h" />
     <ClInclude Include="Public\Engine\Common\LRingBuffer.h" />
     <ClInclude Include="Public\Engine\Common\Windows\LDeviceWindows.h" />
     <ClInclude Include="Public\Engine\Common\Windows\LInputWindows.h" />

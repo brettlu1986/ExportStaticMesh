@@ -4,10 +4,11 @@
 #include "LEngine.h"
 #include "LEvent.h"
 #include "LInput.h"
-#include "LAssetDataLoader.h"
+//#include "LAssetDataLoader.h"
 #include "FRenderThread.h"
 #include <chrono>
 #include <thread> 
+#include "SampleAssets.h"
 
 #include "LLog.h"
 
@@ -50,7 +51,8 @@ void ApplicationMain::OnTouchInit()
 
 void ApplicationMain::OnSceneInit()
 {
-	LAssetDataLoader::LoadSampleScene(&Scene);
+	SampleAssets::LoadSampleScene(&Scene);
+	//LAssetDataLoader::LoadSampleScene(&Scene);
 	FRenderThread::Get()->InitRenderThreadScene(&Scene);
 }
 
@@ -88,6 +90,7 @@ void ApplicationMain::Run()
 
 void ApplicationMain::Destroy()
 {
+	SampleAssets::ReleaseAssets();
 	FRenderThread::Get()->DestroyRenderScene(&Scene);
 	Timer->Release();
 	LEngine::GetEngine()->Destroy();

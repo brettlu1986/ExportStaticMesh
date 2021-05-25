@@ -62,6 +62,7 @@ void LCharacter::Destroy()
 void LCharacter::SetAnimator(LAnimator* Animator)
 {
 	AnimatorIns = Animator;
+	AnimatorIns->SetOwner(this);
 	AnimatorIns->InitStateMachines();
 }
 
