@@ -43,7 +43,7 @@ public:
 		IsLocalControlled = true;
 	}
 
-	void RegisterAnimationStateEvent();
+	//void RegisterAnimationStateEvent();
 
 	bool IsLocalControlledPlayer()
 	{
@@ -66,7 +66,21 @@ public:
 
 	void Update(float dt);
 	void ProcessMoveInput();
+
+	LCharacterMovement* GetCharacterMovement()
+	{
+		return ChaMovement;
+	}
 	
+	float GetBaseSpeed()
+	{
+		return BaseSpeed;
+	}
+
+	float GetMoveSpeed()
+	{
+		return MoveSpeed;
+	}
 private: 
 	bool IsKeyDown(char Key);
 	bool IsKeyUp(char Key);

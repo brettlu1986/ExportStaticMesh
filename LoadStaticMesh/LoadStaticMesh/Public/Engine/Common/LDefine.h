@@ -72,6 +72,18 @@ public:
 	
 }FInputResult;
 
+typedef enum class E_ANIM_STATE : UINT8
+{
+	IDLE = 0,
+	WALK,
+	RUN,
+	JUMP_START,
+	JUMP_LOOP,
+	JUMP_END,
+	STATE_COUNT,
+}E_ANIM_STATE;
+
+
 static const float AnimFrameRate = 1 / 30.f;
 
 

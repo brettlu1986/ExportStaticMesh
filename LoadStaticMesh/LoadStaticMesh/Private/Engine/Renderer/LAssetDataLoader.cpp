@@ -352,12 +352,14 @@ void LAssetDataLoader::LoadSampleScene(FScene* Scene)
 
 		LAnimator* Animator = new LAnimator();
 		Animator->SetSkeleton(Skeleton);
-		for(UINT i = 0; i< SampleAssets::SkeletalAnimCount; ++i)
+
+		for(UINT i = 0; i < (UINT)E_ANIM_STATE::STATE_COUNT; i++)
 		{
 			LAnimationSequence AnimSequence;
 			LoadAnimationSquence(SampleAssets::SkeletalAnim[i], AnimSequence);
-			Animator->AddAnimSequence(SampleAssets::SkeletalAnimName[i], AnimSequence);
+			Animator->AddAnimSequence(static_cast<E_ANIM_STATE>(i), AnimSequence);
 		}
+
 		Animator->SetOwner(Character);
 
 		Character->SetSkeletalMesh(SkeletalMesh);

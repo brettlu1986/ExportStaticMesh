@@ -1,7 +1,7 @@
 #include "LAnimationState.h"
 
-LAnimationState::LAnimationState(std::string InName, bool bInLoop, LAnimationSequence* Seq)
-:Name(InName)
+LAnimationState::LAnimationState(E_ANIM_STATE State, bool bInLoop, LAnimationSequence* Seq)
+:StateType(State)
 ,bLoop(bInLoop)
 ,StateAnim(Seq)
 {

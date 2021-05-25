@@ -18,9 +18,9 @@ public:
 		OwnerCharacter = Owner;
 	}
 
-	void AddAnimSequence(std::string AnimName, LAnimationSequence Seq)
+	void AddAnimSequence(E_ANIM_STATE State, LAnimationSequence Seq)
 	{
-		AnimSequences[AnimName] = Seq;
+		AnimSequences[State] = Seq;
 	}
 
 	void Update(float dt);
@@ -31,16 +31,17 @@ public:
 	}
 
 	void InitStateMachines();
-	void ProcessDefaultStateMachineChange(std::string name);
+	void ProcessDefaultStateMachineChange(E_ANIM_STATE State);
 
-	std::string& GetCurrentAnimStateName()
+	E_ANIM_STATE GetCurrentAnimStateType()
 	{
-		return DefaultStateMachine->GetCurrentAnimStateName();
+		return DefaultStateMachine->GetCurrentAnimStateType();
 	}
 
 private: 
 	void CreateDefaultStateMachine();
-	std::map<std::string, LAnimationSequence> AnimSequences;
+	std::map<E_ANIM_STATE, LAnimationSequence> AnimSequences;
+
 	LSkeleton* Skeleton;
 	LCharacter* OwnerCharacter;
 
@@ -48,4 +49,6 @@ private:
 	std::vector<XMFLOAT4X4> BoneMapFinalTransforms; //use to constant buffer
 
 	LAnimationStateMachine* DefaultStateMachine;
+
+	float Speed;
 };

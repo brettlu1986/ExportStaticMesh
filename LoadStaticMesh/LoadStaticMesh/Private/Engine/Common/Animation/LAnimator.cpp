@@ -5,11 +5,14 @@
 #include "LEngine.h"
 #include "LLog.h"
 //#include <functional>
+#include "LCharacter.h"
+#include "LCharacterMovement.h"
 
 LAnimator::LAnimator()
 :Skeleton(nullptr)
 ,DefaultStateMachine(nullptr)
 ,OwnerCharacter(nullptr)
+,Speed(0.f)
 {
 
 }
@@ -32,31 +35,50 @@ void LAnimator::SetSkeleton(LSkeleton* Ske)
 
 void LAnimator::Update(float dt)
 {
+	// get movement speed change
+	{
+		float BaseSpeed = OwnerCharacter->GetBaseSpeed();
+		Speed = OwnerCharacter->GetMoveSpeed();
+
+		if(Speed == 0.f)
+		{
+			ProcessDefaultStateMachineChange(E_ANIM_STATE::IDLE);
+		}
+		else if(Speed == BaseSpeed)
+		{
+			ProcessDefaultStateMachineChange(E_ANIM_STATE::WALK);
+		}
+		else if(Speed > BaseSpeed)
+		{
+			ProcessDefaultStateMachineChange(E_ANIM_STATE::RUN);
+		}
+
+	}
 	//default state machine update
 	{
 		DefaultStateMachine->Update(dt);
 		if(!DefaultStateMachine->IsTransition())
 		{
 			LAnimationState* AnimState = DefaultStateMachine->GetCurrentAnimState();
-			if (AnimState->GetName() == "JumpStart")
+			if (AnimState->GetStateType() == E_ANIM_STATE::JUMP_START)
 			{
 				if(AnimState->IsFinished())
 				{
-					DefaultStateMachine->SetTransitionToState("JumpLoop", 0.2f);
+					DefaultStateMachine->SetTransitionToState(E_ANIM_STATE::JUMP_LOOP, 0.2f);
 				}
 			}
-			else if(AnimState->GetName() == "JumpLoop")
+			else if(AnimState->GetStateType() == E_ANIM_STATE::JUMP_LOOP)
 			{
 				if (AnimState->IsFinished())
 				{
-					DefaultStateMachine->SetTransitionToState("JumpEnd", 0.2f);
+					DefaultStateMachine->SetTransitionToState(E_ANIM_STATE::JUMP_END, 0.2f);
 				}
 			}
-			else if(AnimState->GetName() == "JumpEnd")
+			else if(AnimState->GetStateType() == E_ANIM_STATE::JUMP_END)
 			{
 				if (AnimState->IsFinished())
 				{
-					DefaultStateMachine->SetTransitionToState("Idle", 0.2f);
+					DefaultStateMachine->SetTransitionToState(E_ANIM_STATE::IDLE, 0.2f);
 				}
 			}
 		}
@@ -65,7 +87,6 @@ void LAnimator::Update(float dt)
 	// calculate bone map final transforms according to current pose
 	{
 		std::vector<LAnimBonePose>& CurrentAnimPoseToParentTrans = DefaultStateMachine->GetCurrentAnimPoseToParentTrans();
-
 
 		UINT BoneCount = Skeleton->GetBoneCount();
 		std::vector<XMFLOAT4X4> CurrentAnimPoseToRootTrans(BoneCount);
@@ -117,31 +138,31 @@ void LAnimator::InitStateMachines()
 void LAnimator::CreateDefaultStateMachine()
 {
 	DefaultStateMachine = new LAnimationStateMachine();
-	std::map<std::string, LAnimationState*> Stats;
-	Stats["Idle"] = new LAnimationState("Idle", true, &AnimSequences["Idle"]);
-	Stats["Walk"] = new LAnimationState("Walk", true, &AnimSequences["Walk"]);
-	Stats["Run"] = new LAnimationState("Run", true, &AnimSequences["Run"]);
-	Stats["JumpStart"] = new LAnimationState("JumpStart", false, &AnimSequences["JumpStart"]);
-	Stats["JumpLoop"] = new LAnimationState("JumpLoop", false, &AnimSequences["JumpLoop"]);
-	Stats["JumpEnd"] = new LAnimationState("JumpEnd", false, &AnimSequences["JumpEnd"]);
-	DefaultStateMachine->OnCreate(Stats, "Idle");
+	std::map<E_ANIM_STATE, LAnimationState*> Stats;
+	Stats[E_ANIM_STATE::IDLE] = new LAnimationState(E_ANIM_STATE::IDLE, true, &AnimSequences[E_ANIM_STATE::IDLE]);
+	Stats[E_ANIM_STATE::WALK] = new LAnimationState(E_ANIM_STATE::WALK, true, &AnimSequences[E_ANIM_STATE::WALK]);
+	Stats[E_ANIM_STATE::RUN] = new LAnimationState(E_ANIM_STATE::RUN, true, &AnimSequences[E_ANIM_STATE::RUN]);
+	Stats[E_ANIM_STATE::JUMP_START] = new LAnimationState(E_ANIM_STATE::JUMP_START, false, &AnimSequences[E_ANIM_STATE::JUMP_START]);
+	Stats[E_ANIM_STATE::JUMP_LOOP] = new LAnimationState(E_ANIM_STATE::JUMP_LOOP, false, &AnimSequences[E_ANIM_STATE::JUMP_LOOP]);
+	Stats[E_ANIM_STATE::JUMP_END] = new LAnimationState(E_ANIM_STATE::JUMP_END, false, &AnimSequences[E_ANIM_STATE::JUMP_END]);
+	DefaultStateMachine->OnCreate(Stats, E_ANIM_STATE::IDLE);
 
 }
 
-void LAnimator::ProcessDefaultStateMachineChange(std::string Name)
+void LAnimator::ProcessDefaultStateMachineChange(E_ANIM_STATE State)
 {
 	
-	if(Name == DefaultStateMachine->GetCurrentAnimStateName())
+	if(State == DefaultStateMachine->GetCurrentAnimStateType())
 	{
 		return;
 	}
 
-	if(Name == "Idle" && (DefaultStateMachine->GetCurrentAnimStateName() == "JumpStart" ||
-		DefaultStateMachine->GetCurrentAnimStateName() == "JumpLoop" || 
-		DefaultStateMachine->GetCurrentAnimStateName() == "JumpEnd"))
+	if(State == E_ANIM_STATE::IDLE && (DefaultStateMachine->GetCurrentAnimStateType() == E_ANIM_STATE::JUMP_START ||
+		DefaultStateMachine->GetCurrentAnimStateType() == E_ANIM_STATE::JUMP_LOOP ||
+		DefaultStateMachine->GetCurrentAnimStateType() == E_ANIM_STATE::JUMP_END))
 	{
 		return;
 	}
 
-	DefaultStateMachine->SetTransitionToState(Name, 0.2f);
+	DefaultStateMachine->SetTransitionToState(State, 0.2f);
 }

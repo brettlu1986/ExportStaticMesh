@@ -90,7 +90,7 @@ void FScene::InitCharacters()
 	LPlayerController* PlayerController = new LPlayerController();
 	PlayerController->Possess(Players[0]);
 	Players[0]->SetPlayerController(PlayerController);
-	Players[0]->RegisterAnimationStateEvent();
+	//Players[0]->RegisterAnimationStateEvent();
 
 	LThirdPersonCamera* Ca = dynamic_cast<LThirdPersonCamera*>(GetThirdPersonCamera());
 	Ca->SetSocketOffset(XMFLOAT3(-2.f, 0.3f, 2.2f));

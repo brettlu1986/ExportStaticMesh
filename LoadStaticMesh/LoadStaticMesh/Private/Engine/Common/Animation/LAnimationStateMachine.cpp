@@ -17,29 +17,36 @@ LAnimationStateMachine::~LAnimationStateMachine()
 	}
 }
 
-void LAnimationStateMachine::OnCreate(std::map<std::string, LAnimationState*>& Stats, std::string DefaultState)
+E_ANIM_STATE LAnimationStateMachine::GetCurrentAnimStateType()
+{
+	if(MachineState == E_MACHINE_STATE::STATE_UPDATE)
+		return CurrentAnimState->GetStateType();
+	return PendingAnimStateType;
+}
+
+void LAnimationStateMachine::OnCreate(std::map<E_ANIM_STATE, LAnimationState*>& Stats, E_ANIM_STATE DefaultState)
 {
 	States.insert(Stats.begin(), Stats.end());
 	SetCurrentAnimState(DefaultState);
 }
 
-void LAnimationStateMachine::SetCurrentAnimState(std::string StateName)
+void LAnimationStateMachine::SetCurrentAnimState(E_ANIM_STATE NewState)
 {
-	CurrentAnimState = States[StateName];
+	CurrentAnimState = States[NewState];
 	CurrentAnimState->Init();
 	MachineState = E_MACHINE_STATE::STATE_UPDATE;
 }
 
-void LAnimationStateMachine::SetTransitionToState(std::string TargetStateName, float Time)
+void LAnimationStateMachine::SetTransitionToState(E_ANIM_STATE NewState, float Time)
 {
 	if(Transition)
 	{
 		delete Transition;
 		Transition = nullptr;
 	}
-	PendingAnimStateName = TargetStateName;
+	PendingAnimStateType = NewState;
 	Transition = new LAnimationStateTransition();
-	Transition->OnCreate(CurrentAnimState->GetAnimSeq(), States[TargetStateName]->GetAnimSeq(), Time);
+	Transition->OnCreate(CurrentAnimState->GetAnimSeq(), States[NewState]->GetAnimSeq(), Time);
 	MachineState = E_MACHINE_STATE::STATE_TRANSITION;
 }
 
@@ -56,7 +63,7 @@ void LAnimationStateMachine::Update(float dt)
 			Transition->Update(dt);
 			if (Transition->IsTransitionComplete())
 			{
-				SetCurrentAnimState(PendingAnimStateName);
+				SetCurrentAnimState(PendingAnimStateType);
 			}
 		}
 	}

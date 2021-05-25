@@ -6,7 +6,7 @@
 class LAnimationState
 {
 public:
-	LAnimationState(std::string InName, bool bInLoop, LAnimationSequence* Seq);
+	LAnimationState(E_ANIM_STATE State, bool bInLoop, LAnimationSequence* Seq);
 	~LAnimationState();
 
 	void Init();
@@ -14,9 +14,9 @@ public:
 
 	std::vector<LAnimBonePose>& GetCurrentAnimPoseToParentTrans();
 
-	std::string& GetName() 
+	E_ANIM_STATE GetStateType()
 	{
-		return Name;
+		return StateType;
 	}
 
 	LAnimationSequence* GetAnimSeq()
@@ -29,7 +29,7 @@ public:
 		return !bLoop && StateAnim->IsAnimationSequenceFinished();
 	}
 private:
-	std::string Name; 
+	E_ANIM_STATE StateType;
 	LAnimationSequence* StateAnim;
 	bool bLoop;
 };
