@@ -11,6 +11,13 @@ struct LBonePose
 	XMFLOAT3 Translate;
 };
 
+struct LAnimBonePose
+{
+	XMVECTOR S;
+	XMVECTOR Q;
+	XMVECTOR T;
+};
+
 struct LBoneInfo
 {
 	std::string BoneName;

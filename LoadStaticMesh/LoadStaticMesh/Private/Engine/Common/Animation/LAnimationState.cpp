@@ -1,6 +1,5 @@
 #include "LAnimationState.h"
 
-
 LAnimationState::LAnimationState(std::string InName, bool bInLoop, LAnimationSequence* Seq)
 :Name(InName)
 ,bLoop(bInLoop)
@@ -26,7 +25,7 @@ void LAnimationState::Init()
 	StateAnim->Reset();
 }
 
-std::vector<XMFLOAT4X4>& LAnimationState::GetCurrentAnimPoseToParentTrans()
+std::vector<LAnimBonePose>& LAnimationState::GetCurrentAnimPoseToParentTrans()
 {
 	return StateAnim->GetCurrentAnimPoseToParentTrans();
 }

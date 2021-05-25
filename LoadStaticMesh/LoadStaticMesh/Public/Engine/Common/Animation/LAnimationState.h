@@ -12,7 +12,7 @@ public:
 	void Init();
 	void Update(float dt);
 
-	std::vector<XMFLOAT4X4>& GetCurrentAnimPoseToParentTrans();
+	std::vector<LAnimBonePose>& GetCurrentAnimPoseToParentTrans();
 
 	std::string& GetName() 
 	{

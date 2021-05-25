@@ -62,7 +62,7 @@ void LAnimationStateMachine::Update(float dt)
 	}
 }
 
-std::vector<XMFLOAT4X4>& LAnimationStateMachine::GetCurrentAnimPoseToParentTrans()
+std::vector<LAnimBonePose>& LAnimationStateMachine::GetCurrentAnimPoseToParentTrans()
 {
 	return CurrentAnimState->GetCurrentAnimPoseToParentTrans();
 }

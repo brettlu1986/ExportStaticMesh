@@ -47,7 +47,7 @@ public:
 	float GetStartTime() { return StartTime;}
 	float GetEndTime() { return EndTime; }
 
-	std::vector<XMFLOAT4X4>& GetCurrentAnimPoseToParentTrans()
+	std::vector<LAnimBonePose>& GetCurrentAnimPoseToParentTrans()
 	{
 		return CurrentPoseToParentsTrans;
 	}
@@ -62,26 +62,6 @@ public:
 		return SequenceTracks;
 	}
 
-	void SetRefBonePoses(const std::vector<LBonePose>& Poses)
-	{
-		RefBonePoses.resize(Poses.size());
-		std::copy(Poses.begin(), Poses.end(), RefBonePoses.begin());
-	}
-
-	XMVECTOR GetCurrentS()
-	{
-		return S;
-	}
-
-	XMVECTOR GetCurrentQ()
-	{
-		return Q;
-	}
-
-	XMVECTOR GetCurrentT()
-	{
-		return T;
-	}
 private:
 	
 	float TimeElapsed;
@@ -93,11 +73,6 @@ private:
 	//size according to current bone count
 	std::vector<LAnimationTrack> SequenceTracks;
 	std::vector<float> FrameTimes;
-	std::vector<XMFLOAT4X4> CurrentPoseToParentsTrans;
 
-	XMVECTOR S;
-	XMVECTOR Q;
-	XMVECTOR T;
-
-	std::vector<LBonePose> RefBonePoses;
+	std::vector<LAnimBonePose> CurrentPoseToParentsTrans;
 };

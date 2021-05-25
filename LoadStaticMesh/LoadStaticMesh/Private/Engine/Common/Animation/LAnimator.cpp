@@ -63,14 +63,26 @@ void LAnimator::Update(float dt)
 
 	// calculate bone map final transforms according to current pose
 	{
-		std::vector<XMFLOAT4X4>& CurrentAnimPoseToParentTrans = DefaultStateMachine->GetCurrentAnimPoseToParentTrans();
+		std::vector<LAnimBonePose>& CurrentAnimPoseToParentTrans = DefaultStateMachine->GetCurrentAnimPoseToParentTrans();
+
+
 		UINT BoneCount = Skeleton->GetBoneCount();
 		std::vector<XMFLOAT4X4> CurrentAnimPoseToRootTrans(BoneCount);
 		//root
-		CurrentAnimPoseToRootTrans[0] = CurrentAnimPoseToParentTrans[0];
+		XMVECTOR Zero = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+		//XMStoreFloat4x4(&CurrentAnimPoseToRootTrans[0], XMMatrixAffineTransformation(CurrentAnimPoseToParentTrans[0].S, Zero,
+		//	CurrentAnimPoseToParentTrans[0].Q, CurrentAnimPoseToParentTrans[0].T));
+
+		XMVECTOR RefT = XMLoadFloat3(&Skeleton->GetRefBonPoses()[0].Translate);
+		XMStoreFloat4x4(&CurrentAnimPoseToRootTrans[0], XMMatrixAffineTransformation(CurrentAnimPoseToParentTrans[0].S, Zero,
+				CurrentAnimPoseToParentTrans[0].Q, RefT));
 		for (UINT i = 1; i < BoneCount; i++)
 		{
-			XMMATRIX ToParent = XMLoadFloat4x4(&CurrentAnimPoseToParentTrans[i]);
+			//	XMMATRIX ToParent = XMMatrixAffineTransformation(CurrentAnimPoseToParentTrans[i].S, Zero,
+				//	CurrentAnimPoseToParentTrans[i].Q, CurrentAnimPoseToParentTrans[i].T);
+			RefT = XMLoadFloat3(&Skeleton->GetRefBonPoses()[i].Translate);
+			XMMATRIX ToParent = XMMatrixAffineTransformation(CurrentAnimPoseToParentTrans[i].S, Zero,
+				CurrentAnimPoseToParentTrans[i].Q, RefT);
 			int ParentIndex = Skeleton->GetBoneInfos()[i].ParentIndex;
 			XMMATRIX ParentToRoot = XMLoadFloat4x4(&CurrentAnimPoseToRootTrans[ParentIndex]);
 

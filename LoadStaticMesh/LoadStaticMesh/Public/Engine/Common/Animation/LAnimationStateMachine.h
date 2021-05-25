@@ -21,7 +21,7 @@ public:
 	void SetCurrentAnimState(std::string StateName);
 	void SetTransitionToState(std::string TargetStateName, float Time);
 
-	std::vector<XMFLOAT4X4>& GetCurrentAnimPoseToParentTrans();
+	std::vector<LAnimBonePose>& GetCurrentAnimPoseToParentTrans();
 
 	std::string& GetCurrentAnimStateName()
 	{
