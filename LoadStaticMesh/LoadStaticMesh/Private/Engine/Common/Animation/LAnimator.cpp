@@ -9,6 +9,7 @@
 LAnimator::LAnimator()
 :Skeleton(nullptr)
 ,DefaultStateMachine(nullptr)
+,OwnerCharacter(nullptr)
 {
 
 }
@@ -123,7 +124,7 @@ void LAnimator::CreateDefaultStateMachine()
 	Stats["JumpStart"] = new LAnimationState("JumpStart", false, &AnimSequences["JumpStart"]);
 	Stats["JumpLoop"] = new LAnimationState("JumpLoop", false, &AnimSequences["JumpLoop"]);
 	Stats["JumpEnd"] = new LAnimationState("JumpEnd", false, &AnimSequences["JumpEnd"]);
-	DefaultStateMachine->OnCreate(Stats, "Run");
+	DefaultStateMachine->OnCreate(Stats, "Idle");
 
 }
 

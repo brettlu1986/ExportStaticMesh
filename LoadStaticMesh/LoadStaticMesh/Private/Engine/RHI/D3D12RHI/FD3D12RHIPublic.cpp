@@ -25,6 +25,17 @@ FDynamicRHI* FD3D12DynamicRHIModule::CreateRHI()
 
 /////////////////////////// dynamic RHI implement
 FD3D12DynamicRHI::FD3D12DynamicRHI()
+:CbvSrvDescriptorSize(0)
+,CurrentCbvSrvDesc(FCbvSrvDesc())
+,DsvDescriptorSize(0)
+,FenceEvent(HANDLE())
+,FenceValues(0)
+,FrameIndex(0)
+,RtvDescriptorSize(0)
+,Window(HWND())
+,ShaderMap(nullptr)
+,WndHeight(0)
+,WndWidth(0)
 {
 	
 }
@@ -708,23 +719,16 @@ void FD3D12DynamicRHI::UpdateSceneSkeletalConstants(FScene* RenderScene)
 		XMFLOAT4X4 TexMat = MathHelper::Identity4x4();
 		XMStoreFloat4x4(&ObjConstants.TexTransform, XMMatrixTranspose(XMLoadFloat4x4(&TexMat)));
 		FD3D12CbvResourceView* CbvResView1 = dynamic_cast<FD3D12CbvResourceView*>(Mesh->MtConstantBufferView);
-
-		int8_t* BufferData1 = new int8_t[CbvResView1->GetBufferSize()];
-		memcpy(BufferData1, &ObjConstants, sizeof(ObjConstants));
-		CbvResView1->UpdateConstantBufferInfo(BufferData1);
+		CbvResView1->UpdateConstantBufferInfo(&ObjConstants);
 
 		//bone map matrix pallete
-		int8_t* BufferData2 = new int8_t[CalcConstantBufferByteSize(sizeof(FSkeletalConstants))];
 		LAnimator* Animator = Character->GetAnimator();
 		FSkeletalConstants SkeCon;
 		std::copy(std::begin(Animator->GetBoneMapFinalTransforms()),
 			std::end(Animator->GetBoneMapFinalTransforms()), &SkeCon.BoneMapBoneTransforms[0]);
-		memcpy(BufferData2, &SkeCon, sizeof(FSkeletalConstants));
 		FD3D12CbvResourceView* CbvResView2 = dynamic_cast<FD3D12CbvResourceView*>(Mesh->SkeletalConstantBufferView);
-		CbvResView2->UpdateConstantBufferInfo(BufferData2);
+		CbvResView2->UpdateConstantBufferInfo(&SkeCon);
 
-		delete BufferData1;
-		delete BufferData2;
 	}
 }
 
@@ -821,7 +825,6 @@ void FD3D12DynamicRHI::UpdateScenePassConstants(FScene* RenderScene)
 		0.5f, 0.5f, 0.0f, 1.0f);
 	XMMATRIX S = LightView * LightProj * T;
 	XMStoreFloat4x4(&PassConstant.ShadowTransform, XMMatrixTranspose(S));
-	
 
 	memcpy(BufferObj->BufferData, &PassConstant, sizeof(PassConstant));
 	FD3DConstantBuffer* Cb = ConstantBuffers[BufferObj->Type];

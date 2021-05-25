@@ -12,6 +12,7 @@ LAnimationSequence::LAnimationSequence()
 ,EndTime(0.f)
 ,IsLoop(false)
 ,SequenceFrameCount(0)
+,bIsPlay(false)
 {
 }
 
@@ -46,7 +47,6 @@ void LAnimationSequence::Update(float dt)
 		UINT ScaleSize = static_cast<UINT>(Track.ScaleChannelFrames.size());
 		UINT QuatSize = static_cast<UINT>(Track.QuatChannelFrames.size());
 		UINT TranslateSize = static_cast<UINT>(Track.TranslateChannelFrames.size());
-	//	XMVECTOR Zero = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 
 		LAnimBonePose Pose;
 		if(TimeElapsed <= FrameTimes.front())
@@ -55,7 +55,6 @@ void LAnimationSequence::Update(float dt)
 			Pose.Q = QuatSize > 0 ? XMLoadFloat4(&Track.QuatChannelFrames.front()) : XMLoadFloat4(&NO_Q);
 			Pose.T = TranslateSize > 0 ? XMLoadFloat3(&Track.TranslateChannelFrames.front()) : XMLoadFloat3(&NO_T);
 			CurrentPoseToParentsTrans[i] = std::move(Pose);
-			//XMStoreFloat4x4(&CurrentPoseToParentsTrans[i], XMMatrixAffineTransformation(S, Zero, Q, T));
 		}
 		else if (TimeElapsed >= FrameTimes.back())
 		{
@@ -63,7 +62,6 @@ void LAnimationSequence::Update(float dt)
 			 Pose.Q = QuatSize > 0 ? XMLoadFloat4(&Track.QuatChannelFrames.back()) : XMLoadFloat4(&NO_Q);
 			 Pose.T = TranslateSize > 0 ? XMLoadFloat3(&Track.TranslateChannelFrames.back()) : XMLoadFloat3(&NO_T);
 			 CurrentPoseToParentsTrans[i] = std::move(Pose);
-			//XMStoreFloat4x4(&CurrentPoseToParentsTrans[i], XMMatrixAffineTransformation(S, Zero, Q, T));
 		}
 		else 
 		{
@@ -100,8 +98,6 @@ void LAnimationSequence::Update(float dt)
 			Pose.Q = XMQuaternionSlerp(q0, q1, LerpPercent);
 			Pose.T = XMVectorLerp(t0, t1, LerpPercent);
 			CurrentPoseToParentsTrans[i] = std::move(Pose);
-			//XMStoreFloat4x4(&CurrentPoseToParentsTrans[i], XMMatrixAffineTransformation(S, Zero, Q, T));
-
 		}
 	}
 }

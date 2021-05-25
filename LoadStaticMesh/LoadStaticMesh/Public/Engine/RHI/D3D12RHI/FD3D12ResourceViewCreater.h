@@ -9,7 +9,10 @@ using namespace Microsoft::WRL;
 class FD3D12ResourceView : public FResourceView
 {
 public: 
-	FD3D12ResourceView() {};
+	FD3D12ResourceView()
+	:CpuDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE())
+	,GpuDescriptor(D3D12_GPU_DESCRIPTOR_HANDLE())
+	{};
 	virtual ~FD3D12ResourceView() {};
 	UINT GetCount() { return Count;}
 
@@ -30,7 +33,10 @@ protected:
 class FD3D12CbvResourceView : public FD3D12ResourceView
 {
 public: 
-	FD3D12CbvResourceView() {};
+	FD3D12CbvResourceView() 
+	:pCbvDataBegin(nullptr)
+	,BufferSize(0)
+	{};
 	virtual ~FD3D12CbvResourceView()
 	{
 		if (ConstantBuffer)

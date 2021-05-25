@@ -64,5 +64,16 @@ void LAnimationStateMachine::Update(float dt)
 
 std::vector<LAnimBonePose>& LAnimationStateMachine::GetCurrentAnimPoseToParentTrans()
 {
+	if (MachineState == E_MACHINE_STATE::STATE_UPDATE)
+	{
+		return CurrentAnimState->GetCurrentAnimPoseToParentTrans();
+	}
+	else if (MachineState == E_MACHINE_STATE::STATE_TRANSITION)
+	{
+		if(Transition)
+			return Transition->GetTransitionAnimPoseToParentTrans();
+	}
+
+	assert(!"wrong return scope!");
 	return CurrentAnimState->GetCurrentAnimPoseToParentTrans();
 }

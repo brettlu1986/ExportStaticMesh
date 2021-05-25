@@ -67,6 +67,9 @@ void FD3D12CbvResourceView::UpdateConstantBufferInfo(void* pDataUpdate)
 
 /// //
 FD3D12ResourceViewHeap::FD3D12ResourceViewHeap()
+:Index(0)
+,DescripterNum(0)
+,DescripterElementSize(0)
 {
 }
 

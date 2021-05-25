@@ -3,8 +3,6 @@
 #include "stdafx.h"
 #include "MathHelper.h"
 
-using namespace DirectX;
-
 enum class E_INDEX_TYPE : UINT8
 {
 	TYPE_UINT_16 = 0,
@@ -209,13 +207,17 @@ public:
 struct FLight
 {
 public:
-	FLight(){};
+	FLight()
+	:Alpha(0.f)
+	,Theta(0.f)
+	,Radius(0.f)
+	{};
 
-	DirectX::XMFLOAT3 Strength = { 0.5f, 0.5f, 0.5f };
+	XMFLOAT3 Strength = { 0.5f, 0.5f, 0.5f };
 	float FalloffStart = 1.0f;                          // point/spot light only
-	DirectX::XMFLOAT3 Direction = { 0.0f, -1.0f, 0.0f };// directional/spot light only
+	XMFLOAT3 Direction = { 0.0f, -1.0f, 0.0f };// directional/spot light only
 	float FalloffEnd = 10.0f;                           // point/spot light only
-	DirectX::XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };  // point/spot light only
+	XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };  // point/spot light only
 	float SpotPower = 64.0f;                            // spot light only
 	UINT LightIndex = 0;
 
@@ -240,7 +242,7 @@ public:
 	void Update(float dt)
 	{
 		Theta -= 0.001f;
-		XMVECTOR V = DirectX::XMVectorSet(Radius * sinf(Alpha) * sinf(Theta),
+		XMVECTOR V = XMVectorSet(Radius * sinf(Alpha) * sinf(Theta),
 			Radius * sinf(Alpha) * cosf(Theta),
 			Radius * cosf(Alpha),
 			1.f);
@@ -258,11 +260,11 @@ public:
 
 struct FPassLight
 {
-	DirectX::XMFLOAT3 Strength = { 0.5f, 0.5f, 0.5f };
+	XMFLOAT3 Strength = { 0.5f, 0.5f, 0.5f };
 	float FalloffStart = 1.0f;                          // point/spot light only
-	DirectX::XMFLOAT3 Direction = { 0.0f, -1.0f, 0.0f };// directional/spot light only
+	XMFLOAT3 Direction = { 0.0f, -1.0f, 0.0f };// directional/spot light only
 	float FalloffEnd = 10.0f;                           // point/spot light only
-	DirectX::XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };  // point/spot light only
+	XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };  // point/spot light only
 	float SpotPower = 64.0f;                            // spot light only
 	UINT LightIndex = 0;
 };
@@ -274,19 +276,21 @@ public:
 	:ViewProj(MathHelper::Identity4x4())
 	, EyePosW({ 0.0f, 0.0f, 0.0f })
 	, CbPerObjectPad1(0.f)
+	, ShadowTransform(XMFLOAT4X4())
+	, LightSpaceMatrix(XMFLOAT4X4())
 	{};
-	DirectX::XMFLOAT4X4 ViewProj;
-	DirectX::XMFLOAT3 EyePosW ;
+	XMFLOAT4X4 ViewProj;
+	XMFLOAT3 EyePosW ;
 	float CbPerObjectPad1;
-	DirectX::XMFLOAT4X4 LightSpaceMatrix;
-	DirectX::XMFLOAT4X4 ShadowTransform;
+	XMFLOAT4X4 LightSpaceMatrix;
+	XMFLOAT4X4 ShadowTransform;
 	FPassLight Lights[MaxLights];
 };
 
 static const UINT MAX_BONE_TRANS = 80;
 struct FSkeletalConstants
 {
-	DirectX::XMFLOAT4X4 BoneMapBoneTransforms[MAX_BONE_TRANS];
+	XMFLOAT4X4 BoneMapBoneTransforms[MAX_BONE_TRANS];
 };
 
 struct FBufferObject

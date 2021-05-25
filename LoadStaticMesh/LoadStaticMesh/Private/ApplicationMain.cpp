@@ -16,6 +16,7 @@
 ApplicationMain* ApplicationMain::Application = nullptr;
 
 ApplicationMain::ApplicationMain()
+:Timer(nullptr)
 {
 	Application = this;
 }

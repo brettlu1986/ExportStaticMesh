@@ -50,3 +50,5 @@
 #include <map>
 #include <functional>
 #include <stdio.h>
+
+using namespace DirectX;

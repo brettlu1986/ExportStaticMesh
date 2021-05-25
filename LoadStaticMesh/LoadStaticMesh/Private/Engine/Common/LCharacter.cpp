@@ -18,7 +18,13 @@ LCharacter::LCharacter()
 ,BaseSpeed(3.f)
 ,bUpdateMove(false)
 ,bJump(false)
+,LastMousePoint(POINT())
 {
+	for (UINT i = 0; i < KEY_SIZE; i++)
+	{
+		Keys[i] = false;
+	}
+
 	ChaMovement = new LCharacterMovement();
 	ChaMovement->SetOwner(this);
 }
