@@ -30,10 +30,10 @@ void LAnimationStateMachine::OnCreate(std::map<E_ANIM_STATE, LAnimationState*>& 
 	SetCurrentAnimState(DefaultState);
 }
 
-void LAnimationStateMachine::SetCurrentAnimState(E_ANIM_STATE NewState)
+void LAnimationStateMachine::SetCurrentAnimState(E_ANIM_STATE NewState, LAnimationStateTransition* PreTransition)
 {
 	CurrentAnimState = States[NewState];
-	CurrentAnimState->Init();
+	CurrentAnimState->Init(PreTransition);
 	MachineState = E_MACHINE_STATE::STATE_UPDATE;
 }
 
@@ -63,7 +63,7 @@ void LAnimationStateMachine::Update(float dt)
 			Transition->Update(dt);
 			if (Transition->IsTransitionComplete())
 			{
-				SetCurrentAnimState(PendingAnimStateType);
+				SetCurrentAnimState(PendingAnimStateType, Transition);
 			}
 		}
 	}

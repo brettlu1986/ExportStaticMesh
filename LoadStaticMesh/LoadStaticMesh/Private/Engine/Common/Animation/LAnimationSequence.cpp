@@ -13,6 +13,7 @@ LAnimationSequence::LAnimationSequence()
 ,IsLoop(false)
 ,SequenceFrameCount(0)
 ,bIsPlay(false)
+//,bLerpTransitionEnd(false)
 {
 }
 
@@ -26,8 +27,6 @@ void LAnimationSequence::Update(float dt)
 	if(!bIsPlay)
 		return;
 
-	TimeElapsed += dt;
-
 	if(IsLoop && TimeElapsed > EndTime)
 	{
 		TimeElapsed = 0;
@@ -40,6 +39,7 @@ void LAnimationSequence::Update(float dt)
 		}
 	}
 
+
 	for(size_t i = 0; i < SequenceTracks.size(); i++)
 	{
 		LAnimationTrack& Track = SequenceTracks[i];
@@ -51,10 +51,21 @@ void LAnimationSequence::Update(float dt)
 		LAnimBonePose Pose;
 		if(TimeElapsed <= FrameTimes.front())
 		{
-			Pose.S = ScaleSize > 0 ? XMLoadFloat3(&Track.ScaleChannelFrames.front()) : XMLoadFloat3(&NO_S);
-			Pose.Q = QuatSize > 0 ? XMLoadFloat4(&Track.QuatChannelFrames.front()) : XMLoadFloat4(&NO_Q);
-			Pose.T = TranslateSize > 0 ? XMLoadFloat3(&Track.TranslateChannelFrames.front()) : XMLoadFloat3(&NO_T);
-			CurrentPoseToParentsTrans[i] = std::move(Pose);
+			//if (bLerpTransitionEnd)
+			//{
+			//	Pose.S = PreTransitionEndSeq[i].S;
+			//	Pose.Q = PreTransitionEndSeq[i].Q;
+			//	Pose.T = PreTransitionEndSeq[i].T;
+			//	CurrentPoseToParentsTrans[i] = std::move(Pose);
+			//	bLerpTransitionEnd = false;
+			//}
+			//else
+			//{
+				Pose.S = ScaleSize > 0 ? XMLoadFloat3(&Track.ScaleChannelFrames.front()) : XMLoadFloat3(&NO_S);
+				Pose.Q = QuatSize > 0 ? XMLoadFloat4(&Track.QuatChannelFrames.front()) : XMLoadFloat4(&NO_Q);
+				Pose.T = TranslateSize > 0 ? XMLoadFloat3(&Track.TranslateChannelFrames.front()) : XMLoadFloat3(&NO_T);
+				CurrentPoseToParentsTrans[i] = std::move(Pose);
+			//}
 		}
 		else if (TimeElapsed >= FrameTimes.back())
 		{
@@ -100,4 +111,6 @@ void LAnimationSequence::Update(float dt)
 			CurrentPoseToParentsTrans[i] = std::move(Pose);
 		}
 	}
+
+	TimeElapsed += dt;
 }

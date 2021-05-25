@@ -62,6 +62,13 @@ public:
 		return SequenceTracks;
 	}
 
+	//void SetPreTransitionEndSeq(std::vector<LAnimBonePose>& TransitionAnimPoseToParent)
+	//{
+	//	PreTransitionEndSeq.clear();
+	//	PreTransitionEndSeq.resize(TransitionAnimPoseToParent.size());
+	//	std::copy(TransitionAnimPoseToParent.begin(), TransitionAnimPoseToParent.end(), PreTransitionEndSeq.begin());
+	//	bLerpTransitionEnd = true;
+	//}
 private:
 	
 	float TimeElapsed;
@@ -69,10 +76,14 @@ private:
 	float EndTime;
 	bool IsLoop;
 	bool bIsPlay;
+	
 	UINT SequenceFrameCount;
 	//size according to current bone count
 	std::vector<LAnimationTrack> SequenceTracks;
 	std::vector<float> FrameTimes;
 
 	std::vector<LAnimBonePose> CurrentPoseToParentsTrans;
+
+	//bool bLerpTransitionEnd;
+	//std::vector<LAnimBonePose> PreTransitionEndSeq;
 };

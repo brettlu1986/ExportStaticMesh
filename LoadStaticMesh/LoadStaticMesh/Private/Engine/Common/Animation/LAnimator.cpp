@@ -53,35 +53,39 @@ void LAnimator::Update(float dt)
 			ProcessDefaultStateMachineChange(E_ANIM_STATE::RUN);
 		}
 
+		//TODO:add just change
+
 	}
 	//default state machine update
 	{
 		DefaultStateMachine->Update(dt);
-		if(!DefaultStateMachine->IsTransition())
-		{
-			LAnimationState* AnimState = DefaultStateMachine->GetCurrentAnimState();
-			if (AnimState->GetStateType() == E_ANIM_STATE::JUMP_START)
-			{
-				if(AnimState->IsFinished())
-				{
-					DefaultStateMachine->SetTransitionToState(E_ANIM_STATE::JUMP_LOOP, 0.2f);
-				}
-			}
-			else if(AnimState->GetStateType() == E_ANIM_STATE::JUMP_LOOP)
-			{
-				if (AnimState->IsFinished())
-				{
-					DefaultStateMachine->SetTransitionToState(E_ANIM_STATE::JUMP_END, 0.2f);
-				}
-			}
-			else if(AnimState->GetStateType() == E_ANIM_STATE::JUMP_END)
-			{
-				if (AnimState->IsFinished())
-				{
-					DefaultStateMachine->SetTransitionToState(E_ANIM_STATE::IDLE, 0.2f);
-				}
-			}
-		}
+
+		//jump state
+		//if(!DefaultStateMachine->IsTransition())
+		//{
+		//	LAnimationState* AnimState = DefaultStateMachine->GetCurrentAnimState();
+		//	if (AnimState->GetStateType() == E_ANIM_STATE::JUMP_START)
+		//	{
+		//		if(AnimState->IsFinished())
+		//		{
+		//			DefaultStateMachine->SetTransitionToState(E_ANIM_STATE::JUMP_LOOP, 0.2f);
+		//		}
+		//	}
+		//	else if(AnimState->GetStateType() == E_ANIM_STATE::JUMP_LOOP)
+		//	{
+		//		if (AnimState->IsFinished())
+		//		{
+		//			DefaultStateMachine->SetTransitionToState(E_ANIM_STATE::JUMP_END, 0.2f);
+		//		}
+		//	}
+		//	else if(AnimState->GetStateType() == E_ANIM_STATE::JUMP_END)
+		//	{
+		//		if (AnimState->IsFinished())
+		//		{
+		//			DefaultStateMachine->SetTransitionToState(E_ANIM_STATE::IDLE, 0.2f);
+		//		}
+		//	}
+		//}
 	}
 
 	// calculate bone map final transforms according to current pose
@@ -146,7 +150,6 @@ void LAnimator::CreateDefaultStateMachine()
 	Stats[E_ANIM_STATE::JUMP_LOOP] = new LAnimationState(E_ANIM_STATE::JUMP_LOOP, false, &AnimSequences[E_ANIM_STATE::JUMP_LOOP]);
 	Stats[E_ANIM_STATE::JUMP_END] = new LAnimationState(E_ANIM_STATE::JUMP_END, false, &AnimSequences[E_ANIM_STATE::JUMP_END]);
 	DefaultStateMachine->OnCreate(Stats, E_ANIM_STATE::IDLE);
-
 }
 
 void LAnimator::ProcessDefaultStateMachineChange(E_ANIM_STATE State)
@@ -157,12 +160,13 @@ void LAnimator::ProcessDefaultStateMachineChange(E_ANIM_STATE State)
 		return;
 	}
 
-	if(State == E_ANIM_STATE::IDLE && (DefaultStateMachine->GetCurrentAnimStateType() == E_ANIM_STATE::JUMP_START ||
-		DefaultStateMachine->GetCurrentAnimStateType() == E_ANIM_STATE::JUMP_LOOP ||
-		DefaultStateMachine->GetCurrentAnimStateType() == E_ANIM_STATE::JUMP_END))
-	{
-		return;
-	}
+	//jump state
+	//if(State == E_ANIM_STATE::IDLE && (DefaultStateMachine->GetCurrentAnimStateType() == E_ANIM_STATE::JUMP_START ||
+	//	DefaultStateMachine->GetCurrentAnimStateType() == E_ANIM_STATE::JUMP_LOOP ||
+	//	DefaultStateMachine->GetCurrentAnimStateType() == E_ANIM_STATE::JUMP_END))
+	//{
+	//	return;
+	//}
 
 	DefaultStateMachine->SetTransitionToState(State, 0.2f);
 }

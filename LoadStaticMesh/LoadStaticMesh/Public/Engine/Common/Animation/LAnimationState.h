@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "LAnimationSequence.h"
-#
+#include "LAnimationStateTransition.h"
 
 class LAnimationState
 {
@@ -9,7 +9,7 @@ public:
 	LAnimationState(E_ANIM_STATE State, bool bInLoop, LAnimationSequence* Seq);
 	~LAnimationState();
 
-	void Init();
+	void Init(LAnimationStateTransition* PreTransition = nullptr);
 	void Update(float dt);
 
 	std::vector<LAnimBonePose>& GetCurrentAnimPoseToParentTrans();
@@ -28,6 +28,7 @@ public:
 	{
 		return !bLoop && StateAnim->IsAnimationSequenceFinished();
 	}
+	
 private:
 	E_ANIM_STATE StateType;
 	LAnimationSequence* StateAnim;

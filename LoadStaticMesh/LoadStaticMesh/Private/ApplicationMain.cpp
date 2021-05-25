@@ -73,8 +73,8 @@ void ApplicationMain::OnRender()
 
 void ApplicationMain::Run()
 {
-	//const UINT FrameRate = 60;
-	//std::chrono::duration<float> FrameLen = std::chrono::duration<float>(1.f/60);
+	const UINT FrameRate = 60;
+	std::chrono::duration<float> FrameLen = std::chrono::duration<float>(1.f/60);
 	while (LEngine::GetEngine()->Run())
 	{
 		Timer->Tick();
@@ -82,7 +82,7 @@ void ApplicationMain::Run()
 
 		Update(Timer->GetDeltaTime());
 		OnRender();
-	//	this_thread::sleep_for(FrameLen - Timer->GetChronoDeltaTime());
+		this_thread::sleep_for(FrameLen - Timer->GetChronoDeltaTime());
 	}
 }
 

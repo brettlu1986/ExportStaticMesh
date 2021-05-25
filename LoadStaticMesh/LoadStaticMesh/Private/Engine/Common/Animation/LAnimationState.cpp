@@ -18,11 +18,13 @@ void LAnimationState::Update(float dt)
 	StateAnim->Update(dt);
 }
 
-void LAnimationState::Init()
+void LAnimationState::Init(LAnimationStateTransition* PreTransition)
 {
 	StateAnim->SetIsPlay(true);
 	StateAnim->SetIsLoop(bLoop);
 	StateAnim->Reset();
+	//if(PreTransition != nullptr)
+	//	StateAnim->SetPreTransitionEndSeq(PreTransition->GetTransitionAnimPoseToParentTrans());
 }
 
 std::vector<LAnimBonePose>& LAnimationState::GetCurrentAnimPoseToParentTrans()

@@ -37,7 +37,7 @@ void LAnimationStateTransition::Update(float dt)
 
 	TransitionElapsed += dt;
 	if(TransitionElapsed >= TransitionTime)
-		TransitionElapsed = TransitionTime;
+		bComplete = true;
 		
 
 	float LerpPercent = TransitionElapsed / TransitionTime;
@@ -68,9 +68,5 @@ void LAnimationStateTransition::Update(float dt)
 		TransitionPoseToParentsTrans[i] = Pose;
 	}
 
-	if(TransitionElapsed == TransitionTime)
-	{
-		bComplete = true;
-	}
 }
 

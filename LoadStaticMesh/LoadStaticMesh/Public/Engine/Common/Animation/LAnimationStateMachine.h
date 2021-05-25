@@ -18,7 +18,7 @@ public:
 	
 	void OnCreate(std::map<E_ANIM_STATE, LAnimationState*>& Stats, E_ANIM_STATE DefaultState);
 	void Update(float dt);
-	void SetCurrentAnimState(E_ANIM_STATE NewState);
+	void SetCurrentAnimState(E_ANIM_STATE NewState, LAnimationStateTransition* PreTransition = nullptr);
 	void SetTransitionToState(E_ANIM_STATE NewState, float Time);
 
 	std::vector<LAnimBonePose>& GetCurrentAnimPoseToParentTrans();
