@@ -1206,12 +1206,12 @@ FResourceView* FD3D12DynamicRHI::CreateResourceView(FResourceViewInfo ViewInfo)
 		FD3D12RtvResourceView* View = dynamic_cast<FD3D12RtvResourceView*>(RtvResView);
 		if(ViewInfo.TexResource == nullptr)
 		{
-			//View->SetRtvViewInfo(D3DDevice.Get(), SwapChain.Get(), nullptr, static_cast<DXGI_FORMAT>(ViewInfo.Format));
+			View->SetRtvViewInfo(D3DDevice.Get(), SwapChain.Get(), static_cast<DXGI_FORMAT>(ViewInfo.Format), ViewInfo.Index);
 		}
 		else 
 		{
 			FD3D12Texture* D3DTex = dynamic_cast<FD3D12Texture*>(*ViewInfo.TexResource);
-			//View->SetRtvViewInfo(D3DDevice.Get(), SwapChain.Get(), D3DTex, static_cast<DXGI_FORMAT>(ViewInfo.Format));
+			View->SetRtvViewInfo(D3DDevice.Get(), D3DTex, static_cast<DXGI_FORMAT>(ViewInfo.Format));
 		}
 	}
 	assert(!"not valid resource view type");

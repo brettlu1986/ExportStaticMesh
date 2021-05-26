@@ -4,6 +4,8 @@
 #include "FSkeletalMesh.h"
 #include "LCharacter.h"
 #include "FShadowMap.h"
+#include "LDeviceWindows.h"
+#include "LEngine.h"
 
 FSceneRenderer::FSceneRenderer()
 {
@@ -30,6 +32,24 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 	{
 		RenderTargets[i] = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_RTV, 1, nullptr, 0, E_GRAPHIC_FORMAT::FORMAT_UNKNOWN, i });
 	}
+
+	//create default dsv view
+	FClearDepth ClearDepth;
+	ClearDepth.Depth = 1.0f;
+	ClearDepth.Stencil = 0;
+
+	FClearValue ClearValue;
+	ClearValue.Format = E_GRAPHIC_FORMAT::FORMAT_D24_UNORM_S8_UINT;
+	ClearValue.ClearDepth = &ClearDepth;
+	ClearValue.ClearColor = nullptr;
+	LDeviceWindows* DeviceWindows = dynamic_cast<LDeviceWindows*>(LEngine::GetEngine()->GetPlatformDevice());
+	FTextureInitializer Initializer =
+	{
+		DeviceWindows->GetWidth(), DeviceWindows->GetHeight(), 1, 0, E_GRAPHIC_FORMAT::FORMAT_R24G8_TYPELESS, E_RESOURCE_FLAGS::RESOURCE_FLAG_ALLOW_DEPTH_STENCIL, &ClearValue,
+		E_RESOURCE_STATE::RESOURCE_STATE_DEPTH_WRITE
+	};
+	DsvTex = GRHI->CreateTexture(Initializer);
+	DsvView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_DSV, 1, &DsvTex, 0, E_GRAPHIC_FORMAT::FORMAT_D24_UNORM_S8_UINT });
 
 	//create used pipline state objects
 	GRHI->CreatePipelineStateObject({ "PsoUseTexture", StandardInputElementDescs, _countof(StandardInputElementDescs), L"ShaderTexVs.cso",

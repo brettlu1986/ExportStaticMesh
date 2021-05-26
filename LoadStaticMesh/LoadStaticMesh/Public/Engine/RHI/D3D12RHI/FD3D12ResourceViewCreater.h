@@ -13,6 +13,8 @@ public:
 	FD3D12ResourceView()
 	:CpuDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE())
 	,GpuDescriptor(D3D12_GPU_DESCRIPTOR_HANDLE())
+	,ViewResource(nullptr)
+	,Type(E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_NONE)
 	{};
 	virtual ~FD3D12ResourceView() {};
 	UINT GetCount() { return Count;}
@@ -26,8 +28,14 @@ public:
 	{
 		return Type;
 	}
+
+	ID3D12Resource* Resource()
+	{
+		return ViewResource;
+	}
 protected: 
 	E_RESOURCE_VIEW_TYPE Type;
+	ID3D12Resource* ViewResource;
 	//resource count, may be more than one
 	UINT Count = 0;
 	UINT DescriptorSize = 0;

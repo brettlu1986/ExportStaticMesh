@@ -37,23 +37,39 @@ void FD3D12ResourceView::SetResourceView(UINT InCount, UINT DesSize, D3D12_CPU_D
 //RtvView
 void FD3D12RtvResourceView::SetRtvViewInfo(ID3D12Device* Device, IDXGISwapChain* SwapChain, DXGI_FORMAT Format, UINT SwapBufferIndex)
 {
+	ThrowIfFailed(SwapChain->GetBuffer(SwapBufferIndex, IID_PPV_ARGS(&ViewResource)));
 
+	D3D12_RENDER_TARGET_VIEW_DESC ColorDesc = {};
+	ColorDesc.Format = Format;
+	ColorDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+	ColorDesc.Texture2D.MipSlice = 0;
+	ColorDesc.Texture2D.PlaneSlice = 0;
+
+	Device->CreateRenderTargetView(ViewResource, &ColorDesc, GetCpu());
 }
 
 void FD3D12RtvResourceView::SetRtvViewInfo(ID3D12Device* Device, FD3D12Texture* Tex, DXGI_FORMAT Format)
 {
+	ViewResource = Tex->Resource();
 
+	D3D12_RENDER_TARGET_VIEW_DESC ColorDesc = {};
+	ColorDesc.Format = Format;
+	ColorDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+	ColorDesc.Texture2D.MipSlice = 0;
+	ColorDesc.Texture2D.PlaneSlice = 0;
+	Device->CreateRenderTargetView(ViewResource, &ColorDesc, GetCpu());
 }
 
 //Dsv View
 void FD3D12DsvResourceView::SetDsvViewInfo(ID3D12Device* Device, FD3D12Texture* Tex, DXGI_FORMAT Format)
 {
+	ViewResource = Tex->Resource();
 	D3D12_DEPTH_STENCIL_VIEW_DESC DsvDesc;
 	DsvDesc.Flags = D3D12_DSV_FLAG_NONE;
 	DsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 	DsvDesc.Format = Format;
 	DsvDesc.Texture2D.MipSlice = 0;
-	Device->CreateDepthStencilView(Tex->Resource(), &DsvDesc, GetCpu());
+	Device->CreateDepthStencilView(ViewResource, &DsvDesc, GetCpu());
 }
 
 //Cbv View

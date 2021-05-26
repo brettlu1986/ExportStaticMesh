@@ -15,4 +15,7 @@ public:
 
 private:
 	FResourceView* RenderTargets[RENDER_TARGET_COUNT];
+
+	FTexture* DsvTex;
+	FResourceView* DsvView;
 };
