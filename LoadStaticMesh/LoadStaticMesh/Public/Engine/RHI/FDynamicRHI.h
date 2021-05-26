@@ -14,32 +14,17 @@
 #include <map>
 #include "FResourceViewCreater.h"
 
+
 struct FRHIViewPort
 {
 public:
 	FRHIViewPort(float SizeX, float SizeY)
 		:Width(SizeX)
-		, Height(SizeY)
+		,Height(SizeY)
 	{
 	}
 	float Width;
 	float Height;
-};
-
-struct FRHIScissorRect
-{
-public:
-	FRHIScissorRect(LONG InLeft, LONG InTop, LONG InRight, LONG InBottom)
-		:Left(InLeft)
-		, Top(InTop)
-		, Right(InRight)
-		, Bottom(InBottom)
-	{
-	}
-	LONG Left;
-	LONG Top;
-	LONG Right;
-	LONG Bottom;
 };
 
 struct FResourceViewInfo
@@ -47,7 +32,9 @@ struct FResourceViewInfo
 	E_RESOURCE_VIEW_TYPE ViewType;
 	UINT ViewCount;
 	FTexture** TexResource;// this is an array pointer, for one just use the tex pointer address
-	UINT DataSize;//use for constant buffer
+	UINT DataSize;//use for cbv
+	E_GRAPHIC_FORMAT Format;//if the texture has bitdata, the format will use the ResourceLoad format, like dds read
+	UINT Index = 0;// use for swap chain rtv index.  TODO:think another way to do this
 };
 
 class FDynamicRHI
@@ -78,6 +65,7 @@ public:
 	virtual void DrawSceneToShadowMap(FScene* Scene) = 0;
 
 	//
+	virtual FTexture* CreateTexture(FTextureInitializer TexInitializer) = 0;
 	virtual void CreateResourceViewCreater(UINT CbvCount, UINT SrvCount, UINT UavCount, UINT DsvCount, UINT RtvCount, UINT SamplerCount) = 0;
 	virtual void CreateVertexAndIndexBufferView(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) = 0;
 	//the Texuture**  is the texture array start pointer, it can create and bind more than one texture onece
@@ -93,6 +81,7 @@ public:
 	virtual void BeginEvent(const char* Name) = 0;
 	virtual void EndEvent() = 0;
 
+	virtual UINT GetFrameIndex() = 0;
 public: 
 	FResourceViewCreater* GetResourceViewCreater()
 	{
@@ -106,6 +95,7 @@ public:
 protected:
 	FResourceViewCreater* ResourceViewCreater = nullptr;
 	std::map<std::string, FD3DGraphicPipline*> PiplelineStateObjCache;
+
 };
 
 extern FDynamicRHI* GRHI;

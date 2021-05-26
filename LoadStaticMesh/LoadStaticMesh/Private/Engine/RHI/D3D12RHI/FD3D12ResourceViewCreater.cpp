@@ -2,6 +2,7 @@
 #include "FD3D12ResourceViewCreater.h"
 #include "FD3D12Helper.h"
 
+//Resource View
 D3D12_CPU_DESCRIPTOR_HANDLE FD3D12ResourceView::GetCpu(UINT i)
 {
 	if (i + 1 > Count)
@@ -24,14 +25,38 @@ D3D12_GPU_DESCRIPTOR_HANDLE FD3D12ResourceView::GetGpu(UINT i)
 	return GpuDes;
 }
 
-void FD3D12ResourceView::SetResourceView(UINT InCount, UINT DesSize, D3D12_CPU_DESCRIPTOR_HANDLE CpuDes, D3D12_GPU_DESCRIPTOR_HANDLE GpuDes)
+void FD3D12ResourceView::SetResourceView(UINT InCount, UINT DesSize, D3D12_CPU_DESCRIPTOR_HANDLE CpuDes, D3D12_GPU_DESCRIPTOR_HANDLE GpuDes, E_RESOURCE_VIEW_TYPE ViewType)
 {
 	Count = InCount;
 	DescriptorSize = DesSize;
 	CpuDescriptor = CpuDes;
 	GpuDescriptor = GpuDes;
+	Type = ViewType;
 }
 
+//RtvView
+void FD3D12RtvResourceView::SetRtvViewInfo(ID3D12Device* Device, IDXGISwapChain* SwapChain, DXGI_FORMAT Format, UINT SwapBufferIndex)
+{
+
+}
+
+void FD3D12RtvResourceView::SetRtvViewInfo(ID3D12Device* Device, FD3D12Texture* Tex, DXGI_FORMAT Format)
+{
+
+}
+
+//Dsv View
+void FD3D12DsvResourceView::SetDsvViewInfo(ID3D12Device* Device, FD3D12Texture* Tex, DXGI_FORMAT Format)
+{
+	D3D12_DEPTH_STENCIL_VIEW_DESC DsvDesc;
+	DsvDesc.Flags = D3D12_DSV_FLAG_NONE;
+	DsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	DsvDesc.Format = Format;
+	DsvDesc.Texture2D.MipSlice = 0;
+	Device->CreateDepthStencilView(Tex->Resource(), &DsvDesc, GetCpu());
+}
+
+//Cbv View
 void FD3D12CbvResourceView::SetConstantBufferViewInfo(ID3D12Device* Device, UINT InBufferSize)
 {
 	BufferSize = InBufferSize;
@@ -65,7 +90,7 @@ void FD3D12CbvResourceView::UpdateConstantBufferInfo(void* pDataUpdate)
 	memcpy(pCbvDataBegin, pDataUpdate, BufferSize);
 }
 
-/// //
+//View Heap
 FD3D12ResourceViewHeap::FD3D12ResourceViewHeap()
 :Index(0)
 ,DescripterNum(0)
@@ -130,7 +155,7 @@ void FD3D12ResourceViewHeap::OnDestroy()
 	Heap.Reset();
 }
 
-bool FD3D12ResourceViewHeap::AllocDescriptor(UINT Count, FResourceView* Rv)
+bool FD3D12ResourceViewHeap::AllocDescriptor(UINT Count, FResourceView* Rv, E_RESOURCE_VIEW_TYPE ViewType)
 {
 	if(Index + Count > DescripterNum)
 	{
@@ -147,11 +172,11 @@ bool FD3D12ResourceViewHeap::AllocDescriptor(UINT Count, FResourceView* Rv)
 	Index += Count;
 
 	FD3D12ResourceView* D3DResView = dynamic_cast<FD3D12ResourceView*>(Rv);
-	D3DResView->SetResourceView(Count, DescripterElementSize, CpuView, GpuView);
+	D3DResView->SetResourceView(Count, DescripterElementSize, CpuView, GpuView, ViewType);
 	return true;
 }
 
-/// 
+//View Creater
 FD3D12ResourceViewCreater::FD3D12ResourceViewCreater()
 :ParentDevice(nullptr)
 {
@@ -189,20 +214,20 @@ bool FD3D12ResourceViewCreater::AllocDescriptor(UINT Count, E_RESOURCE_VIEW_TYPE
 {
 	if (HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_DSV)
 	{
-		return DsvHeap->AllocDescriptor(Count, ResView);
+		return DsvHeap->AllocDescriptor(Count, ResView, HeapType);
 	}
 	else if (HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_RTV)
 	{
-		return RtvHeap->AllocDescriptor(Count, ResView);
+		return RtvHeap->AllocDescriptor(Count, ResView, HeapType);
 	}
 	else if (HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV || HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV ||
 		HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_UAV)
 	{
-		return CbvSrvUavHeap->AllocDescriptor(Count, ResView);
+		return CbvSrvUavHeap->AllocDescriptor(Count, ResView, HeapType);
 	}
 	else if (HeapType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SAMPLER)
 	{
-		return SamplerHeap->AllocDescriptor(Count, ResView);
+		return SamplerHeap->AllocDescriptor(Count, ResView, HeapType);
 	}
 	return false;
 }

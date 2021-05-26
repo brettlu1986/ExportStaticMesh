@@ -409,8 +409,8 @@ void FD3D12DynamicRHI::BeginRenderScene()
 
 void FD3D12DynamicRHI::DrawSceneToShadowMap(FScene* RenderScene)
 {
-	CommandList->SetGraphicsRootSignature(PiplelineStateObjCache["ShaderPass"]->RootSignature.Get());
-	CommandList->SetPipelineState(PiplelineStateObjCache["ShaderPass"]->PipelineState.Get());
+	CommandList->SetGraphicsRootSignature(PiplelineStateObjCache["ShadowPass"]->RootSignature.Get());
+	CommandList->SetPipelineState(PiplelineStateObjCache["ShadowPass"]->PipelineState.Get());
 
 	D3D12_VIEWPORT ViewPort = ShaderMap->Viewport();
 	CommandList->RSSetViewports(1, &ViewPort);
@@ -558,7 +558,7 @@ FVertexBuffer* FD3D12DynamicRHI::RHICreateVertexBuffer()
 
 FTexture* FD3D12DynamicRHI::RHICreateTexture()
 {
-	return new FD3D12Texture();
+	return new FD3D12Texture(D3DDevice.Get());
 }
 
 void FD3D12DynamicRHI::RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture)
@@ -668,7 +668,7 @@ void FD3D12DynamicRHI::CreateSceneResources(FScene* Scene)
 		State.DepthBiasClamp = 0.f;
 		State.SlopeScaledDepthBias = 0.1f;
 		FRHIPiplineStateInitializer PsoInitializerShadowPass = {
-		   "ShaderPass",
+		   "ShadowPass",
 		   StandardInputElementDescs,
 		   _countof(StandardInputElementDescs),
 		   ShadowPassVs->GetShaderByteCode(),
@@ -688,7 +688,7 @@ void FD3D12DynamicRHI::CreateSceneResources(FScene* Scene)
 		delete ShadowPassVs;
 		delete ShadowPassPs;
 
-		Scene->InitSceneRenderResource();
+		//Scene->InitSceneRenderResource();
 	}
 }
 
@@ -718,7 +718,7 @@ void FD3D12DynamicRHI::UpdateSceneSkeletalConstants(FScene* RenderScene)
 		XMStoreFloat4x4(&ObjConstants.World, XMMatrixTranspose(Mesh->GetModelMatrix()));
 		XMFLOAT4X4 TexMat = MathHelper::Identity4x4();
 		XMStoreFloat4x4(&ObjConstants.TexTransform, XMMatrixTranspose(XMLoadFloat4x4(&TexMat)));
-		FD3D12CbvResourceView* CbvResView1 = dynamic_cast<FD3D12CbvResourceView*>(Mesh->MtConstantBufferView);
+		FD3D12CbvResourceView* CbvResView1 = dynamic_cast<FD3D12CbvResourceView*>(Mesh->MatrixConstantBufferView);
 		CbvResView1->UpdateConstantBufferInfo(&ObjConstants);
 
 		//bone map matrix pallete
@@ -1145,6 +1145,12 @@ void FD3D12DynamicRHI::CreatePipelineStateObject(FPiplineStateInitializer Initia
 	delete Ps;
 }
 //////////////////
+FTexture* FD3D12DynamicRHI::CreateTexture(FTextureInitializer TexInitializer)
+{
+	FTexture* Tex = new FD3D12Texture(D3DDevice.Get());
+	Tex->InitializeTexture(TexInitializer);
+	return Tex;
+}
 
 void FD3D12DynamicRHI::CreateResourceViewCreater(UINT CbvCount, UINT SrvCount, UINT UavCount, UINT DsvCount, UINT RtvCount, UINT SamplerCount)
 {
@@ -1171,7 +1177,7 @@ FResourceView* FD3D12DynamicRHI::CreateResourceView(FResourceViewInfo ViewInfo)
 		{
 			FD3D12Texture* D3DTex = dynamic_cast<FD3D12Texture*>(*(ViewInfo.TexResource + i));
 			FD3D12ResourceView* View = dynamic_cast<FD3D12ResourceView*>(ResView);
-			D3DTex->InitGPUTextureView(D3DDevice.Get(), CommandList.Get(), View->GetCpu(i));
+			D3DTex->InitGPUTextureView(D3DDevice.Get(), CommandList.Get(), View->GetCpu(i), static_cast<DXGI_FORMAT>(ViewInfo.Format));
 		}
 		return ResView;
 	}
@@ -1184,7 +1190,30 @@ FResourceView* FD3D12DynamicRHI::CreateResourceView(FResourceViewInfo ViewInfo)
 		View->SetConstantBufferViewInfo(D3DDevice.Get(), ViewInfo.DataSize);
 		return CbResView;
 	}
+	else if(ViewInfo.ViewType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_DSV)
+	{
+		FResourceView* DsvResView = new FD3D12DsvResourceView();
+		ViewCreater->AllocDescriptor(ViewInfo.ViewCount, ViewInfo.ViewType, DsvResView);
 
+		FD3D12DsvResourceView* View = dynamic_cast<FD3D12DsvResourceView*>(DsvResView);
+		FD3D12Texture* D3DTex = dynamic_cast<FD3D12Texture*>(*ViewInfo.TexResource);
+		View->SetDsvViewInfo(D3DDevice.Get(), D3DTex, static_cast<DXGI_FORMAT>(ViewInfo.Format));
+	}
+	else if(ViewInfo.ViewType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_RTV)
+	{
+		FResourceView* RtvResView = new FD3D12RtvResourceView();
+		ViewCreater->AllocDescriptor(ViewInfo.ViewCount, ViewInfo.ViewType, RtvResView);
+		FD3D12RtvResourceView* View = dynamic_cast<FD3D12RtvResourceView*>(RtvResView);
+		if(ViewInfo.TexResource == nullptr)
+		{
+			//View->SetRtvViewInfo(D3DDevice.Get(), SwapChain.Get(), nullptr, static_cast<DXGI_FORMAT>(ViewInfo.Format));
+		}
+		else 
+		{
+			FD3D12Texture* D3DTex = dynamic_cast<FD3D12Texture*>(*ViewInfo.TexResource);
+			//View->SetRtvViewInfo(D3DDevice.Get(), SwapChain.Get(), D3DTex, static_cast<DXGI_FORMAT>(ViewInfo.Format));
+		}
+	}
 	assert(!"not valid resource view type");
 	return new FResourceView();
 }

@@ -52,7 +52,6 @@ void ApplicationMain::OnTouchInit()
 void ApplicationMain::OnSceneInit()
 {
 	SampleAssets::LoadSampleScene(&Scene);
-	//LAssetDataLoader::LoadSampleScene(&Scene);
 	FRenderThread::Get()->InitRenderThreadScene(&Scene);
 }
 

@@ -6,6 +6,7 @@
 #include "LCharacter.h"
 #include "FSkeletalMesh.h"
 
+class FShadowMap;
 class FMesh;
 class LCamera;
 class FScene
@@ -18,7 +19,7 @@ public:
 	void AddCharacterToScene(LCharacter* Character);
 	void AddLightToScene(FLight* Light);
 
-	void InitSceneRenderResource();
+	//void InitSceneRenderResource();
 
 	void Update(float DeltaTime);
 	void Destroy();
@@ -97,7 +98,13 @@ public:
 		}
 		return nullptr;
 	}
+
+	FShadowMap* GetShadowMap()
+	{
+		return ShadowMap;
+	}
 private: 
+	void Init();
 	
 	std::vector<LCharacter*> Players;
 	std::vector<FSkeletalMesh*> SkmMeshes;
@@ -109,4 +116,6 @@ private:
 	UINT ConstantDirty;
 
 	std::vector<LCamera*> Cameras;
+
+	FShadowMap* ShadowMap;
 };

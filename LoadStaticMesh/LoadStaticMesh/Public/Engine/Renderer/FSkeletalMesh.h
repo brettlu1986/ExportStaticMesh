@@ -86,10 +86,10 @@ public:
 		return CurrentBoneMap;
 	}
 
-	FResourceView* MtConstantBufferView;
+	FResourceView* MatrixConstantBufferView;
 	FResourceView* SkeletalConstantBufferView;
 	//TODO: move to material
-	FResourceView* ShaderResView;
+	FResourceView* DiffuseResView;
 
 private:
 	void UpdateModelMatrix();

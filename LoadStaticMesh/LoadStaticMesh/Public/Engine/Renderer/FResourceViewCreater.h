@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
-
+#include "FDefine.h"
 class FResourceView
 {
 public:
@@ -17,7 +17,7 @@ public:
 
 	virtual void OnCreate(ID3D12Device* Device, UINT HeapType, UINT InDescriptorCount) = 0;
 	virtual void OnDestroy() = 0;
-	virtual bool AllocDescriptor(UINT Count, FResourceView* Rv) = 0;
+	virtual bool AllocDescriptor(UINT Count, FResourceView* Rv, E_RESOURCE_VIEW_TYPE ViewType) = 0;
 };
 
 class FResourceViewCreater

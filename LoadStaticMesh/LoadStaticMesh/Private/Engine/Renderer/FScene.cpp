@@ -5,6 +5,7 @@
 #include "FRHI.h"
 #include "LCamera.h"
 #include "LSceneCamera.h"
+#include "FShadowMap.h"
 
 #include "LThirdPersonCamera.h"
 #include "LPlayerController.h"
@@ -13,13 +14,19 @@ FScene::FScene()
 :MeshCount(0)
 ,MeshWithTextureCount(0)
 ,ConstantDirty(1)
+,ShadowMap(nullptr)
 {
-	
+	Init();
 }
 
 FScene::~FScene()
 {
 	Destroy();
+}
+
+void FScene::Init()
+{
+	ShadowMap = new FShadowMap(SHADOW_WIDTH, SHADOW_HEIGHT);
 }
 
 void FScene::ActiveCamera(UINT CameraIndex)
@@ -88,16 +95,16 @@ void FScene::AddLightToScene(FLight* Light)
 	}
 }
 
-void FScene::InitSceneRenderResource()
-{
-	for(size_t i = 0; i < Meshes.size(); ++i)
-	{
-		Meshes[i]->InitRenderResource();
-		Meshes[i]->SetPsoKey(Meshes[i]->GetDiffuseTexture() != nullptr ? "PsoUseTexture" : "PsoNoTexture");
-	}
-	//TODO:move to Scene Render Init
-	PassContantView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FPassConstants)) });
-}
+//void FScene::InitSceneRenderResource()
+//{
+//	//for(size_t i = 0; i < Meshes.size(); ++i)
+//	//{
+//	//	Meshes[i]->InitRenderResource();
+//	//	Meshes[i]->SetPsoKey(Meshes[i]->GetDiffuseTexture() != nullptr ? "PsoUseTexture" : "PsoNoTexture");
+//	//}
+//	////TODO:move to Scene Render Init
+//	//PassContantView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FPassConstants)) });
+//}
 
 void FScene::Update(float DeltaTime)
 {

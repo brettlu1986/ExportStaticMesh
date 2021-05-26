@@ -58,20 +58,28 @@ private:
 class FD3D12Texture : public FTexture
 {
 public:
-	FD3D12Texture();
+	FD3D12Texture(ID3D12Device* Device);
 	virtual ~FD3D12Texture();
 
 	virtual void Destroy() override;
 	virtual void Initialize() override;
 	virtual void InitializeTexture(const std::string& Name) override;
+	virtual void InitializeTexture(FTextureInitializer Initializer) override;
 
 	void InitGPUTextureView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, UINT CbvSrvUavDescriptorSize, ID3D12DescriptorHeap* CbvSrvHeap, FCbvSrvDesc& Desc);
 
-	void InitGPUTextureView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle);
+	void InitGPUTextureView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, DXGI_FORMAT ViewFormat);
+
+	ID3D12Resource* Resource()
+	{
+		return TextureResource.Get();
+	}
 private:
 
 	ComPtr<ID3D12Resource> TextureResource;
 	ComPtr<ID3D12Resource> TextureResourceUpload;
+
+	ID3D12Device* ParentDevice;
 
 	DDS_HEADER* Header;
 	std::unique_ptr<uint8_t[]> DdsData;

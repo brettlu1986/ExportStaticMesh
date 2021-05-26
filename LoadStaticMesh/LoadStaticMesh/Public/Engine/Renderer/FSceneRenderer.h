@@ -13,5 +13,6 @@ public:
 	void Initialize(FScene* RenderScene);
 	void RenderScene(FScene* RenderScene);
 
-
+private:
+	FResourceView* RenderTargets[RENDER_TARGET_COUNT];
 };

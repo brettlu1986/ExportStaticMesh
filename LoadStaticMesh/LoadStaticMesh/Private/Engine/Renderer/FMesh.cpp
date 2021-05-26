@@ -6,12 +6,15 @@
 #include "LAssetDataLoader.h"
 
 FMesh::FMesh()
-:VertexBuffer(nullptr)
-,IndexBuffer(nullptr)
-,DiffuseTex(nullptr)
-,ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
-, UsePsoKey("")
-, MatrixCbIndex(0)
+	:VertexBuffer(nullptr)
+	, IndexBuffer(nullptr)
+	, DiffuseTex(nullptr)
+	, ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
+	, UsePsoKey("")
+	, MatrixCbIndex(0)
+	, MatrixConstantBufferView(nullptr)
+	, MaterialConstantBufferView(nullptr)
+	, DiffuseResView(nullptr)
 {
 	
 }
@@ -24,7 +27,10 @@ FMesh::FMesh(const std::string& FileName, const std::string& TextureName, const 
 	,IndexBuffer(nullptr)
 	,DiffuseTex(nullptr)
 	,ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
-	, MatrixCbIndex(0)
+	,MatrixCbIndex(0)
+	,MatrixConstantBufferView(nullptr)
+	,MaterialConstantBufferView(nullptr)
+	,DiffuseResView(nullptr)
 {
 	Initialize();
 }
@@ -89,7 +95,15 @@ XMMATRIX FMesh::GetModelMatrix()
 void FMesh::InitRenderResource()
 {
 	//render thread init gpu resource
-	GRHI->RHIInitMeshGPUResource(IndexBuffer, VertexBuffer, DiffuseTex);
+	//GRHI->RHIInitMeshGPUResource(IndexBuffer, VertexBuffer, DiffuseTex);
+
+	GRHI->CreateVertexAndIndexBufferView(IndexBuffer, VertexBuffer);
+	if(DiffuseTex)
+	{
+		DiffuseResView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV, 1, &DiffuseTex, 0, E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
+	}
+	MatrixConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FObjectConstants)), E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
+	MaterialConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FMaterialConstants)),E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
 }
 
 void FMesh::SetModelLocation(XMFLOAT3 Location) 

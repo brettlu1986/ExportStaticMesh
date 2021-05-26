@@ -7,7 +7,7 @@ FSkeletalMesh::FSkeletalMesh()
 :VertexBuffer(nullptr)
 ,IndexBuffer(nullptr)
 ,DiffuseTex(nullptr)
-,ShaderResView(nullptr)
+,DiffuseResView(nullptr)
 ,Skeleton(nullptr)
 {
 	Initialize();
@@ -41,11 +41,11 @@ void FSkeletalMesh::Destroy()
 		DiffuseTex = nullptr;
 	}
 
-	delete ShaderResView;
-	ShaderResView = nullptr;
+	delete DiffuseResView;
+	DiffuseResView = nullptr;
 
-	delete MtConstantBufferView;
-	MtConstantBufferView = nullptr;
+	delete MatrixConstantBufferView;
+	MatrixConstantBufferView = nullptr;
 
 	delete SkeletalConstantBufferView;
 	SkeletalConstantBufferView = nullptr;
@@ -68,9 +68,9 @@ void FSkeletalMesh::SetDiffuseTexture(FTexture* Tex)
 void FSkeletalMesh::InitRenderResource()
 {
 	GRHI->CreateVertexAndIndexBufferView(IndexBuffer, VertexBuffer);
-	ShaderResView = GRHI->CreateResourceView({E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV, 1, &DiffuseTex, 0});
-	MtConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FObjectConstants)) });
-	SkeletalConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FSkeletalConstants)) });
+	DiffuseResView = GRHI->CreateResourceView({E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV, 1, &DiffuseTex, 0, E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
+	MatrixConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FObjectConstants)),E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
+	SkeletalConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FSkeletalConstants)),E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
 }
 
 void FSkeletalMesh::SetModelLocation(XMFLOAT3 Location)

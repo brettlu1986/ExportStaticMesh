@@ -7,6 +7,7 @@
 #include "FRenderResource.h"
 #include "FTexture.h"
 
+class FResourceView;
 class FMesh : public FRenderResource
 {
 public:
@@ -70,6 +71,12 @@ public:
 	}
 
 	void InitMaterial(const std::string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float Roughness);
+
+	//
+	FResourceView* MatrixConstantBufferView;
+	FResourceView* MaterialConstantBufferView;
+	//TODO: move to material
+	FResourceView* DiffuseResView;
 private:
 	void UpdateModelMatrix();
 

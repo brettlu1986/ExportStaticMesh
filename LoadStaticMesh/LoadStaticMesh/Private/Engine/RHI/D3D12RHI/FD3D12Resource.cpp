@@ -100,8 +100,9 @@ void FD3D12VertexBuffer::InitGPUVertexBufferView(ID3D12Device* Device, ID3D12Gra
 
 /////////////////////////
 
-FD3D12Texture::FD3D12Texture()
+FD3D12Texture::FD3D12Texture(ID3D12Device* Device)
 	:FTexture(E_RESOURCE_TYPE::TYPE_TEXTURE)
+	,ParentDevice(Device)
 {
 
 }
@@ -128,6 +129,59 @@ void FD3D12Texture::Initialize()
 
 }
 
+void FD3D12Texture::InitializeTexture(FTextureInitializer Initializer) 
+{
+	D3D12_RESOURCE_DESC texDesc;
+	ZeroMemory(&texDesc, sizeof(D3D12_RESOURCE_DESC));
+	texDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	texDesc.Alignment = 0;
+	texDesc.Width = Initializer.Width;
+	texDesc.Height = Initializer.Height;
+	texDesc.DepthOrArraySize = Initializer.DepthOrArraySize;
+	texDesc.MipLevels = Initializer.MipLevels;
+	texDesc.Format = static_cast<DXGI_FORMAT>(Initializer.Format);
+	texDesc.SampleDesc.Count = 1;
+	texDesc.SampleDesc.Quality = 0;
+	texDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	texDesc.Flags = static_cast<D3D12_RESOURCE_FLAGS>(Initializer.Flags);
+
+	D3D12_CLEAR_VALUE ClearValues;
+	if(Initializer.ClearValue != nullptr)
+	{	
+		if(Initializer.ClearValue->ClearColor != nullptr && Initializer.ClearValue->ClearDepth != nullptr)
+		{
+			assert(!"the d3d clear value is union, only set one, can not set both!");
+		}
+
+		ClearValues.Format = static_cast<DXGI_FORMAT>(Initializer.ClearValue->Format);
+		if(Initializer.ClearValue->ClearColor)
+		{
+			FClearColor* Colors = Initializer.ClearValue->ClearColor;
+			ClearValues.Color[0] = Colors->Color[0];
+			ClearValues.Color[1] = Colors->Color[1];
+			ClearValues.Color[2] = Colors->Color[2];
+			ClearValues.Color[3] = Colors->Color[3];
+		}
+
+		if(Initializer.ClearValue->ClearDepth)
+		{
+			ClearValues.DepthStencil.Depth = Initializer.ClearValue->ClearDepth->Depth;
+			ClearValues.DepthStencil.Stencil = Initializer.ClearValue->ClearDepth->Stencil;
+		}
+	}
+
+	CD3DX12_HEAP_PROPERTIES DefaultPro = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	ThrowIfFailed(ParentDevice->CreateCommittedResource(
+		&DefaultPro,
+		D3D12_HEAP_FLAG_NONE,
+		&texDesc,
+		static_cast<D3D12_RESOURCE_STATES>(Initializer.ResourceState),
+		Initializer.ClearValue == nullptr? nullptr : &ClearValues,
+		IID_PPV_ARGS(&TextureResource)
+	));
+
+}
+
 void FD3D12Texture::InitializeTexture(const std::string& Name)
 {
 	size_t Len = strlen(Name.c_str()) + 1;
@@ -138,6 +192,7 @@ void FD3D12Texture::InitializeTexture(const std::string& Name)
 
 	DirectX::LoadTextureDataFromFile(WStr, DdsData, &Header, &BitData, &BitSize);
 	delete[] WStr;
+
 }
 
 void FD3D12Texture::InitGPUTextureView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, UINT CbvSrvUavDescriptorSize, ID3D12DescriptorHeap* CbvSrvHeap, FCbvSrvDesc& CbvSrvDesc)
@@ -157,18 +212,22 @@ void FD3D12Texture::InitGPUTextureView(ID3D12Device* Device, ID3D12GraphicsComma
 	Device->CreateShaderResourceView(TextureResource.Get(), &srvDesc, CbvSrvHandle);
 }
 
-void FD3D12Texture::InitGPUTextureView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle)
+void FD3D12Texture::InitGPUTextureView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, DXGI_FORMAT ViewFormat)
 {
-	DirectX::CreateTextureFromDDS12(Device, CommandList, Header, BitData, BitSize, 0, false, TextureResource, TextureResourceUpload);
-	NAME_D3D12_OBJECT(TextureResource);
-	NAME_D3D12_OBJECT(TextureResourceUpload);
+	if(BitSize != 0)
+	{
+		DirectX::CreateTextureFromDDS12(Device, CommandList, Header, BitData, BitSize, 0, false, TextureResource, TextureResourceUpload);
+		NAME_D3D12_OBJECT(TextureResource);
+		NAME_D3D12_OBJECT(TextureResourceUpload);
+	}
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.Format = TextureResource->GetDesc().Format;
+	srvDesc.Format = BitSize != 0 ? TextureResource->GetDesc().Format : ViewFormat;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = TextureResource->GetDesc().MipLevels;
 	Device->CreateShaderResourceView(TextureResource.Get(), &srvDesc, CpuHandle);
+	
 }
 
 
@@ -318,6 +377,7 @@ void FD3DShaderMap::BuildDescriptors( CD3DX12_CPU_DESCRIPTOR_HANDLE InCpuSrv, CD
 	SrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 	SrvDesc.Texture2D.PlaneSlice = 0;
 	ParentDevice->CreateShaderResourceView(ShadowMap.Get(), &SrvDesc, CpuSrv);
+
 
 	D3D12_DEPTH_STENCIL_VIEW_DESC DsvDesc;
 	DsvDesc.Flags = D3D12_DSV_FLAG_NONE;

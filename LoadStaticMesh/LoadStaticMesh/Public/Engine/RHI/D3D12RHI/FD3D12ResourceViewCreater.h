@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "FResourceViewCreater.h"
 #include "FDefine.h"
+#include "FD3D12Resource.h"
 
 using namespace Microsoft::WRL;
 
@@ -19,15 +20,39 @@ public:
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCpu(UINT i = 0);
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGpu(UINT i = 0);
 	
-	void SetResourceView(UINT InCount, UINT DesSize, D3D12_CPU_DESCRIPTOR_HANDLE CpuDes, D3D12_GPU_DESCRIPTOR_HANDLE GpuDes);
+	void SetResourceView(UINT InCount, UINT DesSize, D3D12_CPU_DESCRIPTOR_HANDLE CpuDes, D3D12_GPU_DESCRIPTOR_HANDLE GpuDes, E_RESOURCE_VIEW_TYPE ViewType);
+
+	E_RESOURCE_VIEW_TYPE GetViewType()
+	{
+		return Type;
+	}
 protected: 
-	
+	E_RESOURCE_VIEW_TYPE Type;
 	//resource count, may be more than one
 	UINT Count = 0;
 	UINT DescriptorSize = 0;
 
 	D3D12_CPU_DESCRIPTOR_HANDLE CpuDescriptor;
 	D3D12_GPU_DESCRIPTOR_HANDLE GpuDescriptor;
+};
+
+class FD3D12DsvResourceView : public FD3D12ResourceView
+{
+public:
+	FD3D12DsvResourceView(){};
+	virtual ~FD3D12DsvResourceView(){};
+
+	void SetDsvViewInfo(ID3D12Device* Device, FD3D12Texture* Tex, DXGI_FORMAT Format);
+};
+
+class FD3D12RtvResourceView : public FD3D12ResourceView
+{
+public:
+	FD3D12RtvResourceView() {};
+	virtual ~FD3D12RtvResourceView(){};
+
+	void SetRtvViewInfo(ID3D12Device* Device, IDXGISwapChain* SwapChain, DXGI_FORMAT Format, UINT SwapBufferIndex);
+	void SetRtvViewInfo(ID3D12Device* Device, FD3D12Texture* Tex, DXGI_FORMAT Format);
 };
 
 class FD3D12CbvResourceView : public FD3D12ResourceView
@@ -63,7 +88,7 @@ public:
 
 	virtual void OnCreate(ID3D12Device* Device, UINT HeapType, UINT InDescriptorCount) override;
 	virtual void OnDestroy() override;
-	virtual bool AllocDescriptor(UINT Count, FResourceView* Rv) override;
+	virtual bool AllocDescriptor(UINT Count, FResourceView* Rv, E_RESOURCE_VIEW_TYPE ViewType) override;
 
 	ID3D12DescriptorHeap* GetHeap() {  return Heap.Get(); }
 private:

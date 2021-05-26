@@ -11,9 +11,11 @@ public:
 	FTexture(E_RESOURCE_TYPE Type);
 	virtual ~FTexture();
 
+	virtual void InitializeTexture(FTextureInitializer Initializer) = 0;
+
 	virtual void Destroy() override;
 	virtual void Initialize() override;
-	virtual void InitializeTexture(const std::string& Name);
+	virtual void InitializeTexture(const std::string& Name) = 0;
 
 	void SetTextureHeapIndex(UINT Index) { TexHeapIndex = Index; }
 	UINT GetTextureHeapIndex() const { return TexHeapIndex; }
