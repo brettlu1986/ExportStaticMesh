@@ -36,10 +36,6 @@ void LThirdPersonCamera::OnResize()
 	LCamera::OnResize();
 }
 
-void LThirdPersonCamera::SetSocketOffset(XMFLOAT3 Offset)
-{
-	SocketOffset = Offset;
-}
 
 void LThirdPersonCamera::Update(float DeltaTime)
 {
@@ -90,4 +86,5 @@ void LThirdPersonCamera::SetViewTarget(LActor* Target)
 	ViewTarget = Target;
 	UpdateViewTarget(0.f);
 }
+
 

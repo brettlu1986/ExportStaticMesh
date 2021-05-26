@@ -18,6 +18,7 @@ public:
 	virtual void Update(float DeltaTime);
 	
 	virtual XMMATRIX GetViewMarix() = 0;
+	
 	XMMATRIX GetProjectionMatrix(float NearPlane = 1.0f, float FarPlane = 1000.0f);
 
 	const XMFLOAT3& GetCameraLocation()
@@ -51,6 +52,10 @@ public:
 	{
 		CameraDatas = Data;
 	}
+
+	void SetSocketOffset(XMFLOAT3 Offset);
+	virtual void SetViewTarget(LActor* Target) {};
+
 protected:
 	bool bActive;
 	FCameraData CameraDatas;
@@ -65,6 +70,8 @@ protected:
 	XMFLOAT3 UpDirection;
 	float Fov;
 	float AspectRatio;
+
+	XMFLOAT3 SocketOffset;
 
 	E_CAMERA_TYPE CameraType;
 };

@@ -72,3 +72,8 @@ XMMATRIX LCamera::GetProjectionMatrix(float NearPlane /*= 1.0f*/, float FarPlane
 	return XMMatrixPerspectiveFovLH(Fov, AspectRatio, NearPlane, FarPlane);
 }
 
+
+void LCamera::SetSocketOffset(XMFLOAT3 Offset)
+{
+	SocketOffset = Offset;
+}

@@ -17,7 +17,6 @@ public:
 	void AddMeshToScene(FMesh* Mesh);
 	void AddCharacterToScene(LCharacter* Character);
 	void AddLightToScene(FLight* Light);
-	void InitCharacters();
 
 	void InitSceneRenderResource();
 

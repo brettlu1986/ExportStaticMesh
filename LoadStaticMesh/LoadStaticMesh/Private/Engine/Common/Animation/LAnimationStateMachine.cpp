@@ -5,6 +5,7 @@ LAnimationStateMachine::LAnimationStateMachine()
 :CurrentAnimState(nullptr)
 ,Transition(nullptr)
 ,MachineState(E_MACHINE_STATE::STATE_NONE)
+,PendingAnimStateType(E_ANIM_STATE::IDLE)
 {
 
 }

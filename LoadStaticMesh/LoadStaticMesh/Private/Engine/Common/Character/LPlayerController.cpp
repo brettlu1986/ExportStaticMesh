@@ -20,6 +20,7 @@ LPlayerController::~LPlayerController()
 void LPlayerController::Possess(LCharacter* Cha)
 {
 	ControlledCharacter = Cha;
+	ControlledCharacter->SetPlayerController(this);
 }
 
 void LPlayerController::Reset()

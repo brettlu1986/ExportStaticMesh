@@ -9,6 +9,7 @@
 
 #include "LSceneCamera.h"
 #include "LThirdPersonCamera.h"
+#include "LPlayerController.h"
 
 std::vector<LSkeleton*> ResourceSkeletons;
 
@@ -90,10 +91,15 @@ void SampleAssets::LoadSampleScene(FScene* Scene)
 
 	LCamera* ThirdPersonCamera = new LThirdPersonCamera();
 	LAssetDataLoader::LoadCameraDataFromFile(SampleAssets::CameraBin, ThirdPersonCamera);
+	ThirdPersonCamera->SetSocketOffset(XMFLOAT3(-2.f, 0.3f, 2.2f));
 
 	Scene->AddCamera(SceneCamera);
 	Scene->AddCamera(ThirdPersonCamera);
 
-	Scene->InitCharacters();
+	//set the first character is the player
+	LPlayerController* PlayerController = new LPlayerController();
+	PlayerController->Possess(Scene->GetCharacters()[0]);
+	ThirdPersonCamera->SetViewTarget(Scene->GetCharacters()[0]);
+
 	Scene->ActiveCamera(0);
 }

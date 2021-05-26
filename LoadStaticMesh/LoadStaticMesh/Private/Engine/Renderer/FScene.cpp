@@ -79,22 +79,6 @@ void FScene::AddCharacterToScene(LCharacter* Character)
 	SkmMeshes.push_back(Character->GetSkeletalMesh());
 }
 
-void FScene::InitCharacters()
-{
-	if(Players.size() < 3)
-	{
-		assert(!"add more characters");
-	}
-
-	LPlayerController* PlayerController = new LPlayerController();
-	PlayerController->Possess(Players[0]);
-	Players[0]->SetPlayerController(PlayerController);
-
-	LThirdPersonCamera* Ca = dynamic_cast<LThirdPersonCamera*>(GetThirdPersonCamera());
-	Ca->SetSocketOffset(XMFLOAT3(-2.f, 0.3f, 2.2f));
-	Ca->SetViewTarget(Players[0]);
-}
-
 void FScene::AddLightToScene(FLight* Light)
 {
 	SceneLights.push_back(Light);

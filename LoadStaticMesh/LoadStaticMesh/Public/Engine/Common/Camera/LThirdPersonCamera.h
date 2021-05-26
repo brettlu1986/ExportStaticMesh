@@ -19,13 +19,12 @@ public:
 	virtual void Update(float DeltaTime) override;
 
 	virtual XMMATRIX GetViewMarix() override;
-
-	void SetViewTarget(LActor* Target);
-	void SetSocketOffset(XMFLOAT3 Offset);
+	virtual void SetViewTarget(LActor* Target) override;
+	
 
 private:
 	void UpdateViewTarget(float dt);
 
 	LActor* ViewTarget;
-	XMFLOAT3 SocketOffset;
+	
 };
