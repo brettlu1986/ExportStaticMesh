@@ -50,5 +50,6 @@
 #include <map>
 #include <functional>
 #include <stdio.h>
+#include <thread>
 
 using namespace DirectX;

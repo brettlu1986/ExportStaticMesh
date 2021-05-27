@@ -3,7 +3,7 @@
 #include "LEngine.h"
 #include "LDeviceWindows.h"
 #include "FRHI.h"
-#include "FRenderThread.h"
+
 #include "FScene.h"
 
 LEngine* LEngine::Engine = nullptr;
@@ -35,6 +35,8 @@ void LEngine::Init(LEngineDesc Desc)
 	CurrentDevice = new LDeviceWindows(Desc.Width, Desc.Height, Desc.Name.c_str());
 #else 
 #endif
+
+	GameThreadId = std::this_thread::get_id();
 	//only create the module, not call any init rhi api
 	RHICreate();
 

@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "LDefine.h"
 #include "LEvent.h"
+#include "FRenderThread.h"
 
 typedef struct LEngineDesc
 {
@@ -39,9 +40,21 @@ public:
 		return EventDisp;
 	}
 
+	bool IsGameThread()
+	{
+		return std::this_thread::get_id() == GameThreadId;
+	}
+
+	bool IsRenderThread()
+	{
+		return std::this_thread::get_id() == FRenderThread::Get()->GetThreadId();
+	}
+
 private: 
 	static LEngine* Engine;
 	LDevice* CurrentDevice = nullptr;
 	E_DEVICE_PLATFORM CurrentPlatform;
 	EventDispatcher EventDisp;
+
+	std::thread::id GameThreadId;
 };

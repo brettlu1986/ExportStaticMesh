@@ -23,6 +23,7 @@ void FThread::Start()
 
 void FThread::ThreadMain()
 {
+	ThreadId = std::this_thread::get_id();
 	SetName();
 	Run();
 	IsFinished = true;

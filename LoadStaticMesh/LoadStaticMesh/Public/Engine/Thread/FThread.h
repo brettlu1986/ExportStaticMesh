@@ -19,6 +19,10 @@ public:
 	virtual void Run() = 0;
 	void SetName();
 
+	std::thread::id GetThreadId()
+	{
+		return ThreadId;
+	}
 protected:
 
 	string Name;
@@ -27,5 +31,6 @@ protected:
 	mutex Mutex;
 	thread ThisThread;
 	condition_variable CVFinished;
+	std::thread::id ThreadId;
 
 };
