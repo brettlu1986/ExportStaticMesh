@@ -26,56 +26,47 @@ public:
 
 	virtual void BeginRenderScene() override;
 	virtual void UpdateSceneResources(FScene* RenderScene) override;
-	virtual void DrawMesh(FMesh* Mesh, FD3DGraphicPipline* Pso) override;
 	virtual void EndRenderScene() override;
 	
-	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) override;
+	virtual void BeginCreateSceneResource() override;
+	virtual void EndCreateSceneResource() override;
+	
 	virtual FIndexBuffer* RHICreateIndexBuffer() override;
 	virtual FVertexBuffer* RHICreateVertexBuffer() override;
+	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) override;
 	virtual FTexture* RHICreateTexture() override;
-	virtual void RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture) override;
-
-	virtual void BeginCreateSceneResource() override;
-	virtual void CreateSceneResources(FScene* RenderScene) override;
-	virtual void RenderSceneObjects(FScene* Scene) override;
-	virtual void EndCreateSceneResource() override;
-	virtual void DrawSceneToShadowMap(FScene* Scene) override;
-
-	//
-
 	virtual FTexture* CreateTexture(FTextureInitializer TexInitializer) override;
+	
 	virtual void CreateResourceViewCreater(UINT CbvCount, UINT SrvCount, UINT UavCount, UINT DsvCount, UINT RtvCount, UINT SamplerCount) override;
 	virtual void CreateVertexAndIndexBufferView(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) override;
 	virtual FResourceView* CreateResourceView(FResourceViewInfo ViewInfo) override;
 	virtual void CreatePipelineStateObject(FPiplineStateInitializer Initializer) override;
 
 	virtual void SetResourceHeaps(std::vector<FResourceHeap*>& Heaps) override;
+	virtual void SetRenderTargets(FResourceView* RtvView, FResourceView* DsvView) override;
 	virtual void SetVertexAndIndexBuffers(FVertexBuffer* VertexBuffer, FIndexBuffer* IndexBuffer) override;
 	virtual void SetPiplineStateObject(FD3DGraphicPipline* PsoObj) override;
 	virtual void SetResourceParams(UINT Index, FResourceView* ResView) override;
 	virtual void DrawTriangleList(FIndexBuffer* IndexBuffer) override;
+	virtual void ResourceTransition(FResourceView* ResourceView, E_RESOURCE_STATE StateFrom, E_RESOURCE_STATE StateTo) override;
 
 	virtual void BeginEvent(const char* Name) override;
 	virtual void EndEvent() override;
+
 	virtual UINT GetFrameIndex() override { return FrameIndex; };
+	virtual void SetViewPortInfo(FRHIViewPort ViewPort) override;
+	virtual FRHIViewPort GetDefaultViewPort() override { return DefaultViewPort;};
+
 private:
 	void UpdateSceneMtConstants(FScene* RenderScene);
-	void UpdateSceneMatConstants(FScene* RenderScene);
 	void UpdateScenePassConstants(FScene* RenderScene);
 	void UpdateSceneSkeletalConstants(FScene* RenderScene);
 
 	void FindAdapter();
 	void InitWindow(UINT Width, UINT Height, void* Window);
 	void InitializeDevices();
-	void CreateDescriptorHeaps();
-	void CreateDescripterHeap(UINT NumDescripters, D3D12_DESCRIPTOR_HEAP_TYPE Type,
-		D3D12_DESCRIPTOR_HEAP_FLAGS, UINT NodeMask, REFIID riid, _COM_Outptr_  void** ppvHeap);
-
-	void CreateD3DResources();
-	void CreatePipelineStateObject(FRHIPiplineStateInitializer& Initializer);
 	void CreateSampler();
 	void CreateSwapChain();
-	void CreateRenderTargets();
 	void WaitForPreviousFrame();
 
 	FD3D12AdapterDesc CurrentAdapterDesc;
@@ -84,39 +75,20 @@ private:
 	ComPtr<IDXGIFactory4> DxgiFactory;
 	ComPtr<IDXGISwapChain> SwapChain;
 
-	ComPtr<ID3D12DescriptorHeap> RtvHeap;
-	ComPtr<ID3D12DescriptorHeap> DsvHeap;
-	ComPtr<ID3D12DescriptorHeap> CbvSrvHeap;
-	ComPtr<ID3D12DescriptorHeap> SamplerHeap;
 	std::vector<CD3DX12_STATIC_SAMPLER_DESC> StaticSamplers;
 
 	ComPtr<ID3D12CommandQueue> CommandQueue;
 	ComPtr<ID3D12GraphicsCommandList> CommandList;
 	ComPtr<ID3D12CommandAllocator> CommandAllocator;
 
-	CD3DX12_VIEWPORT ViewPort;
-	CD3DX12_RECT ScissorRect;
-	
-
-	UINT RtvDescriptorSize;
-	UINT DsvDescriptorSize;
-	UINT CbvSrvDescriptorSize;
-	ComPtr<ID3D12Resource> RenderTargets[RENDER_TARGET_COUNT];
-	ComPtr<ID3D12Resource> DepthStencilBuffer;
-
 	ComPtr<ID3D12Fence> GpuFence;
 	HANDLE FenceEvent;
 	UINT64 FenceValues;
-
-	FCbvSrvDesc CurrentCbvSrvDesc;
 
 	UINT WndWidth;
 	UINT WndHeight;
 	HWND Window;
 
-	FPassConstants PassConstant;
-
 	UINT FrameIndex;
-	std::map<E_CONSTANT_BUFFER_TYPE, FD3DConstantBuffer*> ConstantBuffers;
-	FD3DShaderMap* ShaderMap;
+	FRHIViewPort DefaultViewPort;
 };

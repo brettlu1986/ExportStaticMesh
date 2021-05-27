@@ -292,23 +292,6 @@ struct FRHIRasterizerState
 	FCullMode CullMode = FCullMode::CULL_MODE_NONE;
 };
 
-//deprecated
-//later will add more param, temp use these for this project
-struct FRHIPiplineStateInitializer
-{
-	std::string KeyName;
-	const FRHIInputElement* pInpueElement;
-	UINT NumElements;
-	BYTE* pVSPointer;
-	SIZE_T VsPointerLength;
-	BYTE* pPsPointer;
-	SIZE_T PsPointerLength;
-	UINT NumRenderTargets;
-	FRtvFormat RtvFormat;
-	FRHIRasterizerState RasterizerStat;
-};
-
-//new 
 struct FPiplineStateInitializer
 {
 	std::string KeyName;
@@ -491,57 +474,6 @@ struct FSkeletalConstants
 {
 	XMFLOAT4X4 BoneMapBoneTransforms[MAX_BONE_TRANS];
 };
-
-struct FBufferObject
-{
-public: 
-	FBufferObject()
-	:Type(E_CONSTANT_BUFFER_TYPE::TYPE_CB_UNKNOWN)
-	, DataSize(0)
-	,BufferData(nullptr)
-	{}
-
-	~FBufferObject()
-	{
-		if(BufferData)
-		{
-			delete BufferData;
-			BufferData = nullptr;
-		}
-	}
-	E_CONSTANT_BUFFER_TYPE Type;
-	UINT DataSize;
-	int8_t* BufferData;
-};
-
-typedef struct FConstantBufferDesc
-{
-	E_CONSTANT_BUFFER_TYPE BufferType;
-	UINT HeapOffsetStart;
-	UINT BufferSize;
-	UINT BufferViewCount;
-}FConstantBufferDesc;
-
-typedef struct FShaderResourceDesc
-{
-	UINT HeapOffsetStart;
-	UINT ShaderResourceCount;
-}FShaderResourceDesc;
-
-typedef struct FShaderMapDesc
-{
-	UINT HeapOffsetStart;
-}FShaderMapDesc;
-
-typedef struct FCbvSrvDesc
-{
-	UINT NeedDesciptorCount;
-	FConstantBufferDesc CbMatrix;
-	FConstantBufferDesc CbMaterial;
-	FConstantBufferDesc CbConstant;
-	FShaderResourceDesc SrvDesc;
-	FShaderMapDesc ShaderMapDesc;
-}FCbvSrvDesc;
 
 const UINT RENDER_TARGET_COUNT = 3;
 const int FRAME_COUNT = 3;

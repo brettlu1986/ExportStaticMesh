@@ -18,11 +18,15 @@
 struct FRHIViewPort
 {
 public:
-	FRHIViewPort(float SizeX, float SizeY)
-		:Width(SizeX)
+	FRHIViewPort(float InLeft, float InTop, float SizeX, float SizeY)
+		:Left(InLeft)
+		,Top(InTop)
+		,Width(SizeX)
 		,Height(SizeY)
 	{
 	}
+	float Left;
+	float Top;
 	float Width;
 	float Height;
 };
@@ -44,28 +48,21 @@ public:
 	virtual ~FDynamicRHI() { }
 
 	virtual void Init() = 0;
-
 	virtual void ShutDown() = 0;
-
-	virtual void UpdateSceneResources(FScene* RenderScene) = 0;
-	virtual void BeginRenderScene() = 0;
-	virtual void EndRenderScene() = 0;
-	virtual void DrawMesh(FMesh* Mesh, FD3DGraphicPipline* Pso) = 0;
 	
-	virtual FIndexBuffer* RHICreateIndexBuffer() = 0;
-	virtual FVertexBuffer* RHICreateVertexBuffer() = 0;
-	virtual FTexture* RHICreateTexture() = 0;
-	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) = 0;
-	virtual void RHIInitMeshGPUResource(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer, FTexture* Texture) = 0;
+	virtual void BeginRenderScene() = 0;
+	virtual void UpdateSceneResources(FScene* RenderScene) = 0;
+	virtual void EndRenderScene() = 0;
 
 	virtual void BeginCreateSceneResource() = 0;
-	virtual void CreateSceneResources(FScene* Scene) = 0;
-	virtual void RenderSceneObjects(FScene* Scene) = 0;
 	virtual void EndCreateSceneResource() = 0;
-	virtual void DrawSceneToShadowMap(FScene* Scene) = 0;
 
-	//
+	virtual FIndexBuffer* RHICreateIndexBuffer() = 0;
+	virtual FVertexBuffer* RHICreateVertexBuffer() = 0;
+	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) = 0;
+	virtual FTexture* RHICreateTexture() = 0;
 	virtual FTexture* CreateTexture(FTextureInitializer TexInitializer) = 0;
+	
 	virtual void CreateResourceViewCreater(UINT CbvCount, UINT SrvCount, UINT UavCount, UINT DsvCount, UINT RtvCount, UINT SamplerCount) = 0;
 	virtual void CreateVertexAndIndexBufferView(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) = 0;
 	//the Texuture**  is the texture array start pointer, it can create and bind more than one texture onece
@@ -73,15 +70,19 @@ public:
 	virtual void CreatePipelineStateObject(FPiplineStateInitializer Initializer) = 0;
 
 	virtual void SetResourceHeaps(std::vector<FResourceHeap*>& Heaps ) = 0;
+	virtual void SetRenderTargets(FResourceView* RtvView, FResourceView* DsvView) = 0;
 	virtual void SetVertexAndIndexBuffers(FVertexBuffer* VertexBuffer, FIndexBuffer* IndexBuffer) = 0;
 	virtual void SetPiplineStateObject(FD3DGraphicPipline* PsoObj) = 0;
 	virtual void SetResourceParams(UINT Index, FResourceView* ResView) = 0;
 	virtual void DrawTriangleList(FIndexBuffer* IndexBuffer) = 0;
+	virtual void ResourceTransition(FResourceView* ResourceView, E_RESOURCE_STATE StateFrom, E_RESOURCE_STATE StateTo) = 0;
 
 	virtual void BeginEvent(const char* Name) = 0;
 	virtual void EndEvent() = 0;
 
 	virtual UINT GetFrameIndex() = 0;
+	virtual void SetViewPortInfo(FRHIViewPort ViewPort) = 0;
+	virtual FRHIViewPort GetDefaultViewPort() = 0;
 public: 
 	FResourceViewCreater* GetResourceViewCreater()
 	{

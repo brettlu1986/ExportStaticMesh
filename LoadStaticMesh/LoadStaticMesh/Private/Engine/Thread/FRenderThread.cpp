@@ -127,6 +127,7 @@ void FRenderThread::Clear()
 void FRenderThread::WaitForRenderThread()
 {
 	unique_lock<mutex> Lock(Mutex);
+	//false will block
 	RenderCV.wait(Lock, [this]() { return FrameTaskNum <= FRAME_COUNT; });
 	++FrameTaskNum;
 }

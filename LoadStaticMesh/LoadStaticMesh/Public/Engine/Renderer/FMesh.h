@@ -47,9 +47,6 @@ public:
 		return Material;
 	}
 
-	void SetDiffuseTextureHeapIndex(UINT Index) ;
-	void SetMaterialCbvHeapIndex(UINT Index);
-
 	const std::string& GetPsoKey()
 	{
 		return UsePsoKey;
@@ -60,15 +57,6 @@ public:
 		UsePsoKey = InKey;
 	}
 
-	const UINT GetBufferIndex()
-	{
-		return MatrixCbIndex;
-	}
-
-	void SetMatrixCbIndex(UINT Index)
-	{
-		MatrixCbIndex = Index;
-	}
 
 	void InitMaterial(const std::string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float Roughness);
 
@@ -90,7 +78,6 @@ private:
 	std::string MeshTextureName;
 	std::string UsePsoKey;
 
-	UINT MatrixCbIndex;
 	FVertexBuffer* VertexBuffer;
 	FIndexBuffer* IndexBuffer;
 

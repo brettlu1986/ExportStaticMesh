@@ -8,14 +8,27 @@ FShadowMap::FShadowMap(UINT InWidth, UINT InHeight)
 ,ShadowResource(nullptr)
 ,ShadowResView(nullptr)
 ,DsvResView(nullptr)
-,ViewPort(FRHIViewPort((float)InWidth, (float)InHeight))
+,ViewPort(FRHIViewPort(0.f, 0.f, (float)InWidth, (float)InHeight))
 {
 	
 }
 
 FShadowMap::~FShadowMap()
 {
+	Destroy();
+}
 
+void FShadowMap::Destroy()
+{
+	ShadowResource->Destroy();
+	delete ShadowResource;
+	ShadowResource = nullptr;
+
+	delete ShadowResView;
+	ShadowResView = nullptr;
+
+	delete DsvResView;
+	DsvResView = nullptr;
 }
 
 void FShadowMap::InitRenderResource()

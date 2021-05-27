@@ -23,6 +23,7 @@ public:
 
 	void OnRenderScene(FScene* Scene);
 	void DestroyRenderScene(FScene* Scene);
+
 	/*void NotifyRenderThreadExcute();
 	void NotifyGameExcute();
 	bool ShouldWaitRender();

@@ -19,20 +19,8 @@ public:
 	void AddCharacterToScene(LCharacter* Character);
 	void AddLightToScene(FLight* Light);
 
-	//void InitSceneRenderResource();
-
 	void Update(float DeltaTime);
 	void Destroy();
-
-	UINT GetMeshCount()
-	{
-		return MeshCount;
-	}
-
-	UINT GetMeshWithTextureNum()
-	{
-		return MeshWithTextureCount;
-	}
 
 	const std::vector<FMesh*>& GetDrawMeshes()
 	{
@@ -111,11 +99,8 @@ private:
 	std::vector<FMesh*> Meshes;
 	std::vector<FLight*> SceneLights;
 
-	UINT MeshCount;
-	UINT MeshWithTextureCount;
 	UINT ConstantDirty;
 
 	std::vector<LCamera*> Cameras;
-
 	FShadowMap* ShadowMap;
 };

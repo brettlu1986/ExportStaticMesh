@@ -16,7 +16,10 @@ public:
 	,ViewResource(nullptr)
 	,Type(E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_NONE)
 	{};
-	virtual ~FD3D12ResourceView() {};
+	virtual ~FD3D12ResourceView() 
+	{
+		
+	};
 	UINT GetCount() { return Count;}
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCpu(UINT i = 0);
@@ -32,6 +35,11 @@ public:
 	ID3D12Resource* Resource()
 	{
 		return ViewResource;
+	}
+
+	void SetViewResource(ID3D12Resource* Res)
+	{
+		ViewResource = Res;
 	}
 protected: 
 	E_RESOURCE_VIEW_TYPE Type;

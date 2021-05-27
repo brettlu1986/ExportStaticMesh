@@ -5,8 +5,8 @@
 Texture2D       g_txDiffuse : register(t0);
 Texture2D gShadowMap : register(t1);
 
-SamplerState    g_sampler : register(s0);
-SamplerComparisonState gsamShadow :register(s1);
+SamplerState    g_sampler : register(s1);
+SamplerComparisonState gsamShadow :register(s0);
 
 struct PSInput
 {

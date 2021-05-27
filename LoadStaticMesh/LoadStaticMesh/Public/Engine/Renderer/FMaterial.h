@@ -16,8 +16,6 @@ public:
 	virtual void Initialize() override;
 
 	void Init(const std::string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float Roughness);
-	void SetMaterialCbvHeapIndex(UINT Index) { MatCbHeapIndex = Index; }
-	UINT GetMaterialCbvHeapIndex() const { return MatCbHeapIndex; }
 
 	const XMFLOAT4& GetDiffuseAlbedo() const
 	{
@@ -40,10 +38,6 @@ public:
 	}
 
 protected:
-
-	//this index is the offset from first mat cbv in heap
-	UINT MatCbHeapIndex;
-
 	XMFLOAT4 DiffuseAlbedo;
 	XMFLOAT3 FresnelR0;
 	float Roughness;

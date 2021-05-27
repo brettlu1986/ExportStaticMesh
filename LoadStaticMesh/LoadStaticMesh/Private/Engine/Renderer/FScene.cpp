@@ -11,9 +11,7 @@
 #include "LPlayerController.h"
 
 FScene::FScene()
-:MeshCount(0)
-,MeshWithTextureCount(0)
-,ConstantDirty(1)
+:ConstantDirty(1)
 ,ShadowMap(nullptr)
 {
 	Init();
@@ -65,19 +63,17 @@ void FScene::Destroy()
 		LCamera* Ca = *it;
 		delete Ca;
 	}
+
+	if(ShadowMap)
+	{
+		delete ShadowMap;
+		ShadowMap = nullptr;
+	}
 }
 
 void FScene::AddMeshToScene(FMesh* Mesh)
 {
-	Mesh->SetMatrixCbIndex(MeshCount);
-	Mesh->SetMaterialCbvHeapIndex(MeshCount);
-	if(Mesh->GetDiffuseTexture())
-	{
-		Mesh->SetDiffuseTextureHeapIndex(MeshWithTextureCount);
-		MeshWithTextureCount ++;
-	}
 	Meshes.push_back(Mesh);
-	MeshCount++;
 }
 
 void FScene::AddCharacterToScene(LCharacter* Character)
@@ -94,17 +90,6 @@ void FScene::AddLightToScene(FLight* Light)
 		Light->Init();
 	}
 }
-
-//void FScene::InitSceneRenderResource()
-//{
-//	//for(size_t i = 0; i < Meshes.size(); ++i)
-//	//{
-//	//	Meshes[i]->InitRenderResource();
-//	//	Meshes[i]->SetPsoKey(Meshes[i]->GetDiffuseTexture() != nullptr ? "PsoUseTexture" : "PsoNoTexture");
-//	//}
-//	////TODO:move to Scene Render Init
-//	//PassContantView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FPassConstants)) });
-//}
 
 void FScene::Update(float DeltaTime)
 {

@@ -15,8 +15,8 @@ struct PSInput
 };
 
 Texture2D gShadowMap : register(t1);
-SamplerState g_sampler : register(s0);
-SamplerComparisonState gsamShadow :register(s1);
+SamplerState g_sampler : register(s1);
+SamplerComparisonState gsamShadow :register(s0);
 
 float ShadowCalculation(float4 shadowPosH)
 {

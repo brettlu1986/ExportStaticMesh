@@ -1,6 +1,6 @@
 
 Texture2D       g_txDiffuse : register(t0);
-SamplerState    g_sampler : register(s2);
+SamplerState    g_sampler : register(s1);
 
 struct PSInput
 {

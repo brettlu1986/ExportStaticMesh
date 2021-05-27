@@ -11,7 +11,6 @@ FMesh::FMesh()
 	, DiffuseTex(nullptr)
 	, ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
 	, UsePsoKey("")
-	, MatrixCbIndex(0)
 	, MatrixConstantBufferView(nullptr)
 	, MaterialConstantBufferView(nullptr)
 	, DiffuseResView(nullptr)
@@ -27,7 +26,6 @@ FMesh::FMesh(const std::string& FileName, const std::string& TextureName, const 
 	,IndexBuffer(nullptr)
 	,DiffuseTex(nullptr)
 	,ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
-	,MatrixCbIndex(0)
 	,MatrixConstantBufferView(nullptr)
 	,MaterialConstantBufferView(nullptr)
 	,DiffuseResView(nullptr)
@@ -70,6 +68,15 @@ void FMesh::Destroy()
 		delete Material;
 		Material = nullptr;
 	}
+
+	delete DiffuseResView;
+	DiffuseResView = nullptr;
+
+	delete MatrixConstantBufferView;
+	MatrixConstantBufferView = nullptr;
+
+	delete MaterialConstantBufferView;
+	MaterialConstantBufferView = nullptr;
 }
 
 void FMesh::Initialize()
@@ -128,16 +135,6 @@ void FMesh::UpdateModelMatrix()
 	ModelMatrix = XMMatrixScaling(ModelScale.x, ModelScale.y, ModelScale.z) *
 		XMMatrixRotationRollPitchYaw(XMConvertToRadians(-ModelRotation.z), XMConvertToRadians(-ModelRotation.x), XMConvertToRadians(ModelRotation.y)) *
 		XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
-}
-
-void FMesh::SetDiffuseTextureHeapIndex(UINT Index)
-{
-	DiffuseTex->SetTextureHeapIndex(Index);
-}
-
-void FMesh::SetMaterialCbvHeapIndex(UINT Index)
-{
-	Material->SetMaterialCbvHeapIndex(Index);
 }
 
 void FMesh::InitMaterial(const std::string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float Roughness)

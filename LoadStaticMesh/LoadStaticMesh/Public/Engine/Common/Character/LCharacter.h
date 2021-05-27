@@ -38,8 +38,6 @@ public:
 		IsLocalControlled = true;
 	}
 
-	//void RegisterAnimationStateEvent();
-
 	bool IsLocalControlledPlayer()
 	{
 		return IsLocalControlled;

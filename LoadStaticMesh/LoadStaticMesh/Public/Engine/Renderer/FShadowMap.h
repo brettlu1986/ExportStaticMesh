@@ -11,11 +11,17 @@ public:
 	FShadowMap(UINT InWidth, UINT InHeight);
 	~FShadowMap();
 
+	void Destroy();
 	void InitRenderResource();
 
 	void SetPsoKey(std::string Key)
 	{
 		PsoKey = Key;
+	}
+
+	std::string& GetPsoKey()
+	{
+		return PsoKey;
 	}
 
 	FRHIViewPort ViewPort;
