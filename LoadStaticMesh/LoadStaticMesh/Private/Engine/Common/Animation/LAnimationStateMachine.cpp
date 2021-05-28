@@ -25,7 +25,7 @@ E_ANIM_STATE LAnimationStateMachine::GetCurrentAnimStateType()
 	return PendingAnimStateType;
 }
 
-void LAnimationStateMachine::OnCreate(std::map<E_ANIM_STATE, LAnimationState*>& Stats, E_ANIM_STATE DefaultState)
+void LAnimationStateMachine::OnCreate(map<E_ANIM_STATE, LAnimationState*>& Stats, E_ANIM_STATE DefaultState)
 {
 	States.insert(Stats.begin(), Stats.end());
 	SetCurrentAnimState(DefaultState);
@@ -70,7 +70,7 @@ void LAnimationStateMachine::Update(float dt)
 	}
 }
 
-std::vector<LAnimBonePose>& LAnimationStateMachine::GetCurrentAnimPoseToParentTrans()
+vector<LAnimBonePose>& LAnimationStateMachine::GetCurrentAnimPoseToParentTrans()
 {
 	if (MachineState == E_MACHINE_STATE::STATE_UPDATE)
 	{

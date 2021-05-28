@@ -16,7 +16,7 @@ public:
 		return bComplete;
 	}
 
-	std::vector<LAnimBonePose>& GetTransitionAnimPoseToParentTrans()
+	vector<LAnimBonePose>& GetTransitionAnimPoseToParentTrans()
 	{
 		return TransitionPoseToParentsTrans;
 	}
@@ -28,5 +28,5 @@ private:
 	float TransitionElapsed;
 	bool bComplete;
 
-	std::vector<LAnimBonePose> TransitionPoseToParentsTrans;
+	vector<LAnimBonePose> TransitionPoseToParentsTrans;
 };

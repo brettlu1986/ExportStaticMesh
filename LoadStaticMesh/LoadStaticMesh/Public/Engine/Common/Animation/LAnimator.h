@@ -21,7 +21,7 @@ public:
 
 	void Update(float dt);
 
-	std::vector<XMFLOAT4X4>& GetBoneMapFinalTransforms()
+	vector<XMFLOAT4X4>& GetBoneMapFinalTransforms()
 	{
 		return BoneMapFinalTransforms;
 	}
@@ -36,12 +36,12 @@ public:
 
 private: 
 	void CreateDefaultStateMachine();
-	std::map<E_ANIM_STATE, LAnimationSequence> AnimSequences;
+	map<E_ANIM_STATE, LAnimationSequence> AnimSequences;
 
 	LCharacter* OwnerCharacter;
 
-	std::vector<XMFLOAT4X4> AllBoneFinalTransforms;
-	std::vector<XMFLOAT4X4> BoneMapFinalTransforms; //use to constant buffer
+	vector<XMFLOAT4X4> AllBoneFinalTransforms;
+	vector<XMFLOAT4X4> BoneMapFinalTransforms; //use to constant buffer
 
 	LAnimationStateMachine* DefaultStateMachine;
 

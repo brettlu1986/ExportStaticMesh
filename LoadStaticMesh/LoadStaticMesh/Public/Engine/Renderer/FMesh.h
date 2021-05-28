@@ -12,7 +12,7 @@ class FMesh : public FRenderResource
 {
 public:
 	FMesh();
-	FMesh(const std::string& FileName, const std::string& TextureName = "", const std::string& PsoKey = "");
+	FMesh(const string& FileName, const string& TextureName = "", const string& PsoKey = "");
 	virtual ~FMesh();
 
 	virtual void Destroy();
@@ -47,18 +47,18 @@ public:
 		return Material;
 	}
 
-	const std::string& GetPsoKey()
+	const string& GetPsoKey()
 	{
 		return UsePsoKey;
 	}
 
-	void SetPsoKey(std::string InKey)
+	void SetPsoKey(string InKey)
 	{
 		UsePsoKey = InKey;
 	}
 
 
-	void InitMaterial(const std::string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float Roughness);
+	void InitMaterial(const string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float Roughness);
 
 	//
 	FResourceView* MatrixConstantBufferView;
@@ -74,9 +74,9 @@ private:
 
 	XMMATRIX ModelMatrix;
 
-	std::string MeshFileName;
-	std::string MeshTextureName;
-	std::string UsePsoKey;
+	string MeshFileName;
+	string MeshTextureName;
+	string UsePsoKey;
 
 	FVertexBuffer* VertexBuffer;
 	FIndexBuffer* IndexBuffer;

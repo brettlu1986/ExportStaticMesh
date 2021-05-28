@@ -182,7 +182,7 @@ void FD3D12Texture::InitializeTexture(FTextureInitializer Initializer)
 
 }
 
-void FD3D12Texture::InitializeTexture(const std::string& Name)
+void FD3D12Texture::InitializeTexture(const string& Name)
 {
 	size_t Len = strlen(Name.c_str()) + 1;
 	size_t Converted = 0;

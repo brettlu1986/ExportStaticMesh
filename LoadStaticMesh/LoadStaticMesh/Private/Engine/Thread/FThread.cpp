@@ -23,7 +23,7 @@ void FThread::Start()
 
 void FThread::ThreadMain()
 {
-	ThreadId = std::this_thread::get_id();
+	ThreadId = this_thread::get_id();
 	SetName();
 	Run();
 	IsFinished = true;
@@ -37,7 +37,7 @@ void FThread::Stop()
 		IsRun = false;
 	}
 
-	std::unique_lock<std::mutex> Lock(Mutex);
+	unique_lock<mutex> Lock(Mutex);
 	CVFinished.wait(Lock, [this](){ return IsFinished == true;});
 }
 

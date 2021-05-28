@@ -32,7 +32,7 @@ void FMaterial::Initialize()
 
 }
 
-void FMaterial::Init(const std::string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float InRoughness)
+void FMaterial::Init(const string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float InRoughness)
 {
 	ResourceName = Name;
 	DiffuseAlbedo = InDiffuseAlbedo;

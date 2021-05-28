@@ -36,7 +36,7 @@ void LEngine::Init(LEngineDesc Desc)
 #else 
 #endif
 
-	GameThreadId = std::this_thread::get_id();
+	GameThreadId = this_thread::get_id();
 	//only create the module, not call any init rhi api
 	RHICreate();
 

@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 
-using namespace DirectX;
 
 struct LBonePose
 {
@@ -20,7 +19,7 @@ struct LAnimBonePose
 
 struct LBoneInfo
 {
-	std::string BoneName;
+	string BoneName;
 	INT32 ParentIndex;
 };
 
@@ -40,7 +39,7 @@ public:
 		return BoneNum;
 	}
 
-	UINT GetBoneIndex(std::string& Name) 
+	UINT GetBoneIndex(string& Name) 
 	{
 		return BoneNameToIndex[Name];
 	}
@@ -55,33 +54,33 @@ public:
 		RefBonePoses.push_back(Pose);
 	}
 
-	void SetNameToIndexValue(std::string Name, INT32 Value)
+	void SetNameToIndexValue(string Name, INT32 Value)
 	{
 		BoneNameToIndex[Name] = Value;
 	}
 
 	void CalculateRefPoseGlobalToLocal();
 
-	const std::vector<XMFLOAT4X4>& GetRefPoseRootToBoneTransform()
+	const vector<XMFLOAT4X4>& GetRefPoseRootToBoneTransform()
 	{
 		return RefRootToBoneTransforms;
 	}
 	 
-	const std::vector<LBoneInfo>& GetBoneInfos()
+	const vector<LBoneInfo>& GetBoneInfos()
 	{
 		return RefBoneInfos;
 	}
 
-	const std::vector<LBonePose>& GetRefBonPoses()
+	const vector<LBonePose>& GetRefBonPoses()
 	{
 		return RefBonePoses;
 	}
 private:
 
 	UINT BoneNum;
-	std::map<std::string, INT32> BoneNameToIndex;
-	std::vector<LBonePose> RefBonePoses; // root -> last child
-	std::vector<LBoneInfo> RefBoneInfos; // root -> last child
+	map<string, INT32> BoneNameToIndex;
+	vector<LBonePose> RefBonePoses; // root -> last child
+	vector<LBoneInfo> RefBoneInfos; // root -> last child
 
-	std::vector<XMFLOAT4X4> RefRootToBoneTransforms;
+	vector<XMFLOAT4X4> RefRootToBoneTransforms;
 };

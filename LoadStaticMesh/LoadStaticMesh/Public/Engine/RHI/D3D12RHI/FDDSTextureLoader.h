@@ -203,7 +203,7 @@ namespace DirectX
 	);
 
 	HRESULT LoadTextureDataFromFile(_In_z_ const wchar_t* fileName,
-		std::unique_ptr<uint8_t[]>& ddsData,
+		unique_ptr<uint8_t[]>& ddsData,
 		DDS_HEADER** header,
 		uint8_t** bitData,
 		size_t* bitSize

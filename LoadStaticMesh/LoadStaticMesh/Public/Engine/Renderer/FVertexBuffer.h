@@ -20,6 +20,6 @@ protected:
 	bool bSKMVertex;
 	UINT VertexCount;
 	UINT VertexDataSize;
-	std::vector<FVertexData> VertexData;
-	std::vector<FSkeletalVertexData> SKMVertexData;
+	vector<FVertexData> VertexData;
+	vector<FSkeletalVertexData> SKMVertexData;
 };

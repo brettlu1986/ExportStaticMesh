@@ -19,17 +19,17 @@
 // referenced by the GPU.
 using Microsoft::WRL::ComPtr;
 
-inline std::string HrToString(HRESULT Hr)
+inline string HrToString(HRESULT Hr)
 {
     char s_str[64] = {};
     sprintf_s(s_str, "HRESULT of 0x%08X", static_cast<UINT>(Hr));
-    return std::string(s_str);
+    return string(s_str);
 }
 
-class HrException : public std::runtime_error
+class HrException : public runtime_error
 {
 public:
-    HrException(HRESULT Hr) : std::runtime_error(HrToString(Hr)), HR(Hr) {}
+    HrException(HRESULT Hr) : runtime_error(HrToString(Hr)), HR(Hr) {}
     HRESULT Error() const { return HR; }
 private:
     const HRESULT HR;
@@ -45,11 +45,11 @@ inline void ThrowIfFailed(HRESULT Hr)
     }
 }
 
-inline std::wstring GetSaveDirectory()
+inline wstring GetSaveDirectory()
 {
 	WCHAR CurPath[512];
 	GetCurrentDirectory(_countof(CurPath), CurPath);
-	std::wstring Path = CurPath;
+	wstring Path = CurPath;
 	return Path + L"\\Save\\";
 }
 
@@ -57,14 +57,14 @@ inline void GetAssetsPath(_Out_writes_(PathSize) WCHAR* Path, UINT PathSize)
 {
     if (Path == nullptr)
     {
-        throw std::exception();
+        throw exception();
     }
 
     DWORD size = GetModuleFileName(nullptr, Path, PathSize);
     if (size == 0 || size == PathSize)
     {
         // Method failed or path was truncated.
-        throw std::exception();
+        throw exception();
     }
 
     WCHAR* LastSlash = wcsrchr(Path, L'\\');
@@ -93,18 +93,18 @@ inline HRESULT ReadDataFromFile(LPCWSTR Filename, byte** Data, UINT* Size)
 #endif
     if (file.Get() == INVALID_HANDLE_VALUE)
     {
-        throw std::exception();
+        throw exception();
     }
 
     FILE_STANDARD_INFO fileInfo = {};
     if (!GetFileInformationByHandleEx(file.Get(), FileStandardInfo, &fileInfo, sizeof(fileInfo)))
     {
-        throw std::exception();
+        throw exception();
     }
 
     if (fileInfo.EndOfFile.HighPart != 0)
     {
-        throw std::exception();
+        throw exception();
     }
 
     *Data = reinterpret_cast<byte*>(malloc(fileInfo.EndOfFile.LowPart));
@@ -112,7 +112,7 @@ inline HRESULT ReadDataFromFile(LPCWSTR Filename, byte** Data, UINT* Size)
 
     if (!ReadFile(file.Get(), *Data, fileInfo.EndOfFile.LowPart, nullptr, nullptr))
     {
-        throw std::exception();
+        throw exception();
     }
 
     return S_OK;
@@ -267,10 +267,10 @@ inline UINT CalculateConstantBufferByteSize(UINT byteSize)
 
 #ifdef D3D_COMPILE_STANDARD_FILE_INCLUDE
 inline Microsoft::WRL::ComPtr<ID3DBlob> CompileShader(
-    const std::wstring& filename,
+    const wstring& filename,
     const D3D_SHADER_MACRO* defines,
-    const std::string& entrypoint,
-    const std::string& target)
+    const string& entrypoint,
+    const string& target)
 {
     UINT compileFlags = 0;
 #if defined(_DEBUG) || defined(DBG)

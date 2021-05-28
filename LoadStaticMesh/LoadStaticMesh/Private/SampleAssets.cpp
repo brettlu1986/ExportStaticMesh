@@ -11,11 +11,11 @@
 #include "LThirdPersonCamera.h"
 #include "LPlayerController.h"
 
-std::vector<LSkeleton*> ResourceSkeletons;
+vector<LSkeleton*> ResourceSkeletons;
 
 void SampleAssets::ReleaseAssets()
 {
-	std::vector<LSkeleton*>::iterator it = ResourceSkeletons.begin();
+	vector<LSkeleton*>::iterator it = ResourceSkeletons.begin();
 	for (; it < ResourceSkeletons.end(); it++)
 	{
 		LSkeleton* Sk = *it;
@@ -73,7 +73,7 @@ void SampleAssets::LoadSampleScene(FScene* Scene)
 	}
 
 	// load scene light
-	std::vector<DirectionLightData> DirectionLights;
+	vector<DirectionLightData> DirectionLights;
 	LAssetDataLoader::LoadDirectionLights(SampleAssets::SceneLightsFile, DirectionLights);
 	for (size_t i = 0; i < DirectionLights.size(); i++)
 	{

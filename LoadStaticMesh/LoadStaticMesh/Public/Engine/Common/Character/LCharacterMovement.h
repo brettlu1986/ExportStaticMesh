@@ -3,7 +3,6 @@
 #include "stdafx.h"
 #include "LCharacter.h"
 
-using namespace DirectX;
 
 class LCharacterMovement
 {

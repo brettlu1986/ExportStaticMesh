@@ -82,6 +82,12 @@
     <Filter Include="Header Files\Engine\Common\Character">
       <UniqueIdentifier>{7494c295-f52d-4374-b995-a1cd7616ae36}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Common\RenderData">
+      <UniqueIdentifier>{67427057-178f-45ce-b9b2-acb82b2ed194}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Common\RenderData">
+      <UniqueIdentifier>{5aa7edf0-3573-4f24-a32a-2d478a7f34dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -224,6 +230,18 @@
     </ClCompile>
     <ClCompile Include="Private\Engine\Renderer\FShadowMap.cpp">
       <Filter>Source Files\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\RenderData\LIndexBuffer.cpp">
+      <Filter>Source Files\Engine\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\RenderData\LMesh.cpp">
+      <Filter>Source Files\Engine\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\RenderData\LResource.cpp">
+      <Filter>Source Files\Engine\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\RenderData\LVertexBuffer.cpp">
+      <Filter>Source Files\Engine\Common\RenderData</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -431,6 +449,18 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\Renderer\FShadowMap.h">
       <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\RenderData\LIndexBuffer.h">
+      <Filter>Header Files\Engine\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\RenderData\LMesh.h">
+      <Filter>Header Files\Engine\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\RenderData\LResource.h">
+      <Filter>Header Files\Engine\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\RenderData\LVertexBuffer.h">
+      <Filter>Header Files\Engine\Common\RenderData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

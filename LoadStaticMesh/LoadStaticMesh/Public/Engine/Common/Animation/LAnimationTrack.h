@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 
-using namespace DirectX;
 
 class LAnimationTrack
 {
@@ -29,7 +28,7 @@ public:
 	}
 
 	//this size is 1 or frame size, 1 means this bone has no change
-	std::vector<XMFLOAT3> ScaleChannelFrames;
-	std::vector<XMFLOAT4> QuatChannelFrames;
-	std::vector<XMFLOAT3> TranslateChannelFrames;
+	vector<XMFLOAT3> ScaleChannelFrames;
+	vector<XMFLOAT4> QuatChannelFrames;
+	vector<XMFLOAT3> TranslateChannelFrames;
 };

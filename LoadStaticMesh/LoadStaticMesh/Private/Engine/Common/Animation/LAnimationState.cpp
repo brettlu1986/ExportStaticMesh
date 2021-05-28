@@ -27,7 +27,7 @@ void LAnimationState::Init(LAnimationStateTransition* PreTransition)
 	//	StateAnim->SetPreTransitionEndSeq(PreTransition->GetTransitionAnimPoseToParentTrans());
 }
 
-std::vector<LAnimBonePose>& LAnimationState::GetCurrentAnimPoseToParentTrans()
+vector<LAnimBonePose>& LAnimationState::GetCurrentAnimPoseToParentTrans()
 {
 	return StateAnim->GetCurrentAnimPoseToParentTrans();
 }

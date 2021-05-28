@@ -4,7 +4,6 @@
 #include <atomic>
 #include <vector>
 
-using namespace std;
 
 template <typename T>
 class RingBuffer

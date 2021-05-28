@@ -22,17 +22,17 @@ public:
 	void Update(float DeltaTime);
 	void Destroy();
 
-	const std::vector<FMesh*>& GetDrawMeshes()
+	const vector<FMesh*>& GetDrawMeshes()
 	{
 		return Meshes;
 	}
 
-	const std::vector<FSkeletalMesh*>& GetDrawSkeletalMeshes() 
+	const vector<FSkeletalMesh*>& GetDrawSkeletalMeshes() 
 	{
 		return SkmMeshes;
 	}
 
-	const std::vector<LCharacter*>& GetCharacters()
+	const vector<LCharacter*>& GetCharacters()
 	{
 		return Players;
 	}
@@ -94,13 +94,13 @@ public:
 private: 
 	void Init();
 	
-	std::vector<LCharacter*> Players;
-	std::vector<FSkeletalMesh*> SkmMeshes;
-	std::vector<FMesh*> Meshes;
-	std::vector<FLight*> SceneLights;
+	vector<LCharacter*> Players;
+	vector<FSkeletalMesh*> SkmMeshes;
+	vector<FMesh*> Meshes;
+	vector<FLight*> SceneLights;
 
 	UINT ConstantDirty;
 
-	std::vector<LCamera*> Cameras;
+	vector<LCamera*> Cameras;
 	FShadowMap* ShadowMap;
 };

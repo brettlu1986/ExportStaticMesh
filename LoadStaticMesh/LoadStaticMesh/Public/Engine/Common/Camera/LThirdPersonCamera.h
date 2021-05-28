@@ -6,7 +6,6 @@
 #include "LActor.h"
 #include "LCamera.h"
 
-using namespace DirectX;
 
 class LThirdPersonCamera : public LCamera
 {

@@ -47,26 +47,26 @@ public:
 	float GetStartTime() { return StartTime;}
 	float GetEndTime() { return EndTime; }
 
-	std::vector<LAnimBonePose>& GetCurrentAnimPoseToParentTrans()
+	vector<LAnimBonePose>& GetCurrentAnimPoseToParentTrans()
 	{
 		return CurrentPoseToParentsTrans;
 	}
 
-	std::vector<float>& GetFrameTimes()
+	vector<float>& GetFrameTimes()
 	{
 		return FrameTimes;
 	}
 
-	std::vector<LAnimationTrack>& GetSequenceTracks()
+	vector<LAnimationTrack>& GetSequenceTracks()
 	{
 		return SequenceTracks;
 	}
 
-	//void SetPreTransitionEndSeq(std::vector<LAnimBonePose>& TransitionAnimPoseToParent)
+	//void SetPreTransitionEndSeq(vector<LAnimBonePose>& TransitionAnimPoseToParent)
 	//{
 	//	PreTransitionEndSeq.clear();
 	//	PreTransitionEndSeq.resize(TransitionAnimPoseToParent.size());
-	//	std::copy(TransitionAnimPoseToParent.begin(), TransitionAnimPoseToParent.end(), PreTransitionEndSeq.begin());
+	//	copy(TransitionAnimPoseToParent.begin(), TransitionAnimPoseToParent.end(), PreTransitionEndSeq.begin());
 	//	bLerpTransitionEnd = true;
 	//}
 private:
@@ -79,11 +79,11 @@ private:
 	
 	UINT SequenceFrameCount;
 	//size according to current bone count
-	std::vector<LAnimationTrack> SequenceTracks;
-	std::vector<float> FrameTimes;
+	vector<LAnimationTrack> SequenceTracks;
+	vector<float> FrameTimes;
 
-	std::vector<LAnimBonePose> CurrentPoseToParentsTrans;
+	vector<LAnimBonePose> CurrentPoseToParentsTrans;
 
 	//bool bLerpTransitionEnd;
-	//std::vector<LAnimBonePose> PreTransitionEndSeq;
+	//vector<LAnimBonePose> PreTransitionEndSeq;
 };

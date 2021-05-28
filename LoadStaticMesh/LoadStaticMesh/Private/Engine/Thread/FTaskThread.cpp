@@ -17,7 +17,7 @@ void FThreadTask::DoTask()
 }
 
 
-FTaskThread::FTaskThread(const std::string& InName)
+FTaskThread::FTaskThread(const string& InName)
 :FThread(InName)
 {
 

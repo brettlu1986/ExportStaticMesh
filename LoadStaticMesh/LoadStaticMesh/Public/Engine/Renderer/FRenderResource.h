@@ -15,5 +15,5 @@ public:
 
 protected:
 	E_RESOURCE_TYPE ResourceType;
-	std::string ResourceName;
+	string ResourceName;
 };

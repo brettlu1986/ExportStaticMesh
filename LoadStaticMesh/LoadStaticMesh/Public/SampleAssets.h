@@ -9,9 +9,9 @@ namespace SampleAssets
 {
 	const UINT SamepleCount = 10;
 
-	const std::string CameraBin = "CameraActor.bin";
+	const string CameraBin = "CameraActor.bin";
 
-	const std::string SampleResources[] = 
+	const string SampleResources[] = 
 	{
 		"BP_Chair.bin",
 		"Linear_Stair_StaticMesh.bin",
@@ -25,18 +25,18 @@ namespace SampleAssets
 		"Wall9.bin",
 	};
 
-	const std::string SampleResourceTexture[] = 
+	const string SampleResourceTexture[] = 
 	{
 		"Resource/T_Chair_M.dds",
 		"","","","","","","","",""
 	};
 
-	const std::string PsoUseTexture = "PsoUseTexture";
-	const std::string PsoNoTexture = "PsoNoTexture";
+	const string PsoUseTexture = "PsoUseTexture";
+	const string PsoNoTexture = "PsoNoTexture";
 
 	struct SampleMaterial 
 	{
-		std::string Name;
+		string Name;
 		XMFLOAT4 DiffuseAlbedo;
 		XMFLOAT3 FresnelR0;
 		float Roughness;
@@ -56,19 +56,19 @@ namespace SampleAssets
 		{ "Wall9", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.2f, 0.2f, 0.2f), 0.2f},
 	};
 
-	const std::string SceneLightsFile = "SceneLights.bin";
+	const string SceneLightsFile = "SceneLights.bin";
 
 	const UINT SampleSkeletalMeshCount = 3;
-	const std::string SkeletalMeshResource[] =
+	const string SkeletalMeshResource[] =
 	{
 		"ThirdPersonCharacter_SKM.bin",
 		"ThirdPersonCharacter2_SKM.bin",
 		"ThirdPersonCharacter3_SKM.bin",
 	};
-	const std::string SkeletonResource = "ThirdPersonCharacter_SK.bin";
-	const std::string SkeletonTexture = "Resource/T_Male_Mask.dds";
+	const string SkeletonResource = "ThirdPersonCharacter_SK.bin";
+	const string SkeletonTexture = "Resource/T_Male_Mask.dds";
 	
-	const std::string SkeletalAnim[] = 
+	const string SkeletalAnim[] = 
 	{	
 		"ThirdPersonCharacter_ThirdPersonIdle.bin",
 		"ThirdPersonCharacter_ThirdPersonWalk.bin",

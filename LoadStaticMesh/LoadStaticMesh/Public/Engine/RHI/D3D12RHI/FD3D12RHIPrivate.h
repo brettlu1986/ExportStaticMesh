@@ -42,7 +42,7 @@ public:
 	virtual FResourceView* CreateResourceView(FResourceViewInfo ViewInfo) override;
 	virtual void CreatePipelineStateObject(FPiplineStateInitializer Initializer) override;
 
-	virtual void SetResourceHeaps(std::vector<FResourceHeap*>& Heaps) override;
+	virtual void SetResourceHeaps(vector<FResourceHeap*>& Heaps) override;
 	virtual void SetRenderTargets(FResourceView* RtvView, FResourceView* DsvView) override;
 	virtual void SetVertexAndIndexBuffers(FVertexBuffer* VertexBuffer, FIndexBuffer* IndexBuffer) override;
 	virtual void SetPiplineStateObject(FD3DGraphicPipline* PsoObj) override;
@@ -75,7 +75,7 @@ private:
 	ComPtr<IDXGIFactory4> DxgiFactory;
 	ComPtr<IDXGISwapChain> SwapChain;
 
-	std::vector<CD3DX12_STATIC_SAMPLER_DESC> StaticSamplers;
+	vector<CD3DX12_STATIC_SAMPLER_DESC> StaticSamplers;
 
 	ComPtr<ID3D12CommandQueue> CommandQueue;
 	ComPtr<ID3D12GraphicsCommandList> CommandList;

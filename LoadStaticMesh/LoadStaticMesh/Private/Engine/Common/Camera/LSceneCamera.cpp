@@ -10,8 +10,6 @@
 #include "FRenderThread.h"
 #include "LLog.h"
 
-using namespace DirectX;
-using namespace std;
 
 static const float MAX_PITCH = XMConvertToRadians(89.99f);
 static const float MIN_PITCH = XMConvertToRadians(-89.99f);

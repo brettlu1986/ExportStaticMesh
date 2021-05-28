@@ -19,7 +19,7 @@ private:
 class FTaskThread : public FThread
 {
 public:
-	FTaskThread(const std::string& InName);
+	FTaskThread(const string& InName);
 
 	virtual void Run() override;
 	virtual void AddTask(TaskFunc&& TaskF);

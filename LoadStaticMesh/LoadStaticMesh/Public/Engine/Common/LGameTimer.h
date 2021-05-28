@@ -12,7 +12,7 @@ public:
 	void SetTimeScale(float Time = 1.0f);
 	float GetTimeScale();
 
-	std::chrono::duration<float> GetChronoDeltaTime()
+	chrono::duration<float> GetChronoDeltaTime()
 	{
 		return DeltaTime;
 	}
@@ -26,8 +26,8 @@ private:
 
 	static LGameTimer* TimerInstance;
 
-	std::chrono::system_clock::time_point StartTime;
-	std::chrono::duration<float> DeltaTime;
+	chrono::system_clock::time_point StartTime;
+	chrono::duration<float> DeltaTime;
 	float TimeScale;
 
 };

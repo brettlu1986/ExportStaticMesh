@@ -30,7 +30,7 @@ void FTexture::Initialize()
 {
 }
 
-void FTexture::InitializeTexture(const std::string& Name)
+void FTexture::InitializeTexture(const string& Name)
 {
 
 

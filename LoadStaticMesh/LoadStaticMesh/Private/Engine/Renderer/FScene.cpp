@@ -57,7 +57,7 @@ void FScene::Destroy()
 	}
 	Players.clear();
 
-	std::vector<LCamera*>::iterator it = Cameras.begin();
+	vector<LCamera*>::iterator it = Cameras.begin();
 	for(; it < Cameras.end(); it++)
 	{
 		LCamera* Ca = *it;

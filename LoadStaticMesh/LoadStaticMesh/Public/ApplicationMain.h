@@ -11,7 +11,7 @@ public:
 	ApplicationMain();
 	~ApplicationMain();
 
-	bool Initialize(UINT Width, UINT Height, std::string WndName);
+	bool Initialize(UINT Width, UINT Height, string WndName);
 	void Run();
 
 	void Update(float DeltaTime);

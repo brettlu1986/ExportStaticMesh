@@ -15,7 +15,7 @@ public:
 
 	virtual void Destroy() override;
 	virtual void Initialize() override;
-	virtual void InitializeTexture(const std::string& Name) = 0;
+	virtual void InitializeTexture(const string& Name) = 0;
 
 	const XMFLOAT4X4& GetTextureTransform() const 
 	{
@@ -24,6 +24,6 @@ public:
 protected:
 	uint8_t* BitData;
 	size_t BitSize;
-	std::string TextureName;
+	string TextureName;
 	XMFLOAT4X4 TexTransform;
 };

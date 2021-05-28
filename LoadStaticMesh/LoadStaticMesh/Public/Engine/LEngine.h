@@ -9,7 +9,7 @@ typedef struct LEngineDesc
 {
 	UINT  Width;
 	UINT  Height;
-	std::string Name;
+	string Name;
 }LEngineDesc;
 
 class LDevice;
@@ -42,12 +42,12 @@ public:
 
 	bool IsGameThread()
 	{
-		return std::this_thread::get_id() == GameThreadId;
+		return this_thread::get_id() == GameThreadId;
 	}
 
 	bool IsRenderThread()
 	{
-		return std::this_thread::get_id() == FRenderThread::Get()->GetThreadId();
+		return this_thread::get_id() == FRenderThread::Get()->GetThreadId();
 	}
 
 private: 
@@ -56,5 +56,5 @@ private:
 	E_DEVICE_PLATFORM CurrentPlatform;
 	EventDispatcher EventDisp;
 
-	std::thread::id GameThreadId;
+	thread::id GameThreadId;
 };

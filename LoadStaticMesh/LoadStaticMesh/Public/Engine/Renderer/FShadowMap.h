@@ -14,12 +14,12 @@ public:
 	void Destroy();
 	void InitRenderResource();
 
-	void SetPsoKey(std::string Key)
+	void SetPsoKey(string Key)
 	{
 		PsoKey = Key;
 	}
 
-	std::string& GetPsoKey()
+	string& GetPsoKey()
 	{
 		return PsoKey;
 	}
@@ -32,5 +32,5 @@ public:
 private: 
 	UINT Width;
 	UINT Height;
-	std::string PsoKey;
+	string PsoKey;
 };

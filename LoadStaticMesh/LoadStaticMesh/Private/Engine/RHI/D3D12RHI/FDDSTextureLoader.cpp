@@ -29,7 +29,6 @@ using namespace Microsoft::WRL;
 #pragma comment(lib,"dxguid.lib")
 #endif
 
-using namespace DirectX;
 
 //--------------------------------------------------------------------------------------
 // Macros
@@ -98,7 +97,7 @@ namespace
 
     struct handle_closer { void operator()(HANDLE h) { if (h) CloseHandle(h); } };
 
-    typedef public std::unique_ptr<void, handle_closer> ScopedHandle;
+    typedef public unique_ptr<void, handle_closer> ScopedHandle;
 
     inline HANDLE safe_handle(HANDLE h) { return (h == INVALID_HANDLE_VALUE) ? 0 : h; }
 
@@ -117,7 +116,7 @@ namespace
 
 //--------------------------------------------------------------------------------------
 HRESULT DirectX::LoadTextureDataFromFile(_In_z_ const wchar_t* fileName,
-    std::unique_ptr<uint8_t[]>& ddsData,
+    unique_ptr<uint8_t[]>& ddsData,
     DDS_HEADER** header,
     uint8_t** bitData,
     size_t* bitSize
@@ -177,7 +176,7 @@ HRESULT DirectX::LoadTextureDataFromFile(_In_z_ const wchar_t* fileName,
     }
 
     // create enough space for the file data
-    ddsData.reset(new (std::nothrow) uint8_t[FileSize.LowPart]);
+    ddsData.reset(new (nothrow) uint8_t[FileSize.LowPart]);
     if (!ddsData)
     {
         return E_OUTOFMEMORY;
@@ -471,12 +470,12 @@ static void GetSurfaceInfo(_In_ size_t width,
         size_t numBlocksWide = 0;
         if (width > 0)
         {
-            numBlocksWide = std::max<size_t>(1, (width + 3) / 4);
+            numBlocksWide = max<size_t>(1, (width + 3) / 4);
         }
         size_t numBlocksHigh = 0;
         if (height > 0)
         {
-            numBlocksHigh = std::max<size_t>(1, (height + 3) / 4);
+            numBlocksHigh = max<size_t>(1, (height + 3) / 4);
         }
         rowBytes = numBlocksWide * bpe;
         numRows = numBlocksHigh;
@@ -1580,7 +1579,7 @@ static HRESULT CreateTextureFromDDS(_In_ ID3D11Device* d3dDevice,
     else
     {
         // Create the texture
-        std::unique_ptr<D3D11_SUBRESOURCE_DATA[]> initData(new (std::nothrow) D3D11_SUBRESOURCE_DATA[mipCount * arraySize]);
+        unique_ptr<D3D11_SUBRESOURCE_DATA[]> initData(new (nothrow) D3D11_SUBRESOURCE_DATA[mipCount * arraySize]);
         if (!initData)
         {
             return E_OUTOFMEMORY;
@@ -1813,8 +1812,8 @@ HRESULT DirectX::CreateTextureFromDDS12(
     }
 
     // Create the texture
-    std::unique_ptr<D3D12_SUBRESOURCE_DATA[]> initData(
-        new (std::nothrow) D3D12_SUBRESOURCE_DATA[mipCount * arraySize]
+    unique_ptr<D3D12_SUBRESOURCE_DATA[]> initData(
+        new (nothrow) D3D12_SUBRESOURCE_DATA[mipCount * arraySize]
     );
 
     if (!initData)
@@ -2141,7 +2140,7 @@ HRESULT DirectX::CreateDDSTextureFromFile12(_In_ ID3D12Device* device,
     uint8_t* bitData = nullptr;
     size_t bitSize = 0;
 
-    std::unique_ptr<uint8_t[]> ddsData;
+    unique_ptr<uint8_t[]> ddsData;
     HRESULT hr = LoadTextureDataFromFile(szFileName, ddsData, &header, &bitData, &bitSize);
     if (FAILED(hr))
     {
@@ -2273,7 +2272,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(ID3D11Device* d3dDevice,
     uint8_t* bitData = nullptr;
     size_t bitSize = 0;
 
-    std::unique_ptr<uint8_t[]> ddsData;
+    unique_ptr<uint8_t[]> ddsData;
     HRESULT hr = LoadTextureDataFromFile(fileName,
         ddsData,
         &header,

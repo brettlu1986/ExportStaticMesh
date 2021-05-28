@@ -18,7 +18,7 @@ FMesh::FMesh()
 	
 }
 
-FMesh::FMesh(const std::string& FileName, const std::string& TextureName, const std::string& InUsePsoKey)
+FMesh::FMesh(const string& FileName, const string& TextureName, const string& InUsePsoKey)
 	:MeshFileName(FileName)
 	,MeshTextureName(TextureName)
 	,UsePsoKey(InUsePsoKey)
@@ -137,7 +137,7 @@ void FMesh::UpdateModelMatrix()
 		XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
 }
 
-void FMesh::InitMaterial(const std::string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float Roughness)
+void FMesh::InitMaterial(const string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float Roughness)
 {
 	Material->Init(Name, InDiffuseAlbedo, InFresnelR0, Roughness);
 }

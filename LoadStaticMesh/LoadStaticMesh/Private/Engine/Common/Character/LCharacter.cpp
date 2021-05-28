@@ -6,8 +6,6 @@
 #include "LEngine.h"
 #include "LLog.h"
 
-using namespace std;
-
 LCharacter::LCharacter()
 :SkeletalMesh(nullptr)
 ,AnimatorIns(nullptr)

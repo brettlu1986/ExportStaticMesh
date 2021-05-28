@@ -261,7 +261,7 @@ typedef enum class ERHI_INPUT_CLASSIFICATION
 
 struct FRHIInputElement
 {
-	std::string SemanticName;
+	string SemanticName;
 	UINT SemanticIndex;
 	ERHI_DATA_FORMAT Format;
 	UINT InputSlot;
@@ -294,7 +294,7 @@ struct FRHIRasterizerState
 
 struct FPiplineStateInitializer
 {
-	std::string KeyName;
+	string KeyName;
 	const FRHIInputElement* pInputElement;
 	UINT NumElements;
 	LPCWSTR VsResource;

@@ -14,7 +14,6 @@
 #include "pix.h"
 
 using namespace Microsoft::WRL;
-using namespace DirectX;
 
 static const FRHIColor ClearColor = { 0.690196097f, 0.768627524f, 0.870588303f, 1.000000000f };
 
@@ -100,7 +99,7 @@ void FD3D12DynamicRHI::UpdateSceneResources(FScene* RenderScene)
 
 void FD3D12DynamicRHI::EndRenderScene()
 {
-	std::vector<ID3D12CommandList*> CmdLists;
+	vector<ID3D12CommandList*> CmdLists;
 	CommandList->Close();
 	CmdLists.push_back(CommandList.Get());
 	CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
@@ -116,7 +115,7 @@ void FD3D12DynamicRHI::BeginCreateSceneResource()
 
 void FD3D12DynamicRHI::EndCreateSceneResource()
 {
-	std::vector<ID3D12CommandList*> CmdLists;
+	vector<ID3D12CommandList*> CmdLists;
 	CommandList->Close();
 	CmdLists.push_back(CommandList.Get());
 	CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
@@ -277,7 +276,7 @@ void FD3D12DynamicRHI::CreatePipelineStateObject(FPiplineStateInitializer Initia
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC PsoDesc = {};
 	ZeroMemory(&PsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
 
-	std::vector<D3D12_INPUT_ELEMENT_DESC> InputElementDescs;
+	vector<D3D12_INPUT_ELEMENT_DESC> InputElementDescs;
 	auto ConvertRHIFormatToD3DFormat = [](ERHI_DATA_FORMAT InFormat) -> DXGI_FORMAT
 	{
 		switch (InFormat)
@@ -341,9 +340,9 @@ void FD3D12DynamicRHI::CreatePipelineStateObject(FPiplineStateInitializer Initia
 	delete Ps;
 }
 
-void FD3D12DynamicRHI::SetResourceHeaps(std::vector<FResourceHeap*>& Heaps)
+void FD3D12DynamicRHI::SetResourceHeaps(vector<FResourceHeap*>& Heaps)
 {
-	std::vector <ID3D12DescriptorHeap*> _Heaps;
+	vector <ID3D12DescriptorHeap*> _Heaps;
 	for (size_t i = 0; i < Heaps.size(); i++)
 	{
 		FD3D12ResourceViewHeap* Heap = dynamic_cast<FD3D12ResourceViewHeap*>(Heaps[i]);
@@ -442,7 +441,7 @@ void FD3D12DynamicRHI::SetViewPortInfo(FRHIViewPort ViewPort)
 
 void FD3D12DynamicRHI::UpdateSceneMtConstants(FScene* RenderScene)
 {
-	const std::vector<FMesh*>& Meshes = RenderScene->GetDrawMeshes();
+	const vector<FMesh*>& Meshes = RenderScene->GetDrawMeshes();
 	for (size_t i = 0; i < Meshes.size(); i++)
 	{
 		FObjectConstants ObjConstants;
@@ -517,8 +516,8 @@ void FD3D12DynamicRHI::UpdateSceneSkeletalConstants(FScene* RenderScene)
 		//bone map matrix pallete
 		LAnimator* Animator = Character->GetAnimator();
 		FSkeletalConstants SkeCon;
-		std::copy(std::begin(Animator->GetBoneMapFinalTransforms()),
-			std::end(Animator->GetBoneMapFinalTransforms()), &SkeCon.BoneMapBoneTransforms[0]);
+		copy(begin(Animator->GetBoneMapFinalTransforms()),
+			end(Animator->GetBoneMapFinalTransforms()), &SkeCon.BoneMapBoneTransforms[0]);
 		FD3D12CbvResourceView* CbvResView2 = dynamic_cast<FD3D12CbvResourceView*>(Mesh->SkeletalConstantBufferView);
 		CbvResView2->UpdateConstantBufferInfo(&SkeCon);
 

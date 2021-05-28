@@ -5,7 +5,6 @@
 #include "LDefine.h"
 #include "LActor.h"
 
-using namespace DirectX;
 
 class LCamera
 {

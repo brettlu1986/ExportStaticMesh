@@ -22,7 +22,7 @@ LGameTimer::LGameTimer()
 {
 	Reset();
 	TimeScale = 1.0f;
-	DeltaTime = std::chrono::duration<float>(0.f);
+	DeltaTime = chrono::duration<float>(0.f);
 }
 
 LGameTimer::~LGameTimer()
@@ -32,7 +32,7 @@ LGameTimer::~LGameTimer()
 
 void LGameTimer::Reset()
 {
-	StartTime = std::chrono::system_clock::now();
+	StartTime = chrono::system_clock::now();
 }
 
 float LGameTimer::GetDeltaTime()
@@ -52,22 +52,22 @@ float LGameTimer::GetTimeScale()
 
 void LGameTimer::Tick()
 {
-	DeltaTime = std::chrono::system_clock::now() - StartTime;
+	DeltaTime = chrono::system_clock::now() - StartTime;
 
 	float value = DeltaTime.count();
 }
 
 // control limit frame rate, see the url below
 // https://stackoverflow.com/questions/46258641/using-stdchrono-library-to-adjust-the-application-fps-but-getting-weird-behavi
-//#include <chrono> /// to use std::chrono namespace
+//#include <chrono> /// to use chrono namespace
 //#include <iostream> /// for console output
-//#include <thread> /// for std::this_thread::sleep_for()
+//#include <thread> /// for this_thread::sleep_for()
 //#include <windows.h>
 //#define TARGET_FPS 500 /// our target fps as a macro
 //const float target_fps = (float)TARGET_FPS; /// our target fps
 //float tmp_target_fps = target_fps;  /// used to adjust the target fps depending on the actual real fps to reach the real target fps
-//using frame_len_type = std::chrono::duration<float, std::ratio<1, TARGET_FPS>>; /// this is the     duration that defines the length of a frame
-//using fsecond = std::chrono::duration<float>; /// this duration    represents once second and uses 'float' type as internal representation
+//using frame_len_type = chrono::duration<float, ratio<1, TARGET_FPS>>; /// this is the     duration that defines the length of a frame
+//using fsecond = chrono::duration<float>; /// this duration    represents once second and uses 'float' type as internal representation
 //fsecond target_frame_len(1.0f / tmp_target_fps); /// we will define this    constant here , to represent on frame duration ( defined to avoid    construction inside a loop )
 //bool enable_fps_oscillation = true;
 //void app_logic()
@@ -103,7 +103,7 @@ void LGameTimer::Tick()
 //{
 //	HeighResolutionClockKeeper MyHeighResolutionClockKeeper;
 //	MyHeighResolutionClockKeeper.QueryHeighResolutionClock();
-//	using sys_clock = std::chrono::system_clock; /// simplify the type    name to make the code readable
+//	using sys_clock = chrono::system_clock; /// simplify the type    name to make the code readable
 //	sys_clock::time_point frame_begin, frame_end; /// we will use these time points to point to frame begin and end
 //	sys_clock::time_point start_point = sys_clock::now();
 //	float accum_fps = 0.0f;
@@ -113,7 +113,7 @@ void LGameTimer::Tick()
 //		frame_begin = sys_clock::now(); /// there we go !
 //		app_logic(); /// lets be logical here :)
 //		frame_end = sys_clock::now(); /// we are done so quick !
-//		std::this_thread::sleep_for(target_frame_len - (frame_end.time_since_epoch() - frame_begin.time_since_epoch())); /// we will take a rest that is equal to what we where supposed to take to finish the actual target frame length
+//		this_thread::sleep_for(target_frame_len - (frame_end.time_since_epoch() - frame_begin.time_since_epoch())); /// we will take a rest that is equal to what we where supposed to take to finish the actual target frame length
 //		float fps = fsecond(1) / (sys_clock::now() - frame_begin); /// this will show ass the current FPS
 //
 ///// obviously we will not be able to hit the exact FPS  we want se we need to oscillate around until we
@@ -133,13 +133,13 @@ void LGameTimer::Tick()
 //			if ((sys_clock::now() - start_point) > fsecond(1.0f)) /// show average each 1 sec
 //			{
 //				start_point = sys_clock::now();
-//				std::cout << accum_fps / frames_count << std::endl; /// it is getting more close each time to our target FPS
+//				cout << accum_fps / frames_count << endl; /// it is getting more close each time to our target FPS
 //			}
 //		}
 //		else
 //		{
 //			/// each frame
-//			std::cout << fps << std::endl;
+//			cout << fps << endl;
 //		}
 //	}
 //	MyHeighResolutionClockKeeper.FreeHeighResolutionClock();

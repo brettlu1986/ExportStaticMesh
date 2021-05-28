@@ -9,20 +9,19 @@
 #include "LSceneCamera.h"
 #include "LThirdPersonCamera.h"
 
-using namespace std;
 
 inline void GetAssetsPath(_Out_writes_(PathSize) WCHAR* Path, UINT PathSize)
 {
 	if (Path == nullptr)
 	{
-		throw std::exception();
+		throw exception();
 	}
 
 	DWORD size = GetModuleFileName(nullptr, Path, PathSize);
 	if (size == 0 || size == PathSize)
 	{
 		// Method failed or path was truncated.
-		throw std::exception();
+		throw exception();
 	}
 
 	WCHAR* LastSlash = wcsrchr(Path, L'\\');
@@ -32,29 +31,29 @@ inline void GetAssetsPath(_Out_writes_(PathSize) WCHAR* Path, UINT PathSize)
 	}
 }
 
-inline std::string GetSaveDirectory()
+inline string GetSaveDirectory()
 {
 	char CurPath[512];
 	GetCurrentDirectoryA(_countof(CurPath), CurPath);
-	std::string Path = CurPath;
+	string Path = CurPath;
 	return Path + "\\Save\\";
 }
 
-std::wstring LAssetDataLoader::GetAssetFullPath(LPCWSTR AssetName)
+wstring LAssetDataLoader::GetAssetFullPath(LPCWSTR AssetName)
 {
-	std::wstring AssetsPath;
+	wstring AssetsPath;
 	WCHAR AssetsPathChar[512];
 	GetAssetsPath(AssetsPathChar, _countof(AssetsPathChar));
 	AssetsPath = AssetsPathChar;
 	return AssetsPath + AssetName;
 }
 
-void LAssetDataLoader::LoadMeshVertexDataFromFile(std::string FileName, FMesh* Mesh)
+void LAssetDataLoader::LoadMeshVertexDataFromFile(string FileName, FMesh* Mesh)
 {
 	FVertexBuffer* VertexBuffer = Mesh->GetVertexBuffer();
 	FIndexBuffer* IndexBuffer = Mesh->GetIndexBuffer();
 
-	std::string FName = GetSaveDirectory() + FileName;
+	string FName = GetSaveDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;
@@ -74,7 +73,7 @@ void LAssetDataLoader::LoadMeshVertexDataFromFile(std::string FileName, FMesh* M
 	UINT VertexCount;
 	Rf.read((char*)&VertexCount, sizeof(UINT));
 
-	std::vector<FVertexData> VertexDatas;
+	vector<FVertexData> VertexDatas;
 	VertexDatas.resize(VertexCount);
 	Rf.read((char*)VertexDatas.data(), VertexCount * sizeof(FVertexData));
 	VertexBuffer->Init((char*)VertexDatas.data(), VertexCount * sizeof(FVertexData), VertexCount);
@@ -111,10 +110,10 @@ void LAssetDataLoader::LoadMeshVertexDataFromFile(std::string FileName, FMesh* M
 	}
 }
 
-void LAssetDataLoader::LoadCameraDataFromFile(std::string FileName, LCamera* Camera)
+void LAssetDataLoader::LoadCameraDataFromFile(string FileName, LCamera* Camera)
 {
 	FCameraData CameraData;
-	std::string FName = GetSaveDirectory() + FileName;
+	string FName = GetSaveDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;
@@ -134,9 +133,9 @@ void LAssetDataLoader::LoadCameraDataFromFile(std::string FileName, LCamera* Cam
 	}
 }
 
-void LAssetDataLoader::LoadDirectionLights(std::string FileName, std::vector<DirectionLightData>& LightsData)
+void LAssetDataLoader::LoadDirectionLights(string FileName,  vector<DirectionLightData>& LightsData)
 {
-	std::string FName = GetSaveDirectory() + FileName;
+	string FName = GetSaveDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;
@@ -149,9 +148,9 @@ void LAssetDataLoader::LoadDirectionLights(std::string FileName, std::vector<Dir
 	Rf.read((char*)LightsData.data(), DirectionLightSize * sizeof(DirectionLightData));
 }
 
-void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(std::string FileName, FSkeletalMesh* SkeletalMesh)
+void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(string FileName, FSkeletalMesh* SkeletalMesh)
 {
-	std::string FName = GetSaveDirectory() + FileName;
+	string FName = GetSaveDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;
@@ -173,7 +172,7 @@ void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(std::string FileName, 
 	UINT VertexCount;
 	Rf.read((char*)&VertexCount, sizeof(UINT));
 
-	std::vector<FSkeletalVertexData> VertexDatas;
+	vector<FSkeletalVertexData> VertexDatas;
 	VertexDatas.resize(VertexCount);
 	Rf.read((char*)VertexDatas.data(), VertexCount * sizeof(FSkeletalVertexData));
 
@@ -192,7 +191,7 @@ void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(std::string FileName, 
 
 	SkeletalMesh->SetVertexAndIndexBuffer(VBuffer, IBuffer);
 
-	std::vector<UINT16> BoneMap;
+	vector<UINT16> BoneMap;
 
 	UINT BoneMapSize;
 	Rf.read((char*)&BoneMapSize, sizeof(UINT));
@@ -203,9 +202,9 @@ void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(std::string FileName, 
 	SkeletalMesh->SetCurrentBoneMap(BoneMap);
 }
 
-void LAssetDataLoader::LoadSkeletonFromFile(std::string FileName, LSkeleton* Skeleton)
+void LAssetDataLoader::LoadSkeletonFromFile(string FileName, LSkeleton* Skeleton)
 {
-	std::string FName = GetSaveDirectory() + FileName;
+	string FName = GetSaveDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;
@@ -215,7 +214,7 @@ void LAssetDataLoader::LoadSkeletonFromFile(std::string FileName, LSkeleton* Ske
 	Rf.read((char*)&BoneNum, sizeof(UINT));
 	Skeleton->SetBoneCount(BoneNum);
 
-	std::vector<BoneInfo> BoneInfos;
+	vector<BoneInfo> BoneInfos;
 	BoneInfos.resize(BoneNum);
 	Rf.read((char*)BoneInfos.data(), BoneNum * sizeof(BoneInfo));
 	for(size_t i = 0; i < BoneInfos.size(); ++i)
@@ -228,7 +227,7 @@ void LAssetDataLoader::LoadSkeletonFromFile(std::string FileName, LSkeleton* Ske
 
 	UINT BonePoseNum;
 	Rf.read((char*)&BonePoseNum, sizeof(UINT));
-	std::vector<BonePose> BonePoses;
+	vector<BonePose> BonePoses;
 	BonePoses.resize(BonePoseNum);
 	Rf.read((char*)BonePoses.data(), BonePoseNum * sizeof(BonePose));
 	for (size_t i = 0; i < BonePoses.size(); ++i)
@@ -245,7 +244,7 @@ void LAssetDataLoader::LoadSkeletonFromFile(std::string FileName, LSkeleton* Ske
 
 	UINT BoneNameIdxNum;
 	Rf.read((char*)&BoneNameIdxNum, sizeof(UINT));
-	std::vector<BoneNameIndex> BoneNameIdxs;
+	vector<BoneNameIndex> BoneNameIdxs;
 	BoneNameIdxs.resize(BoneNameIdxNum);
 	Rf.read((char*)BoneNameIdxs.data(), BoneNameIdxNum * sizeof(BoneNameIndex));
 	for (size_t i = 0; i < BoneNameIdxs.size(); ++i)
@@ -254,9 +253,9 @@ void LAssetDataLoader::LoadSkeletonFromFile(std::string FileName, LSkeleton* Ske
 	}
 }
 
-void LAssetDataLoader::LoadAnimationSquence(std::string SequenceName, LAnimationSequence& Seq)
+void LAssetDataLoader::LoadAnimationSquence(string SequenceName, LAnimationSequence& Seq)
 {
-	std::string FName = GetSaveDirectory() + SequenceName;
+	string FName = GetSaveDirectory() + SequenceName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;
@@ -280,7 +279,7 @@ void LAssetDataLoader::LoadAnimationSquence(std::string SequenceName, LAnimation
 
 		UINT Num;
 		Rf.read((char*)&Num, sizeof(UINT));
-		std::vector<XMFLOAT3> Poss;
+		vector<XMFLOAT3> Poss;
 		Poss.resize(Num);
 		Rf.read((char*)Poss.data(), Num * sizeof(XMFLOAT3));
 		for(size_t i = 0; i < Poss.size(); ++i)
@@ -289,7 +288,7 @@ void LAssetDataLoader::LoadAnimationSquence(std::string SequenceName, LAnimation
 		}
 
 		Rf.read((char*)&Num, sizeof(UINT));
-		std::vector<XMFLOAT3> Rots;
+		vector<XMFLOAT3> Rots;
 		Rots.resize(Num);
 		Rf.read((char*)Rots.data(), Num * sizeof(XMFLOAT3));
 		for (size_t i = 0; i < Rots.size(); ++i)
@@ -300,7 +299,7 @@ void LAssetDataLoader::LoadAnimationSquence(std::string SequenceName, LAnimation
 		}
 
 		Rf.read((char*)&Num, sizeof(UINT));
-		std::vector<XMFLOAT3> Scales;
+		vector<XMFLOAT3> Scales;
 		Scales.resize(Num);
 		Rf.read((char*)Scales.data(), Num * sizeof(XMFLOAT3));
 		for (size_t i = 0; i < Scales.size(); ++i)

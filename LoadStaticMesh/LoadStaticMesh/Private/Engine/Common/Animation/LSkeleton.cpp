@@ -15,7 +15,7 @@ LSkeleton::~LSkeleton()
 
 void LSkeleton::CalculateRefPoseGlobalToLocal()
 {
-	std::vector<XMFLOAT4X4> RefPoseToRoot;
+	vector<XMFLOAT4X4> RefPoseToRoot;
 	RefPoseToRoot.resize(RefBonePoses.size());
 
 	XMFLOAT4X4 M;

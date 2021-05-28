@@ -5,8 +5,6 @@
 #include <deque>
 #include <mutex>
 
-using namespace std;
-
 class FThread
 {
 public: 
@@ -19,7 +17,7 @@ public:
 	virtual void Run() = 0;
 	void SetName();
 
-	std::thread::id GetThreadId()
+	thread::id GetThreadId()
 	{
 		return ThreadId;
 	}
@@ -31,6 +29,6 @@ protected:
 	mutex Mutex;
 	thread ThisThread;
 	condition_variable CVFinished;
-	std::thread::id ThreadId;
+	thread::id ThreadId;
 
 };

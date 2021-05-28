@@ -12,7 +12,7 @@ public:
 	void Init(LAnimationStateTransition* PreTransition = nullptr);
 	void Update(float dt);
 
-	std::vector<LAnimBonePose>& GetCurrentAnimPoseToParentTrans();
+	vector<LAnimBonePose>& GetCurrentAnimPoseToParentTrans();
 
 	E_ANIM_STATE GetStateType()
 	{

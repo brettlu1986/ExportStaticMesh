@@ -51,5 +51,7 @@
 #include <functional>
 #include <stdio.h>
 #include <thread>
+#include <memory>
 
 using namespace DirectX;
+using namespace std;

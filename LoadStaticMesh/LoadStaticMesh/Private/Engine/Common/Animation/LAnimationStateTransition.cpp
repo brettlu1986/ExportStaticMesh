@@ -42,9 +42,9 @@ void LAnimationStateTransition::Update(float dt)
 
 	float LerpPercent = TransitionElapsed / TransitionTime;
 
-	std::vector<LAnimBonePose>& FromAnimPoseToParentTrans = TransitionFrom->GetCurrentAnimPoseToParentTrans();
+	vector<LAnimBonePose>& FromAnimPoseToParentTrans = TransitionFrom->GetCurrentAnimPoseToParentTrans();
 
-	std::vector<LAnimationTrack>& ToSequenceTracks = TransitionTo->GetSequenceTracks();
+	vector<LAnimationTrack>& ToSequenceTracks = TransitionTo->GetSequenceTracks();
 
 	for (size_t i = 0; i < ToSequenceTracks.size(); i++)
 	{

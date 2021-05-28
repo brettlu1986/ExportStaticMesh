@@ -69,7 +69,7 @@ public:
 	virtual FResourceView* CreateResourceView(FResourceViewInfo ViewInfo) = 0;
 	virtual void CreatePipelineStateObject(FPiplineStateInitializer Initializer) = 0;
 
-	virtual void SetResourceHeaps(std::vector<FResourceHeap*>& Heaps ) = 0;
+	virtual void SetResourceHeaps(vector<FResourceHeap*>& Heaps ) = 0;
 	virtual void SetRenderTargets(FResourceView* RtvView, FResourceView* DsvView) = 0;
 	virtual void SetVertexAndIndexBuffers(FVertexBuffer* VertexBuffer, FIndexBuffer* IndexBuffer) = 0;
 	virtual void SetPiplineStateObject(FD3DGraphicPipline* PsoObj) = 0;
@@ -88,14 +88,14 @@ public:
 	{
 		return ResourceViewCreater;
 	}
-	FD3DGraphicPipline* GetPsoObject(std::string KeyName)
+	FD3DGraphicPipline* GetPsoObject(string KeyName)
 	{
 		return PiplelineStateObjCache[KeyName];
 	}
 
 protected:
 	FResourceViewCreater* ResourceViewCreater = nullptr;
-	std::map<std::string, FD3DGraphicPipline*> PiplelineStateObjCache;
+	map<string, FD3DGraphicPipline*> PiplelineStateObjCache;
 
 };
 

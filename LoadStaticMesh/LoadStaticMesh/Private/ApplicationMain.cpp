@@ -27,7 +27,7 @@ ApplicationMain::~ApplicationMain()
 
 }
 
-bool ApplicationMain::Initialize(UINT Width, UINT Height, std::string WndName)
+bool ApplicationMain::Initialize(UINT Width, UINT Height, string WndName)
 {
 	Timer = LGameTimer::Get();
 	LEngineDesc Desc = 
@@ -75,7 +75,7 @@ void ApplicationMain::OnRender()
 void ApplicationMain::Run()
 {
 	const UINT FrameRate = 60;
-	std::chrono::duration<float> FrameLen = std::chrono::duration<float>(1.f/60);
+	chrono::duration<float> FrameLen = chrono::duration<float>(1.f/60);
 	while (LEngine::GetEngine()->Run())
 	{
 		Timer->Tick();

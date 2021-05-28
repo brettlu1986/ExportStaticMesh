@@ -63,7 +63,7 @@ public:
 
 	virtual void Destroy() override;
 	virtual void Initialize() override;
-	virtual void InitializeTexture(const std::string& Name) override;
+	virtual void InitializeTexture(const string& Name) override;
 	virtual void InitializeTexture(FTextureInitializer Initializer) override;
 	void InitGPUTextureView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, DXGI_FORMAT ViewFormat);
 
@@ -79,7 +79,7 @@ private:
 	ID3D12Device* ParentDevice;
 
 	DDS_HEADER* Header;
-	std::unique_ptr<uint8_t[]> DdsData;
+	unique_ptr<uint8_t[]> DdsData;
 };
 
 class FD3DGraphicPipline : public FRenderResource

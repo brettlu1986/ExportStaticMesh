@@ -92,11 +92,11 @@ void LAnimator::Update(float dt)
 
 	// calculate bone map final transforms according to current pose
 	{
-		std::vector<LAnimBonePose>& CurrentAnimPoseToParentTrans = DefaultStateMachine->GetCurrentAnimPoseToParentTrans();
+		vector<LAnimBonePose>& CurrentAnimPoseToParentTrans = DefaultStateMachine->GetCurrentAnimPoseToParentTrans();
 
 		LSkeleton* Skeleton = OwnerCharacter->GetSkeletalMesh()->GetSkeleton();
 		UINT BoneCount = Skeleton->GetBoneCount();
-		std::vector<XMFLOAT4X4> CurrentAnimPoseToRootTrans(BoneCount);
+		vector<XMFLOAT4X4> CurrentAnimPoseToRootTrans(BoneCount);
 		//root
 		XMVECTOR Zero = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 		//XMStoreFloat4x4(&CurrentAnimPoseToRootTrans[0], XMMatrixAffineTransformation(CurrentAnimPoseToParentTrans[0].S, Zero,
@@ -119,7 +119,7 @@ void LAnimator::Update(float dt)
 			XMStoreFloat4x4(&CurrentAnimPoseToRootTrans[i], ToRoot);
 		}
 
-		const std::vector<XMFLOAT4X4>& RefPoseRootToBoneTrans = Skeleton->GetRefPoseRootToBoneTransform();
+		const vector<XMFLOAT4X4>& RefPoseRootToBoneTrans = Skeleton->GetRefPoseRootToBoneTransform();
 		for (UINT i = 0; i < BoneCount; ++i)
 		{
 			XMMATRIX RefRootToBone = XMLoadFloat4x4(&RefPoseRootToBoneTrans[i]);
@@ -128,7 +128,7 @@ void LAnimator::Update(float dt)
 			XMStoreFloat4x4(&AllBoneFinalTransforms[i], XMMatrixTranspose(finalTransform));
 		}
 
-		const std::vector<UINT16>& BoneMap = OwnerCharacter->GetSkeletalMesh()->GetBoneMap();
+		const vector<UINT16>& BoneMap = OwnerCharacter->GetSkeletalMesh()->GetBoneMap();
 		for (size_t i = 0; i < BoneMap.size(); i++)
 		{
 			UINT BoneIndex = BoneMap[i];
@@ -145,7 +145,7 @@ void LAnimator::InitStateMachines()
 void LAnimator::CreateDefaultStateMachine()
 {
 	DefaultStateMachine = new LAnimationStateMachine();
-	std::map<E_ANIM_STATE, LAnimationState*> Stats;
+	map<E_ANIM_STATE, LAnimationState*> Stats;
 	Stats[E_ANIM_STATE::IDLE] = new LAnimationState(E_ANIM_STATE::IDLE, true, &AnimSequences[E_ANIM_STATE::IDLE]);
 	Stats[E_ANIM_STATE::WALK] = new LAnimationState(E_ANIM_STATE::WALK, true, &AnimSequences[E_ANIM_STATE::WALK]);
 	Stats[E_ANIM_STATE::RUN] = new LAnimationState(E_ANIM_STATE::RUN, true, &AnimSequences[E_ANIM_STATE::RUN]);

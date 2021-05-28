@@ -8,7 +8,6 @@
 #include "LDefine.h"
 #include "LCamera.h"
 
-using namespace DirectX;
 
 class LSceneCamera : public LCamera
 {

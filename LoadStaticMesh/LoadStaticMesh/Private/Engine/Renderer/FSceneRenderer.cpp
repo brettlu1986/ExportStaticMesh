@@ -77,7 +77,7 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 		L"SkeletalPs.cso", 1, FRtvFormat::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState() });
 	
 	//scene static meshes
-	const std::vector<FMesh*>& Meshes = RenderScene->GetDrawMeshes();
+	const vector<FMesh*>& Meshes = RenderScene->GetDrawMeshes();
 	for (FMesh* Mesh : Meshes)
 	{	
 		Mesh->InitRenderResource();
@@ -85,7 +85,7 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 	}
 
 	//skeletal meshes
-	const std::vector<FSkeletalMesh*>& SkeletalMeshes = RenderScene->GetDrawSkeletalMeshes();
+	const vector<FSkeletalMesh*>& SkeletalMeshes = RenderScene->GetDrawSkeletalMeshes();
 	for(FSkeletalMesh* SkeletalMesh : SkeletalMeshes)
 	{
 		SkeletalMesh->InitRenderResource();
@@ -103,7 +103,7 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 	GRHI->BeginRenderScene();
 	{
 		FUserMarker UserMarker("Render Begin");
-		std::vector<FResourceHeap*> Heaps;
+		vector<FResourceHeap*> Heaps;
 		FResourceViewCreater* ResViewCreater = GRHI->GetResourceViewCreater();
 		Heaps.push_back(ResViewCreater->GetCbvSrvUavHeap());
 		GRHI->SetResourceHeaps(Heaps);
@@ -119,7 +119,7 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 		GRHI->ResourceTransition(ShadowMap->ShadowResView, E_RESOURCE_STATE::RESOURCE_STATE_GENERIC_READ, E_RESOURCE_STATE::RESOURCE_STATE_DEPTH_WRITE);
 		GRHI->SetRenderTargets(nullptr, ShadowMap->DsvResView);
 
-		const std::vector<FMesh*> Meshes = RenderScene->GetDrawMeshes();
+		const vector<FMesh*> Meshes = RenderScene->GetDrawMeshes();
 		for (size_t i = 0; i < Meshes.size(); i++)
 		{
 			GRHI->SetVertexAndIndexBuffers(Meshes[i]->GetVertexBuffer(), Meshes[i]->GetIndexBuffer());
@@ -140,7 +140,7 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 	GRHI->SetRenderTargets(RenderTargets[GRHI->GetFrameIndex()], DsvView);
 	{
 		FUserMarker UserMarker("Draw Static Mesh");
-		const std::vector<FMesh*> Meshes = RenderScene->GetDrawMeshes();
+		const vector<FMesh*> Meshes = RenderScene->GetDrawMeshes();
 		for (size_t i = 0; i < Meshes.size(); i++)
 		{
 			FD3DGraphicPipline* Pso = GRHI->GetPsoObject(Meshes[i]->GetPsoKey());
@@ -162,7 +162,7 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 	{
 		FUserMarker UserMarker("Draw Skeletal Mesh");
 
-		const std::vector<FSkeletalMesh*>& SkmMeshes = RenderScene->GetDrawSkeletalMeshes();
+		const vector<FSkeletalMesh*>& SkmMeshes = RenderScene->GetDrawSkeletalMeshes();
 		for (size_t i = 0; i < SkmMeshes.size(); i++)
 		{	
 			FD3DGraphicPipline* Pso = GRHI->GetPsoObject(SkmMeshes[i]->GetPsoKey());

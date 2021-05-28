@@ -10,8 +10,6 @@
 #include "FRenderThread.h"
 #include "LLog.h"
 
-using namespace DirectX;
-using namespace std;
 
 LCamera::LCamera()
 	:Position(0, 0, 0)

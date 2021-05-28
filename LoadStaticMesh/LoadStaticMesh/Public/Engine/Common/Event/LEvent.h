@@ -22,7 +22,7 @@ class LEvent : public IEvent
 {
 public:
 	//Alias for template callback
-	using _callback = std::function<void(_args...)>;
+	using _callback = function<void(_args...)>;
 
 	//Ctor & Dtor
 	//template< typename T_CB >
@@ -74,5 +74,5 @@ public:
 	}
 
 private:
-	std::map<E_EVENT_KEY, std::vector<IEvent*>> EventList;
+	map<E_EVENT_KEY, vector<IEvent*>> EventList;
 };

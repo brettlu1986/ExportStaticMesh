@@ -15,7 +15,7 @@ public:
 	virtual void Destroy() override;
 	virtual void Initialize() override;
 
-	void Init(const std::string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float Roughness);
+	void Init(const string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float Roughness);
 
 	const XMFLOAT4& GetDiffuseAlbedo() const
 	{

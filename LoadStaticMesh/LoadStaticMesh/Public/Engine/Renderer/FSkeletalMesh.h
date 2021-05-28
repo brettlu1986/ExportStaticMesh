@@ -40,12 +40,12 @@ public:
 		return Skeleton;
 	}
 
-	void SetPsoKey(std::string InKey)
+	void SetPsoKey(string InKey)
 	{
 		UsePsoKey = InKey;
 	}
 
-	const std::string& GetPsoKey()
+	const string& GetPsoKey()
 	{
 		return UsePsoKey;
 	}
@@ -75,13 +75,13 @@ public:
 		return ModelLocation;
 	}
 
-	void SetCurrentBoneMap(std::vector<UINT16>& BoneMap)
+	void SetCurrentBoneMap(vector<UINT16>& BoneMap)
 	{
 		CurrentBoneMap.resize(BoneMap.size());
-		std::copy(BoneMap.begin(), BoneMap.end(), CurrentBoneMap.begin());
+		copy(BoneMap.begin(), BoneMap.end(), CurrentBoneMap.begin());
 	}
 
-	const std::vector<UINT16>& GetBoneMap()
+	const vector<UINT16>& GetBoneMap()
 	{
 		return CurrentBoneMap;
 	}
@@ -104,7 +104,7 @@ private:
 	XMFLOAT3 ModelRotation;
 	XMFLOAT3 ModelScale;
 	XMMATRIX ModelMatrix;
-	std::string UsePsoKey;
+	string UsePsoKey;
 
-	std::vector<UINT16> CurrentBoneMap;// real bone index used in this skeletal, it is associate with the vertex.InfluenceBones Index
+	vector<UINT16> CurrentBoneMap;// real bone index used in this skeletal, it is associate with the vertex.InfluenceBones Index
 };
