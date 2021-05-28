@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 FD3D12IndexBuffer::FD3D12IndexBuffer()
-:FIndexBuffer(E_RESOURCE_TYPE::TYPE_INDEX_BUFFER)
+:FIndexBuffer(E_FRESOURCE_TYPE::F_TYPE_INDEX_BUFFER)
 {
 
 }
@@ -50,7 +50,7 @@ void FD3D12IndexBuffer::Initialize()
 
 /// //////////////////////////////////
 FD3D12VertexBuffer::FD3D12VertexBuffer()
-:FVertexBuffer(E_RESOURCE_TYPE::TYPE_VERTEX_BUFFER)
+:FVertexBuffer(E_FRESOURCE_TYPE::F_TYPE_VERTEX_BUFFER)
 ,VertexBufferView(D3D12_VERTEX_BUFFER_VIEW())
 {
 
@@ -82,26 +82,19 @@ void FD3D12VertexBuffer::Initialize()
 
 void FD3D12VertexBuffer::InitGPUVertexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList)
 {
-	if(bSKMVertex)
-	{
-		CreateBuffer(Device, CommandList, SKMVertexData.data(), VertexDataSize, VertexBuffer, VertexUploadBuffer);
-	}
-	else 
-	{
-		CreateBuffer(Device, CommandList, VertexData.data(), VertexDataSize, VertexBuffer, VertexUploadBuffer);
-	}
+	CreateBuffer(Device, CommandList, VertexByteData, VertexDataSize, VertexBuffer, VertexUploadBuffer);
 	NAME_D3D12_OBJECT(VertexBuffer);
 	NAME_D3D12_OBJECT(VertexUploadBuffer);
 
 	VertexBufferView.BufferLocation = VertexBuffer->GetGPUVirtualAddress();
-	VertexBufferView.StrideInBytes = bSKMVertex ? sizeof(FSkeletalVertexData) : sizeof(FVertexData);
+	VertexBufferView.StrideInBytes = VertexDataSize / VertexCount;
 	VertexBufferView.SizeInBytes = VertexDataSize;
 }
 
 /////////////////////////
 
 FD3D12Texture::FD3D12Texture(ID3D12Device* Device)
-	:FTexture(E_RESOURCE_TYPE::TYPE_TEXTURE)
+	:FTexture(E_FRESOURCE_TYPE::F_TYPE_TEXTURE)
 	,ParentDevice(Device)
 {
 
@@ -214,7 +207,7 @@ void FD3D12Texture::InitGPUTextureView(ID3D12Device* Device, ID3D12GraphicsComma
 }
 
 FD3DGraphicPipline::FD3DGraphicPipline()
-	:FRenderResource(E_RESOURCE_TYPE::TYPE_PIPLINE)
+	:FRenderResource(E_FRESOURCE_TYPE::F_TYPE_PIPLINE)
 {
 
 }

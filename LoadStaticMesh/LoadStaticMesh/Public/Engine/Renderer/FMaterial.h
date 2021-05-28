@@ -9,7 +9,7 @@ class FMaterial : public FRenderResource
 {
 public:
 	FMaterial();
-	FMaterial(E_RESOURCE_TYPE Type);
+	FMaterial(E_FRESOURCE_TYPE Type);
 	virtual ~FMaterial();
 
 	virtual void Destroy() override;

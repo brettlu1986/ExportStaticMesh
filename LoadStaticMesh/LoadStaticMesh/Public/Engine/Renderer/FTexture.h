@@ -8,7 +8,7 @@ class FTexture : public FRenderResource
 {
 public:
 	FTexture();
-	FTexture(E_RESOURCE_TYPE Type);
+	FTexture(E_FRESOURCE_TYPE Type);
 	virtual ~FTexture();
 
 	virtual void InitializeTexture(FTextureInitializer Initializer) = 0;

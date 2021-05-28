@@ -3,7 +3,7 @@
 #include "FIndexBuffer.h"
 
 FIndexBuffer::FIndexBuffer()
-: FRenderResource(E_RESOURCE_TYPE::TYPE_INDEX_BUFFER)
+: FRenderResource(E_FRESOURCE_TYPE::F_TYPE_INDEX_BUFFER)
 , IndicesCount(0)
 , IndicesByteSize(0)
 , IndicesType(E_INDEX_TYPE::TYPE_UINT_16)
@@ -12,7 +12,7 @@ FIndexBuffer::FIndexBuffer()
 
 }
 
-FIndexBuffer::FIndexBuffer(E_RESOURCE_TYPE Type)
+FIndexBuffer::FIndexBuffer(E_FRESOURCE_TYPE Type)
 :FRenderResource(Type)
 ,IndicesCount(0)
 ,IndicesByteSize(0)

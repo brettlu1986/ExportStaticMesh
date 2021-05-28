@@ -177,7 +177,7 @@ void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(string FileName, FSkel
 	Rf.read((char*)VertexDatas.data(), VertexCount * sizeof(FSkeletalVertexData));
 
 	FVertexBuffer* VBuffer = GRHI->RHICreateVertexBuffer();
-	VBuffer->Init((char*)VertexDatas.data(), VertexCount * sizeof(FSkeletalVertexData), VertexCount, true);
+	VBuffer->Init((char*)VertexDatas.data(), VertexCount * sizeof(FSkeletalVertexData), VertexCount);
 
 	UINT IndicesCount;
 	Rf.read((char*)&IndicesCount, sizeof(UINT));

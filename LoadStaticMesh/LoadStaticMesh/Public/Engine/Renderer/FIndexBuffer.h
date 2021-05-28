@@ -1,14 +1,14 @@
 #pragma once
 #include "stdafx.h"
 
-#include "FDefine.h"
+#include "LDefine.h"
 #include "FRenderResource.h"
 
 class FIndexBuffer : public FRenderResource
 {
 public:
 	FIndexBuffer();
-	FIndexBuffer(E_RESOURCE_TYPE Type);
+	FIndexBuffer(E_FRESOURCE_TYPE Type);
 	FIndexBuffer(UINT InCount, UINT InByteSize, E_INDEX_TYPE InType, void* InData);
 	virtual ~FIndexBuffer();
 

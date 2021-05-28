@@ -86,6 +86,26 @@ typedef enum class E_ANIM_STATE : UINT8
 
 static const float AnimFrameRate = 1 / 30.f;
 
+//LResourceDef 
+enum class E_LRESOURCE_TYPE : UINT8
+{
+	L_TYPE_UNKNOWN = 0,
+	L_TYPE_INDEX_BUFFER,
+	L_TYPE_VERTEX_BUFFER,
+	L_TYPE_MESH,
+	L_TYPE_CONSTANT_BUFFER,
+	L_TYPE_TEXTURE,
+	L_TYPE_SHADER,
+	L_TYPE_MATERIAL,
+	L_TYPE_PIPLINE,
+};
+
+enum class E_INDEX_TYPE : UINT8
+{
+	TYPE_UINT_16 = 0,
+	TYPE_UINT_32,
+};
+
 
 
 

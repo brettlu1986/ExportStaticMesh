@@ -3,12 +3,12 @@
 #include "FRenderResource.h"
 
 FRenderResource::FRenderResource()
-:ResourceType(E_RESOURCE_TYPE::TYPE_UNKNOWN)
+:ResourceType(E_FRESOURCE_TYPE::F_TYPE_UNKNOWN)
 {
 
 }
 
-FRenderResource::FRenderResource(E_RESOURCE_TYPE Type)
+FRenderResource::FRenderResource(E_FRESOURCE_TYPE Type)
 :ResourceType(Type)
 {
 

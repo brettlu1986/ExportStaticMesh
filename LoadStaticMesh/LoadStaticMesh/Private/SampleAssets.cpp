@@ -21,6 +21,8 @@ void SampleAssets::ReleaseAssets()
 		LSkeleton* Sk = *it;
 		delete Sk;
 	}
+
+
 }
 
 void SampleAssets::LoadSampleScene(FScene* Scene)

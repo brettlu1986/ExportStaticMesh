@@ -4,13 +4,13 @@
 
 
 FMaterial::FMaterial()
-:FRenderResource(E_RESOURCE_TYPE::TYPE_MATERIAL)
+:FRenderResource(E_FRESOURCE_TYPE::F_TYPE_MATERIAL)
 , MaterialTransform(MathHelper::Identity4x4())
 {
 
 }
 
-FMaterial::FMaterial(E_RESOURCE_TYPE Type)
+FMaterial::FMaterial(E_FRESOURCE_TYPE Type)
 :FRenderResource(Type)
 , MaterialTransform(MathHelper::Identity4x4())
 {

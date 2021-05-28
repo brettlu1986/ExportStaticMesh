@@ -3,7 +3,7 @@
 #include "FShader.h"
 
 FShader::FShader()
-:FRenderResource(E_RESOURCE_TYPE::TYPE_SHADER)
+:FRenderResource(E_FRESOURCE_TYPE::F_TYPE_SHADER)
 , pData(nullptr)
 , DataLength(0)
 {

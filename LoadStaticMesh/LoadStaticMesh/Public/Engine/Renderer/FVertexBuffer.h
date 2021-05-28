@@ -8,18 +8,16 @@ class FVertexBuffer : public FRenderResource
 {
 public:
 	FVertexBuffer();
-	FVertexBuffer(E_RESOURCE_TYPE Type);
+	FVertexBuffer(E_FRESOURCE_TYPE Type);
 	FVertexBuffer(const char* DataSource, UINT DataSize, UINT DataCount);
 	virtual ~FVertexBuffer();
 
 	virtual void Destroy() override;
 	virtual void Initialize() override;
-	void Init(const char* DataSource, UINT DataSize, UINT DataCount, bool bInSKM = false);
+	void Init(const char* DataSource, UINT DataSize, UINT DataCount);
 
 protected: 
-	bool bSKMVertex;
 	UINT VertexCount;
 	UINT VertexDataSize;
-	vector<FVertexData> VertexData;
-	vector<FSkeletalVertexData> SKMVertexData;
+	void* VertexByteData;
 };
