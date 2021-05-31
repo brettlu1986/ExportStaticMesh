@@ -10,6 +10,7 @@ public:
 	FRenderThread();
 
 	virtual void Run() override;
+	void OnThreadInit();
 
 	static void CreateRenderThread();
 	static void DestroyRenderThread();
@@ -23,6 +24,11 @@ public:
 
 	void OnRenderScene(FScene* Scene);
 	void DestroyRenderScene(FScene* Scene);
+
+	FScene* GetRenderScene()
+	{
+		return RenderScene.get();
+	}
 
 	/*void NotifyRenderThreadExcute();
 	void NotifyGameExcute();
@@ -39,6 +45,8 @@ private:
 	//FScene* RenderScene;
 	
 	//UINT SyncCount = 0;
+
+	unique_ptr<FScene> RenderScene;
 };
 
-#define RENDER_THREAD(...) FRenderThread::Get()->AddTask(__VA_ARGS__)
+#define RENDER_THREAD_TASK(...) FRenderThread::Get()->AddTask(__VA_ARGS__)

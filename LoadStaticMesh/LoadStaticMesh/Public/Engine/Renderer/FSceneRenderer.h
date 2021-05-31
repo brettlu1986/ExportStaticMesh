@@ -10,7 +10,7 @@ public:
 	FSceneRenderer();
 	virtual ~FSceneRenderer();
 
-	void Initialize(FScene* RenderScene);
+	void Initialize(/*FScene* RenderScene*/);
 	void RenderScene(FScene* RenderScene);
 
 private:
@@ -18,4 +18,5 @@ private:
 
 	FTexture* DsvTex;
 	FResourceView* DsvView;
+
 };

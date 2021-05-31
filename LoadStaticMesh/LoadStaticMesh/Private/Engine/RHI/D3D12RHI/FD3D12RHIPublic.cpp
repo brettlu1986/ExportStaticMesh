@@ -133,6 +133,18 @@ FVertexBuffer* FD3D12DynamicRHI::RHICreateVertexBuffer()
 	return new FD3D12VertexBuffer();
 }
 
+void FD3D12DynamicRHI::UpdateVertexBufferResource(FVertexBuffer* VertexBuffer, LVertexBuffer& VertexBufferData)
+{
+	FD3D12VertexBuffer* D3DVertexBuffer = dynamic_cast<FD3D12VertexBuffer*>(VertexBuffer);
+	D3DVertexBuffer->InitGPUVertexBufferView(D3DDevice.Get(), CommandList.Get(), VertexBufferData);
+}
+
+void FD3D12DynamicRHI::UpdateIndexBufferResource(FIndexBuffer* IndexBuffer, LIndexBuffer& IndexBufferData)
+{
+	FD3D12IndexBuffer* D3DIndexBuffer = dynamic_cast<FD3D12IndexBuffer*>(IndexBuffer);
+	D3DIndexBuffer->InitGPUIndexBufferView(D3DDevice.Get(), CommandList.Get());
+}
+
 FShader* FD3D12DynamicRHI::RHICreateShader(LPCWSTR  ShaderFile)
 {
 	UINT8* ShaderData = nullptr;

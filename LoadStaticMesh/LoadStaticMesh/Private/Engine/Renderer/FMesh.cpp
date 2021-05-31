@@ -5,6 +5,8 @@
 #include "FDefine.h"
 #include "LAssetDataLoader.h"
 
+#include "LEngine.h"
+
 FMesh::FMesh()
 	:VertexBuffer(nullptr)
 	, IndexBuffer(nullptr)
@@ -17,6 +19,8 @@ FMesh::FMesh()
 {
 	
 }
+
+
 
 FMesh::FMesh(const string& FileName, const string& TextureName, const string& InUsePsoKey)
 	:MeshFileName(FileName)
@@ -93,11 +97,7 @@ void FMesh::Initialize()
 	Material = new FMaterial();
 }
 
-XMMATRIX FMesh::GetModelMatrix()
-{
-	//calculate model matrix : scale * rotation * translation
-	return ModelMatrix;
-}
+
 
 void FMesh::InitRenderResource()
 {
@@ -150,5 +150,38 @@ XMFLOAT4X4 FMesh::GetTextureTransform()
 	XMFLOAT4X4 TexMat = MathHelper::Identity4x4();
 	XMStoreFloat4x4(&TexMat, XMMatrixScaling(1.0f, 1.0f, 1.0f));
 	return TexMat;
+}
+
+//new use
+FMesh::FMesh(LMesh* MeshData)
+{
+	ModelMatrix = MeshData->GetModelMatrix();
+}
+
+void FMesh::InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData)
+{
+	assert(LEngine::GetEngine()->IsRenderThread());
+
+	VertexBuffer = GRHI->RHICreateVertexBuffer();
+	IndexBuffer = GRHI->RHICreateIndexBuffer();
+
+	GRHI->UpdateVertexBufferResource(VertexBuffer, VertexBufferData);
+	GRHI->UpdateIndexBufferResource(IndexBuffer, IndexBufferData);
+
+	MatrixConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FObjectConstants)), E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
+	MaterialConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FMaterialConstants)),E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
+}
+
+void FMesh::AddMeshInRenderThread()
+{
+	assert(LEngine::GetEngine()->IsRenderThread());
+
+	FRenderThread::Get()->GetRenderScene()->AddMeshToScene(this);
+}
+
+XMMATRIX FMesh::GetModelMatrix()
+{
+	//calculate model matrix : scale * rotation * translation
+	return ModelMatrix;
 }
 

@@ -9,9 +9,21 @@ public:
 	LVertexBuffer(const char* DataSource, UINT DataSize, UINT DataCount);
 	virtual ~LVertexBuffer();
 
-	virtual void InitRenderResource() override;
-	virtual void DestroyRenderResource() override;
+	const void* GetVertexByteData()
+	{
+		return VertexByteData;
+	}
 
+	UINT GetVertexCount()
+	{
+		return VertexCount;
+	}
+
+	UINT GetVertexDataSize()
+	{
+		return VertexDataSize;
+	}
+	
 private:
 	UINT VertexCount;
 	UINT VertexDataSize;

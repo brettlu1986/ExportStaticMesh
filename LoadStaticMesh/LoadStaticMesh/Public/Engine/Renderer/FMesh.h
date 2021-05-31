@@ -6,12 +6,14 @@
 #include "FRHIDef.h"
 #include "FRenderResource.h"
 #include "FTexture.h"
+#include "LMesh.h"
 
 class FResourceView;
 class FMesh : public FRenderResource
 {
 public:
 	FMesh();
+	
 	FMesh(const string& FileName, const string& TextureName = "", const string& PsoKey = "");
 	virtual ~FMesh();
 
@@ -24,7 +26,6 @@ public:
 	void SetModelRotation(XMFLOAT3 Rotator) ;
 	void SetModelScale(XMFLOAT3 Scale);
 
-	XMMATRIX GetModelMatrix();
 
 	FVertexBuffer* GetVertexBuffer()
 	{
@@ -60,6 +61,7 @@ public:
 
 	void InitMaterial(const string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float Roughness);
 
+
 	//
 	FResourceView* MatrixConstantBufferView;
 	FResourceView* MaterialConstantBufferView;
@@ -72,8 +74,6 @@ private:
 	XMFLOAT3 ModelRotation;
 	XMFLOAT3 ModelScale;
 
-	XMMATRIX ModelMatrix;
-
 	string MeshFileName;
 	string MeshTextureName;
 	string UsePsoKey;
@@ -83,5 +83,17 @@ private:
 
 	FTexture* DiffuseTex;
 	FMaterial* Material;
+
+public: 
+
+	//new use
+	FMesh(LMesh* MeshData);
+
+	void InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData);
+	void AddMeshInRenderThread();
+
+	XMMATRIX GetModelMatrix();
+private:
+	XMMATRIX ModelMatrix;
 	
 };

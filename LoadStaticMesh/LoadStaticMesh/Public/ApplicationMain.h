@@ -2,8 +2,9 @@
 
 #include "stdafx.h"
 #include "LDefine.h"
-#include "FScene.h"
+//#include "FScene.h"
 #include "LGameTimer.h"
+#include "LScene.h"
 
 class ApplicationMain
 {
@@ -29,6 +30,7 @@ private:
 	void OnSceneInit();
 
 private: 
-	FScene Scene;
+	//FScene Scene;
 	LGameTimer* Timer;
+	unique_ptr<LScene> SceneData;
 };

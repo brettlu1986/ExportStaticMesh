@@ -314,3 +314,61 @@ void LAssetDataLoader::LoadAnimationSquence(string SequenceName, LAnimationSeque
 
 	Seq.GetCurrentAnimPoseToParentTrans().resize(Seq.GetSequenceTracks().size());
 }
+
+
+void LAssetDataLoader::LoadMeshFromFile(string FileName, LMesh& Mesh)
+{
+	string FName = GetSaveDirectory() + FileName;
+	ifstream Rf(FName, ios::out | ios::binary);
+	if (!Rf) {
+		return;
+	}
+
+	XMFLOAT3 Location;
+	Rf.read((char*)&Location, sizeof(XMFLOAT3));
+
+	XMFLOAT3 Rotation;
+	Rf.read((char*)&Rotation, sizeof(XMFLOAT3));
+
+	XMFLOAT3 Scale;
+	Rf.read((char*)&Scale, sizeof(XMFLOAT3));
+
+	Mesh.SetModelLocation(Location);
+	Mesh.SetModelRotation(Rotation);
+	Mesh.SetModelScale(Scale);
+
+	UINT VertexCount;
+	Rf.read((char*)&VertexCount, sizeof(UINT));
+	vector<FVertexData> VertexDatas;
+	VertexDatas.resize(VertexCount);
+	Rf.read((char*)VertexDatas.data(), VertexCount * sizeof(FVertexData));
+	Mesh.SetVertexBufferInfo((char*)VertexDatas.data(), VertexCount * sizeof(FVertexData), VertexCount);
+
+	bool bUseHalfInt32;
+	Rf.read((char*)&bUseHalfInt32, sizeof(UINT8));
+	UINT IndicesCount;
+	Rf.read((char*)&IndicesCount, sizeof(UINT));
+	vector<UINT> Indices;
+	vector<UINT16> IndicesHalf;
+	UINT IndicesByteSize = bUseHalfInt32 ? IndicesCount * sizeof(UINT16) :
+		IndicesCount * sizeof(UINT32);
+
+	if (bUseHalfInt32)
+	{
+		IndicesHalf.resize(IndicesCount);
+		Rf.read((char*)IndicesHalf.data(), IndicesByteSize);
+	}
+	else
+	{
+		Indices.resize(IndicesCount);
+		Rf.read((char*)Indices.data(), IndicesByteSize);
+	}
+	Mesh.SetIndexBufferInfo(IndicesCount, IndicesByteSize,
+		bUseHalfInt32 ? E_INDEX_TYPE::TYPE_UINT_16 : E_INDEX_TYPE::TYPE_UINT_32,
+		bUseHalfInt32 ? reinterpret_cast<void*>(IndicesHalf.data()) : reinterpret_cast<void*>(Indices.data()));
+
+	Rf.close();
+	if (!Rf.good()) {
+		return;
+	}
+}

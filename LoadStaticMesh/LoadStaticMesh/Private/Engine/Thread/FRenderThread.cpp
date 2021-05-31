@@ -13,9 +13,16 @@ FRenderThread::FRenderThread()
 
 }
 
+void FRenderThread::OnThreadInit()
+{
+	RenderScene = make_unique<FScene>();
+	Renderer.Initialize();
+}
+
 void FRenderThread::Run()
 {
 	RHIInit();
+	OnThreadInit();
 	while (IsRun)
 	{
 		//while(ShouldWaitGame())
@@ -58,9 +65,9 @@ FRenderThread* FRenderThread::Get()
 void FRenderThread::InitRenderThreadScene(FScene* Scene)
 {
 	AddTask([this, Scene] {
-		GRHI->BeginCreateSceneResource();
-		Renderer.Initialize(Scene);
-		GRHI->EndCreateSceneResource();
+		//GRHI->BeginCreateSceneResource();
+		//Renderer.Initialize(Scene);
+		//GRHI->EndCreateSceneResource();
 	});
 }
 
@@ -118,6 +125,7 @@ void FRenderThread::Clear()
 {
 	//RenderScene->Destroy();
 	//RenderScene = nullptr;
+	RenderScene = nullptr;
 	ClearTask();
 
 	//lock_guard<mutex> Lock(Mutex);

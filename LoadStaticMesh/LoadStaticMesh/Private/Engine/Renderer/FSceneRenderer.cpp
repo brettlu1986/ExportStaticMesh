@@ -27,7 +27,7 @@ FSceneRenderer::~FSceneRenderer()
 	DsvView = nullptr;
 }
 
-void FSceneRenderer::Initialize(FScene* RenderScene)
+void FSceneRenderer::Initialize(/*FScene* RenderScene*/)
 {
 	//creater use to create rtv, uav, srv
 	const UINT CbvCount = 50;
@@ -77,25 +77,25 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 		L"SkeletalPs.cso", 1, FRtvFormat::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState() });
 	
 	//scene static meshes
-	const vector<FMesh*>& Meshes = RenderScene->GetDrawMeshes();
-	for (FMesh* Mesh : Meshes)
-	{	
-		Mesh->InitRenderResource();
-		Mesh->SetPsoKey(Mesh->GetDiffuseTexture() == nullptr ? "PsoNoTexture" : "PsoUseTexture");
-	}
+	//const vector<FMesh*>& Meshes = RenderScene->GetDrawMeshes();
+	//for (FMesh* Mesh : Meshes)
+	//{	
+	//	Mesh->InitRenderResource();
+	//	Mesh->SetPsoKey(Mesh->GetDiffuseTexture() == nullptr ? "PsoNoTexture" : "PsoUseTexture");
+	//}
 
-	//skeletal meshes
-	const vector<FSkeletalMesh*>& SkeletalMeshes = RenderScene->GetDrawSkeletalMeshes();
-	for(FSkeletalMesh* SkeletalMesh : SkeletalMeshes)
-	{
-		SkeletalMesh->InitRenderResource();
-		SkeletalMesh->SetPsoKey("SKMPso");
-	}
+	////skeletal meshes
+	//const vector<FSkeletalMesh*>& SkeletalMeshes = RenderScene->GetDrawSkeletalMeshes();
+	//for(FSkeletalMesh* SkeletalMesh : SkeletalMeshes)
+	//{
+	//	SkeletalMesh->InitRenderResource();
+	//	SkeletalMesh->SetPsoKey("SKMPso");
+	//}
 
 	//shadow map
-	RenderScene->GetShadowMap()->InitRenderResource();
-	RenderScene->GetShadowMap()->SetPsoKey("ShadowPass");
-	RenderScene->PassContantView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FPassConstants)), E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
+	//RenderScene->GetShadowMap()->InitRenderResource();
+	//RenderScene->GetShadowMap()->SetPsoKey("ShadowPass");
+	//RenderScene->PassContantView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FPassConstants)), E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
 }
 
 void FSceneRenderer::RenderScene(FScene* RenderScene)

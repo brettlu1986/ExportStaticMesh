@@ -9,11 +9,18 @@ public:
 	LIndexBuffer(UINT InCount, UINT InByteSize, E_INDEX_TYPE InType, void* InData);
 	virtual ~LIndexBuffer();
 
-	virtual void InitRenderResource() override;
-	virtual void DestroyRenderResource() override;
+	UINT GetIndicesCount() { return IndicesCount; }
+	UINT GetIndicesDataSize() { return IndicesByteSize; }
+	E_INDEX_TYPE GetIndicesType() {
+		return IndicesType;
+	}
 
-private: 
+	const void* GetIndicesData()
+	{
+		return IndicesData;
+	}
 
+private:
 	UINT IndicesCount;
 	UINT IndicesByteSize;
 	E_INDEX_TYPE IndicesType;

@@ -59,6 +59,9 @@ public:
 
 	virtual FIndexBuffer* RHICreateIndexBuffer() = 0;
 	virtual FVertexBuffer* RHICreateVertexBuffer() = 0;
+	virtual void UpdateVertexBufferResource(FVertexBuffer* VertexBuffer, LVertexBuffer& VertexBufferData) = 0;
+	virtual void UpdateIndexBufferResource(FIndexBuffer* IndexBuffer, LIndexBuffer& IndexBufferData) = 0;
+	
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) = 0;
 	virtual FTexture* RHICreateTexture() = 0;
 	virtual FTexture* CreateTexture(FTextureInitializer TexInitializer) = 0;

@@ -7,6 +7,8 @@
 #include "FSkeletalMesh.h"
 #include "LAnimationSequence.h"
 
+#include "LMesh.h"
+
 struct DirectionLightData
 {
 	XMFLOAT3 Strength;
@@ -53,5 +55,7 @@ public:
 	static void LoadDirectionLights(string FileName, vector<DirectionLightData>&LightsData);
 
 	static wstring GetAssetFullPath(LPCWSTR AssetName);
+
+	static void LoadMeshFromFile(string FileName, LMesh& Mesh);
 
 };

@@ -243,6 +243,9 @@
     <ClCompile Include="Private\Engine\Common\RenderData\LVertexBuffer.cpp">
       <Filter>Source Files\Engine\Common\RenderData</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Engine\Common\RenderData\LScene.cpp">
+      <Filter>Source Files\Engine\Common\RenderData</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds">
@@ -460,6 +463,9 @@
       <Filter>Header Files\Engine\Common\RenderData</Filter>
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\RenderData\LVertexBuffer.h">
+      <Filter>Header Files\Engine\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\RenderData\LScene.h">
       <Filter>Header Files\Engine\Common\RenderData</Filter>
     </ClInclude>
   </ItemGroup>

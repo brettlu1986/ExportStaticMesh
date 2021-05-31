@@ -21,8 +21,14 @@ void SampleAssets::ReleaseAssets()
 		LSkeleton* Sk = *it;
 		delete Sk;
 	}
+}
 
+void SampleAssets::LoadSampleSceneData(LScene& Scene)
+{
+	auto Mesh = make_shared<LMesh>();
+	LAssetDataLoader::LoadMeshFromFile(SampleAssets::NewMeshRes, *Mesh);
 
+	Scene.AddStaticMeshes(Mesh);
 }
 
 void SampleAssets::LoadSampleScene(FScene* Scene)

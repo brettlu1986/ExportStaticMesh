@@ -4,6 +4,7 @@
 #include "DirectXColors.h"
 #include "FScene.h"
 
+#include "LScene.h"
 
 namespace SampleAssets
 {
@@ -80,6 +81,9 @@ namespace SampleAssets
 
 	void ReleaseAssets();
 	void LoadSampleScene(FScene* Scene);
+
+	const string NewMeshRes = "Linear_Stair_StaticMesh2.bin";
+	void LoadSampleSceneData(LScene& Scene);
 	
 	
 }

@@ -19,12 +19,3 @@ LIndexBuffer::~LIndexBuffer()
 	IndicesData = nullptr;
 }
 
-void LIndexBuffer::InitRenderResource()
-{
-
-}
-
-void LIndexBuffer::DestroyRenderResource()
-{
-
-}

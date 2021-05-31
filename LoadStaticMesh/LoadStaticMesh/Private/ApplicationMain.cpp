@@ -51,8 +51,10 @@ void ApplicationMain::OnTouchInit()
 
 void ApplicationMain::OnSceneInit()
 {
-	SampleAssets::LoadSampleScene(&Scene);
-	FRenderThread::Get()->InitRenderThreadScene(&Scene);
+	SampleAssets::LoadSampleSceneData(*SceneData);
+	//
+	//SampleAssets::LoadSampleScene(&Scene);
+	//FRenderThread::Get()->InitRenderThreadScene(&Scene);
 }
 
 void ApplicationMain::Update(float DeltaTime)
@@ -61,15 +63,17 @@ void ApplicationMain::Update(float DeltaTime)
 	//{
 	//	continue;
 	//}
-	Scene.Update(DeltaTime);
+
+	//Scene.Update(DeltaTime);
+
 	//FRenderThread::Get()->NotifyRenderThreadExcute();
 	FRenderThread::Get()->WaitForRenderThread();
-	FRenderThread::Get()->UpdateRenderSceneResource(&Scene);
+	//FRenderThread::Get()->UpdateRenderSceneResource(&Scene);
 }
 
 void ApplicationMain::OnRender()
 {
-	FRenderThread::Get()->OnRenderScene(&Scene);
+	//FRenderThread::Get()->OnRenderScene(&Scene);
 }
 
 void ApplicationMain::Run()
@@ -82,7 +86,7 @@ void ApplicationMain::Run()
 		Timer->Reset();
 
 		Update(Timer->GetDeltaTime());
-		OnRender();
+		//OnRender();
 		this_thread::sleep_for(FrameLen - Timer->GetChronoDeltaTime());
 	}
 }
@@ -90,7 +94,7 @@ void ApplicationMain::Run()
 void ApplicationMain::Destroy()
 {
 	SampleAssets::ReleaseAssets();
-	FRenderThread::Get()->DestroyRenderScene(&Scene);
+	//FRenderThread::Get()->DestroyRenderScene(&Scene);
 	Timer->Release();
 	LEngine::GetEngine()->Destroy();
 }
@@ -115,32 +119,32 @@ void ApplicationMain::ProcessKeyInput(FInputResult& Input)
 		UINT8 Key = static_cast<UINT8>(Input.KeyMapType);
 		if(Key == 96) //num key board 0
 		{ 
-			Scene.ActiveCamera(0);//scene camera
+			//Scene.ActiveCamera(0);//scene camera
 			return;
 		}
 		else if(Key == 97)//num key board 1
 		{
-			Scene.ActiveCamera(1);
+			//Scene.ActiveCamera(1);
 			return;
 		}
 	}
 
-	if(Scene.GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_SCENE)
-	{
-		LSceneCamera* Camera = dynamic_cast<LSceneCamera*>(Scene.GetActiveCamera());
-		Camera->ProcessCameraKeyInput(Input);
-	}
-	else if(Scene.GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_THIRD_PERSON)
-	{
-		LCharacter* LocalPlayer = Scene.GetLocalControlPlayer();
-		LocalPlayer->ProcessKeyInput(Input);
-	}
+	//if(Scene.GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_SCENE)
+	//{
+	//	LSceneCamera* Camera = dynamic_cast<LSceneCamera*>(Scene.GetActiveCamera());
+	//	Camera->ProcessCameraKeyInput(Input);
+	//}
+	//else if(Scene.GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_THIRD_PERSON)
+	//{
+	//	LCharacter* LocalPlayer = Scene.GetLocalControlPlayer();
+	//	LocalPlayer->ProcessKeyInput(Input);
+	//}
 }
 
 void ApplicationMain::ProcessMouseInput(FInputResult& Input)
 {
 
-	if (Scene.GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_SCENE)
+	/*if (Scene.GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_SCENE)
 	{
 		LSceneCamera* Camera = dynamic_cast<LSceneCamera*>(Scene.GetActiveCamera());
 		Camera->ProcessCameraMouseInput(Input);
@@ -149,6 +153,6 @@ void ApplicationMain::ProcessMouseInput(FInputResult& Input)
 	{
 		LCharacter* LocalPlayer = Scene.GetLocalControlPlayer();
 		LocalPlayer->ProcessMouseInput(Input);
-	}
+	}*/
 }
 

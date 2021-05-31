@@ -18,12 +18,3 @@ LVertexBuffer::~LVertexBuffer()
 	VertexByteData = nullptr;
 }
 
-void LVertexBuffer::InitRenderResource()
-{
-
-}
-
-void LVertexBuffer::DestroyRenderResource()
-{
-
-}
