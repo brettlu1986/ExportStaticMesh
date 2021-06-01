@@ -21,7 +21,7 @@ public:
 
 	void Update(float dt);
 
-public:
+private:
 
 	vector<shared_ptr<LMesh>> StaticMeshes;
 	vector<shared_ptr<LCamera>> Cameras;

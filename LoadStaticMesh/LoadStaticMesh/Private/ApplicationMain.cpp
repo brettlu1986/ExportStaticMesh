@@ -20,6 +20,7 @@ ApplicationMain::ApplicationMain()
 :Timer(nullptr)
 {
 	Application = this;
+	DataScene = make_unique<LScene>();
 }
 
 ApplicationMain::~ApplicationMain()

@@ -9,7 +9,6 @@
 
 LScene::LScene()
 {
-
 }
 
 LScene::~LScene()

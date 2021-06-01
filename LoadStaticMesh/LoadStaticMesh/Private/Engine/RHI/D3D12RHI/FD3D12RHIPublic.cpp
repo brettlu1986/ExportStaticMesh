@@ -142,7 +142,7 @@ void FD3D12DynamicRHI::UpdateVertexBufferResource(FVertexBuffer* VertexBuffer, L
 void FD3D12DynamicRHI::UpdateIndexBufferResource(FIndexBuffer* IndexBuffer, LIndexBuffer& IndexBufferData)
 {
 	FD3D12IndexBuffer* D3DIndexBuffer = dynamic_cast<FD3D12IndexBuffer*>(IndexBuffer);
-	D3DIndexBuffer->InitGPUIndexBufferView(D3DDevice.Get(), CommandList.Get());
+	D3DIndexBuffer->InitGPUIndexBufferView(D3DDevice.Get(), CommandList.Get(), IndexBufferData);
 }
 
 FShader* FD3D12DynamicRHI::RHICreateShader(LPCWSTR  ShaderFile)

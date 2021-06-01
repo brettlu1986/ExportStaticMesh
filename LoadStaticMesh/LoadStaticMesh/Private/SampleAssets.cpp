@@ -51,6 +51,8 @@ void SampleAssets::LoadSampleSceneData(LScene& Scene)
 	shared_ptr<LCamera> SceneCamera = make_shared<LSceneCamera>();
 	LAssetDataLoader::LoadCameraDataFromFile(SampleAssets::CameraBin, *SceneCamera);
 	Scene.AddCamera(SceneCamera);
+
+	Scene.ActiveCamera(0);
 }
 
 void SampleAssets::LoadSampleScene(FScene* Scene)

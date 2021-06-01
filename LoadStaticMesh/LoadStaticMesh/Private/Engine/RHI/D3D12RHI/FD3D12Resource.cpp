@@ -43,6 +43,7 @@ void FD3D12IndexBuffer::InitGPUIndexBufferView(ID3D12Device* Device, ID3D12Graph
 
 void FD3D12IndexBuffer::InitGPUIndexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, LIndexBuffer& IndexBufferData)
 {
+	IndicesCount = IndexBufferData.GetIndicesCount();
 	CreateBuffer(Device, CommandList, IndexBufferData.GetIndicesData(), IndexBufferData.GetIndicesDataSize(), IndexBuffer, IndexBufferUpload);
 	NAME_D3D12_OBJECT(IndexBuffer);
 	NAME_D3D12_OBJECT(IndexBufferUpload);

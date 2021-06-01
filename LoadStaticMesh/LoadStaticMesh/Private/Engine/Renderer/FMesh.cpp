@@ -155,6 +155,9 @@ XMFLOAT4X4 FMesh::GetTextureTransform()
 
 //new use
 FMesh::FMesh(LMesh* MeshData)
+:DiffuseTex(nullptr)
+, VertexBuffer(nullptr)
+, IndexBuffer(nullptr)
 {
 	ModelMatrix = MeshData->GetModelMatrix();
 }
