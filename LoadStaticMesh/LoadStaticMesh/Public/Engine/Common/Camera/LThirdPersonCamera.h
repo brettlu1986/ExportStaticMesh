@@ -16,6 +16,7 @@ public:
 	virtual void Init() override;
 	virtual void OnResize() override;
 	virtual void Update(float DeltaTime) override;
+	virtual void SetActive(bool bActivate) override;
 
 	virtual XMMATRIX GetViewMarix() override;
 	virtual void SetViewTarget(LActor* Target) override;

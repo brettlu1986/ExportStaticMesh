@@ -91,9 +91,22 @@ public:
 
 	void InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData);
 	void AddMeshInRenderThread();
+	void UpdateMeshMatrixInRenderThread(XMMATRIX Mat);
+
+	void SetMeshIndex(UINT Idx)
+	{
+		MeshIndex = Idx;
+	}
+
+	UINT GetMeshIndex()
+	{
+		return MeshIndex;
+	}
 
 	XMMATRIX GetModelMatrix();
 private:
+
 	XMMATRIX ModelMatrix;
-	
+
+	UINT MeshIndex;
 };

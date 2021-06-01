@@ -25,11 +25,11 @@ public:
 	virtual void ShutDown() override;
 
 	virtual void BeginRenderScene() override;
-	virtual void UpdateSceneResources(FScene* RenderScene) override;
+	//virtual void UpdateSceneResources(FScene* RenderScene) override;
 	virtual void EndRenderScene() override;
 	
-	virtual void BeginCreateSceneResource() override;
-	virtual void EndCreateSceneResource() override;
+//	virtual void BeginCreateSceneResource() override;
+//	virtual void EndCreateSceneResource() override;
 	
 	virtual FIndexBuffer* RHICreateIndexBuffer() override;
 	virtual FVertexBuffer* RHICreateVertexBuffer() override;
@@ -42,6 +42,7 @@ public:
 	virtual void CreateResourceViewCreater(UINT CbvCount, UINT SrvCount, UINT UavCount, UINT DsvCount, UINT RtvCount, UINT SamplerCount) override;
 	virtual void CreateVertexAndIndexBufferView(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) override;
 	virtual FResourceView* CreateResourceView(FResourceViewInfo ViewInfo) override;
+	virtual void UpdateConstantBufferView(FResourceView* CbvView, void* pDataUpdate) override;
 	virtual void CreatePipelineStateObject(FPiplineStateInitializer Initializer) override;
 
 	virtual void SetResourceHeaps(vector<FResourceHeap*>& Heaps) override;
@@ -60,9 +61,9 @@ public:
 	virtual FRHIViewPort GetDefaultViewPort() override { return DefaultViewPort;};
 
 private:
-	void UpdateSceneMtConstants(FScene* RenderScene);
-	void UpdateScenePassConstants(FScene* RenderScene);
-	void UpdateSceneSkeletalConstants(FScene* RenderScene);
+	//void UpdateSceneMtConstants(FScene* RenderScene);
+	//void UpdateScenePassConstants(FScene* RenderScene);
+	//void UpdateSceneSkeletalConstants(FScene* RenderScene);
 
 	void FindAdapter();
 	void InitWindow(UINT Width, UINT Height, void* Window);

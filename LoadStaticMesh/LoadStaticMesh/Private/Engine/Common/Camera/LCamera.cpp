@@ -51,7 +51,7 @@ void LCamera::Init()
 	XMVECTOR Target = XMVector3Length(XMVectorSet(Position.x - FocusPosition.x, Position.y - FocusPosition.y, Position.z - FocusPosition.z, 1.f));
 	ArmLength = XMVectorGetX(Target);
 
-	OnResize();
+	//OnResize();
 }
 
 void LCamera::OnResize()

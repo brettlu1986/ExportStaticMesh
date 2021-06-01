@@ -37,11 +37,14 @@ void LEngine::Init(LEngineDesc Desc)
 #endif
 
 	GameThreadId = this_thread::get_id();
-	//only create the module, not call any init rhi api
-	RHICreate();
 
 	FRenderThread::CreateRenderThread();
 	FRenderThread::Get()->Start();
+
+	while(!FRenderThread::IsInited())
+	{
+		continue;
+	}
 }
 
 void LEngine::Destroy()

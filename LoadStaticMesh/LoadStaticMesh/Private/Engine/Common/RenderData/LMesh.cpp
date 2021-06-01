@@ -11,6 +11,7 @@ LMesh::LMesh()
 ,ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
 ,ModelRotation(XMFLOAT3(0.f, 0.f, 0.f))
 ,ModelScale(XMFLOAT3(1.f, 1.f, 1.f))
+,RenderMesh(nullptr)
 {
 
 }
@@ -42,6 +43,7 @@ void LMesh::InitRenderThreadResource()
 		[RenderMeshRes, VertexData, IndexData]()
 		{
 			RenderMeshRes->InitRenderThreadResource(*VertexData, *IndexData);
+			RenderMeshRes->SetPsoKey("PsoNoTexture");
 			RenderMeshRes->AddMeshInRenderThread();
 		}
 	);
@@ -76,6 +78,17 @@ void LMesh::UpdateModelMatrix()
 	ModelMatrix = XMMatrixScaling(ModelScale.x, ModelScale.y, ModelScale.z) *
 		XMMatrixRotationRollPitchYaw(XMConvertToRadians(-ModelRotation.z), XMConvertToRadians(-ModelRotation.x), XMConvertToRadians(ModelRotation.y)) *
 		XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
+
+	XMMATRIX ModelMat = GetModelMatrix();
+	auto RenderMeshRes = RenderMesh;
+	assert(RenderMeshRes != nullptr);
+	RENDER_THREAD_TASK(
+		[RenderMeshRes, ModelMat]()
+		{
+			RenderMeshRes->UpdateMeshMatrixInRenderThread(ModelMat);
+		}
+	);
+
 }
 
 

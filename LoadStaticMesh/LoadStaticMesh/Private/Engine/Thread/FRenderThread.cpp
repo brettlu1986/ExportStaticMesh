@@ -5,6 +5,7 @@
 #include "FRHI.h"
 
 FRenderThread* FRenderThread::RenderThread = nullptr;
+bool FRenderThread::Inited = false;
 
 FRenderThread::FRenderThread()
 	:FTaskThread("RenderThread")
@@ -16,7 +17,14 @@ FRenderThread::FRenderThread()
 void FRenderThread::OnThreadInit()
 {
 	RenderScene = make_unique<FScene>();
-	Renderer.Initialize();
+	Renderer.Initialize(GetRenderScene());
+
+	Inited = true;
+}
+
+bool FRenderThread::IsInited()
+{
+	return Inited;
 }
 
 void FRenderThread::Run()
@@ -30,15 +38,20 @@ void FRenderThread::Run()
 		//	continue;
 		//}
 
+		GRHI->BeginRenderScene();
+
 		DoTasks();
 
 		//GRHI->UpdateSceneResources(RenderScene);
-		//Renderer.RenderScene(RenderScene);
 		
+		
+		Renderer.RenderScene(GetRenderScene());
+		
+		GRHI->EndRenderScene();
 		//NotifyGameExcute();
 		
-		//--FrameTaskNum;
-		//RenderCV.notify_all();
+		--FrameTaskNum;
+		RenderCV.notify_all();
 	}
 	Clear();
 	RHIExit();
@@ -62,40 +75,40 @@ FRenderThread* FRenderThread::Get()
 	return RenderThread;
 }
 
-void FRenderThread::InitRenderThreadScene(FScene* Scene)
-{
-	AddTask([this, Scene] {
-		//GRHI->BeginCreateSceneResource();
-		//Renderer.Initialize(Scene);
-		//GRHI->EndCreateSceneResource();
-	});
-}
+//void FRenderThread::InitRenderThreadScene(FScene* Scene)
+//{
+//	AddTask([this, Scene] {
+//		//GRHI->BeginCreateSceneResource();
+//		//Renderer.Initialize(Scene);
+//		//GRHI->EndCreateSceneResource();
+//	});
+//}
 
-void FRenderThread::UpdateRenderSceneResource(FScene* Scene)
-{
-	AddTask([this, Scene]
-	{
-		GRHI->UpdateSceneResources(Scene);
-	});
-}
+//void FRenderThread::UpdateRenderSceneResource(FScene* Scene)
+//{
+//	AddTask([this, Scene]
+//	{
+//		GRHI->UpdateSceneResources(Scene);
+//	});
+//}
 
-void FRenderThread::OnRenderScene(FScene* Scene)
-{
-	AddTask([this, Scene]
-	{
-		Renderer.RenderScene(Scene);
-		--FrameTaskNum;
-		RenderCV.notify_all();
-	});
-}
+//void FRenderThread::OnRenderScene(FScene* Scene)
+//{
+//	AddTask([this, Scene]
+//	{
+//		Renderer.RenderScene(Scene);
+//		--FrameTaskNum;
+//		RenderCV.notify_all();
+//	});
+//}
 
-void FRenderThread::DestroyRenderScene(FScene* Scene)
-{
-	AddTask([this, Scene]
-	{
-		Scene->Destroy();
-	});
-}
+//void FRenderThread::DestroyRenderScene(FScene* Scene)
+//{
+//	AddTask([this, Scene]
+//	{
+//		Scene->Destroy();
+//	});
+//}
 
 //void FRenderThread::NotifyRenderThreadExcute()
 //{

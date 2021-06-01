@@ -2,7 +2,8 @@
 
 #include "LScene.h"
 #include "LMesh.h"
-
+#include "LCamera.h"
+#include "LLight.h"
 #include "LEngine.h"
 
 
@@ -19,6 +20,44 @@ LScene::~LScene()
 void LScene::AddStaticMeshes(shared_ptr<LMesh>& Mesh)
 {
 	assert(LEngine::GetEngine()->IsGameThread());
-	Mesh->InitRenderThreadResource();
-	StaticMeshes.push_back(move(Mesh));
+	StaticMeshes.push_back(std::move(Mesh));
+}
+
+void LScene::AddLightToScene(shared_ptr<LLight>& Light)
+{
+	assert(LEngine::GetEngine()->IsGameThread());
+	SceneLights.push_back(std::move(Light));
+}
+
+void LScene::AddCamera(shared_ptr<LCamera>& Camera)
+{
+	assert(LEngine::GetEngine()->IsGameThread());
+	Cameras.push_back(std::move(Camera));
+}
+
+void LScene::ActiveCamera(UINT CameraIndex)
+{
+	assert(CameraIndex < Cameras.size());
+	for (UINT i = 0; i < Cameras.size(); i++)
+	{
+		Cameras[i]->SetActive(CameraIndex == i);
+	}
+}
+
+LCamera* LScene::GetActiveCamera()
+{
+	for (shared_ptr<LCamera>& Camera : Cameras)
+	{
+		if (Camera->IsActive())
+			return Camera.get();
+	}
+	assert(!"must have one active camera");
+	return Cameras[0].get();
+}
+
+
+void LScene::Update(float dt)
+{
+	GetActiveCamera()->Update(dt);
+	SceneLights[0]->Update(dt);
 }

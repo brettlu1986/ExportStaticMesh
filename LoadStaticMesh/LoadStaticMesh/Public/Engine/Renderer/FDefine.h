@@ -10,7 +10,8 @@ enum class E_FRESOURCE_TYPE : UINT8
 	F_TYPE_UNKNOWN = 0,
 	F_TYPE_INDEX_BUFFER,
 	F_TYPE_VERTEX_BUFFER,
-	F_TYPE_CONSTANT_BUFFER,
+	F_TYPE_MESH,
+	F_TYPE_LIGHT,
 	F_TYPE_TEXTURE,
 	F_TYPE_SHADER,
 	F_TYPE_MATERIAL,
@@ -381,59 +382,59 @@ public:
 
 #define MaxLights 16
 
-struct FLight
-{
-public:
-	FLight()
-	:Alpha(0.f)
-	,Theta(0.f)
-	,Radius(0.f)
-	{};
-
-	XMFLOAT3 Strength = { 0.5f, 0.5f, 0.5f };
-	float FalloffStart = 1.0f;                          // point/spot light only
-	XMFLOAT3 Direction = { 0.0f, -1.0f, 0.0f };// directional/spot light only
-	float FalloffEnd = 10.0f;                           // point/spot light only
-	XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };  // point/spot light only
-	float SpotPower = 64.0f;                            // spot light only
-	UINT LightIndex = 0;
-
-private:
-	float Alpha;
-	float Theta;
-	float Radius;
-
-public:
-	void Init()
-	{
-		// assume that focus to {0, 0, 0}
-		XMVECTOR Target = XMVector3Length(XMVectorSet(Position.x, Position.y, Position.z, 1.f));
-		Radius = XMVectorGetX(Target);
-		Alpha = acosf(Position.z / Radius);
-		Theta = atanf(Position.x / Position.y);
-		if (Theta < 0.f)
-			Theta += XM_PI * 2;
-		Alpha = MathHelper::Clamp(Alpha, 0.1f, MathHelper::Pi - 0.1f);
-	}
-
-	void Update(float dt)
-	{
-		Theta -= 0.001f;
-		XMVECTOR V = XMVectorSet(Radius * sinf(Alpha) * sinf(Theta),
-			Radius * sinf(Alpha) * cosf(Theta),
-			Radius * cosf(Alpha),
-			1.f);
-		Position.x = XMVectorGetX(V);
-		Position.y = XMVectorGetY(V);
-		Position.z = XMVectorGetZ(V);
-
-		XMVECTOR D = XMVectorSet(-Position.x, -Position.y, -Position.z, 1.f);
-		D = XMVector3Normalize(D);
-		Direction.x = XMVectorGetX(D);
-		Direction.y = XMVectorGetY(D);
-		Direction.z = XMVectorGetZ(D);
-	}
-};
+//struct FLight
+//{
+//public:
+//	FLight()
+//	:Alpha(0.f)
+//	,Theta(0.f)
+//	,Radius(0.f)
+//	{};
+//
+//	XMFLOAT3 Strength = { 0.5f, 0.5f, 0.5f };
+//	float FalloffStart = 1.0f;                          // point/spot light only
+//	XMFLOAT3 Direction = { 0.0f, -1.0f, 0.0f };// directional/spot light only
+//	float FalloffEnd = 10.0f;                           // point/spot light only
+//	XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };  // point/spot light only
+//	float SpotPower = 64.0f;                            // spot light only
+//	UINT LightIndex = 0;
+//
+//private:
+//	float Alpha;
+//	float Theta;
+//	float Radius;
+//
+//public:
+//	void Init()
+//	{
+//		// assume that focus to {0, 0, 0}
+//		XMVECTOR Target = XMVector3Length(XMVectorSet(Position.x, Position.y, Position.z, 1.f));
+//		Radius = XMVectorGetX(Target);
+//		Alpha = acosf(Position.z / Radius);
+//		Theta = atanf(Position.x / Position.y);
+//		if (Theta < 0.f)
+//			Theta += XM_PI * 2;
+//		Alpha = MathHelper::Clamp(Alpha, 0.1f, MathHelper::Pi - 0.1f);
+//	}
+//
+//	void Update(float dt)
+//	{
+//		Theta -= 0.001f;
+//		XMVECTOR V = XMVectorSet(Radius * sinf(Alpha) * sinf(Theta),
+//			Radius * sinf(Alpha) * cosf(Theta),
+//			Radius * cosf(Alpha),
+//			1.f);
+//		Position.x = XMVectorGetX(V);
+//		Position.y = XMVectorGetY(V);
+//		Position.z = XMVectorGetZ(V);
+//
+//		XMVECTOR D = XMVectorSet(-Position.x, -Position.y, -Position.z, 1.f);
+//		D = XMVector3Normalize(D);
+//		Direction.x = XMVectorGetX(D);
+//		Direction.y = XMVectorGetY(D);
+//		Direction.z = XMVectorGetZ(D);
+//	}
+//};
 
 struct FPassLight
 {
@@ -446,23 +447,31 @@ struct FPassLight
 	UINT LightIndex = 0;
 };
 
-struct FPassConstants
+struct FPassViewProjection
 {
 public:
-	FPassConstants()
+	FPassViewProjection()
 	:ViewProj(MathHelper::Identity4x4())
 	, EyePosW({ 0.0f, 0.0f, 0.0f })
 	, CbPerObjectPad1(0.f)
-	, ShadowTransform(XMFLOAT4X4())
-	, LightSpaceMatrix(XMFLOAT4X4())
 	{};
 	XMFLOAT4X4 ViewProj;
 	XMFLOAT3 EyePosW ;
 	float CbPerObjectPad1;
+};
+
+struct FPassLightInfo
+{
+public:
+	FPassLightInfo()
+		:ShadowTransform(XMFLOAT4X4())
+		,LightSpaceMatrix(XMFLOAT4X4())
+	{};
 	XMFLOAT4X4 LightSpaceMatrix;
 	XMFLOAT4X4 ShadowTransform;
 	FPassLight Lights[MaxLights];
 };
+
 
 static const UINT MAX_BONE_TRANS = 80;
 struct FSkeletalConstants

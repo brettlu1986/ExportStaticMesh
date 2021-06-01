@@ -13,7 +13,7 @@ typedef struct LEngineDesc
 }LEngineDesc;
 
 class LDevice;
-class FScene;
+//class FScene;
 class LEngine
 {
 public:

@@ -6,20 +6,13 @@
 
 FDynamicRHI* GRHI = nullptr;
 
-bool RHICreate()
+void RHIInit()
 {
 	if (!GRHI)
 	{
 		GRHI = PlatformCreateDynamicRHI();
-		return true;
 	}
-	return false;
-}
-
-void RHIInit()
-{
-	if(GRHI)
-		GRHI->Init();
+	GRHI->Init();
 }
 
 void RHIExit()

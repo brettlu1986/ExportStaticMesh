@@ -4,6 +4,7 @@
 #include "FRHI.h"
 #include "FDefine.h"
 #include "LAssetDataLoader.h"
+#include "DirectXColors.h"
 
 #include "LEngine.h"
 
@@ -158,6 +159,12 @@ FMesh::FMesh(LMesh* MeshData)
 	ModelMatrix = MeshData->GetModelMatrix();
 }
 
+XMMATRIX FMesh::GetModelMatrix()
+{
+	//calculate model matrix : scale * rotation * translation
+	return ModelMatrix;
+}
+
 void FMesh::InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData)
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
@@ -175,13 +182,30 @@ void FMesh::InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuff
 void FMesh::AddMeshInRenderThread()
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
-
 	FRenderThread::Get()->GetRenderScene()->AddMeshToScene(this);
 }
 
-XMMATRIX FMesh::GetModelMatrix()
+void FMesh::UpdateMeshMatrixInRenderThread(XMMATRIX Mat)
 {
-	//calculate model matrix : scale * rotation * translation
-	return ModelMatrix;
+	assert(LEngine::GetEngine()->IsRenderThread());
+	ModelMatrix = Mat;
+
+	FObjectConstants ObjConstants;
+	XMStoreFloat4x4(&ObjConstants.World, XMMatrixTranspose(GetModelMatrix()));
+	XMFLOAT4X4 TexMat = MathHelper::Identity4x4();
+	XMStoreFloat4x4(&ObjConstants.TexTransform, XMMatrixTranspose(XMLoadFloat4x4(&TexMat)));
+	GRHI->UpdateConstantBufferView(MatrixConstantBufferView, &ObjConstants);
+
+	//TODO: exchange to export material param
+	FMaterialConstants MatConstants;
+	MatConstants.DiffuseAlbedo = XMFLOAT4(Colors::DarkGray);
+	MatConstants.FresnelR0 = XMFLOAT3(0.3f, 0.3f, 0.3f);
+	MatConstants.Roughness = 0.4f;
+
+	XMFLOAT4X4 MatTransform = MathHelper::Identity4x4();
+	XMStoreFloat4x4(&MatConstants.MatTransform, XMMatrixTranspose(XMLoadFloat4x4(&MatTransform)));
+	GRHI->UpdateConstantBufferView(MaterialConstantBufferView, &MatConstants);
 }
+
+
 

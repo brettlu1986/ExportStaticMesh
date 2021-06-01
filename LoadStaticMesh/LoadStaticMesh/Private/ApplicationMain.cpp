@@ -51,7 +51,7 @@ void ApplicationMain::OnTouchInit()
 
 void ApplicationMain::OnSceneInit()
 {
-	SampleAssets::LoadSampleSceneData(*SceneData);
+	SampleAssets::LoadSampleSceneData(*DataScene);
 	//
 	//SampleAssets::LoadSampleScene(&Scene);
 	//FRenderThread::Get()->InitRenderThreadScene(&Scene);
@@ -65,16 +65,17 @@ void ApplicationMain::Update(float DeltaTime)
 	//}
 
 	//Scene.Update(DeltaTime);
+	DataScene->Update(DeltaTime);
 
 	//FRenderThread::Get()->NotifyRenderThreadExcute();
 	FRenderThread::Get()->WaitForRenderThread();
 	//FRenderThread::Get()->UpdateRenderSceneResource(&Scene);
 }
 
-void ApplicationMain::OnRender()
-{
-	//FRenderThread::Get()->OnRenderScene(&Scene);
-}
+//void ApplicationMain::OnRender()
+//{
+//	//FRenderThread::Get()->OnRenderScene(&Scene);
+//}
 
 void ApplicationMain::Run()
 {
@@ -129,6 +130,13 @@ void ApplicationMain::ProcessKeyInput(FInputResult& Input)
 		}
 	}
 
+
+	if (DataScene->GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_SCENE)
+	{
+		LSceneCamera* Camera = dynamic_cast<LSceneCamera*>(DataScene->GetActiveCamera());
+		Camera->ProcessCameraKeyInput(Input);
+	}
+
 	//if(Scene.GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_SCENE)
 	//{
 	//	LSceneCamera* Camera = dynamic_cast<LSceneCamera*>(Scene.GetActiveCamera());
@@ -142,7 +150,12 @@ void ApplicationMain::ProcessKeyInput(FInputResult& Input)
 }
 
 void ApplicationMain::ProcessMouseInput(FInputResult& Input)
-{
+{	
+	if (DataScene->GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_SCENE)
+	{
+		LSceneCamera* Camera = dynamic_cast<LSceneCamera*>(DataScene->GetActiveCamera());
+		Camera->ProcessCameraMouseInput(Input);
+	}
 
 	/*if (Scene.GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_SCENE)
 	{

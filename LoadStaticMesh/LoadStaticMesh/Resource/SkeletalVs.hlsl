@@ -11,11 +11,15 @@ cbuffer cbSkinned : register(b1)
 	float4x4 gBoneTransforms[80];
 };
 
-cbuffer cbPass : register(b2)
+cbuffer cbPass1 : register(b2)
 {
 	float4x4 gViewProj;
 	float3 gEyePosW;
 	float cbPerObjectPad1;
+}
+
+cbuffer cbPass2 : register(b3)
+{
 	float4x4 gLightSpaceMatrix;
 	float4x4 gShadowMatrix;
 	Light gLight[MaxLights];

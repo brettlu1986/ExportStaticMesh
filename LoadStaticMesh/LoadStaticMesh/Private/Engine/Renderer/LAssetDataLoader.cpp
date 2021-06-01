@@ -110,7 +110,7 @@ void LAssetDataLoader::LoadMeshVertexDataFromFile(string FileName, FMesh* Mesh)
 	}
 }
 
-void LAssetDataLoader::LoadCameraDataFromFile(string FileName, LCamera* Camera)
+void LAssetDataLoader::LoadCameraDataFromFile(string FileName, LCamera& Camera)
 {
 	FCameraData CameraData;
 	string FName = GetSaveDirectory() + FileName;
@@ -124,8 +124,8 @@ void LAssetDataLoader::LoadCameraDataFromFile(string FileName, LCamera* Camera)
 	Rf.read(CameraBuffer, sizeof(FCameraData));
 	CameraData = *(FCameraData*)(CameraBuffer);
 
-	Camera->SetCameraData(CameraData);
-	Camera->Init();
+	Camera.SetCameraData(CameraData);
+	Camera.Init();
 	delete[] CameraBuffer;
 	Rf.close();
 	if (!Rf.good()) {
@@ -315,7 +315,6 @@ void LAssetDataLoader::LoadAnimationSquence(string SequenceName, LAnimationSeque
 	Seq.GetCurrentAnimPoseToParentTrans().resize(Seq.GetSequenceTracks().size());
 }
 
-
 void LAssetDataLoader::LoadMeshFromFile(string FileName, LMesh& Mesh)
 {
 	string FName = GetSaveDirectory() + FileName;
@@ -332,10 +331,6 @@ void LAssetDataLoader::LoadMeshFromFile(string FileName, LMesh& Mesh)
 
 	XMFLOAT3 Scale;
 	Rf.read((char*)&Scale, sizeof(XMFLOAT3));
-
-	Mesh.SetModelLocation(Location);
-	Mesh.SetModelRotation(Rotation);
-	Mesh.SetModelScale(Scale);
 
 	UINT VertexCount;
 	Rf.read((char*)&VertexCount, sizeof(UINT));
@@ -366,6 +361,14 @@ void LAssetDataLoader::LoadMeshFromFile(string FileName, LMesh& Mesh)
 	Mesh.SetIndexBufferInfo(IndicesCount, IndicesByteSize,
 		bUseHalfInt32 ? E_INDEX_TYPE::TYPE_UINT_16 : E_INDEX_TYPE::TYPE_UINT_32,
 		bUseHalfInt32 ? reinterpret_cast<void*>(IndicesHalf.data()) : reinterpret_cast<void*>(Indices.data()));
+
+	//TODO:move the logic other place, here not good
+	//init render resource first
+	Mesh.InitRenderThreadResource();
+	//update the world matrix, and update world render cbv
+	Mesh.SetModelLocation(Location);
+	Mesh.SetModelRotation(Rotation);
+	Mesh.SetModelScale(Scale);
 
 	Rf.close();
 	if (!Rf.good()) {

@@ -43,6 +43,12 @@ void LThirdPersonCamera::Update(float DeltaTime)
 	UpdateViewTarget(DeltaTime);
 }
 
+void LThirdPersonCamera::SetActive(bool bActivate) 
+{
+	LCamera::SetActive(bActivate);
+
+}
+
 XMMATRIX LThirdPersonCamera::GetViewMarix()
 {
 	return XMMatrixLookToLH(XMLoadFloat3(&Position), XMLoadFloat3(&LookDirection), XMLoadFloat3(&UpDirection));

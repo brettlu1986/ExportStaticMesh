@@ -246,6 +246,12 @@
     <ClCompile Include="Private\Engine\Common\RenderData\LScene.cpp">
       <Filter>Source Files\Engine\Common\RenderData</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Engine\Common\RenderData\LLight.cpp">
+      <Filter>Source Files\Engine\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\FLight.cpp">
+      <Filter>Source Files\Engine\Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds">
@@ -467,6 +473,12 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\RenderData\LScene.h">
       <Filter>Header Files\Engine\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\RenderData\LLight.h">
+      <Filter>Header Files\Engine\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\FLight.h">
+      <Filter>Header Files\Engine\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

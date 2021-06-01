@@ -16,7 +16,7 @@ public:
 	void Run();
 
 	void Update(float DeltaTime);
-	void OnRender();
+	//void OnRender();
 	void Destroy();
 	
 	static ApplicationMain* Get() { return Application; }
@@ -32,5 +32,5 @@ private:
 private: 
 	//FScene Scene;
 	LGameTimer* Timer;
-	unique_ptr<LScene> SceneData;
+	unique_ptr<LScene> DataScene;
 };

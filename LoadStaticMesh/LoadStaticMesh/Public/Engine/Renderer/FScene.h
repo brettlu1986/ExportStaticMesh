@@ -6,9 +6,10 @@
 #include "LCharacter.h"
 #include "FSkeletalMesh.h"
 
-class FShadowMap;
+//class FShadowMap;
 class FMesh;
-class LCamera;
+class FLight;
+//class LCamera;
 class FScene
 {
 public: 
@@ -16,8 +17,9 @@ public:
 	~FScene();
 
 	void AddMeshToScene(FMesh* Mesh);
-	void AddCharacterToScene(LCharacter* Character);
+	//void AddCharacterToScene(LCharacter* Character);
 	void AddLightToScene(FLight* Light);
+	void UpdateLightToScene(FLight* Light);
 
 	void Update(float DeltaTime);
 	void Destroy();
@@ -27,80 +29,89 @@ public:
 		return Meshes;
 	}
 
-	const vector<FSkeletalMesh*>& GetDrawSkeletalMeshes() 
-	{
-		return SkmMeshes;
-	}
 
-	const vector<LCharacter*>& GetCharacters()
-	{
-		return Players;
-	}
+	//const vector<FSkeletalMesh*>& GetDrawSkeletalMeshes() 
+	//{
+	//	return SkmMeshes;
+	//}
 
-	LCamera* GetActiveCamera()
-	{
-		for(LCamera* Camera : Cameras)
-		{
-			if(Camera->IsActive())
-				return Camera;
-		}
-		assert(!"must have one active camera");
-		return Cameras[0];
-	}
+	//const vector<LCharacter*>& GetCharacters()
+	//{
+	//	return Players;
+	//}
 
-	void AddCamera(LCamera* Ca)
-	{
-		Cameras.push_back(Ca);
-	}
+	//LCamera* GetActiveCamera()
+	//{
+	//	for(LCamera* Camera : Cameras)
+	//	{
+	//		if(Camera->IsActive())
+	//			return Camera;
+	//	}
+	//	assert(!"must have one active camera");
+	//	return Cameras[0];
+	//}
+
+	//void AddCamera(LCamera* Ca)
+	//{
+	//	Cameras.push_back(Ca);
+	//}
 	
-	bool IsConstantDirty()
-	{
-		return ConstantDirty > 0;
-	}
+	//bool IsConstantDirty()
+	//{
+	//	return ConstantDirty > 0;
+	//}
 
-	void DecreaseDirtyCount()
-	{
-		ConstantDirty --;
-	}
+	//void DecreaseDirtyCount()
+	//{
+	//	ConstantDirty--;
+	//}
 
-	FLight* GetLight(UINT LightIndex)
-	{
-		return SceneLights[LightIndex];
-	}
+	//FLight* GetLight(UINT LightIndex)
+	//{
+	//	return SceneLights[LightIndex];
+	//}
 
-	LCharacter* GetLocalControlPlayer()
-	{
-		return Players[0];
-	}
+	//LCharacter* GetLocalControlPlayer()
+	//{
+	//	return Players[0];
+	//}
 
-	FResourceView* PassContantView;
+	FResourceView* PassViewProj;
+	FResourceView* PassLightInfo;
 
-	void ActiveCamera(UINT CameraIndex);
+	//void ActiveCamera(UINT CameraIndex);
 
-	LCamera* GetThirdPersonCamera()
-	{
-		for (LCamera* Camera : Cameras)
-		{
-			if (Camera->GetCameraType() == E_CAMERA_TYPE::CAMERA_THIRD_PERSON)
-				return Camera;
-		}
-		return nullptr;
-	}
+	//LCamera* GetThirdPersonCamera()
+	//{
+	//	for (LCamera* Camera : Cameras)
+	//	{
+	//		if (Camera->GetCameraType() == E_CAMERA_TYPE::CAMERA_THIRD_PERSON)
+	//			return Camera;
+	//	}
+	//	return nullptr;
+	//}
 
-	FShadowMap* GetShadowMap()
-	{
-		return ShadowMap;
-	}
+	void UpdateViewProjInfo(FPassViewProjection UpdateViewProj);
+	void UpdateLightInfo(FPassLightInfo UpdateLight);
+	
+
+	//FShadowMap* GetShadowMap()
+	//{
+	//	return ShadowMap;
+	//}
 private: 
-	void Init();
+	//void Init();
 	
-	vector<LCharacter*> Players;
-	vector<FSkeletalMesh*> SkmMeshes;
+	//vector<LCharacter*> Players;
+	//vector<FSkeletalMesh*> SkmMeshes;
 	vector<FMesh*> Meshes;
 	vector<FLight*> SceneLights;
 
-	UINT ConstantDirty;
+	//UINT ConstantDirty;
 
-	vector<LCamera*> Cameras;
-	FShadowMap* ShadowMap;
+	//vector<LCamera*> Cameras;
+	//FShadowMap* ShadowMap;
+
+	FPassViewProjection ViewProjInfo;
+	FPassLightInfo LightInfo;
 };

@@ -51,11 +51,11 @@ public:
 	virtual void ShutDown() = 0;
 	
 	virtual void BeginRenderScene() = 0;
-	virtual void UpdateSceneResources(FScene* RenderScene) = 0;
+	//virtual void UpdateSceneResources(FScene* RenderScene) = 0;
 	virtual void EndRenderScene() = 0;
 
-	virtual void BeginCreateSceneResource() = 0;
-	virtual void EndCreateSceneResource() = 0;
+	//virtual void BeginCreateSceneResource() = 0;
+	//virtual void EndCreateSceneResource() = 0;
 
 	virtual FIndexBuffer* RHICreateIndexBuffer() = 0;
 	virtual FVertexBuffer* RHICreateVertexBuffer() = 0;
@@ -70,6 +70,7 @@ public:
 	virtual void CreateVertexAndIndexBufferView(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) = 0;
 	//the Texuture**  is the texture array start pointer, it can create and bind more than one texture onece
 	virtual FResourceView* CreateResourceView(FResourceViewInfo ViewInfo) = 0;
+	virtual void UpdateConstantBufferView(FResourceView* CbvView, void* pDataUpdate) = 0;
 	virtual void CreatePipelineStateObject(FPiplineStateInitializer Initializer) = 0;
 
 	virtual void SetResourceHeaps(vector<FResourceHeap*>& Heaps ) = 0;

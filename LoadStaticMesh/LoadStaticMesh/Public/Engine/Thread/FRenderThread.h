@@ -12,6 +12,9 @@ public:
 	virtual void Run() override;
 	void OnThreadInit();
 
+	static bool IsInited();
+	
+
 	static void CreateRenderThread();
 	static void DestroyRenderThread();
 	static FRenderThread* Get();
@@ -19,11 +22,11 @@ public:
 	condition_variable RenderCV;
 	atomic_int FrameTaskNum;
 
-	void InitRenderThreadScene(FScene* Scene);
-	void UpdateRenderSceneResource(FScene* Scene);
+	//void InitRenderThreadScene(FScene* Scene);
+	//void UpdateRenderSceneResource(FScene* Scene);
 
-	void OnRenderScene(FScene* Scene);
-	void DestroyRenderScene(FScene* Scene);
+	//void OnRenderScene(FScene* Scene);
+	//void DestroyRenderScene(FScene* Scene);
 
 	FScene* GetRenderScene()
 	{
@@ -41,6 +44,9 @@ public:
 private:
 	static FRenderThread* RenderThread;
 	static const UINT CPU_MAX_AHEAD = 3;
+
+	static bool Inited;
+
 	FSceneRenderer Renderer;
 	//FScene* RenderScene;
 	

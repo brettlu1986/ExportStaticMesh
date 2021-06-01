@@ -172,6 +172,7 @@
     <ClCompile Include="Private\Engine\Common\LGameTimer.cpp" />
     <ClCompile Include="Private\Engine\Common\LInput.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LIndexBuffer.cpp" />
+    <ClCompile Include="Private\Engine\Common\RenderData\LLight.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LMesh.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LResource.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LScene.cpp" />
@@ -180,6 +181,7 @@
     <ClCompile Include="Private\Engine\Common\Windows\LInputWindows.cpp" />
     <ClCompile Include="Private\Engine\LEngine.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FIndexBuffer.cpp" />
+    <ClCompile Include="Private\Engine\Renderer\FLight.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FMaterial.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FMesh.cpp" />
     <ClCompile Include="Private\Engine\Renderer\FRenderResource.cpp" />
@@ -427,6 +429,7 @@
     <ClInclude Include="Public\Engine\Common\LLog.h" />
     <ClInclude Include="Public\Engine\Common\LRingBuffer.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LIndexBuffer.h" />
+    <ClInclude Include="Public\Engine\Common\RenderData\LLight.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LMesh.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LResource.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LScene.h" />
@@ -436,6 +439,7 @@
     <ClInclude Include="Public\Engine\LEngine.h" />
     <ClInclude Include="Public\Engine\Renderer\FDefine.h" />
     <ClInclude Include="Public\Engine\Renderer\FIndexBuffer.h" />
+    <ClInclude Include="Public\Engine\Renderer\FLight.h" />
     <ClInclude Include="Public\Engine\Renderer\FMaterial.h" />
     <ClInclude Include="Public\Engine\Renderer\FMesh.h" />
     <ClInclude Include="Public\Engine\Renderer\FRenderer.h" />

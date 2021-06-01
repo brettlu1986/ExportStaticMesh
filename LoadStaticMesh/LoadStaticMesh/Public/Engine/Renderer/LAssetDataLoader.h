@@ -50,12 +50,12 @@ public:
 
 	static void LoadAnimationSquence(string SequenceName, LAnimationSequence& Seq);
 
-	static void LoadCameraDataFromFile(string FileName, LCamera* Camera);
-
 	static void LoadDirectionLights(string FileName, vector<DirectionLightData>&LightsData);
 
 	static wstring GetAssetFullPath(LPCWSTR AssetName);
 
 	static void LoadMeshFromFile(string FileName, LMesh& Mesh);
+
+	static void LoadCameraDataFromFile(string FileName, LCamera& Camera);
 
 };

@@ -42,11 +42,11 @@ public:
 		return bActive;
 	}
 
-	void SetActive(bool bActivate)
+	virtual void SetActive(bool bActivate)
 	{
 		bActive = bActivate;
 	}
-
+	
 	void SetCameraData(FCameraData Data)
 	{
 		CameraDatas = Data;

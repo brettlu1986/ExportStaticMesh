@@ -29,7 +29,7 @@ namespace SampleAssets
 	const string SampleResourceTexture[] = 
 	{
 		"Resource/T_Chair_M.dds",
-		"","","","","","","","",""
+		"","","","","","","","","",""
 	};
 
 	const string PsoUseTexture = "PsoUseTexture";
@@ -82,7 +82,6 @@ namespace SampleAssets
 	void ReleaseAssets();
 	void LoadSampleScene(FScene* Scene);
 
-	const string NewMeshRes = "Linear_Stair_StaticMesh2.bin";
 	void LoadSampleSceneData(LScene& Scene);
 	
 	

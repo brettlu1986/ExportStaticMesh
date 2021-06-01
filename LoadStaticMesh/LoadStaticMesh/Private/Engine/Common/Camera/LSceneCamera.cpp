@@ -102,6 +102,16 @@ void LSceneCamera::UpdateInput(float dt)
 	}
 }
 
+void LSceneCamera::SetActive(bool bActivate)
+{
+	LCamera::SetActive(bActivate);
+
+	if(bActive)
+	{
+		UpdateViewProjectionRenderThread();
+	}
+}
+
 void LSceneCamera::Update(float DeltaTime)
 {
 	if(!bActive)
@@ -171,9 +181,31 @@ void LSceneCamera::CalculateLocation()
 	Position.x = XMVectorGetX(V);
 	Position.y = XMVectorGetY(V);
 	Position.z = XMVectorGetZ(V);
+
+	UpdateViewProjectionRenderThread();
 }
 
 XMMATRIX LSceneCamera::GetViewMarix()
 {
 	return XMMatrixLookAtLH(XMLoadFloat3(&Position), XMLoadFloat3(&FocusPosition), XMLoadFloat3(&UpDirection));
+}
+
+void LSceneCamera::UpdateViewProjectionRenderThread()
+{
+	assert(LEngine::GetEngine()->IsGameThread());
+
+	XMFLOAT4X4 MtProj;
+	XMStoreFloat4x4(&MtProj, GetProjectionMatrix());
+	XMMATRIX ViewProj = GetViewMarix() * XMLoadFloat4x4(&MtProj);
+
+	FPassViewProjection ViewProjInfo;
+	XMStoreFloat4x4(&ViewProjInfo.ViewProj, XMMatrixTranspose(ViewProj));
+	ViewProjInfo.EyePosW = GetCameraLocation();
+
+	RENDER_THREAD_TASK(
+		[ViewProjInfo]()
+		{
+			FRenderThread::Get()->GetRenderScene()->UpdateViewProjInfo(ViewProjInfo);
+		}
+	);
 }
