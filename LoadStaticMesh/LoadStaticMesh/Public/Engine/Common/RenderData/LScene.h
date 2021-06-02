@@ -22,6 +22,16 @@ public:
 
 	void Update(float dt);
 
+	const vector<shared_ptr<LCharacter>>& GetCharacters()
+	{
+		return Players;
+	}
+
+	LCharacter* GetLocalControlPlayer()
+	{
+		return Players[0].get();
+	}
+
 private:
 
 	vector<shared_ptr<LMesh>> StaticMeshes;

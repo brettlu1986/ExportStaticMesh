@@ -26,7 +26,7 @@ public:
 	void ProcessCameraKeyInput(FInputResult& KeyInput);
 	void CalculateLocation();
 
-	void UpdateViewProjectionRenderThread();
+	
 private:
 	void ProcessInput();
 

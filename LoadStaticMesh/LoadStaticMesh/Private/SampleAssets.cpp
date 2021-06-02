@@ -48,7 +48,6 @@ void SampleAssets::LoadSampleSceneData(LScene& Scene)
 		Scene.AddLightToScene(Light);
 	}
 
-	//--
 	auto Skeleton = make_unique<LSkeleton>();
 	LAssetDataLoader::LoadSkeletonFromFile(SampleAssets::SkeletonResource, Skeleton.get());
 	ResourceSkeletons.push_back(move(Skeleton));
@@ -80,10 +79,20 @@ void SampleAssets::LoadSampleSceneData(LScene& Scene)
 		Scene.AddCharacterToScene(Character);
 	}
 
-	//--
+	//load scene camera
 	shared_ptr<LCamera> SceneCamera = make_shared<LSceneCamera>();
 	LAssetDataLoader::LoadCameraDataFromFile(SampleAssets::CameraBin, *SceneCamera);
 	Scene.AddCamera(SceneCamera);
+
+	shared_ptr<LCamera> ThirdPersonCamera = make_shared<LThirdPersonCamera>();
+	LAssetDataLoader::LoadCameraDataFromFile(SampleAssets::CameraBin, *ThirdPersonCamera);
+	ThirdPersonCamera->SetSocketOffset(XMFLOAT3(-2.f, 0.3f, 2.2f));
+	ThirdPersonCamera->SetViewTarget(Scene.GetCharacters()[0].get());
+	Scene.AddCamera(ThirdPersonCamera);
+
+	//set the first character is the player
+	LPlayerController* PlayerController = new LPlayerController();
+	PlayerController->Possess(Scene.GetCharacters()[0].get());
 
 	Scene.ActiveCamera(0);
 }

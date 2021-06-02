@@ -75,3 +75,24 @@ void LCamera::SetSocketOffset(XMFLOAT3 Offset)
 {
 	SocketOffset = Offset;
 }
+
+
+void LCamera::UpdateViewProjectionRenderThread()
+{
+	assert(LEngine::GetEngine()->IsGameThread());
+
+	XMFLOAT4X4 MtProj;
+	XMStoreFloat4x4(&MtProj, GetProjectionMatrix());
+	XMMATRIX ViewProj = GetViewMarix() * XMLoadFloat4x4(&MtProj);
+
+	FPassViewProjection ViewProjInfo;
+	XMStoreFloat4x4(&ViewProjInfo.ViewProj, XMMatrixTranspose(ViewProj));
+	ViewProjInfo.EyePosW = GetCameraLocation();
+	RENDER_THREAD_TASK("FillViewProj",
+		[ViewProjInfo]()
+	{
+		FRenderThread::Get()->GetRenderScene()->UpdateViewProjInfo(ViewProjInfo);
+	}
+	);
+
+}

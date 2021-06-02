@@ -55,6 +55,8 @@ public:
 	void SetSocketOffset(XMFLOAT3 Offset);
 	virtual void SetViewTarget(LActor* Target) {};
 
+	void UpdateViewProjectionRenderThread();
+
 protected:
 	bool bActive;
 	FCameraData CameraDatas;

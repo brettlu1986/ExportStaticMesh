@@ -82,6 +82,8 @@ void LThirdPersonCamera::UpdateViewTarget(float dt)
 		Position = XMFLOAT3(XMVectorGetX(FinalVec),
 			XMVectorGetY(FinalVec),
 			XMVectorGetZ(FinalVec));
+
+		UpdateViewProjectionRenderThread();
 	}
 }
 

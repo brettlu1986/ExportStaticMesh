@@ -22,7 +22,7 @@ public:
 	void AddLightToScene(FLight* Light);
 	void UpdateLightToScene(FLight* Light);
 
-	void Update(float DeltaTime);
+	//void Update(float DeltaTime);
 	void Destroy();
 
 	const vector<FMesh*>& GetDrawMeshes()

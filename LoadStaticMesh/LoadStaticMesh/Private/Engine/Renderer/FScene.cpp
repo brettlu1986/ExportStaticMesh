@@ -152,8 +152,8 @@ void FScene::AddSkeletalMeshToScene(FSkeletalMesh* Mesh)
 	//}
 //}
 
-void FScene::Update(float DeltaTime)
-{
+//void FScene::Update(float DeltaTime)
+//{
 	//GetActiveCamera()->Update(DeltaTime);
 
 	//for(LCharacter* Ch : Players)
@@ -163,6 +163,6 @@ void FScene::Update(float DeltaTime)
 
 	//FLight* Light = GetLight(0);
 	//Light->Update(DeltaTime);
-}
+//}
 
 
