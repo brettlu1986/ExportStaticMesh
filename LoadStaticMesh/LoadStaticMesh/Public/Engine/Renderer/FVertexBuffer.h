@@ -9,15 +9,9 @@ class FVertexBuffer : public FRenderResource
 public:
 	FVertexBuffer();
 	FVertexBuffer(E_FRESOURCE_TYPE Type);
-	FVertexBuffer(const char* DataSource, UINT DataSize, UINT DataCount);
 	virtual ~FVertexBuffer();
 
 	virtual void Destroy() override;
 	virtual void Initialize() override;
-	void Init(const char* DataSource, UINT DataSize, UINT DataCount);
 
-protected: 
-	UINT VertexCount;
-	UINT VertexDataSize;
-	void* VertexByteData;
 };

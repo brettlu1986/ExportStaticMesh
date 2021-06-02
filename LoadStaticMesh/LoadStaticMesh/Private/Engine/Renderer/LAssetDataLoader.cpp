@@ -48,68 +48,6 @@ wstring LAssetDataLoader::GetAssetFullPath(LPCWSTR AssetName)
 	return AssetsPath + AssetName;
 }
 
-//void LAssetDataLoader::LoadMeshVertexDataFromFile(string FileName, FMesh* Mesh)
-//{
-//	FVertexBuffer* VertexBuffer = Mesh->GetVertexBuffer();
-//	FIndexBuffer* IndexBuffer = Mesh->GetIndexBuffer();
-//
-//	string FName = GetSaveDirectory() + FileName;
-//	ifstream Rf(FName, ios::out | ios::binary);
-//	if (!Rf) {
-//		return;
-//	}
-//	XMFLOAT3 Location;
-//	Rf.read((char*)&Location, sizeof(XMFLOAT3));
-//	Mesh->SetModelLocation(Location);
-//
-//	XMFLOAT3 Rotation;
-//	Rf.read((char*)&Rotation, sizeof(XMFLOAT3));
-//	Mesh->SetModelRotation(Rotation);
-//
-//	XMFLOAT3 Scale;
-//	Rf.read((char*)&Scale, sizeof(XMFLOAT3));
-//	Mesh->SetModelScale(Scale);
-//
-//	UINT VertexCount;
-//	Rf.read((char*)&VertexCount, sizeof(UINT));
-//
-//	vector<FVertexData> VertexDatas;
-//	VertexDatas.resize(VertexCount);
-//	Rf.read((char*)VertexDatas.data(), VertexCount * sizeof(FVertexData));
-//	VertexBuffer->Init((char*)VertexDatas.data(), VertexCount * sizeof(FVertexData), VertexCount);
-//
-//	bool bUseHalfInt32;
-//	Rf.read((char*)&bUseHalfInt32, sizeof(UINT8));
-//
-//	UINT IndicesCount;
-//	Rf.read((char*)&IndicesCount, sizeof(UINT));
-//
-//	vector<UINT> Indices;
-//	vector<UINT16> IndicesHalf;
-//	UINT IndicesByteSize = bUseHalfInt32 ? IndicesCount * sizeof(UINT16) :
-//		IndicesCount * sizeof(UINT32);
-//
-//	if (bUseHalfInt32)
-//	{
-//		IndicesHalf.resize(IndicesCount);
-//		Rf.read((char*)IndicesHalf.data(), IndicesByteSize);
-//	}
-//	else
-//	{
-//		Indices.resize(IndicesCount);
-//		Rf.read((char*)Indices.data(), IndicesByteSize);
-//	}
-//
-//	IndexBuffer->Init(IndicesCount, IndicesByteSize,
-//		bUseHalfInt32 ? E_INDEX_TYPE::TYPE_UINT_16 : E_INDEX_TYPE::TYPE_UINT_32,
-//		bUseHalfInt32 ? reinterpret_cast<void*>(IndicesHalf.data()) : reinterpret_cast<void*>(Indices.data()));
-//
-//	Rf.close();
-//	if (!Rf.good()) {
-//		return;
-//	}
-//}
-
 void LAssetDataLoader::LoadCameraDataFromFile(string FileName, LCamera& Camera)
 {
 	FCameraData CameraData;
@@ -210,64 +148,6 @@ void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(string FileName, LSkel
 		return;
 	}
 }
-
-//void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(string FileName, FSkeletalMesh* SkeletalMesh)
-//{
-//	string FName = GetSaveDirectory() + FileName;
-//	ifstream Rf(FName, ios::out | ios::binary);
-//	if (!Rf) {
-//		return;
-//	}
-//	XMFLOAT3 Location;
-//	Rf.read((char*)&Location, sizeof(XMFLOAT3));
-//	SkeletalMesh->SetModelLocation(Location);
-//
-//	XMFLOAT3 Rotation;
-//	Rf.read((char*)&Rotation, sizeof(XMFLOAT3));
-//	//TODO: the skeletal has yaw 90 degree offset , dont know why ????
-//	Rotation.y -= 90.f;
-//	SkeletalMesh->SetModelRotation(Rotation);
-//
-//	XMFLOAT3 Scale;
-//	Rf.read((char*)&Scale, sizeof(XMFLOAT3));
-//	SkeletalMesh->SetModelScale(Scale);
-//
-//	UINT VertexCount;
-//	Rf.read((char*)&VertexCount, sizeof(UINT));
-//
-//	vector<FSkeletalVertexData> VertexDatas;
-//	VertexDatas.resize(VertexCount);
-//	Rf.read((char*)VertexDatas.data(), VertexCount * sizeof(FSkeletalVertexData));
-//
-//	FVertexBuffer* VBuffer = GRHI->RHICreateVertexBuffer();
-//	VBuffer->Init((char*)VertexDatas.data(), VertexCount * sizeof(FSkeletalVertexData), VertexCount);
-//
-//	UINT IndicesCount;
-//	Rf.read((char*)&IndicesCount, sizeof(UINT));
-//
-//	vector<UINT32> Indices;
-//	Indices.resize(IndicesCount);
-//	Rf.read((char*)Indices.data(), IndicesCount * sizeof(UINT32));
-//
-//	FIndexBuffer* IBuffer = GRHI->RHICreateIndexBuffer();
-//	IBuffer->Init(IndicesCount, IndicesCount * sizeof(UINT32), E_INDEX_TYPE::TYPE_UINT_32, reinterpret_cast<void*>(Indices.data()));
-//
-//	SkeletalMesh->SetVertexAndIndexBuffer(VBuffer, IBuffer);
-//
-//	vector<UINT16> BoneMap;
-//
-//	UINT BoneMapSize;
-//	Rf.read((char*)&BoneMapSize, sizeof(UINT));
-//
-//	BoneMap.resize(BoneMapSize);
-//	Rf.read((char*)BoneMap.data(), BoneMapSize * sizeof(UINT16));
-//
-//	SkeletalMesh->SetCurrentBoneMap(BoneMap);
-//	Rf.close();
-//	if (!Rf.good()) {
-//		return;
-//	}
-//}
 
 void LAssetDataLoader::LoadSkeletonFromFile(string FileName, LSkeleton* Skeleton)
 {

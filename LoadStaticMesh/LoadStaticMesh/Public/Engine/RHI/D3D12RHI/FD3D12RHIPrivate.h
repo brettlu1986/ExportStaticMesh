@@ -40,7 +40,6 @@ public:
 	virtual FTexture* CreateTexture(FTextureInitializer TexInitializer) override;
 	
 	virtual void CreateResourceViewCreater(UINT CbvCount, UINT SrvCount, UINT UavCount, UINT DsvCount, UINT RtvCount, UINT SamplerCount) override;
-	virtual void CreateVertexAndIndexBufferView(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) override;
 	virtual FResourceView* CreateResourceView(FResourceViewInfo ViewInfo) override;
 	virtual void UpdateConstantBufferView(FResourceView* CbvView, void* pDataUpdate) override;
 	virtual void CreatePipelineStateObject(FPiplineStateInitializer Initializer) override;

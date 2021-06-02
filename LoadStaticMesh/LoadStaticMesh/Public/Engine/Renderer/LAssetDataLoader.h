@@ -43,11 +43,6 @@ private:
 	
 public:
 
-	//will delete
-	//static void LoadMeshVertexDataFromFile(string FileName, FMesh* Mesh);
-
-	//static void LoadSkeletalMeshVertexDataFromFile(string FileName, FSkeletalMesh* SkeletalMesh);
-
 	static void LoadSkeletonFromFile(string FileName, LSkeleton* Skeleton);
 
 	static void LoadAnimationSquence(string SequenceName, LAnimationSequence& Seq);

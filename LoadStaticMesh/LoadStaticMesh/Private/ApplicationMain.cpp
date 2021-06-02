@@ -4,11 +4,11 @@
 #include "LEngine.h"
 #include "LEvent.h"
 #include "LInput.h"
-//#include "LAssetDataLoader.h"
 #include "FRenderThread.h"
 #include <chrono>
 #include <thread> 
 #include "SampleAssets.h"
+#include "LCharacter.h"
 
 #include "LLog.h"
 

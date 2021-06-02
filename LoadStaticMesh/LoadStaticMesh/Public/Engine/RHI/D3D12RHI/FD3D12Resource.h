@@ -21,7 +21,6 @@ public:
 
 	virtual void Destroy() override;
 	virtual void Initialize() override;
-	void InitGPUIndexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList);
 	void InitGPUIndexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, LIndexBuffer& IndexBufferData);
 
 	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const
@@ -44,8 +43,6 @@ public:
 
 	virtual void Destroy() override;
 	virtual void Initialize() override;
-	
-	void InitGPUVertexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList);
 
 	void InitGPUVertexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, LVertexBuffer& VertexBufferData);
 

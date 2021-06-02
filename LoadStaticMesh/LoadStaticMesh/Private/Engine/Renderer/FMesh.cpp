@@ -13,7 +13,6 @@ FMesh::FMesh()
 	, IndexBuffer(nullptr)
 	, DiffuseTex(nullptr)
 	, Material(nullptr)
-	, ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
 	, UsePsoKey("")
 	, MatrixConstantBufferView(nullptr)
 	, MaterialConstantBufferView(nullptr)
@@ -22,24 +21,15 @@ FMesh::FMesh()
 	
 }
 
-
-
-FMesh::FMesh(const string& FileName, const string& TextureName, const string& InUsePsoKey)
-	:MeshFileName(FileName)
-	,MeshTextureName(TextureName)
-	,UsePsoKey(InUsePsoKey)
-	,VertexBuffer(nullptr)
-	,IndexBuffer(nullptr)
-	,DiffuseTex(nullptr)
-	,Material(nullptr)
-	,ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
-	,MatrixConstantBufferView(nullptr)
-	,MaterialConstantBufferView(nullptr)
-	,DiffuseResView(nullptr)
+FMesh::FMesh(LMesh* MeshData)
+	:DiffuseTex(nullptr)
+	, VertexBuffer(nullptr)
+	, IndexBuffer(nullptr)
+	, Material(nullptr)
+	, DiffuseResView(nullptr)
 {
-	Initialize();
+	ModelMatrix = MeshData->GetModelMatrix();
 }
-
 
 FMesh::~FMesh()
 {
@@ -91,83 +81,11 @@ void FMesh::Destroy()
 
 void FMesh::Initialize()
 {
-	//game thread read data from file
-	//VertexBuffer = GRHI->RHICreateVertexBuffer();
-	//IndexBuffer = GRHI->RHICreateIndexBuffer();
-	//LAssetDataLoader::LoadMeshVertexDataFromFile(MeshFileName, this);
-	//if(MeshTextureName != "")
-	//{
-	//	DiffuseTex = GRHI->RHICreateTexture();
-	//	DiffuseTex->InitializeTexture(MeshTextureName);
-	//}
-	//Material = new FMaterial();
+
 }
 
 
 
-void FMesh::InitRenderResource()
-{
-	//render thread init gpu resource
-	//GRHI->RHIInitMeshGPUResource(IndexBuffer, VertexBuffer, DiffuseTex);
-
-	GRHI->CreateVertexAndIndexBufferView(IndexBuffer, VertexBuffer);
-	if(DiffuseTex)
-	{
-		DiffuseResView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV, 1, &DiffuseTex, 0, E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
-	}
-	MatrixConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FObjectConstants)), E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
-	MaterialConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FMaterialConstants)),E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
-}
-
-void FMesh::SetModelLocation(XMFLOAT3 Location) 
-{ 
-	ModelLocation = Location; 
-	UpdateModelMatrix();
-}
-void FMesh::SetModelRotation(XMFLOAT3 Rotator) { 
-	
-	ModelRotation = Rotator; 
-	UpdateModelMatrix();
-}
-
-void FMesh::SetModelScale(XMFLOAT3 Scale) { 
-	
-	ModelScale = Scale; 
-	UpdateModelMatrix();
-}
-
-void FMesh::UpdateModelMatrix()
-{
-	ModelMatrix = XMMatrixScaling(ModelScale.x, ModelScale.y, ModelScale.z) *
-		XMMatrixRotationRollPitchYaw(XMConvertToRadians(-ModelRotation.z), XMConvertToRadians(-ModelRotation.x), XMConvertToRadians(ModelRotation.y)) *
-		XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
-}
-
-void FMesh::InitMaterial(const string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float Roughness)
-{
-	Material->Init(Name, InDiffuseAlbedo, InFresnelR0, Roughness);
-}
-
-XMFLOAT4X4 FMesh::GetTextureTransform()
-{
-	if(DiffuseTex != nullptr)
-		return DiffuseTex->GetTextureTransform();
-
-	XMFLOAT4X4 TexMat = MathHelper::Identity4x4();
-	XMStoreFloat4x4(&TexMat, XMMatrixScaling(1.0f, 1.0f, 1.0f));
-	return TexMat;
-}
-
-//new use
-FMesh::FMesh(LMesh* MeshData)
-:DiffuseTex(nullptr)
-, VertexBuffer(nullptr)
-, IndexBuffer(nullptr)
-, Material(nullptr)
-, DiffuseResView(nullptr)
-{
-	ModelMatrix = MeshData->GetModelMatrix();
-}
 
 XMMATRIX FMesh::GetModelMatrix()
 {

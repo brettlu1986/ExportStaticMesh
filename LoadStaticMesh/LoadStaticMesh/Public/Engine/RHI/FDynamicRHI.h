@@ -67,7 +67,6 @@ public:
 	virtual FTexture* CreateTexture(FTextureInitializer TexInitializer) = 0;
 	
 	virtual void CreateResourceViewCreater(UINT CbvCount, UINT SrvCount, UINT UavCount, UINT DsvCount, UINT RtvCount, UINT SamplerCount) = 0;
-	virtual void CreateVertexAndIndexBufferView(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer) = 0;
 	//the Texuture**  is the texture array start pointer, it can create and bind more than one texture onece
 	virtual FResourceView* CreateResourceView(FResourceViewInfo ViewInfo) = 0;
 	virtual void UpdateConstantBufferView(FResourceView* CbvView, void* pDataUpdate) = 0;

@@ -382,60 +382,6 @@ public:
 
 #define MaxLights 16
 
-//struct FLight
-//{
-//public:
-//	FLight()
-//	:Alpha(0.f)
-//	,Theta(0.f)
-//	,Radius(0.f)
-//	{};
-//
-//	XMFLOAT3 Strength = { 0.5f, 0.5f, 0.5f };
-//	float FalloffStart = 1.0f;                          // point/spot light only
-//	XMFLOAT3 Direction = { 0.0f, -1.0f, 0.0f };// directional/spot light only
-//	float FalloffEnd = 10.0f;                           // point/spot light only
-//	XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };  // point/spot light only
-//	float SpotPower = 64.0f;                            // spot light only
-//	UINT LightIndex = 0;
-//
-//private:
-//	float Alpha;
-//	float Theta;
-//	float Radius;
-//
-//public:
-//	void Init()
-//	{
-//		// assume that focus to {0, 0, 0}
-//		XMVECTOR Target = XMVector3Length(XMVectorSet(Position.x, Position.y, Position.z, 1.f));
-//		Radius = XMVectorGetX(Target);
-//		Alpha = acosf(Position.z / Radius);
-//		Theta = atanf(Position.x / Position.y);
-//		if (Theta < 0.f)
-//			Theta += XM_PI * 2;
-//		Alpha = MathHelper::Clamp(Alpha, 0.1f, MathHelper::Pi - 0.1f);
-//	}
-//
-//	void Update(float dt)
-//	{
-//		Theta -= 0.001f;
-//		XMVECTOR V = XMVectorSet(Radius * sinf(Alpha) * sinf(Theta),
-//			Radius * sinf(Alpha) * cosf(Theta),
-//			Radius * cosf(Alpha),
-//			1.f);
-//		Position.x = XMVectorGetX(V);
-//		Position.y = XMVectorGetY(V);
-//		Position.z = XMVectorGetZ(V);
-//
-//		XMVECTOR D = XMVectorSet(-Position.x, -Position.y, -Position.z, 1.f);
-//		D = XMVector3Normalize(D);
-//		Direction.x = XMVectorGetX(D);
-//		Direction.y = XMVectorGetY(D);
-//		Direction.z = XMVectorGetZ(D);
-//	}
-//};
-
 struct FPassLight
 {
 	XMFLOAT3 Strength = { 0.5f, 0.5f, 0.5f };

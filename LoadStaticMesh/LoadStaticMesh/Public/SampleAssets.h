@@ -80,9 +80,6 @@ namespace SampleAssets
 	};
 
 	void ReleaseAssets();
-	void LoadSampleScene(FScene* Scene);
-
 	void LoadSampleSceneData(LScene& Scene);
-	
 	
 }

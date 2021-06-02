@@ -30,16 +30,6 @@ void FD3D12IndexBuffer::Destroy()
 	}
 }
 
-void FD3D12IndexBuffer::InitGPUIndexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList)
-{
-	CreateBuffer(Device, CommandList, IndicesData, IndicesByteSize, IndexBuffer, IndexBufferUpload);
-	NAME_D3D12_OBJECT(IndexBuffer);
-	NAME_D3D12_OBJECT(IndexBufferUpload);
-
-	IndexBufferView.BufferLocation = IndexBuffer->GetGPUVirtualAddress();
-	IndexBufferView.Format = IndicesType == E_INDEX_TYPE::TYPE_UINT_16 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
-	IndexBufferView.SizeInBytes = IndicesByteSize;
-}
 
 void FD3D12IndexBuffer::InitGPUIndexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, LIndexBuffer& IndexBufferData)
 {
@@ -90,17 +80,6 @@ void FD3D12VertexBuffer::Destroy()
 void FD3D12VertexBuffer::Initialize()
 {
 
-}
-
-void FD3D12VertexBuffer::InitGPUVertexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList)
-{
-	CreateBuffer(Device, CommandList, VertexByteData, VertexDataSize, VertexBuffer, VertexUploadBuffer);
-	NAME_D3D12_OBJECT(VertexBuffer);
-	NAME_D3D12_OBJECT(VertexUploadBuffer);
-
-	VertexBufferView.BufferLocation = VertexBuffer->GetGPUVirtualAddress();
-	VertexBufferView.StrideInBytes = VertexDataSize / VertexCount;
-	VertexBufferView.SizeInBytes = VertexDataSize;
 }
 
 void FD3D12VertexBuffer::InitGPUVertexBufferView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, LVertexBuffer& VertexBufferData)

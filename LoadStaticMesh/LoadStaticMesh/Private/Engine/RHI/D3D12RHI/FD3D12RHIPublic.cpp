@@ -172,13 +172,6 @@ void FD3D12DynamicRHI::CreateResourceViewCreater(UINT CbvCount, UINT SrvCount, U
 	ResourceViewCreater->OnCreate(CbvCount, SrvCount, UavCount, DsvCount, RtvCount, SamplerCount);
 }
 
-void FD3D12DynamicRHI::CreateVertexAndIndexBufferView(FIndexBuffer* IndexBuffer, FVertexBuffer* VertexBuffer)
-{
-	FD3D12IndexBuffer* D3DIndexBuffer = dynamic_cast<FD3D12IndexBuffer*>(IndexBuffer);
-	FD3D12VertexBuffer* D3DVertexBuffer = dynamic_cast<FD3D12VertexBuffer*>(VertexBuffer);
-	D3DIndexBuffer->InitGPUIndexBufferView(D3DDevice.Get(), CommandList.Get());
-	D3DVertexBuffer->InitGPUVertexBufferView(D3DDevice.Get(), CommandList.Get());
-}
 
 FResourceView* FD3D12DynamicRHI::CreateResourceView(FResourceViewInfo ViewInfo)
 {
