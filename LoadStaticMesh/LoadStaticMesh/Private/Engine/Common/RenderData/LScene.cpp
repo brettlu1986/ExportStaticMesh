@@ -5,6 +5,7 @@
 #include "LCamera.h"
 #include "LLight.h"
 #include "LEngine.h"
+#include "LCharacter.h"
 
 
 LScene::LScene()
@@ -26,6 +27,12 @@ void LScene::AddLightToScene(shared_ptr<LLight>& Light)
 {
 	assert(LEngine::GetEngine()->IsGameThread());
 	SceneLights.push_back(std::move(Light));
+}
+
+void LScene::AddCharacterToScene(shared_ptr<LCharacter> Character)
+{
+	assert(LEngine::GetEngine()->IsGameThread());
+	Players.push_back(std::move(Character));
 }
 
 void LScene::AddCamera(shared_ptr<LCamera>& Camera)
@@ -59,4 +66,8 @@ void LScene::Update(float dt)
 {
 	GetActiveCamera()->Update(dt);
 	SceneLights[0]->Update(dt);
+	for(auto Ch : Players)
+	{
+		Ch->Update(dt);
+	}
 }

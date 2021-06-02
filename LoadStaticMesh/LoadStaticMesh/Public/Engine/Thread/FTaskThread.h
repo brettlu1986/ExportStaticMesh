@@ -9,11 +9,14 @@ using TaskFunc = function<void()>;
 class FThreadTask
 {
 public: 
-	FThreadTask(TaskFunc TaskF);
+	FThreadTask(const char* InTaskName, TaskFunc TaskF);
 
 	void DoTask();
+
+	std::string& GetTaskName() { return TaskName;}
 private:
 	TaskFunc Task;
+	std::string TaskName;
 };
 
 class FTaskThread : public FThread
@@ -22,7 +25,7 @@ public:
 	FTaskThread(const string& InName);
 
 	virtual void Run() override;
-	virtual void AddTask(TaskFunc&& TaskF);
+	virtual void AddTask(const char* TaskName, TaskFunc&& TaskF);
 protected:
 
 	void DoTasks();

@@ -67,7 +67,6 @@ void ApplicationMain::Update(float DeltaTime)
 
 	//Scene.Update(DeltaTime);
 	DataScene->Update(DeltaTime);
-
 	//FRenderThread::Get()->NotifyRenderThreadExcute();
 	FRenderThread::Get()->WaitForRenderThread();
 	//FRenderThread::Get()->UpdateRenderSceneResource(&Scene);
@@ -81,7 +80,7 @@ void ApplicationMain::Update(float DeltaTime)
 void ApplicationMain::Run()
 {
 	const UINT FrameRate = 60;
-	chrono::duration<float> FrameLen = chrono::duration<float>(1.f/60);
+	chrono::duration<float> FrameLen = chrono::duration<float>(1.f/ FrameRate);
 	while (LEngine::GetEngine()->Run())
 	{
 		Timer->Tick();
@@ -89,6 +88,8 @@ void ApplicationMain::Run()
 
 		Update(Timer->GetDeltaTime());
 		//OnRender();
+
+	//	LLog::Log("Real FrameRate:: %f", 1/ Timer->GetDeltaTime());
 		this_thread::sleep_for(FrameLen - Timer->GetChronoDeltaTime());
 	}
 }

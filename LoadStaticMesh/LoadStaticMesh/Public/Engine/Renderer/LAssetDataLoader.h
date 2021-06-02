@@ -7,6 +7,7 @@
 #include "FSkeletalMesh.h"
 #include "LAnimationSequence.h"
 
+#include "LSkeletalMesh.h"
 #include "LMesh.h"
 
 struct DirectionLightData
@@ -42,9 +43,10 @@ private:
 	
 public:
 
-	static void LoadMeshVertexDataFromFile(string FileName, FMesh* Mesh);
+	//will delete
+	//static void LoadMeshVertexDataFromFile(string FileName, FMesh* Mesh);
 
-	static void LoadSkeletalMeshVertexDataFromFile(string FileName, FSkeletalMesh* SkeletalMesh);
+	//static void LoadSkeletalMeshVertexDataFromFile(string FileName, FSkeletalMesh* SkeletalMesh);
 
 	static void LoadSkeletonFromFile(string FileName, LSkeleton* Skeleton);
 
@@ -53,6 +55,8 @@ public:
 	static void LoadDirectionLights(string FileName, vector<DirectionLightData>&LightsData);
 
 	static wstring GetAssetFullPath(LPCWSTR AssetName);
+
+	static void LoadSkeletalMeshVertexDataFromFile(string FileName, LSkeletalMesh& SkeletalMesh);
 
 	static void LoadMeshFromFile(string FileName, LMesh& Mesh);
 

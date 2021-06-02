@@ -3,9 +3,9 @@
 #include "stdafx.h"
 #include "LAnimator.h"
 #include "LActor.h"
+#include "LSkeletalMesh.h"
 
 class LPlayerController;
-class FSkeletalMesh;
 class LCharacterMovement;
 class LCharacter : public LActor
 {
@@ -15,16 +15,16 @@ public:
 
 	void Destroy();
 
-	void SetSkeletalMesh(FSkeletalMesh* Mesh)
-	{
-		SkeletalMesh = Mesh;
-	}
+	//void SetSkeletalMesh(FSkeletalMesh* Mesh)
+	//{
+	//	SkeletalMesh = Mesh;
+	//}
 
 	void SetAnimator(LAnimator* Animator);
 	
-	FSkeletalMesh* GetSkeletalMesh()
+	LSkeletalMesh* GetSkeletalMesh()
 	{
-		return SkeletalMesh;
+		return SkeletalMeshIns;
 	}
 
 	LAnimator* GetAnimator()
@@ -74,6 +74,13 @@ public:
 	{
 		return MoveSpeed;
 	}
+
+	//--
+	void SetSkeletalMesh(LSkeletalMesh* Mesh)
+	{
+		SkeletalMeshIns = Mesh;
+	}
+	//
 private: 
 	bool IsKeyDown(char Key);
 	bool IsKeyUp(char Key);
@@ -82,7 +89,9 @@ private:
 	bool Keys[KEY_SIZE];
 	POINT LastMousePoint;
 
-	FSkeletalMesh* SkeletalMesh;
+	//FSkeletalMesh* SkeletalMesh;
+
+	LSkeletalMesh* SkeletalMeshIns;
 	LAnimator* AnimatorIns;
 
 	LPlayerController* Controller;

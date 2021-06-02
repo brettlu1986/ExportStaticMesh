@@ -12,6 +12,7 @@ FMesh::FMesh()
 	:VertexBuffer(nullptr)
 	, IndexBuffer(nullptr)
 	, DiffuseTex(nullptr)
+	, Material(nullptr)
 	, ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
 	, UsePsoKey("")
 	, MatrixConstantBufferView(nullptr)
@@ -30,6 +31,7 @@ FMesh::FMesh(const string& FileName, const string& TextureName, const string& In
 	,VertexBuffer(nullptr)
 	,IndexBuffer(nullptr)
 	,DiffuseTex(nullptr)
+	,Material(nullptr)
 	,ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
 	,MatrixConstantBufferView(nullptr)
 	,MaterialConstantBufferView(nullptr)
@@ -74,8 +76,11 @@ void FMesh::Destroy()
 		Material = nullptr;
 	}
 
-	delete DiffuseResView;
-	DiffuseResView = nullptr;
+	if(DiffuseResView)
+	{
+		delete DiffuseResView;
+		DiffuseResView = nullptr;
+	}
 
 	delete MatrixConstantBufferView;
 	MatrixConstantBufferView = nullptr;
@@ -87,15 +92,15 @@ void FMesh::Destroy()
 void FMesh::Initialize()
 {
 	//game thread read data from file
-	VertexBuffer = GRHI->RHICreateVertexBuffer();
-	IndexBuffer = GRHI->RHICreateIndexBuffer();
-	LAssetDataLoader::LoadMeshVertexDataFromFile(MeshFileName, this);
-	if(MeshTextureName != "")
-	{
-		DiffuseTex = GRHI->RHICreateTexture();
-		DiffuseTex->InitializeTexture(MeshTextureName);
-	}
-	Material = new FMaterial();
+	//VertexBuffer = GRHI->RHICreateVertexBuffer();
+	//IndexBuffer = GRHI->RHICreateIndexBuffer();
+	//LAssetDataLoader::LoadMeshVertexDataFromFile(MeshFileName, this);
+	//if(MeshTextureName != "")
+	//{
+	//	DiffuseTex = GRHI->RHICreateTexture();
+	//	DiffuseTex->InitializeTexture(MeshTextureName);
+	//}
+	//Material = new FMaterial();
 }
 
 
@@ -158,6 +163,8 @@ FMesh::FMesh(LMesh* MeshData)
 :DiffuseTex(nullptr)
 , VertexBuffer(nullptr)
 , IndexBuffer(nullptr)
+, Material(nullptr)
+, DiffuseResView(nullptr)
 {
 	ModelMatrix = MeshData->GetModelMatrix();
 }

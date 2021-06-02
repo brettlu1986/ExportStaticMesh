@@ -7,7 +7,7 @@
 #include "LLog.h"
 
 LCharacter::LCharacter()
-:SkeletalMesh(nullptr)
+:SkeletalMeshIns(nullptr)
 ,AnimatorIns(nullptr)
 ,Controller(nullptr)
 ,IsLocalControlled(false)
@@ -34,11 +34,10 @@ LCharacter::~LCharacter()
 
 void LCharacter::Destroy()
 {
-	if (SkeletalMesh)
+	if (SkeletalMeshIns)
 	{
-		SkeletalMesh->Destroy();
-		delete SkeletalMesh;
-		SkeletalMesh = nullptr;
+		delete SkeletalMeshIns;
+		SkeletalMeshIns = nullptr;
 	}
 
 	if (AnimatorIns)
@@ -189,6 +188,12 @@ void LCharacter::Update(float dt)
 	{
 		AnimatorIns->Update(dt);
 	}
+
+	if(SkeletalMeshIns)
+	{
+		SkeletalMeshIns->UpdateModelMatrix();
+		SkeletalMeshIns->UpdateBoneMapFinalTransform(AnimatorIns->GetBoneMapFinalTransforms());
+	}
 }
 
 XMVECTOR LCharacter::GetMoveForwardVector()
@@ -216,31 +221,31 @@ XMVECTOR LCharacter::GetMoveRightVector()
 
 void LCharacter::SetLocation(XMFLOAT3 Location)
 {
-	SkeletalMesh->SetModelLocation(Location);
+	SkeletalMeshIns->SetModelLocation(Location);
 }	
 
 void LCharacter::SetRotation(XMFLOAT3 Rotator)
 {
-	SkeletalMesh->SetModelRotation(Rotator);
+	SkeletalMeshIns->SetModelRotation(Rotator);
 }
 
 void LCharacter::SetScale3D(XMFLOAT3 Scale)
 {
-	SkeletalMesh->SetModelScale(Scale);
+	SkeletalMeshIns->SetModelScale(Scale);
 }
 
 XMFLOAT3 LCharacter::GetLocation()
 {
-	return SkeletalMesh->GetLocation();
+	return SkeletalMeshIns->GetLocation();
 }
  
 //in ue4, the character MeshComponent is -90 yaw to parent
 XMFLOAT3 LCharacter::GetRotation()
 {
-	return XMFLOAT3(SkeletalMesh->GetRotation().x, SkeletalMesh->GetRotation().y + 90, SkeletalMesh->GetRotation().z);
+	return XMFLOAT3(SkeletalMeshIns->GetRotation().x, SkeletalMeshIns->GetRotation().y + 90, SkeletalMeshIns->GetRotation().z);
 }
 
 XMFLOAT3 LCharacter::GetScale3D()
 {
-	return SkeletalMesh->GetScale3D();
+	return SkeletalMeshIns->GetScale3D();
 }

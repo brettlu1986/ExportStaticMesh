@@ -132,6 +132,11 @@ void FScene::UpdateLightToScene(FLight* Light)
 	}
 }
 
+void FScene::AddSkeletalMeshToScene(FSkeletalMesh* Mesh)
+{
+	SkmMeshes.push_back(Mesh);
+}
+
 //void FScene::AddCharacterToScene(LCharacter* Character)
 //{
 	//Players.push_back(Character);

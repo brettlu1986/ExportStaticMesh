@@ -2,13 +2,14 @@
 
 #include "FSkeletalMesh.h"
 #include "FRHI.h"
+#include "LEngine.h"
 
 FSkeletalMesh::FSkeletalMesh()
 :VertexBuffer(nullptr)
 ,IndexBuffer(nullptr)
 ,DiffuseTex(nullptr)
 ,DiffuseResView(nullptr)
-,Skeleton(nullptr)
+//,Skeleton(nullptr)
 {
 	Initialize();
 }
@@ -54,45 +55,98 @@ void FSkeletalMesh::Destroy()
 void FSkeletalMesh::Initialize()
 {}
 
-void FSkeletalMesh::SetVertexAndIndexBuffer(FVertexBuffer* VBuffer, FIndexBuffer* IBuffer)
+//void FSkeletalMesh::SetVertexAndIndexBuffer(FVertexBuffer* VBuffer, FIndexBuffer* IBuffer)
+//{
+//	VertexBuffer = VBuffer;
+//	IndexBuffer = IBuffer;
+//}
+
+//void FSkeletalMesh::SetDiffuseTexture(FTexture* Tex)
+//{
+//	DiffuseTex = Tex;
+//}
+//
+//void FSkeletalMesh::InitRenderResource()
+//{
+//	GRHI->CreateVertexAndIndexBufferView(IndexBuffer, VertexBuffer);
+//	DiffuseResView = GRHI->CreateResourceView({E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV, 1, &DiffuseTex, 0, E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
+//	MatrixConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FObjectConstants)),E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
+//	SkeletalConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FSkeletalConstants)),E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
+//}
+
+//void FSkeletalMesh::SetModelLocation(XMFLOAT3 Location)
+//{
+//	ModelLocation = Location;
+//	UpdateModelMatrix();
+//}
+//void FSkeletalMesh::SetModelRotation(XMFLOAT3 Rotator) {
+//
+//	ModelRotation = Rotator;
+//	UpdateModelMatrix();
+//}
+//
+//void FSkeletalMesh::SetModelScale(XMFLOAT3 Scale) {
+//
+//	ModelScale = Scale;
+//	UpdateModelMatrix();
+//}
+//
+//void FSkeletalMesh::UpdateModelMatrix()
+//{
+//	ModelMatrix = XMMatrixScaling(ModelScale.x, ModelScale.y, ModelScale.z) *
+//		XMMatrixRotationRollPitchYaw(XMConvertToRadians(-ModelRotation.z), XMConvertToRadians(-ModelRotation.x), XMConvertToRadians(ModelRotation.y)) *
+//		XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
+//}
+
+
+//----
+FSkeletalMesh::FSkeletalMesh(LSkeletalMesh* MeshData)
+	:VertexBuffer(nullptr)
+	, IndexBuffer(nullptr)
+	, DiffuseTex(nullptr)
+	, DiffuseResView(nullptr)
 {
-	VertexBuffer = VBuffer;
-	IndexBuffer = IBuffer;
+	ModelMatrix = MeshData->GetModelMatrix();
 }
 
-void FSkeletalMesh::SetDiffuseTexture(FTexture* Tex)
-{
-	DiffuseTex = Tex;
-}
 
-void FSkeletalMesh::InitRenderResource()
+void FSkeletalMesh::InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData)
 {
-	GRHI->CreateVertexAndIndexBufferView(IndexBuffer, VertexBuffer);
-	DiffuseResView = GRHI->CreateResourceView({E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV, 1, &DiffuseTex, 0, E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
+	assert(LEngine::GetEngine()->IsRenderThread());
+
+	VertexBuffer = GRHI->RHICreateVertexBuffer();
+	IndexBuffer = GRHI->RHICreateIndexBuffer();
+
+	GRHI->UpdateVertexBufferResource(VertexBuffer, VertexBufferData);
+	GRHI->UpdateIndexBufferResource(IndexBuffer, IndexBufferData);
+
 	MatrixConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FObjectConstants)),E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
 	SkeletalConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FSkeletalConstants)),E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
+
 }
 
-void FSkeletalMesh::SetModelLocation(XMFLOAT3 Location)
+void FSkeletalMesh::AddMeshInRenderThread()
 {
-	ModelLocation = Location;
-	UpdateModelMatrix();
-}
-void FSkeletalMesh::SetModelRotation(XMFLOAT3 Rotator) {
-
-	ModelRotation = Rotator;
-	UpdateModelMatrix();
+	assert(LEngine::GetEngine()->IsRenderThread());
+	FRenderThread::Get()->GetRenderScene()->AddSkeletalMeshToScene(this);
 }
 
-void FSkeletalMesh::SetModelScale(XMFLOAT3 Scale) {
-
-	ModelScale = Scale;
-	UpdateModelMatrix();
-}
-
-void FSkeletalMesh::UpdateModelMatrix()
+void FSkeletalMesh::UpdateMeshMatrixInRenderThread(XMMATRIX Mat)
 {
-	ModelMatrix = XMMatrixScaling(ModelScale.x, ModelScale.y, ModelScale.z) *
-		XMMatrixRotationRollPitchYaw(XMConvertToRadians(-ModelRotation.z), XMConvertToRadians(-ModelRotation.x), XMConvertToRadians(ModelRotation.y)) *
-		XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
+	assert(LEngine::GetEngine()->IsRenderThread());
+	ModelMatrix = Mat;
+
+	FObjectConstants ObjConstants;
+	XMStoreFloat4x4(&ObjConstants.World, XMMatrixTranspose(GetModelMatrix()));
+	XMFLOAT4X4 TexMat = MathHelper::Identity4x4();
+	XMStoreFloat4x4(&ObjConstants.TexTransform, XMMatrixTranspose(XMLoadFloat4x4(&TexMat)));
+	GRHI->UpdateConstantBufferView(MatrixConstantBufferView, &ObjConstants);
+}
+
+void FSkeletalMesh::UpdateBoneMapFinalTransInRenderThread(const vector<XMFLOAT4X4>& BoneMapFinal)
+{	
+	assert(LEngine::GetEngine()->IsRenderThread());
+	FSkeletalConstants SkeCon;
+	copy(begin(BoneMapFinal),end(BoneMapFinal), &SkeCon.BoneMapBoneTransforms[0]);
+	GRHI->UpdateConstantBufferView(SkeletalConstantBufferView, &SkeCon);
 }

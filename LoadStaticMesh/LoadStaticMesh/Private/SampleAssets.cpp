@@ -11,16 +11,16 @@
 #include "LThirdPersonCamera.h"
 #include "LPlayerController.h"
 #include "LLight.h"
+#include "LSkeletalMesh.h"
 
-vector<LSkeleton*> ResourceSkeletons;
+vector<unique_ptr<LSkeleton>> ResourceSkeletons;
 
 void SampleAssets::ReleaseAssets()
 {
-	vector<LSkeleton*>::iterator it = ResourceSkeletons.begin();
+	vector<unique_ptr<LSkeleton>>::iterator it = ResourceSkeletons.begin();
 	for (; it < ResourceSkeletons.end(); it++)
 	{
-		LSkeleton* Sk = *it;
-		delete Sk;
+		*it = nullptr;
 	}
 }
 
@@ -48,6 +48,39 @@ void SampleAssets::LoadSampleSceneData(LScene& Scene)
 		Scene.AddLightToScene(Light);
 	}
 
+	//--
+	auto Skeleton = make_unique<LSkeleton>();
+	LAssetDataLoader::LoadSkeletonFromFile(SampleAssets::SkeletonResource, Skeleton.get());
+	ResourceSkeletons.push_back(move(Skeleton));
+
+	for (UINT i = 0; i < SampleAssets::SampleSkeletalMeshCount; i++)
+	{
+		//character has skeleton mesh and animator instance
+		auto Character = make_shared<LCharacter>();
+
+		//create skeletal mesh, skeleton save in skeletal mesh
+		LSkeletalMesh* SkeletalMesh = new LSkeletalMesh();
+		LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(SampleAssets::SkeletalMeshResource[i], *SkeletalMesh);
+		SkeletalMesh->SetSkeleton(ResourceSkeletons[0].get());
+
+		//create animator
+		LAnimator* Animator = new LAnimator();
+		for (UINT i = 0; i < (UINT)E_ANIM_STATE::STATE_COUNT; i++)
+		{
+			LAnimationSequence AnimSequence;
+			LAssetDataLoader::LoadAnimationSquence(SampleAssets::SkeletalAnim[i], AnimSequence);
+			Animator->AddAnimSequence(static_cast<E_ANIM_STATE>(i), AnimSequence);
+		}
+
+		//set skeletal mesh and animator to character
+		Character->SetSkeletalMesh(SkeletalMesh);
+		Character->SetAnimator(Animator);
+
+		//add player to scene
+		Scene.AddCharacterToScene(Character);
+	}
+
+	//--
 	shared_ptr<LCamera> SceneCamera = make_shared<LSceneCamera>();
 	LAssetDataLoader::LoadCameraDataFromFile(SampleAssets::CameraBin, *SceneCamera);
 	Scene.AddCamera(SceneCamera);

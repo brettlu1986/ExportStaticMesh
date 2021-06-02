@@ -34,6 +34,7 @@ public:
 		return DefaultStateMachine->GetCurrentAnimStateType();
 	}
 
+
 private: 
 	void CreateDefaultStateMachine();
 	map<E_ANIM_STATE, LAnimationSequence> AnimSequences;

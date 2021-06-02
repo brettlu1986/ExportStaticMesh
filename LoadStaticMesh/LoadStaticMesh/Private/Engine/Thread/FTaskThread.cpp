@@ -3,9 +3,12 @@
 
 #include "FTaskThread.h"
 #include "FDefine.h"
+#include "LGameTimer.h"
+#include "LLog.h"
 
-FThreadTask::FThreadTask(TaskFunc TaskF)
+FThreadTask::FThreadTask(const char* InTaskName, TaskFunc TaskF)
 :Task(TaskF)
+,TaskName(InTaskName)
 {}
 
 void FThreadTask::DoTask()
@@ -57,11 +60,11 @@ void FTaskThread::DoTasks()
 	}
 }
 
-void FTaskThread::AddTask(TaskFunc&& TaskF)
+void FTaskThread::AddTask(const char* Name, TaskFunc&& TaskF)
 {
 	if(IsRun )
 	{
 		lock_guard<mutex> Lock(Mutex);
-		Tasks.push_back(FThreadTask(TaskF));
+		Tasks.push_back(FThreadTask(Name, TaskF));
 	}
 }

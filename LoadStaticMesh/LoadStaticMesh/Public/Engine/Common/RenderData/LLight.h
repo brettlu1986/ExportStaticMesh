@@ -32,5 +32,4 @@ private:
 	float Radius;
 
 	shared_ptr<FLight> RenderLight;
-
 };

@@ -252,6 +252,9 @@
     <ClCompile Include="Private\Engine\Renderer\FLight.cpp">
       <Filter>Source Files\Engine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Engine\Common\RenderData\LSkeletalMesh.cpp">
+      <Filter>Source Files\Engine\Common\RenderData</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds">
@@ -479,6 +482,9 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\Renderer\FLight.h">
       <Filter>Header Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\RenderData\LSkeletalMesh.h">
+      <Filter>Header Files\Engine\Common\RenderData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

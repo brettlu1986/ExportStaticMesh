@@ -43,7 +43,7 @@ public:
 
 private:
 	static FRenderThread* RenderThread;
-	static const UINT CPU_MAX_AHEAD = 3;
+	//static const UINT CPU_MAX_AHEAD = 3;
 
 	static bool Inited;
 
@@ -55,4 +55,10 @@ private:
 	unique_ptr<FScene> RenderScene;
 };
 
-#define RENDER_THREAD_TASK(...) FRenderThread::Get()->AddTask(__VA_ARGS__)
+//TODO:we should not put wait here, this will delay the frame execute, influence the frame rate
+#define RENDER_THREAD_TASK(...)\
+FRenderThread::Get()->WaitForRenderThread(); \
+FRenderThread::Get()->AddTask(__VA_ARGS__) \
+
+
+

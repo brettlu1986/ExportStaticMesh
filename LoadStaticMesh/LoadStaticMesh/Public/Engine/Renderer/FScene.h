@@ -17,6 +17,7 @@ public:
 	~FScene();
 
 	void AddMeshToScene(FMesh* Mesh);
+	void AddSkeletalMeshToScene(FSkeletalMesh* Mesh);
 	//void AddCharacterToScene(LCharacter* Character);
 	void AddLightToScene(FLight* Light);
 	void UpdateLightToScene(FLight* Light);
@@ -30,10 +31,10 @@ public:
 	}
 
 
-	//const vector<FSkeletalMesh*>& GetDrawSkeletalMeshes() 
-	//{
-	//	return SkmMeshes;
-	//}
+	const vector<FSkeletalMesh*>& GetDrawSkeletalMeshes() 
+	{
+		return SkmMeshes;
+	}
 
 	//const vector<LCharacter*>& GetCharacters()
 	//{
@@ -103,7 +104,7 @@ private:
 	//void Init();
 	
 	//vector<LCharacter*> Players;
-	//vector<FSkeletalMesh*> SkmMeshes;
+	vector<FSkeletalMesh*> SkmMeshes;
 	vector<FMesh*> Meshes;
 	vector<FLight*> SceneLights;
 

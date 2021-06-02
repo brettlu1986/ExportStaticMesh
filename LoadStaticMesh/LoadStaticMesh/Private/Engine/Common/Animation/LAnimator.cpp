@@ -134,6 +134,8 @@ void LAnimator::Update(float dt)
 			UINT BoneIndex = BoneMap[i];
 			BoneMapFinalTransforms[i] = AllBoneFinalTransforms[BoneIndex];
 		}
+
+
 	}
 }
 

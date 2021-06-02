@@ -9,6 +9,7 @@
 #include "LDeviceWindows.h"
 #include "FRenderThread.h"
 #include "LLog.h"
+#include "LGameTimer.h"
 
 
 static const float MAX_PITCH = XMConvertToRadians(89.99f);
@@ -201,11 +202,11 @@ void LSceneCamera::UpdateViewProjectionRenderThread()
 	FPassViewProjection ViewProjInfo;
 	XMStoreFloat4x4(&ViewProjInfo.ViewProj, XMMatrixTranspose(ViewProj));
 	ViewProjInfo.EyePosW = GetCameraLocation();
-
-	RENDER_THREAD_TASK(
+	RENDER_THREAD_TASK("FillViewProj",
 		[ViewProjInfo]()
 		{
 			FRenderThread::Get()->GetRenderScene()->UpdateViewProjInfo(ViewProjInfo);
 		}
 	);
+
 }

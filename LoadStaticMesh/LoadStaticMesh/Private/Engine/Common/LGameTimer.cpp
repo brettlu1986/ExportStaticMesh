@@ -53,8 +53,6 @@ float LGameTimer::GetTimeScale()
 void LGameTimer::Tick()
 {
 	DeltaTime = chrono::system_clock::now() - StartTime;
-
-	float value = DeltaTime.count();
 }
 
 // control limit frame rate, see the url below

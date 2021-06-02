@@ -103,7 +103,8 @@ void FD3D12DynamicRHI::EndRenderScene()
 	CommandList->Close();
 	CmdLists.push_back(CommandList.Get());
 	CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
-	SwapChain->Present(1, 0);
+	//TODO:Present first should use 1, for Vsync 
+	SwapChain->Present(0, 0);
 	WaitForPreviousFrame();
 	FrameIndex = (FrameIndex + 1) % FRAME_COUNT;
 }

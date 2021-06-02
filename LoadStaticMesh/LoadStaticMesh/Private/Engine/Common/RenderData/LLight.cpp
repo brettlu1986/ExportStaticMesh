@@ -32,7 +32,7 @@ void LLight::Init()
 
 void LLight::Update(float dt)
 {
-	Theta -= 0.001f;
+	Theta -= 0.0001f;
 	XMVECTOR V = XMVectorSet(Radius * sinf(Alpha) * sinf(Theta),
 		Radius * sinf(Alpha) * cosf(Theta),
 		Radius * cosf(Alpha),
@@ -46,7 +46,7 @@ void LLight::Update(float dt)
 	Direction.x = XMVectorGetX(D);
 	Direction.y = XMVectorGetY(D);
 	Direction.z = XMVectorGetZ(D);
-
+	
 	UpdateLightInRenderThread();
 }
 
@@ -58,7 +58,7 @@ void LLight::UpdateLightInRenderThread()
 	XMFLOAT3 Dir = Direction;
 	XMFLOAT3 StrengthValue = Strength;
 	XMFLOAT3 Pos = Position;
-	RENDER_THREAD_TASK(
+	RENDER_THREAD_TASK("UpdateLightDirPos",
 		[RenderLightRes, Dir, StrengthValue, Pos]()
 		{
 			RenderLightRes->UpdateLightInRenderThread(Dir, StrengthValue, Pos);
@@ -72,7 +72,7 @@ void LLight::InitRenderThreadResource()
 	RenderLight = make_shared<FLight>(this);
 
 	auto RenderLightRes = RenderLight;
-	RENDER_THREAD_TASK(
+	RENDER_THREAD_TASK("AddFlightInRender",
 		[RenderLightRes]()
 		{
 			RenderLightRes->AddLightInRenderThread();

@@ -39,7 +39,7 @@ void LMesh::InitRenderThreadResource()
 	auto RenderMeshRes = RenderMesh;
 	auto VertexData = VertexBufferData;
 	auto IndexData = IndexBufferData;
-	RENDER_THREAD_TASK(
+	RENDER_THREAD_TASK("InitFMeshInRender",
 		[RenderMeshRes, VertexData, IndexData]()
 		{
 			RenderMeshRes->InitRenderThreadResource(*VertexData, *IndexData);
@@ -82,7 +82,7 @@ void LMesh::UpdateModelMatrix()
 	XMMATRIX ModelMat = GetModelMatrix();
 	auto RenderMeshRes = RenderMesh;
 	assert(RenderMeshRes != nullptr);
-	RENDER_THREAD_TASK(
+	RENDER_THREAD_TASK("UpdateMeshMatrix",
 		[RenderMeshRes, ModelMat]()
 		{
 			RenderMeshRes->UpdateMeshMatrixInRenderThread(ModelMat);

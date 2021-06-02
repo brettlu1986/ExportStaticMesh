@@ -176,6 +176,7 @@
     <ClCompile Include="Private\Engine\Common\RenderData\LMesh.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LResource.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LScene.cpp" />
+    <ClCompile Include="Private\Engine\Common\RenderData\LSkeletalMesh.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LVertexBuffer.cpp" />
     <ClCompile Include="Private\Engine\Common\Windows\LDeviceWindows.cpp" />
     <ClCompile Include="Private\Engine\Common\Windows\LInputWindows.cpp" />
@@ -433,6 +434,7 @@
     <ClInclude Include="Public\Engine\Common\RenderData\LMesh.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LResource.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LScene.h" />
+    <ClInclude Include="Public\Engine\Common\RenderData\LSkeletalMesh.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LVertexBuffer.h" />
     <ClInclude Include="Public\Engine\Common\Windows\LDeviceWindows.h" />
     <ClInclude Include="Public\Engine\Common\Windows\LInputWindows.h" />
