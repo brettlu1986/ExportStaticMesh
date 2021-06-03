@@ -10,6 +10,7 @@ public:
 	FRenderThread();
 
 	virtual void Run() override;
+	virtual void Stop() override;
 	void OnThreadInit();
 
 	static bool IsInited();
@@ -22,21 +23,19 @@ public:
 		return RenderScene.get();
 	}
 
-	/*void NotifyRenderThreadExcute();
-	void NotifyGameExcute();
-	bool ShouldWaitRender();
-	bool ShouldWaitGame();*/
 	void Clear();
 	
 	void WaitForRenderThread();
+	void WaitForGameThread();
 
 	condition_variable RenderCV;
 	
 
 private:
 	static FRenderThread* RenderThread;
-	//static const INT CPU_MAX_AHEAD = 3;
-	//UINT SyncCount = 0;
+
+	atomic_int SyncCount = 0;
+	static const INT CPU_MAX_AHEAD = 2;
 
 	static bool Inited;
 	FSceneRenderer Renderer;

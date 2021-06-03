@@ -31,8 +31,9 @@ protected:
 
 	void DoTasks();
 	void ClearTask();
-	deque<FThreadTask> Tasks;
+	//deque<FThreadTask> Tasks;
 
-	//deque<FThreadTask> FrameTasks[FRAME_COUNT];
-	atomic_int FrameTaskIndex = 0;
+	UINT FrameTaskIndex;
+	deque<FThreadTask> FrameTasks[FRAME_COUNT];
+	
 };

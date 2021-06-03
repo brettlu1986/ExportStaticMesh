@@ -32,10 +32,9 @@ void FRenderThread::Run()
 	OnThreadInit();
 	while (IsRun)
 	{
-		//while(ShouldWaitGame())
-		//{
-		//	continue;
-		//}
+		//LLog::Log("RenderTHread ::%d \n", (INT)SyncCount);
+
+		WaitForGameThread();
 
 		GRHI->BeginRenderScene();
 
@@ -43,12 +42,19 @@ void FRenderThread::Run()
 		Renderer.RenderScene(GetRenderScene());
 		GRHI->EndRenderScene();
 
-		//NotifyGameExcute();
-		--FrameTaskIndex;
+		--SyncCount;
 		RenderCV.notify_all();
 	}
 	Clear();
 	RHIExit();
+}
+
+void FRenderThread::Stop()
+{
+	++SyncCount;
+	RenderCV.notify_all();
+
+	FThread::Stop();
 }
 
 void FRenderThread::CreateRenderThread()
@@ -76,38 +82,22 @@ void FRenderThread::Clear()
 	DoTasks();
 	Renderer.Destroy();
 	RenderScene = nullptr;
-	//lock_guard<mutex> Lock(Mutex);
-	//SyncCount = 0;
 }
 
 void FRenderThread::WaitForRenderThread()
 {
+	//LLog::Log("GameTHread ::%d \n", (INT)SyncCount);
+
+	//cv false will block
 	unique_lock<mutex> Lock(Mutex);
-	//false will block
-	RenderCV.wait(Lock, [this]() { return FrameTaskIndex <= FRAME_COUNT; });
-	++FrameTaskIndex;
+	RenderCV.wait(Lock, [this]() { return SyncCount <= CPU_MAX_AHEAD; });
+	++SyncCount;
+
+	RenderCV.notify_all();
 }
 
-//void FRenderThread::NotifyRenderThreadExcute()
-//{
-//	lock_guard<mutex> Lock(Mutex);
-//	++SyncCount;
-//}
-//
-//void FRenderThread::NotifyGameExcute()
-//{
-//	lock_guard<mutex> Lock(Mutex);
-//	--SyncCount;
-//}
-//
-//bool FRenderThread::ShouldWaitRender()
-//{	
-//	lock_guard<mutex> Lock(Mutex);
-//	return SyncCount > CPU_MAX_AHEAD;
-//}
-//
-//bool FRenderThread::ShouldWaitGame()
-//{
-//	lock_guard<mutex> Lock(Mutex);
-//	return SyncCount <= 0;
-//}
+void FRenderThread::WaitForGameThread()
+{
+	unique_lock<mutex> Lock(Mutex);
+	RenderCV.wait(Lock, [this]() { return SyncCount > 0; });
+}

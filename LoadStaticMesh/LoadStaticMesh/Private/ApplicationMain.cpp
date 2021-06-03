@@ -54,13 +54,7 @@ void ApplicationMain::OnSceneInit()
 
 void ApplicationMain::Update(float DeltaTime)
 {
-	//while(FRenderThread::Get()->ShouldWaitRender())
-	//{
-	//	continue;
-	//}
-
 	DataScene->Update(DeltaTime);
-	//FRenderThread::Get()->NotifyRenderThreadExcute();
 	FRenderThread::Get()->WaitForRenderThread();
 }
 
