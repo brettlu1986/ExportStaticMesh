@@ -1,5 +1,4 @@
 
-#include "stdafx.h"
 #include "ApplicationMain.h"
 #include "LEngine.h"
 #include "LEvent.h"
@@ -9,9 +8,7 @@
 #include <thread> 
 #include "SampleAssets.h"
 #include "LCharacter.h"
-
 #include "LLog.h"
-
 #include "LSceneCamera.h"
 
 ApplicationMain* ApplicationMain::Application = nullptr;
@@ -53,9 +50,6 @@ void ApplicationMain::OnTouchInit()
 void ApplicationMain::OnSceneInit()
 {
 	SampleAssets::LoadSampleSceneData(*DataScene);
-	//
-	//SampleAssets::LoadSampleScene(&Scene);
-	//FRenderThread::Get()->InitRenderThreadScene(&Scene);
 }
 
 void ApplicationMain::Update(float DeltaTime)
@@ -65,17 +59,11 @@ void ApplicationMain::Update(float DeltaTime)
 	//	continue;
 	//}
 
-	//Scene.Update(DeltaTime);
 	DataScene->Update(DeltaTime);
 	//FRenderThread::Get()->NotifyRenderThreadExcute();
 	FRenderThread::Get()->WaitForRenderThread();
-	//FRenderThread::Get()->UpdateRenderSceneResource(&Scene);
 }
 
-//void ApplicationMain::OnRender()
-//{
-//	//FRenderThread::Get()->OnRenderScene(&Scene);
-//}
 
 void ApplicationMain::Run()
 {
@@ -87,9 +75,8 @@ void ApplicationMain::Run()
 		Timer->Reset();
 
 		Update(Timer->GetDeltaTime());
-		//OnRender();
 
-	//	LLog::Log("Real FrameRate:: %f", 1/ Timer->GetDeltaTime());
+		LLog::Log("Real FrameRate:: %f \n", 1/ Timer->GetDeltaTime());
 		this_thread::sleep_for(FrameLen - Timer->GetChronoDeltaTime());
 	}
 }
@@ -97,7 +84,6 @@ void ApplicationMain::Run()
 void ApplicationMain::Destroy()
 {
 	SampleAssets::ReleaseAssets();
-	//FRenderThread::Get()->DestroyRenderScene(&Scene);
 	Timer->Release();
 	LEngine::GetEngine()->Destroy();
 }
@@ -123,17 +109,14 @@ void ApplicationMain::ProcessKeyInput(FInputResult& Input)
 		if(Key == 96) //num key board 0
 		{ 
 			DataScene->ActiveCamera(0);
-			//Scene.ActiveCamera(0);//scene camera
 			return;
 		}
 		else if(Key == 97)//num key board 1
 		{
 			DataScene->ActiveCamera(1);
-			//Scene.ActiveCamera(1);
 			return;
 		}
 	}
-
 
 	if (DataScene->GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_SCENE)
 	{
@@ -145,17 +128,6 @@ void ApplicationMain::ProcessKeyInput(FInputResult& Input)
 		LCharacter* LocalPlayer = DataScene->GetLocalControlPlayer();
 		LocalPlayer->ProcessKeyInput(Input);
 	}
-
-	//if(Scene.GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_SCENE)
-	//{
-	//	LSceneCamera* Camera = dynamic_cast<LSceneCamera*>(Scene.GetActiveCamera());
-	//	Camera->ProcessCameraKeyInput(Input);
-	//}
-	//else if(Scene.GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_THIRD_PERSON)
-	//{
-	//	LCharacter* LocalPlayer = Scene.GetLocalControlPlayer();
-	//	LocalPlayer->ProcessKeyInput(Input);
-	//}
 }
 
 void ApplicationMain::ProcessMouseInput(FInputResult& Input)
@@ -170,15 +142,5 @@ void ApplicationMain::ProcessMouseInput(FInputResult& Input)
 		LCharacter* LocalPlayer = DataScene->GetLocalControlPlayer();
 		LocalPlayer->ProcessMouseInput(Input);
 	}
-	/*if (Scene.GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_SCENE)
-	{
-		LSceneCamera* Camera = dynamic_cast<LSceneCamera*>(Scene.GetActiveCamera());
-		Camera->ProcessCameraMouseInput(Input);
-	}
-	else if (Scene.GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_THIRD_PERSON)
-	{
-		LCharacter* LocalPlayer = Scene.GetLocalControlPlayer();
-		LocalPlayer->ProcessMouseInput(Input);
-	}*/
 }
 

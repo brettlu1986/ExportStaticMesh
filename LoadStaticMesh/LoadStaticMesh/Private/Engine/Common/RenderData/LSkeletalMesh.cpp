@@ -58,13 +58,13 @@ void LSkeletalMesh::UpdateBoneMapFinalTransform(vector<XMFLOAT4X4>& BoneMapFinal
 	assert(LEngine::GetEngine()->IsGameThread());
 
 	auto RenderMeshRes = RenderMesh;
-	vector<XMFLOAT4X4> BoneMapFinalTrans;
-	BoneMapFinalTrans.resize(BoneMapFinal.size());
-	copy(begin(BoneMapFinal), end(BoneMapFinal), BoneMapFinalTrans.begin());
+
+	FSkeletalConstants SkeCon;
+	copy(begin(BoneMapFinal), end(BoneMapFinal), &SkeCon.BoneMapBoneTransforms[0]);
 	RENDER_THREAD_TASK("UpdateBoneMapFinalTransform",
-		[RenderMeshRes, BoneMapFinalTrans]()
+		[RenderMeshRes, SkeCon]()
 		{
-			RenderMeshRes->UpdateBoneMapFinalTransInRenderThread(BoneMapFinalTrans);
+			RenderMeshRes->UpdateBoneMapFinalTransInRenderThread(SkeCon);
 		}
 	);
 
@@ -109,7 +109,6 @@ void LSkeletalMesh::UpdateModelMatrix()
 			RenderMeshRes->UpdateMeshMatrixInRenderThread(ModelMat);
 		}
 	);
-
 }
 
 

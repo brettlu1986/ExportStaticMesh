@@ -83,20 +83,6 @@ void FD3D12DynamicRHI::BeginRenderScene()
 	ThrowIfFailed(CommandList->Reset(CommandAllocator.Get(), nullptr));
 }
 
-//void FD3D12DynamicRHI::UpdateSceneResources(FScene* RenderScene)
-//{
-//	if (RenderScene != nullptr)
-//	{
-//		if (RenderScene->IsConstantDirty())
-//		{
-//			UpdateSceneMtConstants(RenderScene);
-//			RenderScene->DecreaseDirtyCount();
-//		}
-//		UpdateScenePassConstants(RenderScene);
-//		UpdateSceneSkeletalConstants(RenderScene);
-//	}
-//}
-
 void FD3D12DynamicRHI::EndRenderScene()
 {
 	vector<ID3D12CommandList*> CmdLists;
@@ -104,25 +90,11 @@ void FD3D12DynamicRHI::EndRenderScene()
 	CmdLists.push_back(CommandList.Get());
 	CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
 	//TODO:Present first should use 1, for Vsync 
-	SwapChain->Present(0, 0);
+	SwapChain->Present(1, 0);
 	WaitForPreviousFrame();
 	FrameIndex = (FrameIndex + 1) % FRAME_COUNT;
 }
 
-//void FD3D12DynamicRHI::BeginCreateSceneResource()
-//{
-//	ThrowIfFailed(CommandList->Reset(CommandAllocator.Get(), nullptr));
-//}
-
-//void FD3D12DynamicRHI::EndCreateSceneResource()
-//{
-//	vector<ID3D12CommandList*> CmdLists;
-//	CommandList->Close();
-//	CmdLists.push_back(CommandList.Get());
-//	CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
-//	FenceValues = 1;
-//	WaitForPreviousFrame();
-//}
 
 FIndexBuffer* FD3D12DynamicRHI::RHICreateIndexBuffer()
 {
@@ -452,91 +424,6 @@ void FD3D12DynamicRHI::SetViewPortInfo(FRHIViewPort ViewPort)
 	CommandList->RSSetViewports(1, &Viewport);
 	CommandList->RSSetScissorRects(1, &ScissorRect);
 }
-
-//void FD3D12DynamicRHI::UpdateSceneMtConstants(FScene* RenderScene)
-//{
-//	const vector<FMesh*>& Meshes = RenderScene->GetDrawMeshes();
-//	for (size_t i = 0; i < Meshes.size(); i++)
-//	{
-//		FObjectConstants ObjConstants;
-//		XMStoreFloat4x4(&ObjConstants.World, XMMatrixTranspose(Meshes[i]->GetModelMatrix()));
-//		XMFLOAT4X4 TexMat = Meshes[i]->GetTextureTransform();
-//		XMStoreFloat4x4(&ObjConstants.TexTransform, XMMatrixTranspose(XMLoadFloat4x4(&TexMat)));
-//		FD3D12CbvResourceView* MatrixCbvResView = dynamic_cast<FD3D12CbvResourceView*>(Meshes[i]->MatrixConstantBufferView);
-//		MatrixCbvResView->UpdateConstantBufferInfo(&ObjConstants);
-//
-//		FMaterial* Material = Meshes[i]->GetMaterial();
-//		XMFLOAT4X4 Mat = Material->GetMaterialTransform();
-//		XMMATRIX MatTransform = XMLoadFloat4x4(&Mat);
-//		FMaterialConstants MatConstants;
-//		MatConstants.DiffuseAlbedo = Material->GetDiffuseAlbedo();
-//		MatConstants.FresnelR0 = Material->GetFresnelR0();
-//		MatConstants.Roughness = Material->GetRoughness();
-//		XMStoreFloat4x4(&MatConstants.MatTransform, XMMatrixTranspose(MatTransform));
-//		FD3D12CbvResourceView* MaterialCbvView = dynamic_cast<FD3D12CbvResourceView*>(Meshes[i]->MaterialConstantBufferView);
-//		MaterialCbvView->UpdateConstantBufferInfo(&MatConstants);
-//	}
-//
-//}
-
-//void FD3D12DynamicRHI::UpdateScenePassConstants(FScene* RenderScene)
-//{
-//	FPassConstants PassConstant;
-//	LCamera* Camera = RenderScene->GetActiveCamera();
-//	XMFLOAT4X4 MtProj;
-//	XMStoreFloat4x4(&MtProj, Camera->GetProjectionMatrix());
-//	XMMATRIX ViewProj = Camera->GetViewMarix() * XMLoadFloat4x4(&MtProj);
-//	XMStoreFloat4x4(&PassConstant.ViewProj, XMMatrixTranspose(ViewProj));
-//	PassConstant.EyePosW = Camera->GetCameraLocation();
-//	FLight* Light = RenderScene->GetLight(0);
-//	PassConstant.Lights[0].Direction = Light->Direction;
-//	PassConstant.Lights[0].Strength = Light->Strength;
-//	PassConstant.Lights[0].Position = Light->Position;
-//
-//	XMFLOAT3 LightUp = { 0, 0, 1 };
-//	XMMATRIX LightView = XMMatrixLookToLH(XMLoadFloat3(&Light->Position), XMLoadFloat3(&Light->Direction), XMLoadFloat3(&LightUp));
-//	XMMATRIX LightProj = XMMatrixOrthographicLH((float)50, (float)50, 1.f, 100.f);
-//	XMMATRIX LightSpaceMatrix = LightView * LightProj;
-//
-//	XMStoreFloat4x4(&PassConstant.LightSpaceMatrix, XMMatrixTranspose(LightSpaceMatrix));
-//
-//	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
-//	XMMATRIX T(
-//		0.5f, 0.0f, 0.0f, 0.0f,
-//		0.0f, -0.5f, 0.0f, 0.0f,
-//		0.0f, 0.0f, 1.0f, 0.0f,
-//		0.5f, 0.5f, 0.0f, 1.0f);
-//	XMMATRIX S = LightView * LightProj * T;
-//	XMStoreFloat4x4(&PassConstant.ShadowTransform, XMMatrixTranspose(S));
-//
-//	FD3D12CbvResourceView* CbvResView = dynamic_cast<FD3D12CbvResourceView*>(RenderScene->PassContantView);
-//	CbvResView->UpdateConstantBufferInfo(&PassConstant);
-//}
-//
-//void FD3D12DynamicRHI::UpdateSceneSkeletalConstants(FScene* RenderScene)
-//{
-//	for (size_t i = 0; i < RenderScene->GetCharacters().size(); i++)
-//	{
-//		LCharacter* Character = RenderScene->GetCharacters()[i];
-//		FSkeletalMesh* Mesh = Character->GetSkeletalMesh();
-//		//update world matrix
-//		FObjectConstants ObjConstants;
-//		XMStoreFloat4x4(&ObjConstants.World, XMMatrixTranspose(Mesh->GetModelMatrix()));
-//		XMFLOAT4X4 TexMat = MathHelper::Identity4x4();
-//		XMStoreFloat4x4(&ObjConstants.TexTransform, XMMatrixTranspose(XMLoadFloat4x4(&TexMat)));
-//		FD3D12CbvResourceView* CbvResView1 = dynamic_cast<FD3D12CbvResourceView*>(Mesh->MatrixConstantBufferView);
-//		CbvResView1->UpdateConstantBufferInfo(&ObjConstants);
-//
-//		//bone map matrix pallete
-//		LAnimator* Animator = Character->GetAnimator();
-//		FSkeletalConstants SkeCon;
-//		copy(begin(Animator->GetBoneMapFinalTransforms()),
-//			end(Animator->GetBoneMapFinalTransforms()), &SkeCon.BoneMapBoneTransforms[0]);
-//		FD3D12CbvResourceView* CbvResView2 = dynamic_cast<FD3D12CbvResourceView*>(Mesh->SkeletalConstantBufferView);
-//		CbvResView2->UpdateConstantBufferInfo(&SkeCon);
-//
-//	}
-//}
 
 void FD3D12DynamicRHI::FindAdapter()
 {

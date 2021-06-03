@@ -51,11 +51,7 @@ public:
 	virtual void ShutDown() = 0;
 	
 	virtual void BeginRenderScene() = 0;
-	//virtual void UpdateSceneResources(FScene* RenderScene) = 0;
 	virtual void EndRenderScene() = 0;
-
-	//virtual void BeginCreateSceneResource() = 0;
-	//virtual void EndCreateSceneResource() = 0;
 
 	virtual FIndexBuffer* RHICreateIndexBuffer() = 0;
 	virtual FVertexBuffer* RHICreateVertexBuffer() = 0;

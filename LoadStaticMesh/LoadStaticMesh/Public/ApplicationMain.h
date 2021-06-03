@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 #include "LDefine.h"
-//#include "FScene.h"
 #include "LGameTimer.h"
 #include "LScene.h"
 
@@ -16,7 +15,6 @@ public:
 	void Run();
 
 	void Update(float DeltaTime);
-	//void OnRender();
 	void Destroy();
 	
 	static ApplicationMain* Get() { return Application; }
@@ -30,7 +28,6 @@ private:
 	void OnSceneInit();
 
 private: 
-	//FScene Scene;
 	LGameTimer* Timer;
 	unique_ptr<LScene> DataScene;
 };

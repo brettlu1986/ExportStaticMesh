@@ -95,10 +95,9 @@ void FSkeletalMesh::UpdateMeshMatrixInRenderThread(XMMATRIX Mat)
 	GRHI->UpdateConstantBufferView(MatrixConstantBufferView, &ObjConstants);
 }
 
-void FSkeletalMesh::UpdateBoneMapFinalTransInRenderThread(const vector<XMFLOAT4X4>& BoneMapFinal)
+void FSkeletalMesh::UpdateBoneMapFinalTransInRenderThread(const FSkeletalConstants& SkelConstant)
 {	
 	assert(LEngine::GetEngine()->IsRenderThread());
-	FSkeletalConstants SkeCon;
-	copy(begin(BoneMapFinal),end(BoneMapFinal), &SkeCon.BoneMapBoneTransforms[0]);
-	GRHI->UpdateConstantBufferView(SkeletalConstantBufferView, &SkeCon);
+	SkeletalConstants = SkelConstant;
+	GRHI->UpdateConstantBufferView(SkeletalConstantBufferView, &SkeletalConstants);
 }

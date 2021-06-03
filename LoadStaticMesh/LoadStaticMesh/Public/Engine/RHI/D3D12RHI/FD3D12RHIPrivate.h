@@ -25,11 +25,7 @@ public:
 	virtual void ShutDown() override;
 
 	virtual void BeginRenderScene() override;
-	//virtual void UpdateSceneResources(FScene* RenderScene) override;
 	virtual void EndRenderScene() override;
-	
-//	virtual void BeginCreateSceneResource() override;
-//	virtual void EndCreateSceneResource() override;
 	
 	virtual FIndexBuffer* RHICreateIndexBuffer() override;
 	virtual FVertexBuffer* RHICreateVertexBuffer() override;
@@ -60,10 +56,6 @@ public:
 	virtual FRHIViewPort GetDefaultViewPort() override { return DefaultViewPort;};
 
 private:
-	//void UpdateSceneMtConstants(FScene* RenderScene);
-	//void UpdateScenePassConstants(FScene* RenderScene);
-	//void UpdateSceneSkeletalConstants(FScene* RenderScene);
-
 	void FindAdapter();
 	void InitWindow(UINT Width, UINT Height, void* Window);
 	void InitializeDevices();

@@ -22,7 +22,7 @@ public:
 	void InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData);
 	void AddMeshInRenderThread();
 	void UpdateMeshMatrixInRenderThread(XMMATRIX Mat);
-	void UpdateBoneMapFinalTransInRenderThread(const vector<XMFLOAT4X4>& BoneMapFinal);
+	void UpdateBoneMapFinalTransInRenderThread(const FSkeletalConstants& SkelConstant);
 
 	XMMATRIX& GetModelMatrix()
 	{
@@ -55,13 +55,14 @@ public:
 	FResourceView* DiffuseResView;
 
 private:
-
+	
 	FVertexBuffer* VertexBuffer;
 	FIndexBuffer* IndexBuffer;
 	
 	FTexture* DiffuseTex;
 
 	XMMATRIX ModelMatrix;
-	string UsePsoKey;
+	FSkeletalConstants SkeletalConstants;
 
+	string UsePsoKey;
 };
