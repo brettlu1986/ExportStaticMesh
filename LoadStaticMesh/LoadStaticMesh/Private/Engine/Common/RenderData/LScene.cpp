@@ -14,7 +14,25 @@ LScene::LScene()
 
 LScene::~LScene()
 {
+	for(auto Mesh : StaticMeshes)
+	{
+		Mesh = nullptr;
+	}
 
+	for (auto Light : SceneLights)
+	{
+		Light = nullptr;
+	}
+
+	for (auto Player : Players)
+	{
+		Player = nullptr;
+	}
+
+	for (auto Camera : Cameras)
+	{
+		Camera = nullptr;
+	}
 }
 
 void LScene::AddStaticMeshes(shared_ptr<LMesh>& Mesh)

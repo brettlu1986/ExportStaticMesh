@@ -15,7 +15,7 @@ LLight::LLight()
 
 LLight::~LLight()
 {
-
+	DestroyRenderThreadResource();
 }
 
 void LLight::Init()
@@ -32,7 +32,7 @@ void LLight::Init()
 
 void LLight::Update(float dt)
 {
-	Theta -= 0.0001f;
+	Theta -= 0.001f;
 	XMVECTOR V = XMVectorSet(Radius * sinf(Alpha) * sinf(Theta),
 		Radius * sinf(Alpha) * cosf(Theta),
 		Radius * cosf(Alpha),
@@ -82,5 +82,15 @@ void LLight::InitRenderThreadResource()
 
 void LLight::DestroyRenderThreadResource()
 {
-
+	assert(LEngine::GetEngine()->IsGameThread());
+	if(RenderLight != nullptr)
+	{
+		auto RenderLightRes = RenderLight;
+		RENDER_THREAD_TASK("DeleteLightInRender",
+			[RenderLightRes]()
+			{
+				RenderLightRes->DeleteLightInRenderThread();
+			}
+		);
+	}
 }

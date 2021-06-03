@@ -14,12 +14,6 @@ public:
 	virtual ~LCharacter();
 
 	void Destroy();
-
-	//void SetSkeletalMesh(FSkeletalMesh* Mesh)
-	//{
-	//	SkeletalMesh = Mesh;
-	//}
-
 	void SetAnimator(LAnimator* Animator);
 	
 	LSkeletalMesh* GetSkeletalMesh()
@@ -75,12 +69,10 @@ public:
 		return MoveSpeed;
 	}
 
-	//--
 	void SetSkeletalMesh(LSkeletalMesh* Mesh)
 	{
 		SkeletalMeshIns = Mesh;
 	}
-	//
 private: 
 	bool IsKeyDown(char Key);
 	bool IsKeyUp(char Key);
@@ -88,8 +80,6 @@ private:
 	static const UINT KEY_SIZE = 256;
 	bool Keys[KEY_SIZE];
 	POINT LastMousePoint;
-
-	//FSkeletalMesh* SkeletalMesh;
 
 	LSkeletalMesh* SkeletalMeshIns;
 	LAnimator* AnimatorIns;

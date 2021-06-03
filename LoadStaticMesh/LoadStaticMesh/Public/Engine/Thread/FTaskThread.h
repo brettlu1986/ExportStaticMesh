@@ -4,6 +4,7 @@
 #include "FThread.h"
 #include <deque>
 #include <functional>
+#include "FDefine.h"
 
 using TaskFunc = function<void()>;
 class FThreadTask
@@ -31,5 +32,7 @@ protected:
 	void DoTasks();
 	void ClearTask();
 	deque<FThreadTask> Tasks;
-	
+
+	//deque<FThreadTask> FrameTasks[FRAME_COUNT];
+	atomic_int FrameTaskIndex = 0;
 };

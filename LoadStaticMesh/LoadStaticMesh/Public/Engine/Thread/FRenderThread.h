@@ -31,11 +31,11 @@ public:
 	void WaitForRenderThread();
 
 	condition_variable RenderCV;
-	atomic_int SyncCount;
+	
 
 private:
 	static FRenderThread* RenderThread;
-	static const INT CPU_MAX_AHEAD = 3;
+	//static const INT CPU_MAX_AHEAD = 3;
 	//UINT SyncCount = 0;
 
 	static bool Inited;

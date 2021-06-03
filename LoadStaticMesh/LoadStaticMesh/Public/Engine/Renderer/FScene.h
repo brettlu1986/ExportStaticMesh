@@ -13,8 +13,11 @@ public:
 	~FScene();
 
 	void AddMeshToScene(FMesh* Mesh);
+	void DeleteMeshToScene(FMesh* Mesh);
 	void AddSkeletalMeshToScene(FSkeletalMesh* Mesh);
+	void DeleteSkeletalMeshToScene(FSkeletalMesh* Mesh);
 	void AddLightToScene(FLight* Light);
+	void DeleteLightToScene(FLight* Light);
 	void UpdateLightToScene(FLight* Light);
 
 	void Destroy();

@@ -21,6 +21,7 @@ public:
 
 	void InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData);
 	void AddMeshInRenderThread();
+	void DeleteInRenderThread();
 	void UpdateMeshMatrixInRenderThread(XMMATRIX Mat);
 
 	FVertexBuffer* GetVertexBuffer()

@@ -3,13 +3,13 @@
 
 #include "FRenderThread.h"
 #include "FRHI.h"
+#include "LLog.h"
 
 FRenderThread* FRenderThread::RenderThread = nullptr;
 bool FRenderThread::Inited = false;
 
 FRenderThread::FRenderThread()
 	:FTaskThread("RenderThread")
-	//, RenderScene(nullptr)
 {
 
 }
@@ -18,7 +18,6 @@ void FRenderThread::OnThreadInit()
 {
 	RenderScene = make_unique<FScene>();
 	Renderer.Initialize(GetRenderScene());
-
 	Inited = true;
 }
 
@@ -41,12 +40,11 @@ void FRenderThread::Run()
 		GRHI->BeginRenderScene();
 
 		DoTasks();
-		
 		Renderer.RenderScene(GetRenderScene());
 		GRHI->EndRenderScene();
 
 		//NotifyGameExcute();
-		--SyncCount;
+		--FrameTaskIndex;
 		RenderCV.notify_all();
 	}
 	Clear();
@@ -73,9 +71,11 @@ FRenderThread* FRenderThread::Get()
 
 void FRenderThread::Clear()
 {
+	//ClearTask();
+	//may have clear tasks
+	DoTasks();
+	Renderer.Destroy();
 	RenderScene = nullptr;
-	ClearTask();
-
 	//lock_guard<mutex> Lock(Mutex);
 	//SyncCount = 0;
 }
@@ -84,8 +84,8 @@ void FRenderThread::WaitForRenderThread()
 {
 	unique_lock<mutex> Lock(Mutex);
 	//false will block
-	RenderCV.wait(Lock, [this]() { return SyncCount <= CPU_MAX_AHEAD; });
-	++SyncCount;
+	RenderCV.wait(Lock, [this]() { return FrameTaskIndex <= FRAME_COUNT; });
+	++FrameTaskIndex;
 }
 
 //void FRenderThread::NotifyRenderThreadExcute()

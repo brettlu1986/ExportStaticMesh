@@ -37,12 +37,29 @@ void FTaskThread::Run()
 
 void FTaskThread::ClearTask()
 {
+	//for(auto& Tasks : FrameTasks)
+	//{
+	//	Tasks.clear();
+	//}
 	Tasks.clear();
 }
 
 void FTaskThread::DoTasks()
 {
 	FThreadTask* Task = nullptr;
+	{
+		lock_guard<mutex> Lock(Mutex);
+		//auto& Tasks = FrameTasks[FrameTaskIndex];
+		while(!Tasks.empty())
+		{
+			Task = &Tasks.front();
+			Task->DoTask();
+
+			Tasks.pop_front();
+			Task = nullptr;
+		}
+	}
+	/*FThreadTask* Task = nullptr;
 	{
 		lock_guard<mutex> Lock(Mutex);
 		if (!Tasks.empty())
@@ -57,7 +74,7 @@ void FTaskThread::DoTasks()
 			lock_guard<mutex> Lock(Mutex);
 			Tasks.pop_front();
 		}
-	}
+	}*/
 }
 
 void FTaskThread::AddTask(const char* Name, TaskFunc&& TaskF)
@@ -65,6 +82,7 @@ void FTaskThread::AddTask(const char* Name, TaskFunc&& TaskF)
 	if(IsRun )
 	{
 		lock_guard<mutex> Lock(Mutex);
+		//FrameTasks[FrameTaskIndex].push_back(FThreadTask(Name, TaskF));
 		Tasks.push_back(FThreadTask(Name, TaskF));
 	}
 }

@@ -18,7 +18,11 @@ public:
 	{};
 	virtual ~FD3D12ResourceView() 
 	{
-		
+		if(ViewResource != nullptr)
+		{
+			ViewResource->Release();
+			ViewResource = nullptr;
+		}
 	};
 	UINT GetCount() { return Count;}
 

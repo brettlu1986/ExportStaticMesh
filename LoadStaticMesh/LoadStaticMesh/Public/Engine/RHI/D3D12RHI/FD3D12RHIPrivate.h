@@ -53,7 +53,8 @@ public:
 
 	virtual UINT GetFrameIndex() override { return FrameIndex; };
 	virtual void SetViewPortInfo(FRHIViewPort ViewPort) override;
-	virtual FRHIViewPort GetDefaultViewPort() override { return DefaultViewPort;};
+	virtual FRHIViewPort GetDefaultViewPort() override { return DefaultViewPort;}
+	virtual void WaitForPreviousFrame() override;
 
 private:
 	void FindAdapter();
@@ -61,7 +62,6 @@ private:
 	void InitializeDevices();
 	void CreateSampler();
 	void CreateSwapChain();
-	void WaitForPreviousFrame();
 
 	FD3D12AdapterDesc CurrentAdapterDesc;
 	ComPtr<ID3D12Device> D3DDevice;

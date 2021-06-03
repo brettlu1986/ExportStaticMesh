@@ -36,6 +36,13 @@ void FLight::AddLightInRenderThread()
 	FRenderThread::Get()->GetRenderScene()->AddLightToScene(this);
 }
 
+void FLight::DeleteLightInRenderThread()
+{
+	assert(LEngine::GetEngine()->IsRenderThread());
+
+	FRenderThread::Get()->GetRenderScene()->DeleteLightToScene(this);
+}
+
 void FLight::UpdateLightInRenderThread(XMFLOAT3 Dir, XMFLOAT3 StrengthValues, XMFLOAT3 Pos)
 {
 	assert(LEngine::GetEngine()->IsRenderThread());

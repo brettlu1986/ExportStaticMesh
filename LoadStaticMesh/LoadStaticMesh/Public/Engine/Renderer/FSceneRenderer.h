@@ -11,6 +11,7 @@ public:
 	FSceneRenderer();
 	virtual ~FSceneRenderer();
 
+	void Destroy();
 	void Initialize(FScene* RenderScene);
 	void RenderScene(FScene* RenderScene);
 

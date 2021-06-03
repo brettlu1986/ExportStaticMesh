@@ -18,7 +18,10 @@ LMesh::LMesh()
 
 LMesh::~LMesh()
 {
+	VertexBufferData = nullptr;
+	IndexBufferData = nullptr;
 
+	DestroyRenderThreadResource();
 }
 
 void LMesh::SetVertexBufferInfo(const char* DataSource, UINT DataSize, UINT DataCount)
@@ -49,10 +52,19 @@ void LMesh::InitRenderThreadResource()
 	);
 }
 
-//TODO: add dynamic remove render resource
 void LMesh::DestroyRenderThreadResource()
 {
-
+	if(RenderMesh != nullptr)
+	{
+		auto RenderMeshRes = RenderMesh;
+		RENDER_THREAD_TASK("DeleteMesh",
+			[RenderMeshRes]()
+			{
+				RenderMeshRes->DeleteInRenderThread();
+			}
+		);
+		RenderMesh = nullptr;
+	}
 }
 
 void LMesh::SetModelLocation(XMFLOAT3 Location)

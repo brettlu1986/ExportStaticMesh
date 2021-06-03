@@ -15,7 +15,6 @@ FShadowMap::FShadowMap(UINT InWidth, UINT InHeight)
 
 FShadowMap::~FShadowMap()
 {
-	Destroy();
 }
 
 void FShadowMap::Destroy()

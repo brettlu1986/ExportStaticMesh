@@ -64,7 +64,6 @@ void ApplicationMain::Update(float DeltaTime)
 	FRenderThread::Get()->WaitForRenderThread();
 }
 
-
 void ApplicationMain::Run()
 {
 	const UINT FrameRate = 60;
@@ -75,8 +74,7 @@ void ApplicationMain::Run()
 		Timer->Reset();
 
 		Update(Timer->GetDeltaTime());
-
-		LLog::Log("Real FrameRate:: %f \n", 1/ Timer->GetDeltaTime());
+		//LLog::Log("Real FrameRate:: %f \n", 1/ Timer->GetDeltaTime());
 		this_thread::sleep_for(FrameLen - Timer->GetChronoDeltaTime());
 	}
 }
@@ -84,6 +82,7 @@ void ApplicationMain::Run()
 void ApplicationMain::Destroy()
 {
 	SampleAssets::ReleaseAssets();
+	DataScene = nullptr;
 	Timer->Release();
 	LEngine::GetEngine()->Destroy();
 }
@@ -102,7 +101,6 @@ void ApplicationMain::ProcessInput(FInputResult Input)
 
 void ApplicationMain::ProcessKeyInput(FInputResult& Input)
 {	
-
 	if (Input.TouchType == E_TOUCH_TYPE::KEY_DOWN)
 	{
 		UINT8 Key = static_cast<UINT8>(Input.KeyMapType);

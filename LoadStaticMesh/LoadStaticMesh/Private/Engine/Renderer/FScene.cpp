@@ -14,15 +14,8 @@ FScene::~FScene()
 	Destroy();
 }
 
-
 void FScene::Destroy()
 {
-	for (size_t i = 0; i < Meshes.size(); ++i)
-	{
-		Meshes[i]->Destroy();
-	}
-	Meshes.clear();
-
 	delete PassViewProj;
 	PassViewProj = nullptr;
 
@@ -52,16 +45,39 @@ void FScene::AddMeshToScene(FMesh* Mesh)
 	Meshes.push_back(Mesh);
 }
 
+void FScene::DeleteMeshToScene(FMesh* Mesh)
+{
+	UINT MeshIndex = Mesh->GetMeshIndex();
+	Meshes[MeshIndex]->Destroy();
+	Meshes[MeshIndex] = nullptr;
+}
+
 void FScene::AddLightToScene(FLight* Light)
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
 	SceneLights.push_back(Light);
 }
 
+void FScene::DeleteLightToScene(FLight* Light)
+{
+	UINT LightIndex = Light->GetLightIndex();
+	SceneLights[LightIndex]->Destroy();
+	SceneLights[LightIndex] = nullptr;
+}
+
 void FScene::AddSkeletalMeshToScene(FSkeletalMesh* Mesh)
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
+	UINT Len = (UINT)SkmMeshes.size();
+	Mesh->SetMeshIndex(Len);
 	SkmMeshes.push_back(Mesh);
+}
+
+void FScene::DeleteSkeletalMeshToScene(FSkeletalMesh* Mesh)
+{
+	UINT MeshIndex = Mesh->GetMeshIndex();
+	SkmMeshes[MeshIndex]->Destroy();
+	SkmMeshes[MeshIndex] = nullptr;
 }
 
 void FScene::UpdateLightToScene(FLight* Light)

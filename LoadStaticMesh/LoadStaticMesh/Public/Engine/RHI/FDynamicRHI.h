@@ -82,6 +82,8 @@ public:
 	virtual UINT GetFrameIndex() = 0;
 	virtual void SetViewPortInfo(FRHIViewPort ViewPort) = 0;
 	virtual FRHIViewPort GetDefaultViewPort() = 0;
+
+	virtual void WaitForPreviousFrame() = 0;
 public: 
 	FResourceViewCreater* GetResourceViewCreater()
 	{

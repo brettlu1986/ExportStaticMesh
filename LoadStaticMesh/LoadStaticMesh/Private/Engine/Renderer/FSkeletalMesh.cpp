@@ -83,6 +83,12 @@ void FSkeletalMesh::AddMeshInRenderThread()
 	FRenderThread::Get()->GetRenderScene()->AddSkeletalMeshToScene(this);
 }
 
+void FSkeletalMesh::DeleteMeshInRenderThread()
+{
+	assert(LEngine::GetEngine()->IsRenderThread());
+	FRenderThread::Get()->GetRenderScene()->DeleteSkeletalMeshToScene(this);
+}
+
 void FSkeletalMesh::UpdateMeshMatrixInRenderThread(XMMATRIX Mat)
 {
 	assert(LEngine::GetEngine()->IsRenderThread());

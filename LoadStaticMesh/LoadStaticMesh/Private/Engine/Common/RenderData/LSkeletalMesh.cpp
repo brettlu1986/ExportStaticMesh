@@ -22,6 +22,8 @@ LSkeletalMesh::~LSkeletalMesh()
 {
 	VertexBufferData = nullptr;
 	IndexBufferData = nullptr;
+
+	DestroyRenderThreadResource();
 }
 
 void LSkeletalMesh::SetVertexBufferInfo(const char* DataSource, UINT DataSize, UINT DataCount)
@@ -70,10 +72,19 @@ void LSkeletalMesh::UpdateBoneMapFinalTransform(vector<XMFLOAT4X4>& BoneMapFinal
 
 }
 
-//TODO: add dynamic remove render resource
 void LSkeletalMesh::DestroyRenderThreadResource()
 {
-	
+	if(RenderMesh != nullptr)
+	{
+		auto RenderMeshRes = RenderMesh;
+		RENDER_THREAD_TASK("DeleteSkeletalMesh",
+			[RenderMeshRes]()
+		{
+			RenderMeshRes->DeleteMeshInRenderThread();
+		}
+		);
+		RenderMesh = nullptr;
+	}
 }
 
 void LSkeletalMesh::SetModelLocation(XMFLOAT3 Location)

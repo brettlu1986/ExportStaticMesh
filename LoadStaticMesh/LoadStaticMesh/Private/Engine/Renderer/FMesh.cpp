@@ -85,8 +85,6 @@ void FMesh::Initialize()
 }
 
 
-
-
 XMMATRIX FMesh::GetModelMatrix()
 {
 	//calculate model matrix : scale * rotation * translation
@@ -111,6 +109,12 @@ void FMesh::AddMeshInRenderThread()
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
 	FRenderThread::Get()->GetRenderScene()->AddMeshToScene(this);
+}
+
+void FMesh::DeleteInRenderThread()
+{
+	assert(LEngine::GetEngine()->IsRenderThread());
+	FRenderThread::Get()->GetRenderScene()->DeleteMeshToScene(this);
 }
 
 void FMesh::UpdateMeshMatrixInRenderThread(XMMATRIX Mat)

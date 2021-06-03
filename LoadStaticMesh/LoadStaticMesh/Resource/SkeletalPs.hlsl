@@ -17,7 +17,7 @@ struct PSInput
 float4 PsMain(PSInput input) : SV_TARGET
 {
 	//return g_txDiffuse.Sample(g_sampler, input.uv0);
-	float3 color = input.color.xyz;
+	float3 color = input.normal * 0.5 + 0.5;
 	color = color * 0.8;
 	float gamma = 2.2f;
 	color = pow(color, 1.0f / gamma);

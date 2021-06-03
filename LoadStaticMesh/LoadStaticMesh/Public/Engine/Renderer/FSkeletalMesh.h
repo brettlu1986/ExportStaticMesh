@@ -21,6 +21,7 @@ public:
 
 	void InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData);
 	void AddMeshInRenderThread();
+	void DeleteMeshInRenderThread();
 	void UpdateMeshMatrixInRenderThread(XMMATRIX Mat);
 	void UpdateBoneMapFinalTransInRenderThread(const FSkeletalConstants& SkelConstant);
 
@@ -54,10 +55,21 @@ public:
 	//TODO: move to material
 	FResourceView* DiffuseResView;
 
+	void SetMeshIndex(UINT Index)
+	{
+		MeshIndex = Index;
+	}
+
+	UINT GetMeshIndex()
+	{
+		return MeshIndex;
+	}
+
 private:
 	
 	FVertexBuffer* VertexBuffer;
 	FIndexBuffer* IndexBuffer;
+	UINT MeshIndex;
 	
 	FTexture* DiffuseTex;
 

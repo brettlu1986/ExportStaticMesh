@@ -24,7 +24,9 @@ void LEngine::InitEngine(LEngineDesc Desc)
 
 bool LEngine::Run()
 {
-	return CurrentDevice->Run();
+	if(CurrentDevice)
+		return CurrentDevice->Run();
+	return false;
 }
 
 void LEngine::Init(LEngineDesc Desc)
@@ -49,14 +51,13 @@ void LEngine::Init(LEngineDesc Desc)
 
 void LEngine::Destroy()
 {
-	FRenderThread::DestroyRenderThread();
-
-	if(CurrentDevice)
+	if (CurrentDevice)
 	{
 		delete CurrentDevice;
 		CurrentDevice = nullptr;
 	}
 
+	FRenderThread::DestroyRenderThread();
 	Engine = nullptr;
 }
 

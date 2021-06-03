@@ -14,6 +14,7 @@ public:
 	virtual void Initialize() override;
 
 	void AddLightInRenderThread();
+	void DeleteLightInRenderThread();
 	void UpdateLightInRenderThread(XMFLOAT3 Dir, XMFLOAT3 StrengthValues, XMFLOAT3 Pos);
 
 	XMFLOAT3 GetStrength() {
