@@ -16,6 +16,9 @@ public:
 	void RenderScene(FScene* RenderScene);
 
 private:
+	void RenderSceneStaticMeshes(FScene* RenderScene, bool bShadowPass = false);
+	void RenderSceneSkeletalMeshes(FScene* RenderScene);
+
 	FResourceView* RenderTargets[RENDER_TARGET_COUNT];
 
 	FShadowMap* ShadowMap;

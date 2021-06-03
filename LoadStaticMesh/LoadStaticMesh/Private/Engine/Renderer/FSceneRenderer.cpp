@@ -117,24 +117,8 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 		GRHI->ResourceTransition(ShadowMap->ShadowResView, E_RESOURCE_STATE::RESOURCE_STATE_GENERIC_READ, E_RESOURCE_STATE::RESOURCE_STATE_DEPTH_WRITE);
 		GRHI->SetRenderTargets(nullptr, ShadowMap->DsvResView);
 
-		const vector<FMesh*> Meshes = RenderScene->GetDrawMeshes();
-		for (size_t i = 0; i < Meshes.size(); i++)
-		{
-			if(Meshes[i])
-			{
-				GRHI->SetVertexAndIndexBuffers(Meshes[i]->GetVertexBuffer(), Meshes[i]->GetIndexBuffer());
-				GRHI->SetResourceParams(0, Meshes[i]->MatrixConstantBufferView);
-				GRHI->SetResourceParams(1, Meshes[i]->MaterialConstantBufferView);
-				GRHI->SetResourceParams(2, RenderScene->PassViewProj);
-				GRHI->SetResourceParams(3, RenderScene->PassLightInfo);
-				if (Meshes[i]->GetDiffuseTexture())
-				{
-					GRHI->SetResourceParams(4, Meshes[i]->DiffuseResView);
-				}
-				GRHI->SetResourceParams(5, ShadowMap->ShadowResView);
-				GRHI->DrawTriangleList(Meshes[i]->GetIndexBuffer());
-			}
-		}
+		RenderSceneStaticMeshes(RenderScene, true);
+
 		GRHI->ResourceTransition(ShadowMap->ShadowResView, E_RESOURCE_STATE::RESOURCE_STATE_DEPTH_WRITE, E_RESOURCE_STATE::RESOURCE_STATE_GENERIC_READ);
 	}
 	
@@ -142,54 +126,67 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 	GRHI->SetRenderTargets(RenderTargets[GRHI->GetFrameIndex()], DsvView);
 	{
 		FUserMarker UserMarker("Draw Static Mesh");
-		const vector<FMesh*> Meshes = RenderScene->GetDrawMeshes();
-		for (size_t i = 0; i < Meshes.size(); i++)
-		{
-			if(Meshes[i])
-			{
-				FD3DGraphicPipline* Pso = GRHI->GetPsoObject(Meshes[i]->GetPsoKey());
-				GRHI->SetVertexAndIndexBuffers(Meshes[i]->GetVertexBuffer(), Meshes[i]->GetIndexBuffer());
-				GRHI->SetPiplineStateObject(Pso);
-				GRHI->SetResourceParams(0, Meshes[i]->MatrixConstantBufferView);
-				GRHI->SetResourceParams(1, Meshes[i]->MaterialConstantBufferView);
-				GRHI->SetResourceParams(2, RenderScene->PassViewProj);
-				GRHI->SetResourceParams(3, RenderScene->PassLightInfo);
-				if (Meshes[i]->GetDiffuseTexture())
-				{
-					GRHI->SetResourceParams(4, Meshes[i]->DiffuseResView);
-				}
-				GRHI->SetResourceParams(5, ShadowMap->ShadowResView);
-				GRHI->DrawTriangleList(Meshes[i]->GetIndexBuffer());
-			}
-		}
+		RenderSceneStaticMeshes(RenderScene);
 	}
 
 	// draw skeletal mesh 
 	{
 		FUserMarker UserMarker("Draw Skeletal Mesh");
-
-		const vector<FSkeletalMesh*>& SkmMeshes = RenderScene->GetDrawSkeletalMeshes();
-		for (size_t i = 0; i < SkmMeshes.size(); i++)
-		{
-			if(SkmMeshes[i])
-			{
-				FD3DGraphicPipline* Pso = GRHI->GetPsoObject(SkmMeshes[i]->GetPsoKey());
-				GRHI->SetVertexAndIndexBuffers(SkmMeshes[i]->GetVertexBuffer(), SkmMeshes[i]->GetIndexBuffer());
-				GRHI->SetPiplineStateObject(Pso);
-				GRHI->SetResourceParams(0, SkmMeshes[i]->MatrixConstantBufferView);
-				GRHI->SetResourceParams(1, SkmMeshes[i]->SkeletalConstantBufferView);
-				GRHI->SetResourceParams(2, RenderScene->PassViewProj);
-				GRHI->SetResourceParams(3, RenderScene->PassLightInfo);
-				if (SkmMeshes[i]->DiffuseResView)
-				{
-					GRHI->SetResourceParams(4, SkmMeshes[i]->DiffuseResView);
-				}
-				GRHI->DrawTriangleList(SkmMeshes[i]->GetIndexBuffer());
-			}
-		}
+		RenderSceneSkeletalMeshes(RenderScene);
 	}
 	
 	GRHI->ResourceTransition(RenderTargets[GRHI->GetFrameIndex()], E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET, E_RESOURCE_STATE::RESOURCE_STATE_PRESENT);
 	
+}
+
+void FSceneRenderer::RenderSceneStaticMeshes(FScene* RenderScene, bool bShadowPass)
+{
+	const vector<FMesh*> Meshes = RenderScene->GetDrawMeshes();
+	for (size_t i = 0; i < Meshes.size(); i++)
+	{
+		if (!Meshes[i])
+			continue;
+			
+		if (!bShadowPass)
+		{	
+			FD3DGraphicPipline* Pso = GRHI->GetPsoObject(Meshes[i]->GetPsoKey());
+			GRHI->SetPiplineStateObject(Pso);
+		}
+		
+		GRHI->SetVertexAndIndexBuffers(Meshes[i]->GetVertexBuffer(), Meshes[i]->GetIndexBuffer());
+		GRHI->SetResourceParams(0, Meshes[i]->MatrixConstantBufferView);
+		GRHI->SetResourceParams(1, Meshes[i]->MaterialConstantBufferView);
+		GRHI->SetResourceParams(2, RenderScene->PassViewProj);
+		GRHI->SetResourceParams(3, RenderScene->PassLightInfo);
+		if (Meshes[i]->GetDiffuseTexture())
+		{
+			GRHI->SetResourceParams(4, Meshes[i]->DiffuseResView);
+		}
+		GRHI->SetResourceParams(5, ShadowMap->ShadowResView);
+		GRHI->DrawTriangleList(Meshes[i]->GetIndexBuffer());
+	}
+}
+
+void FSceneRenderer::RenderSceneSkeletalMeshes(FScene* RenderScene)
+{
+	const vector<FSkeletalMesh*>& SkmMeshes = RenderScene->GetDrawSkeletalMeshes();
+	for (size_t i = 0; i < SkmMeshes.size(); i++)
+	{
+		if (SkmMeshes[i])
+		{
+			FD3DGraphicPipline* Pso = GRHI->GetPsoObject(SkmMeshes[i]->GetPsoKey());
+			GRHI->SetVertexAndIndexBuffers(SkmMeshes[i]->GetVertexBuffer(), SkmMeshes[i]->GetIndexBuffer());
+			GRHI->SetPiplineStateObject(Pso);
+			GRHI->SetResourceParams(0, SkmMeshes[i]->MatrixConstantBufferView);
+			GRHI->SetResourceParams(1, SkmMeshes[i]->SkeletalConstantBufferView);
+			GRHI->SetResourceParams(2, RenderScene->PassViewProj);
+			GRHI->SetResourceParams(3, RenderScene->PassLightInfo);
+			if (SkmMeshes[i]->DiffuseResView)
+			{
+				GRHI->SetResourceParams(4, SkmMeshes[i]->DiffuseResView);
+			}
+			GRHI->DrawTriangleList(SkmMeshes[i]->GetIndexBuffer());
+		}
+	}
 }
 

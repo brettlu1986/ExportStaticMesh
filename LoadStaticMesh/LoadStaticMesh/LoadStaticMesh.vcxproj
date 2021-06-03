@@ -168,6 +168,7 @@
     <ClCompile Include="Private\Engine\Common\Character\LCharacter.cpp" />
     <ClCompile Include="Private\Engine\Common\Character\LCharacterMovement.cpp" />
     <ClCompile Include="Private\Engine\Common\Character\LPlayerController.cpp" />
+    <ClCompile Include="Private\Engine\Common\LAssetManager.cpp" />
     <ClCompile Include="Private\Engine\Common\LDevice.cpp" />
     <ClCompile Include="Private\Engine\Common\LGameTimer.cpp" />
     <ClCompile Include="Private\Engine\Common\LInput.cpp" />
@@ -177,6 +178,7 @@
     <ClCompile Include="Private\Engine\Common\RenderData\LResource.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LScene.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LSkeletalMesh.cpp" />
+    <ClCompile Include="Private\Engine\Common\RenderData\LTexture.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LVertexBuffer.cpp" />
     <ClCompile Include="Private\Engine\Common\Windows\LDeviceWindows.cpp" />
     <ClCompile Include="Private\Engine\Common\Windows\LInputWindows.cpp" />
@@ -423,6 +425,7 @@
     <ClInclude Include="Public\Engine\Common\Character\LPlayerController.h" />
     <ClInclude Include="Public\Engine\Common\Event\LEvent.h" />
     <ClInclude Include="Public\Engine\Common\LActor.h" />
+    <ClInclude Include="Public\Engine\Common\LAssetManager.h" />
     <ClInclude Include="Public\Engine\Common\LDefine.h" />
     <ClInclude Include="Public\Engine\Common\LDevice.h" />
     <ClInclude Include="Public\Engine\Common\LGameTimer.h" />
@@ -435,6 +438,7 @@
     <ClInclude Include="Public\Engine\Common\RenderData\LResource.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LScene.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LSkeletalMesh.h" />
+    <ClInclude Include="Public\Engine\Common\RenderData\LTexture.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LVertexBuffer.h" />
     <ClInclude Include="Public\Engine\Common\Windows\LDeviceWindows.h" />
     <ClInclude Include="Public\Engine\Common\Windows\LInputWindows.h" />

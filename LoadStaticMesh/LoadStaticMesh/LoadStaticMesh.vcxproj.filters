@@ -255,6 +255,12 @@
     <ClCompile Include="Private\Engine\Common\RenderData\LSkeletalMesh.cpp">
       <Filter>Source Files\Engine\Common\RenderData</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Engine\Common\LAssetManager.cpp">
+      <Filter>Source Files\Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\RenderData\LTexture.cpp">
+      <Filter>Source Files\Engine\Common\RenderData</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource\T_Chair_M.dds">
@@ -484,6 +490,12 @@
       <Filter>Header Files\Engine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\RenderData\LSkeletalMesh.h">
+      <Filter>Header Files\Engine\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\LAssetManager.h">
+      <Filter>Header Files\Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\RenderData\LTexture.h">
       <Filter>Header Files\Engine\Common\RenderData</Filter>
     </ClInclude>
   </ItemGroup>
