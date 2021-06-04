@@ -77,8 +77,6 @@ FRenderThread* FRenderThread::Get()
 
 void FRenderThread::Clear()
 {
-	//ClearTask();
-	//may have clear tasks
 	DoTasks();
 	Renderer.Destroy();
 	RenderScene = nullptr;
@@ -93,6 +91,7 @@ void FRenderThread::WaitForRenderThread()
 	RenderCV.wait(Lock, [this]() { return SyncCount <= CPU_MAX_AHEAD; });
 	++SyncCount;
 
+	TasksIndex = (TasksIndex + + 1) % FRAME_COUNT;
 	RenderCV.notify_all();
 }
 

@@ -14,6 +14,7 @@ LSkeletalMesh::LSkeletalMesh()
 	, ModelRotation(XMFLOAT3(0.f, 0.f, 0.f))
 	, ModelScale(XMFLOAT3(1.f, 1.f, 1.f))
 	, RenderMesh(nullptr)
+	, bUpdateWorldTrans(false)
 {
 
 }
@@ -72,6 +73,30 @@ void LSkeletalMesh::UpdateBoneMapFinalTransform(vector<XMFLOAT4X4>& BoneMapFinal
 
 }
 
+void LSkeletalMesh::UpdateModelMatrix()
+{
+	if(!bUpdateWorldTrans)
+	{
+		return;
+	}
+
+	bUpdateWorldTrans = false;
+	ModelMatrix = XMMatrixScaling(ModelScale.x, ModelScale.y, ModelScale.z) *
+		XMMatrixRotationRollPitchYaw(XMConvertToRadians(-ModelRotation.z), XMConvertToRadians(-ModelRotation.x), XMConvertToRadians(ModelRotation.y)) *
+		XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
+
+	XMMATRIX ModelMat = GetModelMatrix();
+	auto RenderMeshRes = RenderMesh;
+	assert(RenderMeshRes != nullptr);
+	RENDER_THREAD_TASK("UpdateSkeletalMeshMatrix",
+		[RenderMeshRes, ModelMat]()
+	{
+		RenderMeshRes->UpdateMeshMatrixInRenderThread(ModelMat);
+	}
+	);
+}
+
+
 void LSkeletalMesh::DestroyRenderThreadResource()
 {
 	if(RenderMesh != nullptr)
@@ -90,37 +115,22 @@ void LSkeletalMesh::DestroyRenderThreadResource()
 void LSkeletalMesh::SetModelLocation(XMFLOAT3 Location)
 {
 	ModelLocation = Location;
-	UpdateModelMatrix();
+	bUpdateWorldTrans = true;
 }
 
 void LSkeletalMesh::SetModelRotation(XMFLOAT3 Rotator)
 {
 	ModelRotation = Rotator;
-	UpdateModelMatrix();
+	bUpdateWorldTrans = true;
 }
 
 void LSkeletalMesh::SetModelScale(XMFLOAT3 Scale)
 {
 	ModelScale = Scale;
-	UpdateModelMatrix();
+	bUpdateWorldTrans = true;
 }
 
-void LSkeletalMesh::UpdateModelMatrix()
-{
-	ModelMatrix = XMMatrixScaling(ModelScale.x, ModelScale.y, ModelScale.z) *
-		XMMatrixRotationRollPitchYaw(XMConvertToRadians(-ModelRotation.z), XMConvertToRadians(-ModelRotation.x), XMConvertToRadians(ModelRotation.y)) *
-		XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
 
-	XMMATRIX ModelMat = GetModelMatrix();
-	auto RenderMeshRes = RenderMesh;
-	assert(RenderMeshRes != nullptr);
-	RENDER_THREAD_TASK("UpdateSkeletalMeshMatrix",
-		[RenderMeshRes, ModelMat]()
-		{
-			RenderMeshRes->UpdateMeshMatrixInRenderThread(ModelMat);
-		}
-	);
-}
 
 
 

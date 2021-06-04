@@ -49,5 +49,9 @@ void LPlayerController::UpdateRotation(float dt)
 
 void LPlayerController::Update(float dt)
 {
-	UpdateRotation(dt);
+	if(RotationPitchInput != 0.f || RotationYawInput != 0)
+	{
+		UpdateRotation(dt);
+	}
 }
+

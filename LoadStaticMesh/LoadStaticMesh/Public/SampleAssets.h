@@ -59,7 +59,7 @@ namespace SampleAssets
 
 	const string SceneLightsFile = "SceneLights.bin";
 
-	const UINT SampleSkeletalMeshCount = 3;
+	const UINT SampleSkeletalMeshCount = 1;
 	const string SkeletalMeshResource[] =
 	{
 		"ThirdPersonCharacter_SKM.bin",

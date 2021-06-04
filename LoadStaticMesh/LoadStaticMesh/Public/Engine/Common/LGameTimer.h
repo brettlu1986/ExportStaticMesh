@@ -25,6 +25,16 @@ public:
 	float GetDeltaTime();
 	void Tick();
 
+	chrono::system_clock::time_point GetCurrentTime()
+	{
+		return chrono::system_clock::now();
+	}
+
+	chrono::system_clock::time_point GetStartTime()
+	{
+		return StartTime;
+	}
+
 	INT64 GetCurrentTimeSeconds()
 	{
 		chrono::seconds TimeSec = chrono::duration_cast<chrono::seconds>(chrono::system_clock::now().time_since_epoch());

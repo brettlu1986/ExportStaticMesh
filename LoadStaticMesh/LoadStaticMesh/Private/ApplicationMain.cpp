@@ -60,17 +60,19 @@ void ApplicationMain::Update(float DeltaTime)
 
 void ApplicationMain::Run()
 {
-	const UINT FramePerSec = 60;
-	chrono::duration<float> FrameRate = chrono::duration<float>(1.f/ FramePerSec);
+	//const UINT FramePerSec = 60;
+	//chrono::duration<float> FrameRate = chrono::duration<float>(1.f / FramePerSec);
 	while (LEngine::GetEngine()->Run())
 	{
 		Timer->Tick();
 		Timer->Reset();
 
-		//Update(Timer->GetDeltaTime());
-		Update(FrameRate.count());
-		//LLog::Log("Real FrameRate:: %f \n", 1/ Timer->GetDeltaTime());
-		this_thread::sleep_for(FrameRate - Timer->GetChronoDeltaTime());
+		Update(Timer->GetDeltaTime());
+	   // LLog::Log("fps:: %f \n", Timer->GetDeltaTime());
+
+		//this_thread::sleep_for(FrameRate - Timer->GetChronoDeltaTime());
+		//chrono::duration<float> FpsDelTime = Timer->GetCurrentTime() - Timer->GetStartTime();
+		//LLog::Log("fps:: %f \n", 1 / FpsDelTime.count());
 	}
 }
 

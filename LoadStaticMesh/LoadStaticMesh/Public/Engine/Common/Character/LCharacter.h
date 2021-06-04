@@ -4,6 +4,7 @@
 #include "LAnimator.h"
 #include "LActor.h"
 #include "LSkeletalMesh.h"
+#include "LCamera.h"
 
 class LPlayerController;
 class LCharacterMovement;

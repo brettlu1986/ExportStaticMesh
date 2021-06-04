@@ -21,7 +21,6 @@ public:
 		if(ViewResource != nullptr)
 		{
 			ViewResource->Release();
-			ViewResource = nullptr;
 		}
 	};
 	UINT GetCount() { return Count;}

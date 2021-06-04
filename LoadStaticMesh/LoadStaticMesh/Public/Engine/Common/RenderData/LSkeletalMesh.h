@@ -7,6 +7,7 @@
 
 class LSkeleton;
 class FSkeletalMesh;
+class LCamera;
 class LSkeletalMesh : public LResource
 {
 public:
@@ -46,6 +47,7 @@ public:
 	}
 
 	void UpdateBoneMapFinalTransform(vector<XMFLOAT4X4>& BoneMapFinal);
+	void UpdateModelMatrix();
 
 	const vector<UINT16>& GetBoneMap()
 	{
@@ -62,7 +64,7 @@ public:
 		return Skeleton;
 	}
 
-	void UpdateModelMatrix();
+	
 private:
 
 	shared_ptr<LIndexBuffer> IndexBufferData;
@@ -75,6 +77,7 @@ private:
 	LSkeleton* Skeleton;
 
 	shared_ptr<FSkeletalMesh> RenderMesh;
+	bool bUpdateWorldTrans;
 
 	vector<UINT16> CurrentBoneMap;// real bone index used in this skeletal, it is associate with the vertex.InfluenceBones Index
 };

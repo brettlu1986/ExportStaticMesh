@@ -82,10 +82,11 @@ LCamera* LScene::GetActiveCamera()
 
 void LScene::Update(float dt)
 {
-	GetActiveCamera()->Update(dt);
 	SceneLights[0]->Update(dt);
 	for(auto Ch : Players)
 	{
 		Ch->Update(dt);
 	}
+	GetActiveCamera()->Update(dt);
+	
 }
