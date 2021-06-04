@@ -11,20 +11,28 @@
 #include "LAnimator.h"
 #include "LScene.h"
 #include "LCharacter.h"
-
-vector<unique_ptr<LSkeleton>> ResourceSkeletons;
-
-void SampleAssets::ReleaseAssets()
-{
-	vector<unique_ptr<LSkeleton>>::iterator it = ResourceSkeletons.begin();
-	for (; it < ResourceSkeletons.end(); it++)
-	{
-		*it = nullptr;
-	}
-}
+#include "LAssetManager.h"
 
 void SampleAssets::LoadSampleSceneData(LScene& Scene)
 {
+	LAssetManager::Get()->LoadSkeletal(SampleAssets::SkeletonResource.FileName, SampleAssets::SkeletonResource.RefName);
+
+	for (UINT i = 0; i < SampleAssets::DDSTexResourcesCount; i++)
+	{
+		LAssetManager::Get()->LoadTexture(SampleAssets::DDSTexResources[i].FileName, SampleAssets::DDSTexResources[i].RefName);
+	}
+
+	for (UINT i = 0; i < SampleAssets::DDSTexResourcesCount; i++)
+	{
+		LAssetManager::Get()->LoadTexture(SampleAssets::DDSTexResources[i].FileName, SampleAssets::DDSTexResources[i].RefName);
+	}
+
+	for (UINT i = 0; i < SampleAssets::ShaderResCount; i++)
+	{
+		LAssetManager::Get()->LoadShader(SampleAssets::ShaderResources[i].FileName, SampleAssets::ShaderResources[i].RefName);
+	}
+
+	//
 	for (UINT i = 0; i < SampleAssets::SamepleCount; i++)
 	{
 		auto Mesh = make_shared<LMesh>();
@@ -47,9 +55,6 @@ void SampleAssets::LoadSampleSceneData(LScene& Scene)
 		Scene.AddLightToScene(Light);
 	}
 
-	auto Skeleton = make_unique<LSkeleton>();
-	LAssetDataLoader::LoadSkeletonFromFile(SampleAssets::SkeletonResource, Skeleton.get());
-	ResourceSkeletons.push_back(move(Skeleton));
 
 	for (UINT i = 0; i < SampleAssets::SampleSkeletalMeshCount; i++)
 	{
@@ -59,7 +64,7 @@ void SampleAssets::LoadSampleSceneData(LScene& Scene)
 		//create skeletal mesh, skeleton save in skeletal mesh
 		LSkeletalMesh* SkeletalMesh = new LSkeletalMesh();
 		LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(SampleAssets::SkeletalMeshResource[i], *SkeletalMesh);
-		SkeletalMesh->SetSkeleton(ResourceSkeletons[0].get());
+		SkeletalMesh->SetSkeleton(LAssetManager::Get()->GetSkeletal(SampleAssets::SkeletonResource.RefName));
 
 		//create animator
 		LAnimator* Animator = new LAnimator();

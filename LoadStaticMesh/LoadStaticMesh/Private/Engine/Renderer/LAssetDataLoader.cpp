@@ -9,8 +9,9 @@
 #include "LSceneCamera.h"
 #include "LThirdPersonCamera.h"
 
+#include "FD3D12Helper.h"
 
-inline void GetAssetsPath(_Out_writes_(PathSize) WCHAR* Path, UINT PathSize)
+inline void GetAssetsDataPath(_Out_writes_(PathSize) WCHAR* Path, UINT PathSize)
 {
 	if (Path == nullptr)
 	{
@@ -31,7 +32,7 @@ inline void GetAssetsPath(_Out_writes_(PathSize) WCHAR* Path, UINT PathSize)
 	}
 }
 
-inline string GetSaveDirectory()
+inline string GetSaveDataDirectory()
 {
 	char CurPath[512];
 	GetCurrentDirectoryA(_countof(CurPath), CurPath);
@@ -43,7 +44,7 @@ wstring LAssetDataLoader::GetAssetFullPath(LPCWSTR AssetName)
 {
 	wstring AssetsPath;
 	WCHAR AssetsPathChar[512];
-	GetAssetsPath(AssetsPathChar, _countof(AssetsPathChar));
+	GetAssetsDataPath(AssetsPathChar, _countof(AssetsPathChar));
 	AssetsPath = AssetsPathChar;
 	return AssetsPath + AssetName;
 }
@@ -51,7 +52,7 @@ wstring LAssetDataLoader::GetAssetFullPath(LPCWSTR AssetName)
 void LAssetDataLoader::LoadCameraDataFromFile(string FileName, LCamera& Camera)
 {
 	FCameraData CameraData;
-	string FName = GetSaveDirectory() + FileName;
+	string FName = GetSaveDataDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;
@@ -74,7 +75,7 @@ void LAssetDataLoader::LoadCameraDataFromFile(string FileName, LCamera& Camera)
 
 void LAssetDataLoader::LoadDirectionLights(string FileName,  vector<DirectionLightData>& LightsData)
 {
-	string FName = GetSaveDirectory() + FileName;
+	string FName = GetSaveDataDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;
@@ -94,7 +95,7 @@ void LAssetDataLoader::LoadDirectionLights(string FileName,  vector<DirectionLig
 
 void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(string FileName, LSkeletalMesh& SkeletalMesh)
 {
-	string FName = GetSaveDirectory() + FileName;
+	string FName = GetSaveDataDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;
@@ -151,7 +152,7 @@ void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(string FileName, LSkel
 
 void LAssetDataLoader::LoadSkeletonFromFile(string FileName, LSkeleton* Skeleton)
 {
-	string FName = GetSaveDirectory() + FileName;
+	string FName = GetSaveDataDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;
@@ -204,9 +205,29 @@ void LAssetDataLoader::LoadSkeletonFromFile(string FileName, LSkeleton* Skeleton
 	}
 }
 
+void LAssetDataLoader::LoadDDSTextureFromFile(string FileName, LTexture* Texture)
+{
+	size_t Len = strlen(FileName.c_str()) + 1;
+	size_t Converted = 0;
+	wchar_t* WStr = new wchar_t[(UINT)(Len * sizeof(wchar_t))];
+	memset(WStr, 0, Len * sizeof(wchar_t));
+	mbstowcs_s(&Converted, WStr, Len, FileName.c_str(), _TRUNCATE);
+
+	DirectX::LoadTextureDataFromFile(WStr, Texture->DdsData, &Texture->Header, &Texture->BitData, &Texture->BitSize);
+	delete[] WStr;
+}
+
+void LAssetDataLoader::LoadShaderFromeFile(LPCWSTR FileName, LShader* Shader)
+{
+	UINT8* ShaderData = nullptr;
+	UINT ShaderLen = 0;
+	ReadDataFromFile(LAssetDataLoader::GetAssetFullPath(FileName).c_str(), &ShaderData, &ShaderLen);
+	Shader->Init(ShaderData, ShaderLen);
+}
+
 void LAssetDataLoader::LoadAnimationSquence(string SequenceName, LAnimationSequence& Seq)
 {
-	string FName = GetSaveDirectory() + SequenceName;
+	string FName = GetSaveDataDirectory() + SequenceName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;
@@ -272,7 +293,7 @@ void LAssetDataLoader::LoadAnimationSquence(string SequenceName, LAnimationSeque
 
 void LAssetDataLoader::LoadMeshFromFile(string FileName, LMesh& Mesh)
 {
-	string FName = GetSaveDirectory() + FileName;
+	string FName = GetSaveDataDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;

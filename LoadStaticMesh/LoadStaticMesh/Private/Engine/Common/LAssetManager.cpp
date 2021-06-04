@@ -1,7 +1,9 @@
 
 
 #include "LAssetManager.h"
+#include "LAssetDataLoader.h"
 
+LAssetManager* LAssetManager::Instance = nullptr;
 LAssetManager::LAssetManager()
 {
 
@@ -9,5 +11,48 @@ LAssetManager::LAssetManager()
 
 LAssetManager::~LAssetManager()
 {
+	for (auto& Ske : ResourceSkeletons)
+	{
+		Ske.second = nullptr;
+	}
 
+	for (auto& Tex : ResourceTexs)
+	{
+		Tex.second = nullptr;
+	}
+
+	for (auto& Sha : ResourceShaders)
+	{
+		Sha.second = nullptr;
+	}
+}
+
+LAssetManager* LAssetManager::Get()
+{
+	if (Instance == nullptr)
+		Instance = new LAssetManager();
+
+	return Instance;
+}
+
+void LAssetManager::LoadSkeletal(std::string FileName, string ReferenceName)
+{
+	auto Skeleton = make_unique<LSkeleton>();
+	LAssetDataLoader::LoadSkeletonFromFile(FileName, Skeleton.get());
+	ResourceSkeletons.insert({ ReferenceName, move(Skeleton) });
+}
+
+//current only dds texture suport
+void LAssetManager::LoadTexture(std::string FileName, string ReferenceName)
+{
+	auto Texture = make_unique<LTexture>();
+	LAssetDataLoader::LoadDDSTextureFromFile(FileName, Texture.get());
+	ResourceTexs.insert({ ReferenceName, move(Texture) });
+}
+
+void LAssetManager::LoadShader(LPCWSTR FileName, string ReferenceName)
+{
+	auto Shader = make_unique<LShader>();
+	LAssetDataLoader::LoadShaderFromeFile(FileName, Shader.get());
+	ResourceShaders.insert({ ReferenceName, move(Shader) });
 }

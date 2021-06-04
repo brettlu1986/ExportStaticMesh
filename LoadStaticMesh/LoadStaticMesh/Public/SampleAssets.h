@@ -8,10 +8,40 @@
 
 namespace SampleAssets
 {
+	// assets
+
+	const UINT DDSTexResourcesCount = 2;
+	struct BaseAssetRefInfo
+	{
+		std::string RefName;
+		std::string FileName;
+	};
+	const BaseAssetRefInfo SkeletonResource = {"BaseSke", "ThirdPersonCharacter_SK.bin"};
+	const BaseAssetRefInfo DDSTexResources[] = {
+		{"MaleMask", "Resource/T_Male_Mask.dds"},
+		{"ChairM", "Resource/T_Chair_M.dds"}
+	};
+
+	const UINT ShaderResCount = 8;
+	struct ShaderAssetRefInfo
+	{
+		std::string RefName;
+		LPCWSTR FileName;
+	};
+	const ShaderAssetRefInfo ShaderResources[] =
+	{
+		{"ShaderTexVs",			L"ShaderTexVs.cso" },
+		{"ShaderTexPs",			L"ShaderTexPs.cso" },
+		{"ShaderVs",			L"ShaderVs.cso"},
+		{"ShaderPs",			L"ShaderPs.cso"},
+		{"SampleDepthShaderVs", L"SampleDepthShaderVs.cso"},
+		{"SampleDepthShaderPs", L"SampleDepthShaderPs.cso"},
+		{"SkeletalVs",			L"SkeletalVs.cso"},
+		{"SkeletalPs",			L"SkeletalPs.cso"},
+	};
+	//
+
 	const UINT SamepleCount = 10;
-
-	const string CameraBin = "CameraActor.bin";
-
 	const string SampleResources[] = 
 	{
 		"BP_Chair.bin",
@@ -32,6 +62,8 @@ namespace SampleAssets
 		"","","","","","","","","",""
 	};
 
+	const string CameraBin = "CameraActor.bin";
+
 	const string PsoUseTexture = "PsoUseTexture";
 	const string PsoNoTexture = "PsoNoTexture";
 
@@ -41,11 +73,13 @@ namespace SampleAssets
 		XMFLOAT4 DiffuseAlbedo;
 		XMFLOAT3 FresnelR0;
 		float Roughness;
+		string BaseTexture = ""; // ref name in asset manager
+		string NormalTexture = ""; // ref name in asset manager
 	};
 
 	const SampleMaterial SampeMats[] = 
 	{
-		{ "Chair", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.1f},
+		{ "Chair", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.1f, "ChairM"},
 		{ "Stair", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.2f, 0.2f, 0.2f), 0.05f},
 		{ "Sphere", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.02f},
 		{ "Floor2", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.02f},
@@ -59,14 +93,14 @@ namespace SampleAssets
 
 	const string SceneLightsFile = "SceneLights.bin";
 
-	const UINT SampleSkeletalMeshCount = 1;
+	const UINT SampleSkeletalMeshCount = 3;
 	const string SkeletalMeshResource[] =
 	{
 		"ThirdPersonCharacter_SKM.bin",
 		"ThirdPersonCharacter2_SKM.bin",
 		"ThirdPersonCharacter3_SKM.bin",
 	};
-	const string SkeletonResource = "ThirdPersonCharacter_SK.bin";
+	
 	const string SkeletonTexture = "Resource/T_Male_Mask.dds";
 	
 	const string SkeletalAnim[] = 
@@ -79,7 +113,6 @@ namespace SampleAssets
 		"ThirdPersonCharacter_ThirdPerson_Jump.bin",
 	};
 
-	void ReleaseAssets();
 	void LoadSampleSceneData(LScene& Scene);
 	
 }

@@ -179,6 +179,7 @@
     <ClCompile Include="Private\Engine\Common\RenderData\LMesh.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LResource.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LScene.cpp" />
+    <ClCompile Include="Private\Engine\Common\RenderData\LShader.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LSkeletalMesh.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LTexture.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LVertexBuffer.cpp" />
@@ -439,6 +440,7 @@
     <ClInclude Include="Public\Engine\Common\RenderData\LMesh.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LResource.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LScene.h" />
+    <ClInclude Include="Public\Engine\Common\RenderData\LShader.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LSkeletalMesh.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LTexture.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LVertexBuffer.h" />

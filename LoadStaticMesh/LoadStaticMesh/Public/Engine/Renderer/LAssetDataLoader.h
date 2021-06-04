@@ -1,14 +1,13 @@
 #pragma once
 
 #include "stdafx.h"
-#include "FMesh.h"
 #include "LCamera.h"
-#include "FScene.h"
-#include "FSkeletalMesh.h"
 #include "LAnimationSequence.h"
 
 #include "LSkeletalMesh.h"
 #include "LMesh.h"
+#include "LTexture.h"
+#include "LShader.h"
 
 struct DirectionLightData
 {
@@ -44,6 +43,10 @@ private:
 public:
 
 	static void LoadSkeletonFromFile(string FileName, LSkeleton* Skeleton);
+
+	static void LoadDDSTextureFromFile(string FileName, LTexture* Texture);
+
+	static void LoadShaderFromeFile(LPCWSTR FileName, LShader* Shader);
 
 	static void LoadAnimationSquence(string SequenceName, LAnimationSequence& Seq);
 

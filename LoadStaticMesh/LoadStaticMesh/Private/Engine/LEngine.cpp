@@ -2,9 +2,7 @@
 #include "stdafx.h"
 #include "LEngine.h"
 #include "LDeviceWindows.h"
-#include "FRHI.h"
-
-#include "FScene.h"
+#include "LAssetManager.h"
 
 LEngine* LEngine::Engine = nullptr;
 
@@ -37,6 +35,7 @@ void LEngine::Init(LEngineDesc Desc)
 	CurrentDevice = new LDeviceWindows(Desc.Width, Desc.Height, Desc.Name.c_str());
 #else 
 #endif
+	AssetManager = LAssetManager::Get();
 
 	GameThreadId = this_thread::get_id();
 
@@ -55,6 +54,12 @@ void LEngine::Destroy()
 	{
 		delete CurrentDevice;
 		CurrentDevice = nullptr;
+	}
+
+	if(AssetManager)
+	{	
+		delete AssetManager;
+		AssetManager = nullptr;
 	}
 
 	FRenderThread::DestroyRenderThread();

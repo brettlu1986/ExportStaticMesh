@@ -60,8 +60,8 @@ void ApplicationMain::Update(float DeltaTime)
 
 void ApplicationMain::Run()
 {
-	//const UINT FramePerSec = 60;
-	//chrono::duration<float> FrameRate = chrono::duration<float>(1.f / FramePerSec);
+	const UINT FramePerSec = 60;
+	chrono::duration<float> FrameRate = chrono::duration<float>(1.f / FramePerSec);
 	while (LEngine::GetEngine()->Run())
 	{
 		Timer->Tick();
@@ -70,7 +70,7 @@ void ApplicationMain::Run()
 		Update(Timer->GetDeltaTime());
 	   // LLog::Log("fps:: %f \n", Timer->GetDeltaTime());
 
-		//this_thread::sleep_for(FrameRate - Timer->GetChronoDeltaTime());
+		this_thread::sleep_for(FrameRate - Timer->GetChronoDeltaTime());
 		//chrono::duration<float> FpsDelTime = Timer->GetCurrentTime() - Timer->GetStartTime();
 		//LLog::Log("fps:: %f \n", 1 / FpsDelTime.count());
 	}
@@ -78,7 +78,6 @@ void ApplicationMain::Run()
 
 void ApplicationMain::Destroy()
 {
-	SampleAssets::ReleaseAssets();
 	DataScene = nullptr;
 	Timer->Release();
 	LEngine::GetEngine()->Destroy();

@@ -13,7 +13,7 @@ typedef struct LEngineDesc
 }LEngineDesc;
 
 class LDevice;
-//class FScene;
+class LAssetManager;
 class LEngine
 {
 public:
@@ -52,6 +52,8 @@ public:
 
 private: 
 	static LEngine* Engine;
+
+	LAssetManager* AssetManager = nullptr;
 	LDevice* CurrentDevice = nullptr;
 	E_DEVICE_PLATFORM CurrentPlatform;
 	EventDispatcher EventDisp;
