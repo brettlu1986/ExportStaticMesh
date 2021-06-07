@@ -57,16 +57,7 @@ namespace SampleAssets
 		"Wall9.bin",
 	};
 
-	const string SampleResourceTexture[] = 
-	{
-		"Resource/T_Chair_M.dds",
-		"","","","","","","","","",""
-	};
-
 	const string CameraBin = "CameraActor.bin";
-
-	const string PsoUseTexture = "PsoUseTexture";
-	const string PsoNoTexture = "PsoNoTexture";
 
 	//light
 	const string SceneLightsFile = "SceneLights.bin";
@@ -79,8 +70,6 @@ namespace SampleAssets
 		"ThirdPersonCharacter2_SKM.bin",
 		"ThirdPersonCharacter3_SKM.bin",
 	};
-	
-	const string SkeletonTexture = "Resource/T_Male_Mask.dds";
 	
 	//animation
 	const string SkeletalAnim[] = 
