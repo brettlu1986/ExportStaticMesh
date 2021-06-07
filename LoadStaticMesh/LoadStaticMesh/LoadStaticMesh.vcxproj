@@ -176,6 +176,7 @@
     <ClCompile Include="Private\Engine\Common\LInput.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LIndexBuffer.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LLight.cpp" />
+    <ClCompile Include="Private\Engine\Common\RenderData\LMaterial.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LMesh.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LResource.cpp" />
     <ClCompile Include="Private\Engine\Common\RenderData\LScene.cpp" />
@@ -437,6 +438,7 @@
     <ClInclude Include="Public\Engine\Common\LRingBuffer.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LIndexBuffer.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LLight.h" />
+    <ClInclude Include="Public\Engine\Common\RenderData\LMaterial.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LMesh.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LResource.h" />
     <ClInclude Include="Public\Engine\Common\RenderData\LScene.h" />

@@ -19,7 +19,7 @@ public:
 	virtual void Destroy();
 	virtual void Initialize();
 
-	void InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData);
+	void InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData, LMaterial& MaterialData);
 	void AddMeshInRenderThread();
 	void DeleteInRenderThread();
 	void UpdateMeshMatrixInRenderThread(XMMATRIX Mat);
@@ -32,11 +32,6 @@ public:
 	FIndexBuffer* GetIndexBuffer()
 	{
 		return IndexBuffer;
-	}
-
-	FTexture* GetDiffuseTexture()
-	{
-		return DiffuseTex;
 	}
 
 	const string& GetPsoKey()
@@ -59,12 +54,14 @@ public:
 		return MeshIndex;
 	}
 
+	FMaterial* GetMaterial()
+	{
+		return Material;
+	}
+
 	XMMATRIX GetModelMatrix();
 	
 	FResourceView* MatrixConstantBufferView;
-	FResourceView* MaterialConstantBufferView;
-	//TODO: move to material
-	FResourceView* DiffuseResView;
 
 private:
 
@@ -72,8 +69,6 @@ private:
 
 	FVertexBuffer* VertexBuffer;
 	FIndexBuffer* IndexBuffer;
-
-	FTexture* DiffuseTex;
 	FMaterial* Material;
 
 	XMMATRIX ModelMatrix;

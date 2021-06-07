@@ -126,9 +126,11 @@ FShader* FD3D12DynamicRHI::RHICreateShader(LPCWSTR  ShaderFile)
 	return new FShader(ShaderData, ShaderLen);
 }
 
-FTexture* FD3D12DynamicRHI::RHICreateTexture()
+FTexture* FD3D12DynamicRHI::CreateTexture(LTexture* TextureData)
 {
-	return new FD3D12Texture(D3DDevice.Get());
+	FTexture* Tex = new FD3D12Texture(D3DDevice.Get());
+	Tex->InitializeTexture(TextureData);
+	return Tex;
 }
 
 FTexture* FD3D12DynamicRHI::CreateTexture(FTextureInitializer TexInitializer)

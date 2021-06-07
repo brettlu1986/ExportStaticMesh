@@ -2,7 +2,6 @@
 
 #include "LLight.h"
 #include "FLight.h"
-#include "MathHelper.h"
 #include "FRenderThread.h"
 #include "LEngine.h"
 

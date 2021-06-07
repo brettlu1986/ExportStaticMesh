@@ -5,7 +5,6 @@
 #include "FRenderThread.h"
 #include "FSkeletalMesh.h"
 
-#include "FRenderThread.h"
 #include "LEngine.h"
 
 LSkeletalMesh::LSkeletalMesh()
@@ -37,6 +36,11 @@ void LSkeletalMesh::SetIndexBufferInfo(UINT InCount, UINT InByteSize, E_INDEX_TY
 	IndexBufferData = make_shared<LIndexBuffer>(InCount, InByteSize, InType, InData);
 }
 
+void LSkeletalMesh::SetMaterial(LMaterial* MatData)
+{
+	MaterialData = MatData;
+}
+
 void LSkeletalMesh::InitRenderThreadResource()
 {
 	assert(LEngine::GetEngine()->IsGameThread());
@@ -45,10 +49,11 @@ void LSkeletalMesh::InitRenderThreadResource()
 	auto RenderMeshRes = RenderMesh;
 	auto VertexData = VertexBufferData;
 	auto IndexData = IndexBufferData;
+	auto RenderMaterialData = MaterialData;
 	RENDER_THREAD_TASK("InitFSkeletalMeshInRender",
-		[RenderMeshRes, VertexData, IndexData]()
+		[RenderMeshRes, VertexData, IndexData, RenderMaterialData]()
 		{
-			RenderMeshRes->InitRenderThreadResource(*VertexData, *IndexData);
+			RenderMeshRes->InitRenderThreadResource(*VertexData, *IndexData, *RenderMaterialData);
 			RenderMeshRes->SetPsoKey("SKMPso");
 			RenderMeshRes->AddMeshInRenderThread();
 		}

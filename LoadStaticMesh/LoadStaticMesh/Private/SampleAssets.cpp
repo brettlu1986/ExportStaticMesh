@@ -15,27 +15,35 @@
 
 void SampleAssets::LoadSampleSceneData(LScene& Scene)
 {
+	//load assets
 	LAssetManager::Get()->LoadSkeletal(SampleAssets::SkeletonResource.FileName, SampleAssets::SkeletonResource.RefName);
-
-	for (UINT i = 0; i < SampleAssets::DDSTexResourcesCount; i++)
-	{
-		LAssetManager::Get()->LoadTexture(SampleAssets::DDSTexResources[i].FileName, SampleAssets::DDSTexResources[i].RefName);
-	}
-
-	for (UINT i = 0; i < SampleAssets::DDSTexResourcesCount; i++)
-	{
-		LAssetManager::Get()->LoadTexture(SampleAssets::DDSTexResources[i].FileName, SampleAssets::DDSTexResources[i].RefName);
-	}
 
 	for (UINT i = 0; i < SampleAssets::ShaderResCount; i++)
 	{
 		LAssetManager::Get()->LoadShader(SampleAssets::ShaderResources[i].FileName, SampleAssets::ShaderResources[i].RefName);
 	}
 
-	//
+	for (UINT i = 0; i < SampleAssets::DDSTexResourcesCount; i++)
+	{
+		LAssetManager::Get()->LoadTexture(SampleAssets::DDSTexResources[i].FileName, SampleAssets::DDSTexResources[i].RefName);
+	}
+
+	auto DefaultMat = make_unique<LMaterial>();
+	LAssetManager::Get()->LoadMaterial(DefaultMat, "DefaultMat");
+
+	auto ChairMat = make_unique<LMaterial>();
+	ChairMat->SetColorTex(LAssetManager::Get()->GetTexture("ChairDiffuse"));
+	LAssetManager::Get()->LoadMaterial(ChairMat, "ChairMat");
+
+	auto CharacterMat = make_unique<LMaterial>();
+	CharacterMat->SetColorTex(LAssetManager::Get()->GetTexture("MaleDiffuse"));
+	LAssetManager::Get()->LoadMaterial(CharacterMat, "CharacterMat");
+	
+	//load static mesh
 	for (UINT i = 0; i < SampleAssets::SamepleCount; i++)
 	{
 		auto Mesh = make_shared<LMesh>();
+		Mesh->SetMaterial(LAssetManager::Get()->GetMaterial(i == 0 ? "ChairMat" : "DefaultMat"));
 		LAssetDataLoader::LoadMeshFromFile(SampleAssets::SampleResources[i], *Mesh);
 		Scene.AddStaticMeshes(Mesh);
 	}
@@ -63,6 +71,7 @@ void SampleAssets::LoadSampleSceneData(LScene& Scene)
 
 		//create skeletal mesh, skeleton save in skeletal mesh
 		LSkeletalMesh* SkeletalMesh = new LSkeletalMesh();
+		SkeletalMesh->SetMaterial(LAssetManager::Get()->GetMaterial("CharacterMat"));
 		LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(SampleAssets::SkeletalMeshResource[i], *SkeletalMesh);
 		SkeletalMesh->SetSkeleton(LAssetManager::Get()->GetSkeletal(SampleAssets::SkeletonResource.RefName));
 

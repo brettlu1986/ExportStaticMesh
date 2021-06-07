@@ -4,6 +4,7 @@
 #include "LResource.h"
 #include "LIndexBuffer.h"
 #include "LVertexBuffer.h"
+#include "LMaterial.h"
 
 class LSkeleton;
 class FSkeletalMesh;
@@ -64,11 +65,14 @@ public:
 		return Skeleton;
 	}
 
+	void SetMaterial(LMaterial* MatData);
 	
 private:
 
 	shared_ptr<LIndexBuffer> IndexBufferData;
 	shared_ptr<LVertexBuffer> VertexBufferData;
+
+	LMaterial* MaterialData;
 
 	XMFLOAT3 ModelLocation;
 	XMFLOAT3 ModelRotation;

@@ -11,7 +11,9 @@ LMesh::LMesh()
 ,ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
 ,ModelRotation(XMFLOAT3(0.f, 0.f, 0.f))
 ,ModelScale(XMFLOAT3(1.f, 1.f, 1.f))
+,ModelMatrix(XMMATRIX())
 ,RenderMesh(nullptr)
+,MaterialData(nullptr)
 {
 
 }
@@ -34,6 +36,11 @@ void LMesh::SetIndexBufferInfo(UINT InCount, UINT InByteSize, E_INDEX_TYPE InTyp
 	IndexBufferData = make_shared<LIndexBuffer>(InCount, InByteSize, InType, InData);
 }
 
+void LMesh::SetMaterial(LMaterial* MatData)
+{
+	MaterialData = MatData;
+}
+
 void LMesh::InitRenderThreadResource()
 {
 	assert(LEngine::GetEngine()->IsGameThread());
@@ -42,11 +49,12 @@ void LMesh::InitRenderThreadResource()
 	auto RenderMeshRes = RenderMesh;
 	auto VertexData = VertexBufferData;
 	auto IndexData = IndexBufferData;
+	auto RenderMaterialData = MaterialData;
 	RENDER_THREAD_TASK("InitFMeshInRender",
-		[RenderMeshRes, VertexData, IndexData]()
+		[RenderMeshRes, VertexData, IndexData, RenderMaterialData]()
 		{
-			RenderMeshRes->InitRenderThreadResource(*VertexData, *IndexData);
-			RenderMeshRes->SetPsoKey("PsoNoTexture");
+			RenderMeshRes->InitRenderThreadResource(*VertexData, *IndexData, *RenderMaterialData);
+			RenderMeshRes->SetPsoKey(RenderMaterialData->HasTex() ? "PsoUseTexture" : "PsoNoTexture");
 			RenderMeshRes->AddMeshInRenderThread();
 		}
 	);

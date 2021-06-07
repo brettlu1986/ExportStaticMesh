@@ -11,6 +11,11 @@ LAssetManager::LAssetManager()
 
 LAssetManager::~LAssetManager()
 {
+	for (auto& Ma : ResourceMaterials)
+	{
+		Ma.second = nullptr;
+	}
+
 	for (auto& Ske : ResourceSkeletons)
 	{
 		Ske.second = nullptr;
@@ -39,7 +44,7 @@ void LAssetManager::LoadSkeletal(std::string FileName, string ReferenceName)
 {
 	auto Skeleton = make_unique<LSkeleton>();
 	LAssetDataLoader::LoadSkeletonFromFile(FileName, Skeleton.get());
-	ResourceSkeletons.insert({ ReferenceName, move(Skeleton) });
+	ResourceSkeletons.insert( { ReferenceName, move(Skeleton) } );
 }
 
 //current only dds texture suport
@@ -47,12 +52,17 @@ void LAssetManager::LoadTexture(std::string FileName, string ReferenceName)
 {
 	auto Texture = make_unique<LTexture>();
 	LAssetDataLoader::LoadDDSTextureFromFile(FileName, Texture.get());
-	ResourceTexs.insert({ ReferenceName, move(Texture) });
+	ResourceTexs.insert( { ReferenceName, move(Texture) } );
 }
 
 void LAssetManager::LoadShader(LPCWSTR FileName, string ReferenceName)
 {
 	auto Shader = make_unique<LShader>();
 	LAssetDataLoader::LoadShaderFromeFile(FileName, Shader.get());
-	ResourceShaders.insert({ ReferenceName, move(Shader) });
+	ResourceShaders.insert( { ReferenceName, move(Shader) } );
+}
+
+void LAssetManager::LoadMaterial(unique_ptr<LMaterial>&Mat, string RefereneceName)
+{
+	ResourceMaterials.insert( { RefereneceName, move(Mat) } );
 }

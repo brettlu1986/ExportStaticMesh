@@ -1,9 +1,6 @@
 #pragma once
 
 #include "stdafx.h"
-#include "MathHelper.h"
-
-
 
 enum class E_FRESOURCE_TYPE : UINT8
 {

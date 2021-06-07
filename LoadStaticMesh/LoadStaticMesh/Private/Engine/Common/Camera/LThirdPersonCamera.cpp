@@ -1,9 +1,7 @@
 
-#include "stdafx.h"
 
 #include "LThirdPersonCamera.h"
 #include "MathHelper.h"
-#include "FD3D12Helper.h"
 
 #include "LEngine.h"
 #include "LDeviceWindows.h"

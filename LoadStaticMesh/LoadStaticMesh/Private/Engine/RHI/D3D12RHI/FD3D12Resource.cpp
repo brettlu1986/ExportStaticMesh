@@ -174,34 +174,20 @@ void FD3D12Texture::InitializeTexture(FTextureInitializer Initializer)
 		Initializer.ClearValue == nullptr? nullptr : &ClearValues,
 		IID_PPV_ARGS(&TextureResource)
 	));
-
-}
-
-void FD3D12Texture::InitializeTexture(const string& Name)
-{
-	size_t Len = strlen(Name.c_str()) + 1;
-	size_t Converted = 0;
-	wchar_t* WStr = new wchar_t[(UINT)(Len * sizeof(wchar_t))];
-	memset(WStr, 0, Len * sizeof(wchar_t));
-	mbstowcs_s(&Converted, WStr, Len, Name.c_str(), _TRUNCATE);
-
-	DirectX::LoadTextureDataFromFile(WStr, DdsData, &Header, &BitData, &BitSize);
-	delete[] WStr;
-
 }
 
 void FD3D12Texture::InitGPUTextureView(ID3D12Device* Device, ID3D12GraphicsCommandList* CommandList, D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, DXGI_FORMAT ViewFormat)
 {
-	if(BitSize != 0)
+	if(TextureData != 0)
 	{
-		DirectX::CreateTextureFromDDS12(Device, CommandList, Header, BitData, BitSize, 0, false, TextureResource, TextureResourceUpload);
+		DirectX::CreateTextureFromDDS12(Device, CommandList, TextureData->Header, TextureData->BitData, TextureData->BitSize, 0, false, TextureResource, TextureResourceUpload);
 		NAME_D3D12_OBJECT(TextureResource);
 		NAME_D3D12_OBJECT(TextureResourceUpload);
 	}
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.Format = BitSize != 0 ? TextureResource->GetDesc().Format : ViewFormat;
+	srvDesc.Format = TextureData != 0 ? TextureResource->GetDesc().Format : ViewFormat;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = TextureResource->GetDesc().MipLevels;
 	Device->CreateShaderResourceView(TextureResource.Get(), &srvDesc, CpuHandle);

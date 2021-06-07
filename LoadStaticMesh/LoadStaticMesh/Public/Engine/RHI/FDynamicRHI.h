@@ -59,7 +59,7 @@ public:
 	virtual void UpdateIndexBufferResource(FIndexBuffer* IndexBuffer, LIndexBuffer& IndexBufferData) = 0;
 	
 	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) = 0;
-	virtual FTexture* RHICreateTexture() = 0;
+	virtual FTexture* CreateTexture(LTexture* TextureData) = 0;
 	virtual FTexture* CreateTexture(FTextureInitializer TexInitializer) = 0;
 	
 	virtual void CreateResourceViewCreater(UINT CbvCount, UINT SrvCount, UINT UavCount, UINT DsvCount, UINT RtvCount, UINT SamplerCount) = 0;

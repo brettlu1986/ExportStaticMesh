@@ -4,6 +4,7 @@
 #include "LResource.h"
 #include "LIndexBuffer.h"
 #include "LVertexBuffer.h"
+#include "LMaterial.h"
 
 class FMesh;
 class LMesh : public LResource
@@ -14,6 +15,7 @@ public:
 
 	void SetVertexBufferInfo(const char* DataSource, UINT DataSize, UINT DataCount);
 	void SetIndexBufferInfo(UINT InCount, UINT InByteSize, E_INDEX_TYPE InType, void* InData);
+	void SetMaterial(LMaterial* MatData);
 
 	void InitRenderThreadResource();
 	void DestroyRenderThreadResource();
@@ -28,6 +30,8 @@ private:
 
 	shared_ptr<LIndexBuffer> IndexBufferData;
 	shared_ptr<LVertexBuffer> VertexBufferData;
+
+	LMaterial* MaterialData;
 
 	XMFLOAT3 ModelLocation;
 	XMFLOAT3 ModelRotation;

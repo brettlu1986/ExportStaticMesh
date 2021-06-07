@@ -43,7 +43,7 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
 
-	//creater use to create rtv, uav, srv
+	//create use to create rtv, uav, srv
 	const UINT CbvCount = 50;
 	const UINT SrvCount = 100;
 	const UINT UavCount = 10;
@@ -155,12 +155,12 @@ void FSceneRenderer::RenderSceneStaticMeshes(FScene* RenderScene, bool bShadowPa
 		
 		GRHI->SetVertexAndIndexBuffers(Meshes[i]->GetVertexBuffer(), Meshes[i]->GetIndexBuffer());
 		GRHI->SetResourceParams(0, Meshes[i]->MatrixConstantBufferView);
-		GRHI->SetResourceParams(1, Meshes[i]->MaterialConstantBufferView);
+		GRHI->SetResourceParams(1, Meshes[i]->GetMaterial()->MaterialConstantBufferView);
 		GRHI->SetResourceParams(2, RenderScene->PassViewProj);
 		GRHI->SetResourceParams(3, RenderScene->PassLightInfo);
-		if (Meshes[i]->GetDiffuseTexture())
+		if (Meshes[i]->GetMaterial()->DiffuseResView)
 		{
-			GRHI->SetResourceParams(4, Meshes[i]->DiffuseResView);
+			GRHI->SetResourceParams(4, Meshes[i]->GetMaterial()->DiffuseResView);
 		}
 		GRHI->SetResourceParams(5, ShadowMap->ShadowResView);
 		GRHI->DrawTriangleList(Meshes[i]->GetIndexBuffer());
@@ -181,9 +181,9 @@ void FSceneRenderer::RenderSceneSkeletalMeshes(FScene* RenderScene)
 			GRHI->SetResourceParams(1, SkmMeshes[i]->SkeletalConstantBufferView);
 			GRHI->SetResourceParams(2, RenderScene->PassViewProj);
 			GRHI->SetResourceParams(3, RenderScene->PassLightInfo);
-			if (SkmMeshes[i]->DiffuseResView)
+			if (SkmMeshes[i]->GetMaterial()->DiffuseResView)
 			{
-				GRHI->SetResourceParams(4, SkmMeshes[i]->DiffuseResView);
+				GRHI->SetResourceParams(4, SkmMeshes[i]->GetMaterial()->DiffuseResView);
 			}
 			GRHI->DrawTriangleList(SkmMeshes[i]->GetIndexBuffer());
 		}

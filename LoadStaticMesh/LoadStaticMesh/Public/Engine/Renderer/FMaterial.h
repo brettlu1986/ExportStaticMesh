@@ -5,6 +5,10 @@
 #include "FDefine.h"
 #include "FRenderResource.h"
 
+#include "LMaterial.h"
+
+class FResourceView;
+class FTexture;
 class FMaterial : public FRenderResource
 {
 public:
@@ -15,27 +19,16 @@ public:
 	virtual void Destroy() override;
 	virtual void Initialize() override;
 
-	void Init(const string& Name, XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float Roughness);
+	void Init(LMaterial& MaterialData);
+	void UpdateMaterialConstantInRenderThread(XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float InRoughness, XMFLOAT4X4 InMatTrans);
 
-	const XMFLOAT4& GetDiffuseAlbedo() const
-	{
-		return DiffuseAlbedo;
-	}
+	FResourceView* MaterialConstantBufferView;
 
-	const XMFLOAT3& GetFresnelR0() const
-	{
-		return FresnelR0;
-	}
+	FTexture* DiffuseTex;
+	FTexture* NormalTex;
 
-	float GetRoughness() const
-	{
-		return Roughness;
-	}
-
-	const XMFLOAT4X4& GetMaterialTransform() 
-	{
-		return MaterialTransform;
-	}
+	FResourceView* DiffuseResView;
+	FResourceView* NormalResView;
 
 protected:
 	XMFLOAT4 DiffuseAlbedo;

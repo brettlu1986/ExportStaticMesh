@@ -7,16 +7,12 @@
 FSkeletalMesh::FSkeletalMesh()
 :VertexBuffer(nullptr)
 ,IndexBuffer(nullptr)
-,DiffuseTex(nullptr)
-,DiffuseResView(nullptr)
 {
 }
 
 FSkeletalMesh::FSkeletalMesh(LSkeletalMesh* MeshData)
 	:VertexBuffer(nullptr)
 	, IndexBuffer(nullptr)
-	, DiffuseTex(nullptr)
-	, DiffuseResView(nullptr)
 {
 	ModelMatrix = MeshData->GetModelMatrix();
 }
@@ -42,15 +38,12 @@ void FSkeletalMesh::Destroy()
 		IndexBuffer = nullptr;
 	}
 
-	if (DiffuseTex)
+	if (Material)
 	{
-		DiffuseTex->Destroy();
-		delete DiffuseTex;
-		DiffuseTex = nullptr;
+		Material->Destroy();
+		delete Material;
+		Material = nullptr;
 	}
-
-	delete DiffuseResView;
-	DiffuseResView = nullptr;
 
 	delete MatrixConstantBufferView;
 	MatrixConstantBufferView = nullptr;
@@ -62,15 +55,17 @@ void FSkeletalMesh::Destroy()
 void FSkeletalMesh::Initialize()
 {}
 
-void FSkeletalMesh::InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData)
+void FSkeletalMesh::InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData, LMaterial& MaterialData)
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
 
 	VertexBuffer = GRHI->RHICreateVertexBuffer();
 	IndexBuffer = GRHI->RHICreateIndexBuffer();
+	Material = new FMaterial();
 
 	GRHI->UpdateVertexBufferResource(VertexBuffer, VertexBufferData);
 	GRHI->UpdateIndexBufferResource(IndexBuffer, IndexBufferData);
+	Material->Init(MaterialData);
 
 	MatrixConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FObjectConstants)),E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
 	SkeletalConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FSkeletalConstants)),E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });

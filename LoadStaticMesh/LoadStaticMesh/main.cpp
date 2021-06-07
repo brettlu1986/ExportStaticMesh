@@ -1,6 +1,5 @@
 
 
-#include "stdafx.h"
 #include "ApplicationMain.h"
 
 #include <iostream>

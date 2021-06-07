@@ -8,6 +8,8 @@
 #include "FResourceViewCreater.h"
 
 #include "LSkeletalMesh.h"
+#include "FMaterial.h"
+#include "LMaterial.h"
 
 class FSkeletalMesh : public FRenderResource
 {
@@ -19,7 +21,7 @@ public:
 	virtual void Destroy();
 	virtual void Initialize();
 
-	void InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData);
+	void InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData, LMaterial& MaterialData);
 	void AddMeshInRenderThread();
 	void DeleteMeshInRenderThread();
 	void UpdateMeshMatrixInRenderThread(XMMATRIX Mat);
@@ -50,11 +52,6 @@ public:
 		return IndexBuffer;
 	}
 
-	FResourceView* MatrixConstantBufferView;
-	FResourceView* SkeletalConstantBufferView;
-	//TODO: move to material
-	FResourceView* DiffuseResView;
-
 	void SetMeshIndex(UINT Index)
 	{
 		MeshIndex = Index;
@@ -65,16 +62,22 @@ public:
 		return MeshIndex;
 	}
 
+	FMaterial* GetMaterial()
+	{
+		return Material;
+	}
+
+	FResourceView* MatrixConstantBufferView;
+	FResourceView* SkeletalConstantBufferView;
+
 private:
 	
 	FVertexBuffer* VertexBuffer;
 	FIndexBuffer* IndexBuffer;
-	UINT MeshIndex;
-	
-	FTexture* DiffuseTex;
+	FMaterial* Material;
 
+	UINT MeshIndex;
 	XMMATRIX ModelMatrix;
 	FSkeletalConstants SkeletalConstants;
-
 	string UsePsoKey;
 };

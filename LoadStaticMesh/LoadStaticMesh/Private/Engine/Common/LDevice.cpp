@@ -1,5 +1,4 @@
 
-#include "stdafx.h"
 #include "LDevice.h"
 
 LDevice::LDevice(UINT InW, UINT InH)

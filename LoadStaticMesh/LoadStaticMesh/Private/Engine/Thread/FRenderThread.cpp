@@ -91,7 +91,7 @@ void FRenderThread::WaitForRenderThread()
 	RenderCV.wait(Lock, [this]() { return SyncCount <= CPU_MAX_AHEAD; });
 	++SyncCount;
 
-	TasksIndex = (TasksIndex + + 1) % FRAME_COUNT;
+	TasksIndex = (TasksIndex + 1) % FRAME_COUNT;
 	RenderCV.notify_all();
 }
 

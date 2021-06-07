@@ -11,22 +11,17 @@
 FMesh::FMesh()
 	:VertexBuffer(nullptr)
 	, IndexBuffer(nullptr)
-	, DiffuseTex(nullptr)
 	, Material(nullptr)
 	, UsePsoKey("")
 	, MatrixConstantBufferView(nullptr)
-	, MaterialConstantBufferView(nullptr)
-	, DiffuseResView(nullptr)
 {
 	
 }
 
 FMesh::FMesh(LMesh* MeshData)
-	:DiffuseTex(nullptr)
-	, VertexBuffer(nullptr)
+	: VertexBuffer(nullptr)
 	, IndexBuffer(nullptr)
 	, Material(nullptr)
-	, DiffuseResView(nullptr)
 {
 	ModelMatrix = MeshData->GetModelMatrix();
 }
@@ -51,14 +46,7 @@ void FMesh::Destroy()
 		delete IndexBuffer;
 		IndexBuffer = nullptr;
 	}
-
-	if (DiffuseTex)
-	{
-		DiffuseTex->Destroy();
-		delete DiffuseTex;
-		DiffuseTex = nullptr;
-	}
-
+	
 	if (Material)
 	{
 		Material->Destroy();
@@ -66,17 +54,9 @@ void FMesh::Destroy()
 		Material = nullptr;
 	}
 
-	if(DiffuseResView)
-	{
-		delete DiffuseResView;
-		DiffuseResView = nullptr;
-	}
-
 	delete MatrixConstantBufferView;
 	MatrixConstantBufferView = nullptr;
 
-	delete MaterialConstantBufferView;
-	MaterialConstantBufferView = nullptr;
 }
 
 void FMesh::Initialize()
@@ -91,18 +71,19 @@ XMMATRIX FMesh::GetModelMatrix()
 	return ModelMatrix;
 }
 
-void FMesh::InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData)
+void FMesh::InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData, LMaterial& MaterialData)
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
 
 	VertexBuffer = GRHI->RHICreateVertexBuffer();
 	IndexBuffer = GRHI->RHICreateIndexBuffer();
+	Material = new FMaterial();
 
 	GRHI->UpdateVertexBufferResource(VertexBuffer, VertexBufferData);
 	GRHI->UpdateIndexBufferResource(IndexBuffer, IndexBufferData);
+	Material->Init(MaterialData);
 
 	MatrixConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FObjectConstants)), E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
-	MaterialConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FMaterialConstants)),E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
 }
 
 void FMesh::AddMeshInRenderThread()
@@ -127,16 +108,6 @@ void FMesh::UpdateMeshMatrixInRenderThread(XMMATRIX Mat)
 	XMFLOAT4X4 TexMat = MathHelper::Identity4x4();
 	XMStoreFloat4x4(&ObjConstants.TexTransform, XMMatrixTranspose(XMLoadFloat4x4(&TexMat)));
 	GRHI->UpdateConstantBufferView(MatrixConstantBufferView, &ObjConstants);
-
-	//TODO: exchange to export material param
-	FMaterialConstants MatConstants;
-	MatConstants.DiffuseAlbedo = XMFLOAT4(Colors::DarkGray);
-	MatConstants.FresnelR0 = XMFLOAT3(0.3f, 0.3f, 0.3f);
-	MatConstants.Roughness = 0.4f;
-
-	XMFLOAT4X4 MatTransform = MathHelper::Identity4x4();
-	XMStoreFloat4x4(&MatConstants.MatTransform, XMMatrixTranspose(XMLoadFloat4x4(&MatTransform)));
-	GRHI->UpdateConstantBufferView(MaterialConstantBufferView, &MatConstants);
 }
 
 

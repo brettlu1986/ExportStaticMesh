@@ -9,7 +9,7 @@
 namespace SampleAssets
 {
 	// assets
-
+	//skeleton
 	const UINT DDSTexResourcesCount = 2;
 	struct BaseAssetRefInfo
 	{
@@ -17,11 +17,7 @@ namespace SampleAssets
 		std::string FileName;
 	};
 	const BaseAssetRefInfo SkeletonResource = {"BaseSke", "ThirdPersonCharacter_SK.bin"};
-	const BaseAssetRefInfo DDSTexResources[] = {
-		{"MaleMask", "Resource/T_Male_Mask.dds"},
-		{"ChairM", "Resource/T_Chair_M.dds"}
-	};
-
+	//shader
 	const UINT ShaderResCount = 8;
 	struct ShaderAssetRefInfo
 	{
@@ -39,7 +35,12 @@ namespace SampleAssets
 		{"SkeletalVs",			L"SkeletalVs.cso"},
 		{"SkeletalPs",			L"SkeletalPs.cso"},
 	};
-	//
+
+	//material
+	const BaseAssetRefInfo DDSTexResources[] = {
+		{"MaleDiffuse", "Resource/T_Male_Mask.dds"},
+		{"ChairDiffuse", "Resource/T_Chair_M.dds"}
+	};
 
 	const UINT SamepleCount = 10;
 	const string SampleResources[] = 
@@ -67,32 +68,10 @@ namespace SampleAssets
 	const string PsoUseTexture = "PsoUseTexture";
 	const string PsoNoTexture = "PsoNoTexture";
 
-	struct SampleMaterial 
-	{
-		string Name;
-		XMFLOAT4 DiffuseAlbedo;
-		XMFLOAT3 FresnelR0;
-		float Roughness;
-		string BaseTexture = ""; // ref name in asset manager
-		string NormalTexture = ""; // ref name in asset manager
-	};
-
-	const SampleMaterial SampeMats[] = 
-	{
-		{ "Chair", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.1f, "ChairM"},
-		{ "Stair", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.2f, 0.2f, 0.2f), 0.05f},
-		{ "Sphere", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.02f},
-		{ "Floor2", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.02f},
-		{ "Bump", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.2f, 0.2f, 0.2f), 0.2f},
-		{ "LeftArm", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.3f, 0.3f, 0.3f), 0.4f},
-		{ "Wall6", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.15f},
-		{ "Wall7", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.2f, 0.2f, 0.2f), 0.12f},
-		{ "Wall8", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.1f, 0.1f, 0.1f), 0.3f},
-		{ "Wall9", XMFLOAT4(Colors::DarkGray), XMFLOAT3(0.2f, 0.2f, 0.2f), 0.2f},
-	};
-
+	//light
 	const string SceneLightsFile = "SceneLights.bin";
 
+	//skeletal 
 	const UINT SampleSkeletalMeshCount = 3;
 	const string SkeletalMeshResource[] =
 	{
@@ -103,6 +82,7 @@ namespace SampleAssets
 	
 	const string SkeletonTexture = "Resource/T_Male_Mask.dds";
 	
+	//animation
 	const string SkeletalAnim[] = 
 	{	
 		"ThirdPersonCharacter_ThirdPersonIdle.bin",

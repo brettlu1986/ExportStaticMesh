@@ -31,6 +31,7 @@
 #include <D3Dcompiler.h>
 #include <DirectXMath.h>
 #include <process.h>
+#include <MathHelper.h>
 #include "d3dx12.h"
 
 #include <string>

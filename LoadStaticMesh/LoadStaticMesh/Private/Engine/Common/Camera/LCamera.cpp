@@ -1,8 +1,5 @@
 
-#include "stdafx.h"
-
 #include "LCamera.h"
-#include "MathHelper.h"
 #include "FD3D12Helper.h"
 
 #include "LEngine.h"
