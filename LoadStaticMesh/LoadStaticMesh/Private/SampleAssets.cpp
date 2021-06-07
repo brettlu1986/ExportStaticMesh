@@ -42,9 +42,16 @@ void SampleAssets::LoadSampleSceneData(LScene& Scene)
 	//load static mesh
 	for (UINT i = 0; i < SampleAssets::SamepleCount; i++)
 	{
+		XMFLOAT3 Location, Rotation, Scale;
 		auto Mesh = make_shared<LMesh>();
 		Mesh->SetMaterial(LAssetManager::Get()->GetMaterial(i == 0 ? "ChairMat" : "DefaultMat"));
-		LAssetDataLoader::LoadMeshFromFile(SampleAssets::SampleResources[i], *Mesh);
+		LAssetDataLoader::LoadMeshFromFile(SampleAssets::SampleResources[i], *Mesh, Location, Rotation, Scale);
+		Mesh->InitRenderThreadResource();
+
+		Mesh->SetModelLocation(Location);
+		Mesh->SetModelRotation(Rotation);
+		Mesh->SetModelScale(Scale);
+
 		Scene.AddStaticMeshes(Mesh);
 	}
 
@@ -63,16 +70,22 @@ void SampleAssets::LoadSampleSceneData(LScene& Scene)
 		Scene.AddLightToScene(Light);
 	}
 
-
 	for (UINT i = 0; i < SampleAssets::SampleSkeletalMeshCount; i++)
 	{
+		XMFLOAT3 Location, Rotation, Scale;
 		//character has skeleton mesh and animator instance
 		auto Character = make_shared<LCharacter>();
 
 		//create skeletal mesh, skeleton save in skeletal mesh
 		LSkeletalMesh* SkeletalMesh = new LSkeletalMesh();
 		SkeletalMesh->SetMaterial(LAssetManager::Get()->GetMaterial("CharacterMat"));
-		LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(SampleAssets::SkeletalMeshResource[i], *SkeletalMesh);
+		LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(SampleAssets::SkeletalMeshResource[i], *SkeletalMesh, Location, Rotation, Scale);
+		SkeletalMesh->InitRenderThreadResource();
+
+		SkeletalMesh->SetModelLocation(Location);
+		SkeletalMesh->SetModelRotation(Rotation);
+		SkeletalMesh->SetModelScale(Scale);
+
 		SkeletalMesh->SetSkeleton(LAssetManager::Get()->GetSkeletal(SampleAssets::SkeletonResource.RefName));
 
 		//create animator

@@ -93,22 +93,16 @@ void LAssetDataLoader::LoadDirectionLights(string FileName,  vector<DirectionLig
 	}
 }
 
-void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(string FileName, LSkeletalMesh& SkeletalMesh)
+void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(string FileName, LSkeletalMesh& SkeletalMesh, XMFLOAT3& Location, XMFLOAT3& Rotation, XMFLOAT3& Scale)
 {
 	string FName = GetSaveDataDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;
 	}
-	XMFLOAT3 Location;
 	Rf.read((char*)&Location, sizeof(XMFLOAT3));
-
-	XMFLOAT3 Rotation;
 	Rf.read((char*)&Rotation, sizeof(XMFLOAT3));
-	//TODO: the skeletal has yaw 90 degree offset , dont know why ????
 	Rotation.y -= 90.f;
-
-	XMFLOAT3 Scale;
 	Rf.read((char*)&Scale, sizeof(XMFLOAT3));
 
 	UINT VertexCount;
@@ -135,14 +129,6 @@ void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(string FileName, LSkel
 	BoneMap.resize(BoneMapSize);
 	Rf.read((char*)BoneMap.data(), BoneMapSize * sizeof(UINT16));
 	SkeletalMesh.SetCurrentBoneMap(BoneMap);
-
-	//TODO:move the logic other place, here not good
-	//init render resource first
-	SkeletalMesh.InitRenderThreadResource();
-	//update the world matrix, and update world render cbv
-	SkeletalMesh.SetModelLocation(Location);
-	SkeletalMesh.SetModelRotation(Rotation);
-	SkeletalMesh.SetModelScale(Scale);
 
 	Rf.close();
 	if (!Rf.good()) {
@@ -291,7 +277,7 @@ void LAssetDataLoader::LoadAnimationSquence(string SequenceName, LAnimationSeque
 	}
 }
 
-void LAssetDataLoader::LoadMeshFromFile(string FileName, LMesh& Mesh)
+void LAssetDataLoader::LoadMeshFromFile(string FileName, LMesh& Mesh, XMFLOAT3& Location, XMFLOAT3& Rotation, XMFLOAT3& Scale)
 {
 	string FName = GetSaveDataDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
@@ -299,13 +285,8 @@ void LAssetDataLoader::LoadMeshFromFile(string FileName, LMesh& Mesh)
 		return;
 	}
 
-	XMFLOAT3 Location;
 	Rf.read((char*)&Location, sizeof(XMFLOAT3));
-
-	XMFLOAT3 Rotation;
 	Rf.read((char*)&Rotation, sizeof(XMFLOAT3));
-
-	XMFLOAT3 Scale;
 	Rf.read((char*)&Scale, sizeof(XMFLOAT3));
 
 	UINT VertexCount;
@@ -337,14 +318,6 @@ void LAssetDataLoader::LoadMeshFromFile(string FileName, LMesh& Mesh)
 	Mesh.SetIndexBufferInfo(IndicesCount, IndicesByteSize,
 		bUseHalfInt32 ? E_INDEX_TYPE::TYPE_UINT_16 : E_INDEX_TYPE::TYPE_UINT_32,
 		bUseHalfInt32 ? reinterpret_cast<void*>(IndicesHalf.data()) : reinterpret_cast<void*>(Indices.data()));
-
-	//TODO:move the logic other place, here not good
-	//init render resource first
-	Mesh.InitRenderThreadResource();
-	//update the world matrix, and update world render cbv
-	Mesh.SetModelLocation(Location);
-	Mesh.SetModelRotation(Rotation);
-	Mesh.SetModelScale(Scale);
 
 	Rf.close();
 	if (!Rf.good()) {

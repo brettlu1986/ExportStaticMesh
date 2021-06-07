@@ -54,9 +54,9 @@ public:
 
 	static wstring GetAssetFullPath(LPCWSTR AssetName);
 
-	static void LoadSkeletalMeshVertexDataFromFile(string FileName, LSkeletalMesh& SkeletalMesh);
+	static void LoadSkeletalMeshVertexDataFromFile(string FileName, LSkeletalMesh& SkeletalMesh, XMFLOAT3& Location, XMFLOAT3& Rotation, XMFLOAT3& Scale);
 
-	static void LoadMeshFromFile(string FileName, LMesh& Mesh);
+	static void LoadMeshFromFile(string FileName, LMesh& Mesh, XMFLOAT3& Location, XMFLOAT3& Rotation, XMFLOAT3& Scale);
 
 	static void LoadCameraDataFromFile(string FileName, LCamera& Camera);
 
