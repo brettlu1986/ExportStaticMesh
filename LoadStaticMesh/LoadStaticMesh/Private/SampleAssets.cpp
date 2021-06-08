@@ -32,11 +32,11 @@ void SampleAssets::LoadSampleSceneData(LScene& Scene)
 	LAssetManager::Get()->LoadMaterial(DefaultMat, "DefaultMat");
 
 	auto ChairMat = make_unique<LMaterial>();
-	ChairMat->SetColorTex(LAssetManager::Get()->GetTexture("ChairDiffuse"));
+	ChairMat->SetColorTex(LAssetManager::Get()->GetTexture("ChairColor"));
 	LAssetManager::Get()->LoadMaterial(ChairMat, "ChairMat");
 
 	auto CharacterMat = make_unique<LMaterial>();
-	CharacterMat->SetColorTex(LAssetManager::Get()->GetTexture("MaleDiffuse"));
+	CharacterMat->SetColorTex(LAssetManager::Get()->GetTexture("MaleColor"));
 	LAssetManager::Get()->LoadMaterial(CharacterMat, "CharacterMat");
 	
 	//load static mesh

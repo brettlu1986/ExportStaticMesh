@@ -1,7 +1,6 @@
 
 #include "stdafx.h"
 #include "LAssetDataLoader.h"
-#include "SampleAssets.h"
 #include "LCharacter.h"
 #include "LAnimator.h"
 #include "FRHI.h"

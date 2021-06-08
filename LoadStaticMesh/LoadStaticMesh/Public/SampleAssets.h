@@ -17,6 +17,7 @@ namespace SampleAssets
 		std::string FileName;
 	};
 	const BaseAssetRefInfo SkeletonResource = {"BaseSke", "ThirdPersonCharacter_SK.bin"};
+
 	//shader
 	const UINT ShaderResCount = 8;
 	struct ShaderAssetRefInfo
@@ -38,11 +39,11 @@ namespace SampleAssets
 
 	//material
 	const BaseAssetRefInfo DDSTexResources[] = {
-		{"MaleDiffuse", "Resource/T_Male_Mask.dds"},
-		{"ChairDiffuse", "Resource/T_Chair_M.dds"}
+		{"MaleColor", "Resource/T_Male_Mask.dds"},
+		{"ChairColor", "Resource/T_Chair_M.dds"}
 	};
 
-	const UINT SamepleCount = 10;
+	const UINT SamepleCount = 16;
 	const string SampleResources[] = 
 	{
 		"BP_Chair.bin",
@@ -55,6 +56,12 @@ namespace SampleAssets
 		"Wall7.bin",
 		"Wall8.bin",
 		"Wall9.bin",
+		"BP_Chair2.bin",
+		"BP_Chair3.bin",
+		"BP_Chair4.bin",
+		"BP_Rock.bin",
+		"BP_TableRound.bin",
+		"BP_Lamp_Ceiling.bin"
 	};
 
 	const string CameraBin = "CameraActor.bin";
