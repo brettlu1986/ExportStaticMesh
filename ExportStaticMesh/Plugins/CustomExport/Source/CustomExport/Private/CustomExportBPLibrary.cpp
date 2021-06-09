@@ -189,6 +189,83 @@ void UCustomExportBPLibrary::ShowMessageDialog(const FText Target, const FText R
 	const FText WarningMessage = FText::Format(LOCTEXT("CustomExport_Message", "{0} export {1}!"), Target, Result);
 	EAppReturnType::Type ReturnType = FMessageDialog::Open(EAppMsgType::Ok, WarningMessage);
 }
+
+bool UCustomExportBPLibrary::ExportsAssets(TArray<FAssetsDef> Skeletons, TArray<FAssetsDef> Shaders, TArray<FAssetsDef> Textures, TArray<FAssetsDef> Materials, TArray<FAssetsDef> MaterialsIns, TArray<FAssetsDef> Animations, TArray<FAssetsDef> MeshGeometries,
+	TArray<FAssetsDef> SkeletalMeshGeometries, FAssetsExport Out, FString FileBaseName)
+{
+	Out.Skeletons.Append(Skeletons);
+	Out.ShaderFiles.Append(Shaders);
+	Out.Textures.Append(Textures);
+	Out.Materials.Append(Materials);
+	Out.MaterialInstances.Append(MaterialsIns);
+	Out.Animations.Append(Animations);
+	Out.MeshGeometries.Append(MeshGeometries);
+	Out.SkeletalMeshGeometries.Append(SkeletalMeshGeometries);
+
+	//delete old files
+	FString File = FileBaseName + ".json";
+	FString BinFile = FileBaseName + ".bin";
+	CheckFileExistAndDelete(File);
+	CheckFileExistAndDelete(BinFile);
+
+	//save json
+	FString Json;
+	FJsonObjectConverter::UStructToJsonObjectString(Out, Json);
+	FString MeshSaveFile = SavePath + File;
+	if(!FFileHelper::SaveStringToFile(Json, *MeshSaveFile)) 
+	{
+		return false;
+	}
+
+	//save binary
+	BinFile = SavePath + BinFile;
+	char* ResultName = TCHAR_TO_ANSI(*BinFile);
+	ofstream Wf(ResultName, ios::out | ios::binary);
+	if (!Wf)
+	{
+		return false;
+	}
+
+	uint32 VarNum = Out.Skeletons.Num();
+	Wf << VarNum;
+	
+	for (uint32 i = 0; i < VarNum; i++)
+	{
+		Wf << string(TCHAR_TO_UTF8(*Out.Skeletons[i].RefName)) << string(TCHAR_TO_UTF8(*Out.Skeletons[i].FileName));
+	}
+
+	VarNum = Out.ShaderFiles.Num();
+	Wf << VarNum;
+	for (uint32 i = 0; i < VarNum; i++)
+	{
+		Wf << string(TCHAR_TO_UTF8(*Out.ShaderFiles[i].RefName)) << string(TCHAR_TO_UTF8(*Out.ShaderFiles[i].FileName));
+	}
+
+	VarNum = Out.Textures.Num();
+	Wf << VarNum;
+	for (uint32 i = 0; i < VarNum; i++)
+	{
+		Wf << string(TCHAR_TO_UTF8(*Out.Textures[i].RefName)) << string(TCHAR_TO_UTF8(*Out.Textures[i].FileName));
+	}
+
+	VarNum = Out.Materials.Num();
+	Wf << VarNum;
+	for (uint32 i = 0; i < VarNum; i++)
+	{
+		Wf << string(TCHAR_TO_UTF8(*Out.Materials[i].RefName)) << string(TCHAR_TO_UTF8(*Out.Materials[i].FileName));
+	}
+
+	VarNum = Out.MaterialInstances.Num();
+	Wf << VarNum;
+	for (uint32 i = 0; i < VarNum; i++)
+	{
+		Wf << string(TCHAR_TO_UTF8(*Out.MaterialInstances[i].RefName)) << string(TCHAR_TO_UTF8(*Out.MaterialInstances[i].FileName));
+	}
+	
+	Wf.close();
+	return Wf.good();
+}
+
 #undef LOCTEXT_NAMESPACE
 
 void ExportMeshWorld(const AActor* MeshActor, FFullMeshDataJson& MeshDataJsonOut, FFullMeshDataBinary& MeshDataBinaryOut, bool bSke)

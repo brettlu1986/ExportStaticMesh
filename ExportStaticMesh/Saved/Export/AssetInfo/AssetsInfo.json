@@ -1,0 +1,182 @@
+{
+	"skeletons": [
+		{
+			"refName": "BaseSke",
+			"fileName": "SkeletalMeshes/ThirdPersonCharacter_SK.bin"
+		}
+	],
+	"shaderFiles": [
+		{
+			"refName": "ShaderTexVs",
+			"fileName": "ShaderTexVs.cso"
+		},
+		{
+			"refName": "ShaderTexPs",
+			"fileName": "ShaderTexPs.cso"
+		},
+		{
+			"refName": "ShaderVs",
+			"fileName": "ShaderVs.cso"
+		},
+		{
+			"refName": "ShaderPs",
+			"fileName": "ShaderPs.cso"
+		},
+		{
+			"refName": "SampleDepthShaderVs",
+			"fileName": "SampleDepthShaderVs.cso"
+		},
+		{
+			"refName": "SampleDepthShaderPs",
+			"fileName": "SampleDepthShaderPs.cso"
+		},
+		{
+			"refName": "SkeletalVs",
+			"fileName": "SkeletalVs.cso"
+		},
+		{
+			"refName": "SkeletalPs",
+			"fileName": "SkeletalPs.cso"
+		}
+	],
+	"textures": [
+		{
+			"refName": "MaleColor",
+			"fileName": "Textures/T_Male_Mask.dds"
+		},
+		{
+			"refName": "ChairColor",
+			"fileName": "Textures/T_Chair_M.dds"
+		},
+		{
+			"refName": "LampColor",
+			"fileName": "Textures/T_Lamp_M.dds"
+		},
+		{
+			"refName": "RockColor",
+			"fileName": "Textures/T_Rock_Basalt_D.dds"
+		},
+		{
+			"refName": "TableColor",
+			"fileName": "Textures/T_TableRound_M.dds"
+		}
+	],
+	"materials": [
+		{
+			"refName": "M_Chair",
+			"fileName": "Materials/M_ChairBase.bin"
+		},
+		{
+			"refName": "M_Mesh",
+			"fileName": "Materials/M_MeshBase.bin"
+		}
+	],
+	"materialInstances": [
+		{
+			"refName": "M_InsChair1",
+			"fileName": "Materials/M_ChairBase_Ins1.bin"
+		},
+		{
+			"refName": "M_InsChair2",
+			"fileName": "Materials/M_ChairBase_Inst2.bin"
+		},
+		{
+			"refName": "M_InsChair3",
+			"fileName": "Materials/M_ChairBase_Inst3.bin"
+		},
+		{
+			"refName": "M_InsCharacter",
+			"fileName": "Materials/M_MeshCharacter.bin"
+		},
+		{
+			"refName": "M_InsLamp",
+			"fileName": "Materials/M_MeshLamp.bin"
+		},
+		{
+			"refName": "M_InsRock",
+			"fileName": "Materials/M_MeshRock.bin"
+		},
+		{
+			"refName": "M_InsTable",
+			"fileName": "Materials/M_MeshTable.bin"
+		}
+	],
+	"animations": [
+		{
+			"refName": "ThirdPersonWalk",
+			"fileName": "Animations/ThirdPersonWalk.bin"
+		},
+		{
+			"refName": "ThirdPersonRun",
+			"fileName": "Animations/ThirdPersonRun.bin"
+		},
+		{
+			"refName": "ThirdPersonIdle",
+			"fileName": "Animations/ThirdPersonIdle.bin"
+		},
+		{
+			"refName": "ThirdPersonJump_Start",
+			"fileName": "Animations/ThirdPersonJump_Start.bin"
+		},
+		{
+			"refName": "ThirdPersonJump_Loop",
+			"fileName": "Animations/ThirdPersonJump_Loop.bin"
+		},
+		{
+			"refName": "ThirdPerson_Jump",
+			"fileName": "Animations/ThirdPerson_Jump.bin"
+		}
+	],
+	"meshGeometries": [
+		{
+			"refName": "Floor",
+			"fileName": "StaticMeshes/Floor.bin"
+		},
+		{
+			"refName": "Wall8",
+			"fileName": "StaticMeshes/Wall8.bin"
+		},
+		{
+			"refName": "LeftArm_StaticMesh",
+			"fileName": "StaticMeshes/LeftArm_StaticMesh.bin"
+		},
+		{
+			"refName": "Linear_Stair_StaticMesh",
+			"fileName": "StaticMeshes/Linear_Stair_StaticMesh.bin"
+		},
+		{
+			"refName": "Bump_StaticMesh",
+			"fileName": "StaticMeshes/Bump_StaticMesh.bin"
+		},
+		{
+			"refName": "Sphere",
+			"fileName": "StaticMeshes/Sphere.bin"
+		},
+		{
+			"refName": "Cube",
+			"fileName": "StaticMeshes/Cube.bin"
+		},
+		{
+			"refName": "BP_Chair",
+			"fileName": "StaticMeshes/BP_Chair.bin"
+		},
+		{
+			"refName": "BP_Lamp_Ceiling",
+			"fileName": "StaticMeshes/BP_Lamp_Ceiling.bin"
+		},
+		{
+			"refName": "BP_Rock",
+			"fileName": "StaticMeshes/BP_Rock.bin"
+		},
+		{
+			"refName": "BP_TableRound",
+			"fileName": "StaticMeshes/BP_TableRound.bin"
+		}
+	],
+	"skeletalMeshGeometries": [
+		{
+			"refName": "ThirdPersonCharacter",
+			"fileName": "SkeletalMeshes/ThirdPersonCharacter_SKM.bin"
+		}
+	]
+}

@@ -16,7 +16,7 @@ namespace SampleAssets
 		std::string RefName;
 		std::string FileName;
 	};
-	const BaseAssetRefInfo SkeletonResource = {"BaseSke", "SkeletalMeshes/ThirdPersonCharacter_SK.bin"};
+	const BaseAssetRefInfo SkeletonResource = {"BaseSke", "SkeletalMeshes/ThirdPersonCharacter_SK.bin"};//
 
 	//shader
 	const UINT ShaderResCount = 8;
@@ -30,13 +30,13 @@ namespace SampleAssets
 		{"SampleDepthShaderPs", "SampleDepthShaderPs.cso"},
 		{"SkeletalVs",			"SkeletalVs.cso"},
 		{"SkeletalPs",			"SkeletalPs.cso"},
-	};
+	};//
 
 	//material
 	const BaseAssetRefInfo DDSTexResources[] = {
 		{"MaleColor", "Textures/T_Male_Mask.dds"},
 		{"ChairColor", "Textures/T_Chair_M.dds"}
-	};
+	};//
 
 	const UINT SamepleCount = 16;
 	const string SampleResources[] = 
@@ -57,12 +57,12 @@ namespace SampleAssets
 		"StaticMeshes/BP_Rock.bin",
 		"StaticMeshes/BP_TableRound.bin",
 		"StaticMeshes/BP_Lamp_Ceiling.bin"
-	};
+	};//
 
-	const string CameraBin = "Cameras/CameraActor.bin";
+	const string CameraBin = "Cameras/CameraActor.bin";//
 
 	//light
-	const string SceneLightsFile = "Lights/SceneLights.bin";
+	const string SceneLightsFile = "Lights/SceneLights.bin";//
 
 	//skeletal 
 	const UINT SampleSkeletalMeshCount = 3;

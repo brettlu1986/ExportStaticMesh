@@ -464,11 +464,78 @@ struct FAssetsDef
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString RefName;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString FileName;
+};
+
+USTRUCT(BlueprintType)
+struct FMapObjectInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString ObjectPathName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector WorldLocation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FRotator WorldRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector WorldScale;
+};
+
+USTRUCT(BlueprintType)
+struct FMapExport
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FMapObjectInfo> StaticMeshes;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FMapObjectInfo> SkeletalMeshes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString SceneLightsFile;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString CameraFile;
+};
+
+
+USTRUCT(BlueprintType)
+struct FAssetsExport
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FAssetsDef> Skeletons;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FAssetsDef> ShaderFiles;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FAssetsDef> Textures;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FAssetsDef> Materials;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FAssetsDef> MaterialInstances;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FAssetsDef> Animations;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FAssetsDef> MeshGeometries;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FAssetsDef> SkeletalMeshGeometries;
 
 };
 
@@ -483,6 +550,11 @@ public:
 	
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Show Message"), Category = "CustomExportBPLibrary")
 	static void ShowMessageDialog(const FText Target, const FText Result);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Assets"), Category = "CustomExportBPLibrary")
+	static bool ExportsAssets(TArray<FAssetsDef> Skeletons, TArray<FAssetsDef> Shaders, TArray<FAssetsDef> Textures, 
+		TArray<FAssetsDef> Materials, TArray<FAssetsDef> MaterialsIns, TArray<FAssetsDef> Animations, TArray<FAssetsDef> MeshGeometries, 
+		TArray<FAssetsDef> SkeletalMeshGeometries, FAssetsExport Out, FString FileBaseName);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Camera"), Category = "CustomExportBPLibrary")
 	static bool ExportCamera(const UCameraComponent* Component, FCameraData CameraData, FString FileName);
