@@ -262,6 +262,27 @@ bool UCustomExportBPLibrary::ExportsAssets(TArray<FAssetsDef> Skeletons, TArray<
 		Wf << string(TCHAR_TO_UTF8(*Out.MaterialInstances[i].RefName)) << string(TCHAR_TO_UTF8(*Out.MaterialInstances[i].FileName));
 	}
 	
+	VarNum = Out.Animations.Num();
+	Wf << VarNum;
+	for (uint32 i = 0; i < VarNum; i++)
+	{
+		Wf << string(TCHAR_TO_UTF8(*Out.Animations[i].RefName)) << string(TCHAR_TO_UTF8(*Out.Animations[i].FileName));
+	}
+
+	VarNum = Out.MeshGeometries.Num();
+	Wf << VarNum;
+	for (uint32 i = 0; i < VarNum; i++)
+	{
+		Wf << string(TCHAR_TO_UTF8(*Out.MeshGeometries[i].RefName)) << string(TCHAR_TO_UTF8(*Out.MeshGeometries[i].FileName));
+	}
+
+	VarNum = Out.SkeletalMeshGeometries.Num();
+	Wf << VarNum;
+	for (uint32 i = 0; i < VarNum; i++)
+	{
+		Wf << string(TCHAR_TO_UTF8(*Out.SkeletalMeshGeometries[i].RefName)) << string(TCHAR_TO_UTF8(*Out.SkeletalMeshGeometries[i].FileName));
+	}
+
 	Wf.close();
 	return Wf.good();
 }
