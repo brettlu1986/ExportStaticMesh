@@ -36,7 +36,7 @@ inline string GetSaveDataDirectory()
 	char CurPath[512];
 	GetCurrentDirectoryA(_countof(CurPath), CurPath);
 	string Path = CurPath;
-	return Path + "\\Save\\";
+	return Path + "\\Resource\\";
 }
 
 wstring LAssetDataLoader::GetAssetFullPath(LPCWSTR AssetName)
@@ -192,21 +192,29 @@ void LAssetDataLoader::LoadSkeletonFromFile(string FileName, LSkeleton* Skeleton
 
 void LAssetDataLoader::LoadDDSTextureFromFile(string FileName, LTexture* Texture)
 {
+	string FNameC = GetSaveDataDirectory() + FileName;
+
+	size_t Len = strlen(FNameC.c_str()) + 1;
+	size_t Converted = 0;
+	wchar_t* WStr = new wchar_t[(UINT)(Len * sizeof(wchar_t))];
+	memset(WStr, 0, Len * sizeof(wchar_t));
+	mbstowcs_s(&Converted, WStr, Len, FNameC.c_str(), _TRUNCATE);
+
+	DirectX::LoadTextureDataFromFile(WStr, Texture->DdsData, &Texture->Header, &Texture->BitData, &Texture->BitSize);
+	delete[] WStr;
+}
+
+void LAssetDataLoader::LoadShaderFromeFile(string FileName, LShader* Shader)
+{
 	size_t Len = strlen(FileName.c_str()) + 1;
 	size_t Converted = 0;
 	wchar_t* WStr = new wchar_t[(UINT)(Len * sizeof(wchar_t))];
 	memset(WStr, 0, Len * sizeof(wchar_t));
 	mbstowcs_s(&Converted, WStr, Len, FileName.c_str(), _TRUNCATE);
 
-	DirectX::LoadTextureDataFromFile(WStr, Texture->DdsData, &Texture->Header, &Texture->BitData, &Texture->BitSize);
-	delete[] WStr;
-}
-
-void LAssetDataLoader::LoadShaderFromeFile(LPCWSTR FileName, LShader* Shader)
-{
 	UINT8* ShaderData = nullptr;
 	UINT ShaderLen = 0;
-	ReadDataFromFile(LAssetDataLoader::GetAssetFullPath(FileName).c_str(), &ShaderData, &ShaderLen);
+	ReadDataFromFile(LAssetDataLoader::GetAssetFullPath(WStr).c_str(), &ShaderData, &ShaderLen);
 	Shader->Init(ShaderData, ShaderLen);
 }
 

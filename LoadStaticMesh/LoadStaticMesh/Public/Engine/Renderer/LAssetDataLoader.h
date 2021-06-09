@@ -46,7 +46,7 @@ public:
 
 	static void LoadDDSTextureFromFile(string FileName, LTexture* Texture);
 
-	static void LoadShaderFromeFile(LPCWSTR FileName, LShader* Shader);
+	static void LoadShaderFromeFile(string FileName, LShader* Shader);
 
 	static void LoadAnimationSquence(string SequenceName, LAnimationSequence& Seq);
 

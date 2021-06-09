@@ -50,7 +50,7 @@ inline wstring GetSaveDirectory()
 	WCHAR CurPath[512];
 	GetCurrentDirectory(_countof(CurPath), CurPath);
 	wstring Path = CurPath;
-	return Path + L"\\Save\\";
+	return Path + L"\\Resource\\";
 }
 
 inline void GetAssetsPath(_Out_writes_(PathSize) WCHAR* Path, UINT PathSize)

@@ -55,21 +55,6 @@ void SampleAssets::LoadSampleSceneData(LScene& Scene)
 		Scene.AddStaticMeshes(Mesh);
 	}
 
-	vector<DirectionLightData> DirectionLights;
-	LAssetDataLoader::LoadDirectionLights(SampleAssets::SceneLightsFile, DirectionLights);
-	for (size_t i = 0; i < DirectionLights.size(); i++)
-	{
-		auto Light = make_shared<LLight>();
-		Light->Direction = DirectionLights[i].Direction;
-		Light->Position = DirectionLights[i].Position;
-		Light->Strength = DirectionLights[i].Strength;
-		Light->LightIndex = (UINT)i;
-		//only change the first light param
-		Light->Init();
-		Light->InitRenderThreadResource();
-		Scene.AddLightToScene(Light);
-	}
-
 	for (UINT i = 0; i < SampleAssets::SampleSkeletalMeshCount; i++)
 	{
 		XMFLOAT3 Location, Rotation, Scale;
@@ -103,6 +88,21 @@ void SampleAssets::LoadSampleSceneData(LScene& Scene)
 
 		//add player to scene
 		Scene.AddCharacterToScene(Character);
+	}
+
+	vector<DirectionLightData> DirectionLights;
+	LAssetDataLoader::LoadDirectionLights(SampleAssets::SceneLightsFile, DirectionLights);
+	for (size_t i = 0; i < DirectionLights.size(); i++)
+	{
+		auto Light = make_shared<LLight>();
+		Light->Direction = DirectionLights[i].Direction;
+		Light->Position = DirectionLights[i].Position;
+		Light->Strength = DirectionLights[i].Strength;
+		Light->LightIndex = (UINT)i;
+		//only change the first light param
+		Light->Init();
+		Light->InitRenderThreadResource();
+		Scene.AddLightToScene(Light);
 	}
 
 	//load scene camera

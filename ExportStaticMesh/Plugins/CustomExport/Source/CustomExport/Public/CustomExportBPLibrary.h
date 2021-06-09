@@ -459,6 +459,19 @@ struct FSkeletonData
 	TMap<FName, int32> RawNameToIndexMap;
 };
 
+USTRUCT(BlueprintType)
+struct FAssetsDef
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString RefName;
+
+	UPROPERTY()
+	FString FileName;
+
+};
+
 #pragma pack(pop)
 
 UCLASS()

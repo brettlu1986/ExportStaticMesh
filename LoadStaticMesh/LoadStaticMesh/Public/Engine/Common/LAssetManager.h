@@ -17,7 +17,7 @@ public:
 
 	void LoadSkeletal(std::string FileName, string ReferenceName);
 	void LoadTexture(std::string FileName, string ReferenceName);
-	void LoadShader(LPCWSTR FileName, string ReferenceName);
+	void LoadShader(string FileName, string ReferenceName);
 	void LoadMaterial(unique_ptr<LMaterial>&MatTex, string RefereneceName);
 
 	LSkeleton* GetSkeletal(const std::string& RefName) {

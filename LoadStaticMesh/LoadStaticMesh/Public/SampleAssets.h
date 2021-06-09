@@ -16,77 +16,72 @@ namespace SampleAssets
 		std::string RefName;
 		std::string FileName;
 	};
-	const BaseAssetRefInfo SkeletonResource = {"BaseSke", "ThirdPersonCharacter_SK.bin"};
+	const BaseAssetRefInfo SkeletonResource = {"BaseSke", "SkeletalMeshes/ThirdPersonCharacter_SK.bin"};
 
 	//shader
 	const UINT ShaderResCount = 8;
-	struct ShaderAssetRefInfo
+	const BaseAssetRefInfo ShaderResources[] =
 	{
-		std::string RefName;
-		LPCWSTR FileName;
-	};
-	const ShaderAssetRefInfo ShaderResources[] =
-	{
-		{"ShaderTexVs",			L"ShaderTexVs.cso" },
-		{"ShaderTexPs",			L"ShaderTexPs.cso" },
-		{"ShaderVs",			L"ShaderVs.cso"},
-		{"ShaderPs",			L"ShaderPs.cso"},
-		{"SampleDepthShaderVs", L"SampleDepthShaderVs.cso"},
-		{"SampleDepthShaderPs", L"SampleDepthShaderPs.cso"},
-		{"SkeletalVs",			L"SkeletalVs.cso"},
-		{"SkeletalPs",			L"SkeletalPs.cso"},
+		{"ShaderTexVs",			"ShaderTexVs.cso" },
+		{"ShaderTexPs",			"ShaderTexPs.cso" },
+		{"ShaderVs",			"ShaderVs.cso"},
+		{"ShaderPs",			"ShaderPs.cso"},
+		{"SampleDepthShaderVs", "SampleDepthShaderVs.cso"},
+		{"SampleDepthShaderPs", "SampleDepthShaderPs.cso"},
+		{"SkeletalVs",			"SkeletalVs.cso"},
+		{"SkeletalPs",			"SkeletalPs.cso"},
 	};
 
 	//material
 	const BaseAssetRefInfo DDSTexResources[] = {
-		{"MaleColor", "Resource/T_Male_Mask.dds"},
-		{"ChairColor", "Resource/T_Chair_M.dds"}
+		{"MaleColor", "Textures/T_Male_Mask.dds"},
+		{"ChairColor", "Textures/T_Chair_M.dds"}
 	};
 
 	const UINT SamepleCount = 16;
 	const string SampleResources[] = 
 	{
-		"BP_Chair.bin",
-		"Linear_Stair_StaticMesh.bin",
-		"Sphere.bin",
-		"Floor.bin",
-		"Bump_StaticMesh.bin",
-		"LeftArm_StaticMesh.bin",
-		"Wall6.bin",
-		"Wall7.bin",
-		"Wall8.bin",
-		"Wall9.bin",
-		"BP_Chair2.bin",
-		"BP_Chair3.bin",
-		"BP_Chair4.bin",
-		"BP_Rock.bin",
-		"BP_TableRound.bin",
-		"BP_Lamp_Ceiling.bin"
+		"StaticMeshes/BP_Chair.bin",
+		"StaticMeshes/Linear_Stair_StaticMesh.bin",
+		"StaticMeshes/Sphere.bin",
+		"StaticMeshes/Floor.bin",
+		"StaticMeshes/Bump_StaticMesh.bin",
+		"StaticMeshes/LeftArm_StaticMesh.bin",
+		"StaticMeshes/Wall6.bin",
+		"StaticMeshes/Wall7.bin",
+		"StaticMeshes/Wall8.bin",
+		"StaticMeshes/Wall9.bin",
+		"StaticMeshes/BP_Chair2.bin",
+		"StaticMeshes/BP_Chair3.bin",
+		"StaticMeshes/BP_Chair4.bin",
+		"StaticMeshes/BP_Rock.bin",
+		"StaticMeshes/BP_TableRound.bin",
+		"StaticMeshes/BP_Lamp_Ceiling.bin"
 	};
 
-	const string CameraBin = "CameraActor.bin";
+	const string CameraBin = "Cameras/CameraActor.bin";
 
 	//light
-	const string SceneLightsFile = "SceneLights.bin";
+	const string SceneLightsFile = "Lights/SceneLights.bin";
 
 	//skeletal 
 	const UINT SampleSkeletalMeshCount = 3;
 	const string SkeletalMeshResource[] =
 	{
-		"ThirdPersonCharacter_SKM.bin",
-		"ThirdPersonCharacter2_SKM.bin",
-		"ThirdPersonCharacter3_SKM.bin",
+		"SkeletalMeshes/ThirdPersonCharacter_SKM.bin",
+		"SkeletalMeshes/ThirdPersonCharacter_SKM.bin",
+		"SkeletalMeshes/ThirdPersonCharacter_SKM.bin",
 	};
 	
 	//animation
 	const string SkeletalAnim[] = 
 	{	
-		"ThirdPersonCharacter_ThirdPersonIdle.bin",
-		"ThirdPersonCharacter_ThirdPersonWalk.bin",
-		"ThirdPersonCharacter_ThirdPersonRun.bin",
-		"ThirdPersonCharacter_ThirdPersonJump_Start.bin",
-		"ThirdPersonCharacter_ThirdPersonJump_Loop.bin",
-		"ThirdPersonCharacter_ThirdPerson_Jump.bin",
+		"Animations/ThirdPersonCharacter_ThirdPersonIdle.bin",
+		"Animations/ThirdPersonCharacter_ThirdPersonWalk.bin",
+		"Animations/ThirdPersonCharacter_ThirdPersonRun.bin",
+		"Animations/ThirdPersonCharacter_ThirdPersonJump_Start.bin",
+		"Animations/ThirdPersonCharacter_ThirdPersonJump_Loop.bin",
+		"Animations/ThirdPersonCharacter_ThirdPerson_Jump.bin",
 	};
 
 	void LoadSampleSceneData(LScene& Scene);

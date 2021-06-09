@@ -55,7 +55,7 @@ void LAssetManager::LoadTexture(std::string FileName, string ReferenceName)
 	ResourceTexs.insert( { ReferenceName, move(Texture) } );
 }
 
-void LAssetManager::LoadShader(LPCWSTR FileName, string ReferenceName)
+void LAssetManager::LoadShader(string FileName, string ReferenceName)
 {
 	auto Shader = make_unique<LShader>();
 	LAssetDataLoader::LoadShaderFromeFile(FileName, Shader.get());

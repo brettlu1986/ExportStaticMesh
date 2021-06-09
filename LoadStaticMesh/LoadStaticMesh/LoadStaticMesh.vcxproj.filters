@@ -88,6 +88,12 @@
     <Filter Include="Source Files\Engine\Common\RenderData">
       <UniqueIdentifier>{5aa7edf0-3573-4f24-a32a-2d478a7f34dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders">
+      <UniqueIdentifier>{f4d1c535-cc6d-4089-a49b-7b0efe8d6786}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Textures">
+      <UniqueIdentifier>{9d6ca129-96ab-4f38-a59f-5c04a81453e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -267,43 +273,6 @@
     <ClCompile Include="Private\Engine\Common\RenderData\LMaterial.cpp">
       <Filter>Source Files\Engine\Common\RenderData</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Resource\T_Chair_M.dds">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Resource\T_Male_Mask.dds">
-      <Filter>Resource Files</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Resource\LightingUtil.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Resource\SampleDepthShaderVs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Resource\SampleDepthShaderPs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Resource\ShaderTexPs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Resource\ShaderTexVs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Resource\ShaderPs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Resource\ShaderVs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Resource\SkeletalVs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Resource\SkeletalPs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\ApplicationMain.h">
@@ -512,8 +481,54 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resource\ShaderDef.hlsli">
-      <Filter>Resource Files</Filter>
+    <FxCompile Include="Resource\Shaders\SampleDepthShaderPs.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\Shaders\SampleDepthShaderVs.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\Shaders\ShaderPs.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\Shaders\ShaderTexPs.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\Shaders\ShaderTexVs.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\Shaders\ShaderVs.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\Shaders\SkeletalPs.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\Shaders\SkeletalVs.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\Shaders\LightingUtil.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resource\Shaders\ShaderDef.hlsli">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resource\Textures\T_Chair_M.dds">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Textures\T_Lamp_M.dds">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Textures\T_Male_Mask.dds">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Textures\T_Rock_Basalt_D.dds">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Resource\Textures\T_TableRound_M.dds">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>
