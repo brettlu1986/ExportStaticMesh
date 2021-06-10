@@ -190,6 +190,129 @@ void UCustomExportBPLibrary::ShowMessageDialog(const FText Target, const FText R
 	EAppReturnType::Type ReturnType = FMessageDialog::Open(EAppMsgType::Ok, WarningMessage);
 }
 
+bool UCustomExportBPLibrary::ExportMaterial(UMaterialInterface* Material, FString FileBaseName)
+{
+	FMaterialExport ExportMaterialData;
+	//TODO:fill info
+	//delete old files
+	FString File = FileBaseName + ".json";
+	FString BinFile = FileBaseName + ".bin";
+	CheckFileExistAndDelete(File);
+	CheckFileExistAndDelete(BinFile);
+
+	//save json
+	FString Json;
+	FJsonObjectConverter::UStructToJsonObjectString(ExportMaterialData, Json);
+	FString MeshSaveFile = SavePath + File;
+	if (!FFileHelper::SaveStringToFile(Json, *MeshSaveFile))
+	{
+		return false;
+	}
+
+	//save binary
+	BinFile = SavePath + BinFile;
+	char* ResultName = TCHAR_TO_ANSI(*BinFile);
+	ofstream Wf(ResultName, ios::out | ios::binary);
+	if (!Wf)
+	{
+		return false;
+	}
+
+	Wf << string(TCHAR_TO_UTF8(*ExportMaterialData.RefParent));
+	uint32 Num = ExportMaterialData.ParamTypes.Num();
+	Wf << Num;
+	for (uint32 i = 0; i < Num; i++)
+	{
+		Wf << ExportMaterialData.ParamTypes[i];
+	}
+
+	 Num = ExportMaterialData.ParamFloatValues.Num();
+	 for (uint32 i = 0; i < Num; i++)
+	 {
+		 Wf << ExportMaterialData.ParamFloatValues[i];
+	 }
+
+	 Num = ExportMaterialData.ParamIntValues.Num();
+	 for (uint32 i = 0; i < Num; i++)
+	 {
+		 Wf << ExportMaterialData.ParamIntValues[i];
+	 }
+
+	 Num = ExportMaterialData.ParamRefTextures.Num();
+	 for (uint32 i = 0; i < Num; i++)
+	 {
+		 Wf << string(TCHAR_TO_UTF8(*ExportMaterialData.ParamRefTextures[i]));
+	 }
+
+	 Wf.close();
+	 return Wf.good();
+}
+
+bool UCustomExportBPLibrary::ExportsMap(TArray<FMapStaticMeshes> StaticMeshes, TArray<FMapSkeletalMeshes> SkeletalMeshes, FString SceneLightsFile, FString CameraFile, FMapExport Out, FString FileBaseName)
+{
+	Out.StaticMeshes.Append(StaticMeshes);
+	Out.SkeletalMeshes.Append(SkeletalMeshes);
+	Out.SceneLightsFile = SceneLightsFile;
+	Out.CameraFile = CameraFile;
+
+	//delete old files
+	FString File = FileBaseName + ".json";
+	FString BinFile = FileBaseName + ".bin";
+	CheckFileExistAndDelete(File);
+	CheckFileExistAndDelete(BinFile);
+
+	//save json
+	FString Json;
+	FJsonObjectConverter::UStructToJsonObjectString(Out, Json);
+	FString MeshSaveFile = SavePath + File;
+	if (!FFileHelper::SaveStringToFile(Json, *MeshSaveFile))
+	{
+		return false;
+	}
+
+	//save binary
+	BinFile = SavePath + BinFile;
+	char* ResultName = TCHAR_TO_ANSI(*BinFile);
+	ofstream Wf(ResultName, ios::out | ios::binary);
+	if (!Wf)
+	{
+		return false;
+	}
+
+	uint32 Num = Out.StaticMeshes.Num();
+	Wf << Num;
+
+	for (uint32 i = 0; i < Num; i++)
+	{
+		Wf << string(TCHAR_TO_UTF8(*Out.StaticMeshes[i].RefGeometry)) << string(TCHAR_TO_UTF8(*Out.StaticMeshes[i].RefMaterial))
+			<< Out.StaticMeshes[i].WorldLocation.X << Out.StaticMeshes[i].WorldLocation.Y << Out.StaticMeshes[i].WorldLocation.Z 
+			<< Out.StaticMeshes[i].WorldRotation.Pitch << Out.StaticMeshes[i].WorldRotation.Yaw << Out.StaticMeshes[i].WorldRotation.Roll
+			<< Out.StaticMeshes[i].WorldScale.X << Out.StaticMeshes[i].WorldScale.Y << Out.StaticMeshes[i].WorldScale.Z;
+	}
+
+	Num = Out.SkeletalMeshes.Num();
+	for (uint32 i = 0; i < Num; i++)
+	{
+		Wf << string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].RefGeometry)) << string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].RefMaterial))
+			<< string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].RefSkeleton));
+
+		uint32 AnimNum = Out.SkeletalMeshes[i].RefAnims.Num();
+		Wf << AnimNum;
+
+		for(uint32 j = 0; j < AnimNum; j++)
+		{
+			Wf << string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].RefAnims[j]));
+		}
+
+		Wf  << Out.SkeletalMeshes[i].WorldLocation.X << Out.SkeletalMeshes[i].WorldLocation.Y << Out.SkeletalMeshes[i].WorldLocation.Z
+			<< Out.SkeletalMeshes[i].WorldRotation.Pitch << Out.SkeletalMeshes[i].WorldRotation.Yaw << Out.SkeletalMeshes[i].WorldRotation.Roll
+			<< Out.SkeletalMeshes[i].WorldScale.X << Out.SkeletalMeshes[i].WorldScale.Y << Out.SkeletalMeshes[i].WorldScale.Z;
+	}
+
+	Wf.close();
+	return Wf.good();
+}
+
 bool UCustomExportBPLibrary::ExportsAssets(TArray<FAssetsDef> Skeletons, TArray<FAssetsDef> Shaders, TArray<FAssetsDef> Textures, TArray<FAssetsDef> Materials, TArray<FAssetsDef> MaterialsIns, TArray<FAssetsDef> Animations, TArray<FAssetsDef> MeshGeometries,
 	TArray<FAssetsDef> SkeletalMeshGeometries, FAssetsExport Out, FString FileBaseName)
 {

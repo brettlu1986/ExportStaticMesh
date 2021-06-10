@@ -472,12 +472,42 @@ struct FAssetsDef
 };
 
 USTRUCT(BlueprintType)
-struct FMapObjectInfo
+struct FMapStaticMeshes
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString ObjectPathName;
+	FString RefGeometry;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString RefMaterial;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector WorldLocation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FRotator WorldRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector WorldScale;
+};
+
+USTRUCT(BlueprintType)
+struct FMapSkeletalMeshes
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString RefGeometry;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString RefMaterial;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString RefSkeleton;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FString>	 RefAnims;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector WorldLocation;
@@ -495,10 +525,10 @@ struct FMapExport
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite)
-	TArray<FMapObjectInfo> StaticMeshes;
+	TArray<FMapStaticMeshes> StaticMeshes;
 
 	UPROPERTY(BlueprintReadWrite)
-	TArray<FMapObjectInfo> SkeletalMeshes;
+	TArray<FMapSkeletalMeshes> SkeletalMeshes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString SceneLightsFile;
@@ -539,6 +569,37 @@ struct FAssetsExport
 
 };
 
+UENUM(BlueprintType)
+enum class EMaterialParamType : uint8
+{
+	TYPE_FLOAT = 0 UMETA(DisplayName = "FLOAT"),
+	TYPE_INT		 UMETA(DisplayName = "INT"),
+	TYPE_COLOR	 UMETA(DisplayName = "RGBA_COLOR"),
+	TYPE_TEXTURE UMETA(DisplayName = "TEXTURE"),
+	MAX,
+};
+
+USTRUCT(BlueprintType)
+struct FMaterialExport
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	FString RefParent; 
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<uint8> ParamTypes;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<float> ParamFloatValues;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<int32> ParamIntValues;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FString> ParamRefTextures;
+};
+
 #pragma pack(pop)
 
 UCLASS()
@@ -555,6 +616,12 @@ public:
 	static bool ExportsAssets(TArray<FAssetsDef> Skeletons, TArray<FAssetsDef> Shaders, TArray<FAssetsDef> Textures, 
 		TArray<FAssetsDef> Materials, TArray<FAssetsDef> MaterialsIns, TArray<FAssetsDef> Animations, TArray<FAssetsDef> MeshGeometries, 
 		TArray<FAssetsDef> SkeletalMeshGeometries, FAssetsExport Out, FString FileBaseName);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Map"), Category = "CustomExportBPLibrary")
+	static bool ExportsMap(TArray<FMapStaticMeshes> StaticMeshes, TArray<FMapSkeletalMeshes> SkeletalMeshes, FString SceneLightsFile, FString CameraFile, FMapExport Out, FString FileBaseName);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Material"), Category = "CustomExportBPLibrary")
+	static bool ExportMaterial(UMaterialInterface* Material, FString FileBaseName);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Export Camera"), Category = "CustomExportBPLibrary")
 	static bool ExportCamera(const UCameraComponent* Component, FCameraData CameraData, FString FileName);
