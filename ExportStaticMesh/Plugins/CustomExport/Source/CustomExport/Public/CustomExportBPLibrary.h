@@ -594,7 +594,7 @@ struct FMaterialExport
 	TArray<float> ParamFloatValues;
 
 	UPROPERTY(BlueprintReadWrite)
-	TArray<int32> ParamIntValues;
+	TArray<FLinearColor> ParamVectorValues;
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FString> ParamRefTextures;

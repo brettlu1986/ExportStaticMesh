@@ -190,9 +190,82 @@ void UCustomExportBPLibrary::ShowMessageDialog(const FText Target, const FText R
 	EAppReturnType::Type ReturnType = FMessageDialog::Open(EAppMsgType::Ok, WarningMessage);
 }
 
+//USTRUCT(BlueprintType)
+//struct FMaterialExport
+//{
+//	GENERATED_BODY()
+//
+//		UPROPERTY(BlueprintReadWrite)
+//		FString RefParent;
+//
+//	UPROPERTY(BlueprintReadWrite)
+//		TArray<uint8> ParamTypes;
+//
+//	UPROPERTY(BlueprintReadWrite)
+//		TArray<float> ParamFloatValues;
+//
+//	UPROPERTY(BlueprintReadWrite)
+//		TArray<int32> ParamIntValues;
+//
+//	UPROPERTY(BlueprintReadWrite)
+//		TArray<FString> ParamRefTextures;
+//};
 bool UCustomExportBPLibrary::ExportMaterial(UMaterialInterface* Material, FString FileBaseName)
 {
 	FMaterialExport ExportMaterialData;
+	if(const UMaterial* Mat = Cast<UMaterial>(Material))
+	{
+		ExportMaterialData.RefParent = TEXT("NaN");
+
+		TArray<FMaterialParameterInfo> OutParameterScalars;
+		TArray<FGuid> OutScalarIds;
+		Mat->GetAllScalarParameterInfo(OutParameterScalars, OutScalarIds);
+		if (OutParameterScalars.Num() > 0)
+			ExportMaterialData.ParamTypes.Add((uint8)EMaterialParamType::TYPE_FLOAT);
+		for (const FMaterialParameterInfo& ScalarParameterInfo : OutParameterScalars)
+		{
+			float Value;
+			if (Mat->GetScalarParameterValue(ScalarParameterInfo.Name, Value))
+			{
+				ExportMaterialData.ParamFloatValues.Add(Value);
+			}
+		}
+
+		TArray<FMaterialParameterInfo> OutParameterInfo2;
+		TArray<FGuid> OutParameterIds2;
+		Mat->GetAllVectorParameterInfo(OutParameterInfo2, OutParameterIds2);
+
+		TArray<FMaterialParameterInfo> OutParameterInfo3;
+		TArray<FGuid> OutParameterIds3;
+		Mat->GetAllTextureParameterInfo(OutParameterInfo3, OutParameterIds3);
+	}
+	else if(const UMaterialInstance* MatIns = Cast<UMaterialInstance>(Material))
+	{
+		ExportMaterialData.RefParent = MatIns->Parent->GetName();
+		
+		TArray<FMaterialParameterInfo> OutParameterScalars;
+		TArray<FGuid> OutScalarIds;
+		MatIns->GetAllScalarParameterInfo(OutParameterScalars, OutScalarIds);
+
+		if(OutParameterScalars.Num() > 0)
+			ExportMaterialData.ParamTypes.Add((uint8)EMaterialParamType::TYPE_FLOAT);
+		for (const FMaterialParameterInfo& ScalarParameterInfo : OutParameterScalars)
+		{
+			float Value; 
+			if(MatIns->GetScalarParameterValue(ScalarParameterInfo.Name, Value))
+			{
+				ExportMaterialData.ParamFloatValues.Add(Value);
+			}
+		}
+
+		TArray<FMaterialParameterInfo> OutVectorParameters;
+		TArray<FGuid> OutParameterIds2;
+		MatIns->GetAllVectorParameterInfo(OutParameterInfo2, OutParameterIds2);
+
+		TArray<FMaterialParameterInfo> OutParameterInfo3;
+		TArray<FGuid> OutParameterIds3;
+		MatIns->GetAllTextureParameterInfo(OutParameterInfo3, OutParameterIds3);
+	}
 	//TODO:fill info
 	//delete old files
 	FString File = FileBaseName + ".json";
