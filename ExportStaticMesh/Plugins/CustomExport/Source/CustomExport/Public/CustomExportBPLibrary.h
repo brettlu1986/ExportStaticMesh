@@ -573,8 +573,7 @@ UENUM(BlueprintType)
 enum class EMaterialParamType : uint8
 {
 	TYPE_FLOAT = 0 UMETA(DisplayName = "FLOAT"),
-	TYPE_INT		 UMETA(DisplayName = "INT"),
-	TYPE_COLOR	 UMETA(DisplayName = "RGBA_COLOR"),
+	TYPE_VECTOR		 UMETA(DisplayName = "VECTOR"),
 	TYPE_TEXTURE UMETA(DisplayName = "TEXTURE"),
 	MAX,
 };

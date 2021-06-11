@@ -1,0 +1,16 @@
+{
+	"refParent": "M_ChairBase",
+	"paramTypes": [ 0, 1, 2 ],
+	"paramFloatValues": [ 1 ],
+	"paramVectorValues": [
+		{
+			"r": 0,
+			"g": 0.5,
+			"b": 0,
+			"a": 0
+		}
+	],
+	"paramRefTextures": [
+		"T_Chair_M"
+	]
+}

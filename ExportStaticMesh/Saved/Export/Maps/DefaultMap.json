@@ -1,0 +1,475 @@
+{
+	"staticMeshes": [
+		{
+			"refGeometry": "TemplateFloor",
+			"refMaterial": "CubeMaterial",
+			"worldLocation":
+			{
+				"x": -399.75146484375,
+				"y": 0,
+				"z": 0
+			},
+			"worldRotation":
+			{
+				"pitch": 0.0015367924934253097,
+				"yaw": 0,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 0.80000001192092896,
+				"y": 0.80000001192092896,
+				"z": 1
+			}
+		},
+		{
+			"refGeometry": "1M_Cube",
+			"refMaterial": "CubeMaterial",
+			"worldLocation":
+			{
+				"x": -1874.739501953125,
+				"y": 0.06109619140625,
+				"z": 0
+			},
+			"worldRotation":
+			{
+				"pitch": 0.0015367924934253097,
+				"yaw": -89.999992370605469,
+				"roll": 1.5633061511977075e-10
+			},
+			"worldScale":
+			{
+				"x": 30,
+				"y": 0.5,
+				"z": 8
+			}
+		},
+		{
+			"refGeometry": "1M_Cube",
+			"refMaterial": "CubeMaterial",
+			"worldLocation":
+			{
+				"x": 1075.260498046875,
+				"y": 0.061096001416444778,
+				"z": 0
+			},
+			"worldRotation":
+			{
+				"pitch": 0.0015367924934253097,
+				"yaw": -89.999992370605469,
+				"roll": 5.2110205039923585e-11
+			},
+			"worldScale":
+			{
+				"x": 30,
+				"y": 0.5,
+				"z": 8
+			}
+		},
+		{
+			"refGeometry": "1M_Cube",
+			"refMaterial": "CubeMaterial",
+			"worldLocation":
+			{
+				"x": -399.7410888671875,
+				"y": -1474.943359375,
+				"z": 0
+			},
+			"worldRotation":
+			{
+				"pitch": 0.0015367924934253097,
+				"yaw": 0.00017356869648210704,
+				"roll": 4.0965543457449627e-11
+			},
+			"worldScale":
+			{
+				"x": 30,
+				"y": 0.5,
+				"z": 8
+			}
+		},
+		{
+			"refGeometry": "1M_Cube",
+			"refMaterial": "CubeMaterial",
+			"worldLocation":
+			{
+				"x": -399.7410888671875,
+				"y": 1475.056640625,
+				"z": 0
+			},
+			"worldRotation":
+			{
+				"pitch": 0.0015367924934253097,
+				"yaw": 0.00017399998614564538,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 30,
+				"y": 0.5,
+				"z": 8
+			}
+		},
+		{
+			"refGeometry": "LeftArm_StaticMesh",
+			"refMaterial": "RampMaterial",
+			"worldLocation":
+			{
+				"x": -10,
+				"y": -410,
+				"z": 0
+			},
+			"worldRotation":
+			{
+				"pitch": 0,
+				"yaw": 0,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 1,
+				"y": 1,
+				"z": 1
+			}
+		},
+		{
+			"refGeometry": "Linear_Stair_StaticMesh",
+			"refMaterial": "RampMaterial",
+			"worldLocation":
+			{
+				"x": -420,
+				"y": 990,
+				"z": 0
+			},
+			"worldRotation":
+			{
+				"pitch": 0,
+				"yaw": 0,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 1,
+				"y": 1,
+				"z": 1
+			}
+		},
+		{
+			"refGeometry": "Bump_StaticMesh",
+			"refMaterial": "RampMaterial",
+			"worldLocation":
+			{
+				"x": 190,
+				"y": 530,
+				"z": 0
+			},
+			"worldRotation":
+			{
+				"pitch": 0,
+				"yaw": 0,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 1,
+				"y": 1,
+				"z": 1
+			}
+		},
+		{
+			"refGeometry": "Sphere",
+			"refMaterial": "RampMaterial",
+			"worldLocation":
+			{
+				"x": -160,
+				"y": -150,
+				"z": 270
+			},
+			"worldRotation":
+			{
+				"pitch": 0,
+				"yaw": 0,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 1,
+				"y": 1,
+				"z": 1
+			}
+		},
+		{
+			"refGeometry": "Cube",
+			"refMaterial": "BasicShapeMaterial",
+			"worldLocation":
+			{
+				"x": -80,
+				"y": 820,
+				"z": 280
+			},
+			"worldRotation":
+			{
+				"pitch": 0,
+				"yaw": 0,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 1,
+				"y": 1,
+				"z": 1
+			}
+		},
+		{
+			"refGeometry": "SM_Chair",
+			"refMaterial": "M_ChairBase_Ins1",
+			"worldLocation":
+			{
+				"x": 50,
+				"y": -110,
+				"z": 0
+			},
+			"worldRotation":
+			{
+				"pitch": 0,
+				"yaw": 0,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 1,
+				"y": 1,
+				"z": 1
+			}
+		},
+		{
+			"refGeometry": "SM_Chair",
+			"refMaterial": "M_ChairBase_Inst2",
+			"worldLocation":
+			{
+				"x": 410,
+				"y": -190,
+				"z": 0
+			},
+			"worldRotation":
+			{
+				"pitch": 0,
+				"yaw": 110.00013732910156,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 1,
+				"y": 1,
+				"z": 1
+			}
+		},
+		{
+			"refGeometry": "SM_Chair",
+			"refMaterial": "M_ChairBase_Inst3",
+			"worldLocation":
+			{
+				"x": 130,
+				"y": 230,
+				"z": 0
+			},
+			"worldRotation":
+			{
+				"pitch": 0,
+				"yaw": -90.000114440917969,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 1,
+				"y": 1,
+				"z": 1
+			}
+		},
+		{
+			"refGeometry": "SM_Chair",
+			"refMaterial": "M_ChairBase",
+			"worldLocation":
+			{
+				"x": 560,
+				"y": -20,
+				"z": 0
+			},
+			"worldRotation":
+			{
+				"pitch": 0,
+				"yaw": -179.999755859375,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 1,
+				"y": 1,
+				"z": 1
+			}
+		},
+		{
+			"refGeometry": "SM_Lamp_Ceiling",
+			"refMaterial": "M_MeshLamp",
+			"worldLocation":
+			{
+				"x": 520,
+				"y": 200,
+				"z": 160
+			},
+			"worldRotation":
+			{
+				"pitch": 0,
+				"yaw": 0,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 1,
+				"y": 1,
+				"z": 1
+			}
+		},
+		{
+			"refGeometry": "SM_Rock",
+			"refMaterial": "M_MeshRock",
+			"worldLocation":
+			{
+				"x": 300,
+				"y": 20,
+				"z": 140
+			},
+			"worldRotation":
+			{
+				"pitch": 0,
+				"yaw": 0,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 0.5,
+				"y": 0.5,
+				"z": 0.5
+			}
+		},
+		{
+			"refGeometry": "SM_TableRound",
+			"refMaterial": "M_MeshTable",
+			"worldLocation":
+			{
+				"x": 320,
+				"y": 30,
+				"z": 0
+			},
+			"worldRotation":
+			{
+				"pitch": 0,
+				"yaw": 0,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 1,
+				"y": 1,
+				"z": 1
+			}
+		}
+	],
+	"skeletalMeshes": [
+		{
+			"refGeometry": "SK_Mannequin",
+			"refMaterial": "M_MeshCharacter",
+			"refSkeleton": "UE4_Mannequin_Skeleton",
+			"refAnims": [
+				"ThirdPersonIdle",
+				"ThirdPersonWalk",
+				"ThirdPersonRun",
+				"ThirdPersonJump_Start",
+				"ThirdPersonJump_Loop",
+				"ThirdPerson_Jump"
+			],
+			"worldLocation":
+			{
+				"x": -159.39697265625,
+				"y": 550,
+				"z": 98.156471252441406
+			},
+			"worldRotation":
+			{
+				"pitch": 0,
+				"yaw": 89.999992370605469,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 1,
+				"y": 1,
+				"z": 1
+			}
+		},
+		{
+			"refGeometry": "SK_Mannequin",
+			"refMaterial": "M_MeshCharacter",
+			"refSkeleton": "UE4_Mannequin_Skeleton",
+			"refAnims": [
+				"ThirdPersonIdle",
+				"ThirdPersonWalk",
+				"ThirdPersonRun",
+				"ThirdPersonJump_Start",
+				"ThirdPersonJump_Loop",
+				"ThirdPerson_Jump"
+			],
+			"worldLocation":
+			{
+				"x": -130.00276184082031,
+				"y": -160,
+				"z": 98.157264709472656
+			},
+			"worldRotation":
+			{
+				"pitch": 0,
+				"yaw": -89.999992370605469,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 1,
+				"y": 1,
+				"z": 1
+			}
+		},
+		{
+			"refGeometry": "SK_Mannequin",
+			"refMaterial": "M_MeshCharacter",
+			"refSkeleton": "UE4_Mannequin_Skeleton",
+			"refAnims": [
+				"ThirdPersonIdle",
+				"ThirdPersonWalk",
+				"ThirdPersonRun",
+				"ThirdPersonJump_Start",
+				"ThirdPersonJump_Loop",
+				"ThirdPerson_Jump"
+			],
+			"worldLocation":
+			{
+				"x": -850.00018310546875,
+				"y": 20,
+				"z": 98.137863159179688
+			},
+			"worldRotation":
+			{
+				"pitch": 0,
+				"yaw": 0,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 1,
+				"y": 1,
+				"z": 1
+			}
+		}
+	],
+	"sceneLightsFile": "Lights/SceneLights.bin",
+	"cameraFile": "Cameras/CameraActor.bin"
+}

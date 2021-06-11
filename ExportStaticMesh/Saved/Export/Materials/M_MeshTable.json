@@ -1,0 +1,9 @@
+{
+	"refParent": "M_MeshBase",
+	"paramTypes": [ 2 ],
+	"paramFloatValues": [],
+	"paramVectorValues": [],
+	"paramRefTextures": [
+		"T_TableRound_M"
+	]
+}

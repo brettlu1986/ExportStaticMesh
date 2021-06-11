@@ -1,7 +1,9 @@
 {
-	"refParent": "",
-	"paramTypes": [],
+	"refParent": "M_MeshBase",
+	"paramTypes": [ 2 ],
 	"paramFloatValues": [],
-	"paramIntValues": [],
-	"paramRefTextures": []
+	"paramVectorValues": [],
+	"paramRefTextures": [
+		"T_Male_Mask"
+	]
 }
