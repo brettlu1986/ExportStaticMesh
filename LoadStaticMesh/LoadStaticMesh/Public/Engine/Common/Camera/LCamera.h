@@ -47,7 +47,7 @@ public:
 		bActive = bActivate;
 	}
 	
-	void SetCameraData(FCameraData Data)
+	void SetCameraData(LCameraData Data)
 	{
 		CameraDatas = Data;
 	}
@@ -59,7 +59,7 @@ public:
 
 protected:
 	bool bActive;
-	FCameraData CameraDatas;
+	LCameraData CameraDatas;
 	XMFLOAT3 Position;
 	float Yaw;
 	float Pitch;

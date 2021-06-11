@@ -5,7 +5,7 @@
 #include "LTexture.h"
 #include "LSkeleton.h"
 #include "LShader.h"
-#include "LMaterial.h"
+#include "LMaterialBase.h"
 
 class LAssetManager
 {
@@ -15,10 +15,16 @@ public:
 
 	static LAssetManager* Get();
 
-	void LoadSkeletal(std::string FileName, string ReferenceName);
-	void LoadTexture(std::string FileName, string ReferenceName);
+	void LoadAssets(std::string AssetsFile);
+
+	void LoadSkeleton(std::string FileName, string ReferenceName);
 	void LoadShader(string FileName, string ReferenceName);
-	void LoadMaterial(unique_ptr<LMaterial>&MatTex, string RefereneceName);
+	void LoadTexture(std::string FileName, string ReferenceName);
+	void LoadMaterial(std::string FileName, string ReferenceName);
+	void LoadMaterialInstance(std::string FileName, string ReferenceName);
+
+	//deprecated
+	//void LoadMaterial(unique_ptr<LMaterial>&MatTex, string RefereneceName);
 
 	LSkeleton* GetSkeletal(const std::string& RefName) {
 		return ResourceSkeletons[RefName].get();
@@ -34,16 +40,16 @@ public:
 		return ResourceTexs[RefName].get();
 	}
 
-	LMaterial* GetMaterial(const std::string& RefName)
+	LMaterialBase* GetMaterial(const std::string& RefName)
 	{
 		return ResourceMaterials[RefName].get();
 	}
-
+	
 private:
 	static LAssetManager* Instance;
 
 	unordered_map<std::string, unique_ptr<LSkeleton>> ResourceSkeletons;
 	unordered_map<std::string, unique_ptr<LTexture>> ResourceTexs;
 	unordered_map<std::string, unique_ptr<LShader>> ResourceShaders;
-	unordered_map<std::string, unique_ptr<LMaterial>> ResourceMaterials;
+	unordered_map<std::string, unique_ptr<LMaterialBase>> ResourceMaterials;
 };

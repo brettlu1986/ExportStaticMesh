@@ -1,7 +1,4 @@
 {
-	"worldLocation": [ -4.1999998092651367, 9.8999996185302734, 0 ],
-	"worldRotation": [ 0, 0, 0 ],
-	"worldScale": [ 1, 1, 1 ],
 	"vsFormat": [
 		"POSITION",
 		"NORMAL",

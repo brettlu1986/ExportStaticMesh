@@ -16,7 +16,7 @@
 void SampleAssets::LoadSampleSceneData(LScene& Scene)
 {
 	//load assets
-	LAssetManager::Get()->LoadSkeletal(SampleAssets::SkeletonResource.FileName, SampleAssets::SkeletonResource.RefName);
+	LAssetManager::Get()->LoadSkeleton(SampleAssets::SkeletonResource.FileName, SampleAssets::SkeletonResource.RefName);
 
 	for (UINT i = 0; i < SampleAssets::ShaderResCount; i++)
 	{
@@ -29,28 +29,28 @@ void SampleAssets::LoadSampleSceneData(LScene& Scene)
 	}
 
 	auto DefaultMat = make_unique<LMaterial>();
-	LAssetManager::Get()->LoadMaterial(DefaultMat, "DefaultMat");
+	//LAssetManager::Get()->LoadMaterial(DefaultMat, "DefaultMat");
 
 	auto ChairMat = make_unique<LMaterial>();
 	ChairMat->SetColorTex(LAssetManager::Get()->GetTexture("ChairColor"));
-	LAssetManager::Get()->LoadMaterial(ChairMat, "ChairMat");
+	//LAssetManager::Get()->LoadMaterial(ChairMat, "ChairMat");
 
 	auto CharacterMat = make_unique<LMaterial>();
 	CharacterMat->SetColorTex(LAssetManager::Get()->GetTexture("MaleColor"));
-	LAssetManager::Get()->LoadMaterial(CharacterMat, "CharacterMat");
+	//LAssetManager::Get()->LoadMaterial(CharacterMat, "CharacterMat");
 	
 	//load static mesh
 	for (UINT i = 0; i < SampleAssets::SamepleCount; i++)
 	{
 		XMFLOAT3 Location, Rotation, Scale;
 		auto Mesh = make_shared<LMesh>();
-		Mesh->SetMaterial(LAssetManager::Get()->GetMaterial(i == 0 ? "ChairMat" : "DefaultMat"));
-		LAssetDataLoader::LoadMeshFromFile(SampleAssets::SampleResources[i], *Mesh, Location, Rotation, Scale);
+		//Mesh->SetMaterial(LAssetManager::Get()->GetMaterial(i == 0 ? "ChairMat" : "DefaultMat"));
+		//LAssetDataLoader::LoadMeshFromFile(SampleAssets::SampleResources[i], *Mesh, Location, Rotation, Scale);
 		Mesh->InitRenderThreadResource();
 
-		Mesh->SetModelLocation(Location);
+		/*Mesh->SetModelLocation(Location);
 		Mesh->SetModelRotation(Rotation);
-		Mesh->SetModelScale(Scale);
+		Mesh->SetModelScale(Scale);*/
 
 		Scene.AddStaticMeshes(Mesh);
 	}
@@ -63,7 +63,7 @@ void SampleAssets::LoadSampleSceneData(LScene& Scene)
 
 		//create skeletal mesh, skeleton save in skeletal mesh
 		LSkeletalMesh* SkeletalMesh = new LSkeletalMesh();
-		SkeletalMesh->SetMaterial(LAssetManager::Get()->GetMaterial("CharacterMat"));
+		//SkeletalMesh->SetMaterial(LAssetManager::Get()->GetMaterial("CharacterMat"));
 		LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(SampleAssets::SkeletalMeshResource[i], *SkeletalMesh, Location, Rotation, Scale);
 		SkeletalMesh->InitRenderThreadResource();
 
@@ -90,7 +90,7 @@ void SampleAssets::LoadSampleSceneData(LScene& Scene)
 		Scene.AddCharacterToScene(Character);
 	}
 
-	vector<DirectionLightData> DirectionLights;
+	vector<LDirectionLightData> DirectionLights;
 	LAssetDataLoader::LoadDirectionLights(SampleAssets::SceneLightsFile, DirectionLights);
 	for (size_t i = 0; i < DirectionLights.size(); i++)
 	{
@@ -107,11 +107,11 @@ void SampleAssets::LoadSampleSceneData(LScene& Scene)
 
 	//load scene camera
 	shared_ptr<LCamera> SceneCamera = make_shared<LSceneCamera>();
-	LAssetDataLoader::LoadCameraDataFromFile(SampleAssets::CameraBin, *SceneCamera);
+	//LAssetDataLoader::LoadCameraDataFromFile(SampleAssets::CameraBin, *SceneCamera);
 	Scene.AddCamera(SceneCamera);
 
 	shared_ptr<LCamera> ThirdPersonCamera = make_shared<LThirdPersonCamera>();
-	LAssetDataLoader::LoadCameraDataFromFile(SampleAssets::CameraBin, *ThirdPersonCamera);
+	//LAssetDataLoader::LoadCameraDataFromFile(SampleAssets::CameraBin, *ThirdPersonCamera);
 	ThirdPersonCamera->SetSocketOffset(XMFLOAT3(-2.f, 0.3f, 2.2f));
 	ThirdPersonCamera->SetViewTarget(Scene.GetCharacters()[0].get());
 	Scene.AddCamera(ThirdPersonCamera);

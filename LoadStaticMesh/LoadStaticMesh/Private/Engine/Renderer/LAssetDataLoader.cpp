@@ -7,6 +7,8 @@
 #include "LDefine.h"
 #include "LSceneCamera.h"
 #include "LThirdPersonCamera.h"
+#include "LLog.h"
+#include "LAssetManager.h"
 
 #include "FD3D12Helper.h"
 
@@ -48,22 +50,142 @@ wstring LAssetDataLoader::GetAssetFullPath(LPCWSTR AssetName)
 	return AssetsPath + AssetName;
 }
 
-void LAssetDataLoader::LoadCameraDataFromFile(string FileName, LCamera& Camera)
+void LAssetDataLoader::LoadMap(string MapFile, vector<LMapStaticObjInfo>& MapStaticObjInfos, vector<LMapSkeletalObjInfo>& MapSkeletalObjInfos, LCameraData& CameraData, vector<LDirectionLightData>& LightsData)
 {
-	FCameraData CameraData;
+	string FName = GetSaveDataDirectory() + MapFile;
+	ifstream Rf(FName, ios::out | ios::binary);
+	if (!Rf) {
+		return;
+	}
+
+	UINT Num;
+	Rf >> Num;
+	for(UINT i = 0; i < Num; i++)
+	{
+		LMapStaticObjInfo StaticInfo;
+		Rf >> StaticInfo.ObjectName >> StaticInfo.RefGeometry >> StaticInfo.RefMaterial >>
+		StaticInfo.WorldLocation.x >> StaticInfo.WorldLocation.y >> StaticInfo.WorldLocation.z >>
+		StaticInfo.WorldRotator.x >> StaticInfo.WorldRotator.y >> StaticInfo.WorldRotator.z >>
+		StaticInfo.WorldScale.x >> StaticInfo.WorldScale.y >> StaticInfo.WorldScale.z;
+		MapStaticObjInfos.push_back(StaticInfo);
+	}
+
+	Rf >> Num;
+	for (UINT i = 0; i < Num; i++)
+	{
+		LMapSkeletalObjInfo SkeletalInfo;
+		Rf >> SkeletalInfo.ObjectName >> SkeletalInfo.RefGeometry >> SkeletalInfo.RefMaterial >> SkeletalInfo.RefSkeleton;
+		UINT AnimNum;
+		Rf >> AnimNum;
+		SkeletalInfo.RefAnims.resize(AnimNum);
+		for(UINT j = 0; j < AnimNum; j++)
+		{
+			Rf >> SkeletalInfo.RefAnims[j];
+		}
+		Rf >> SkeletalInfo.WorldLocation.x >> SkeletalInfo.WorldLocation.y >> SkeletalInfo.WorldLocation.z 
+		>> SkeletalInfo.WorldRotator.x >> SkeletalInfo.WorldRotator.y >> SkeletalInfo.WorldRotator.z 
+		>> SkeletalInfo.WorldScale.x >> SkeletalInfo.WorldScale.y >> SkeletalInfo.WorldScale.z;
+		MapSkeletalObjInfos.push_back(SkeletalInfo);
+	}
+	string LightsFile;
+	Rf >> LightsFile;
+	LoadDirectionLights(LightsFile, LightsData);
+
+	string CameraFile;
+	Rf >> CameraFile;
+	LoadCameraDataFromFile(CameraFile, CameraData);
+}
+
+void LAssetDataLoader::LoadAssetsFromFile(string FileName, vector<LAssetDef>& Skeletons, vector<LAssetDef>& ShaderFiles, vector<LAssetDef>& Textures, vector<LAssetDef>& Materials, vector<LAssetDef>& MaterialInstances, vector<LAssetDef>& Animations, vector<LAssetDef>& MeshGeometries, vector<LAssetDef>& SkeletalMeshGeometries)
+{
 	string FName = GetSaveDataDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;
 	}
 
-	char* CameraBuffer = new char[sizeof(FCameraData)];
-	memset(CameraBuffer, '\0', sizeof(FCameraData));
-	Rf.read(CameraBuffer, sizeof(FCameraData));
-	CameraData = *(FCameraData*)(CameraBuffer);
+	UINT Num; 
+	Rf >> Num;
+	for (UINT i = 0; i < Num; i++)
+	{
+		LAssetDef Def;
+		Rf >> Def.RefName >> Def.FileName;
+		Skeletons.push_back(Def);
+	}
+	Rf >> Num;
+	for (UINT i = 0; i < Num; i++)
+	{
+		LAssetDef Def;
+		Rf >> Def.RefName >> Def.FileName;
+		ShaderFiles.push_back(Def);
+	}
+	Rf >> Num;
+	for (UINT i = 0; i < Num; i++)
+	{
+		LAssetDef Def;
+		Rf >> Def.RefName >> Def.FileName;
+		Textures.push_back(Def);
+	}
 
-	Camera.SetCameraData(CameraData);
-	Camera.Init();
+	Rf >> Num;
+	for (UINT i = 0; i < Num; i++)
+	{
+		LAssetDef Def;
+		Rf >> Def.RefName >> Def.FileName;
+		Materials.push_back(Def);
+	}
+
+	Rf >> Num;
+	for (UINT i = 0; i < Num; i++)
+	{
+		LAssetDef Def;
+		Rf >> Def.RefName >> Def.FileName;
+		MaterialInstances.push_back(Def);
+	}
+
+	Rf >> Num;
+	for (UINT i = 0; i < Num; i++)
+	{
+		LAssetDef Def;
+		Rf >> Def.RefName >> Def.FileName;
+		Animations.push_back(Def);
+	}
+
+	Rf >> Num;
+	for (UINT i = 0; i < Num; i++)
+	{
+		LAssetDef Def;
+		Rf >> Def.RefName >> Def.FileName;
+		MeshGeometries.push_back(Def);
+	}
+
+	Rf >> Num;
+	for (UINT i = 0; i < Num; i++)
+	{
+		LAssetDef Def;
+		Rf >> Def.RefName >> Def.FileName;
+		SkeletalMeshGeometries.push_back(Def);
+	}
+
+	Rf.close();
+	if (!Rf.good()) {
+		return;
+	}
+}
+
+void LAssetDataLoader::LoadCameraDataFromFile(string FileName, LCameraData& CameraData)
+{
+	string FName = GetSaveDataDirectory() + FileName;
+	ifstream Rf(FName, ios::out | ios::binary);
+	if (!Rf) {
+		return;
+	}
+
+	char* CameraBuffer = new char[sizeof(LCameraData)];
+	memset(CameraBuffer, '\0', sizeof(LCameraData));
+	Rf.read(CameraBuffer, sizeof(LCameraData));
+	CameraData = *(LCameraData*)(CameraBuffer);
+
 	delete[] CameraBuffer;
 
 	Rf.close();
@@ -72,7 +194,31 @@ void LAssetDataLoader::LoadCameraDataFromFile(string FileName, LCamera& Camera)
 	}
 }
 
-void LAssetDataLoader::LoadDirectionLights(string FileName,  vector<DirectionLightData>& LightsData)
+//void LAssetDataLoader::LoadCameraDataFromFile(string FileName, LCamera& Camera)
+//{
+//	LCameraData CameraData;
+//	string FName = GetSaveDataDirectory() + FileName;
+//	ifstream Rf(FName, ios::out | ios::binary);
+//	if (!Rf) {
+//		return;
+//	}
+//
+//	char* CameraBuffer = new char[sizeof(LCameraData)];
+//	memset(CameraBuffer, '\0', sizeof(LCameraData));
+//	Rf.read(CameraBuffer, sizeof(LCameraData));
+//	CameraData = *(LCameraData*)(CameraBuffer);
+//
+//	Camera.SetCameraData(CameraData);
+//	Camera.Init();
+//	delete[] CameraBuffer;
+//
+//	Rf.close();
+//	if (!Rf.good()) {
+//		return;
+//	}
+//}
+
+void LAssetDataLoader::LoadDirectionLights(string FileName,  vector<LDirectionLightData>& LightsData)
 {
 	string FName = GetSaveDataDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
@@ -84,7 +230,7 @@ void LAssetDataLoader::LoadDirectionLights(string FileName,  vector<DirectionLig
 	Rf.read((char*)&DirectionLightSize, sizeof(UINT));
 	
 	LightsData.resize(DirectionLightSize);
-	Rf.read((char*)LightsData.data(), DirectionLightSize * sizeof(DirectionLightData));
+	Rf.read((char*)LightsData.data(), DirectionLightSize * sizeof(LDirectionLightData));
 
 	Rf.close();
 	if (!Rf.good()) {
@@ -134,6 +280,7 @@ void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(string FileName, LSkel
 		return;
 	}
 }
+
 
 void LAssetDataLoader::LoadSkeletonFromFile(string FileName, LSkeleton* Skeleton)
 {
@@ -216,6 +363,104 @@ void LAssetDataLoader::LoadShaderFromeFile(string FileName, LShader* Shader)
 	UINT ShaderLen = 0;
 	ReadDataFromFile(LAssetDataLoader::GetAssetFullPath(WStr).c_str(), &ShaderData, &ShaderLen);
 	Shader->Init(ShaderData, ShaderLen);
+}
+
+void LAssetDataLoader::LoadMaterial(string FileName, LMaterial* Material)
+{
+	string FName = GetSaveDataDirectory() + FileName;
+	ifstream Rf(FName, ios::out | ios::binary);
+	if (!Rf) {
+		return;
+	}
+
+	string Ignore;
+	Rf >> Ignore;
+
+	UINT Num;
+	Rf >> Num;
+	for(UINT i = 0; i < Num; i++)
+	{
+		UINT8 Type;
+		Rf >> Type;
+		Material->AddParamType(static_cast<E_MATERIAL_PARAM_TYPE>(Type));
+	}
+
+	Rf >> Num;
+	for (UINT i = 0; i < Num; i++)
+	{
+		float Value;
+		Rf >> Value;
+		Material->AddParamFloat(Value);
+	}
+
+	Rf >> Num;
+	for (UINT i = 0; i < Num; i++)
+	{
+		XMFLOAT4 Value;
+		Rf >> Value.x >> Value.y >> Value.z >> Value.w;
+		Material->AddParamVector(Value);
+	}
+
+	Rf >> Num;
+	for (UINT i = 0; i < Num; i++)
+	{
+		string RefName;
+		Rf >> RefName;
+		Material->AddParamTexture(LAssetManager::Get()->GetTexture(RefName));
+	}
+
+	Rf.close();
+	if (!Rf.good()) {
+		return;
+	}
+}
+
+void LAssetDataLoader::LoadMaterialInstance(string FileName, LMaterialInstance* MaterialIns)
+{
+	string FName = GetSaveDataDirectory() + FileName;
+	ifstream Rf(FName, ios::out | ios::binary);
+	if (!Rf) {
+		return;
+	}
+
+	string ParentName;
+	Rf >> ParentName;
+	LMaterial* MatTemplate = dynamic_cast<LMaterial*>(LAssetManager::Get()->GetMaterial(ParentName));
+	MaterialIns->InitMaterialTemplate(MatTemplate);
+
+	UINT Num;
+	Rf >> Num;
+	for (UINT i = 0; i < Num; i++)
+	{
+		UINT8 Type;
+		Rf >> Type;
+		//instance not need to add type, just update value
+	}
+
+	Rf >> Num;
+	for (UINT i = 0; i < Num; i++)
+	{
+		float Value;
+		Rf >> Value;
+		MaterialIns->SetParamFloat(i, Value);
+	}
+
+	Rf >> Num;
+	for (UINT i = 0; i < Num; i++)
+	{
+		XMFLOAT4 Value;
+		Rf >> Value.x >> Value.y >> Value.z >> Value.w;
+		MaterialIns->SetParamVector(i, Value);
+	}
+
+	Rf >> Num;
+	for (UINT i = 0; i < Num; i++)
+	{
+		string RefName;
+		Rf >> RefName;
+		MaterialIns->SetParamTexture(i, LAssetManager::Get()->GetTexture(RefName));
+	}
+
 }
 
 void LAssetDataLoader::LoadAnimationSquence(string SequenceName, LAnimationSequence& Seq)

@@ -149,10 +149,6 @@ bool SaveMeshBinaryToFile(const FMeshDataBinary& MeshBinOut, const TArray<uint32
 		return false;
 	}
 
-	Wf.write((char*)&(MeshBinOut.WorldLocation), sizeof(FVector));
-	Wf.write((char*)&(MeshBinOut.WorldRotation), sizeof(FRotator));
-	Wf.write((char*)&(MeshBinOut.WorldScale), sizeof(FVector));
-
 	uint32  VertexsSize = MeshBinOut.MeshVertexDatas.Num();
 	Wf.write((char*)&VertexsSize, sizeof(uint32));
 	Wf.write((char*)MeshBinOut.MeshVertexDatas.GetData(), sizeof(FVertexDatas) * VertexsSize);
@@ -273,7 +269,7 @@ bool UCustomExportBPLibrary::ExportMaterial(UMaterialInterface* Material, FStrin
 		return false;
 	}
 
-	Wf << string(TCHAR_TO_UTF8(*ExportMaterialData.RefParent));
+	Wf << string(TCHAR_TO_UTF8(*ExportMaterialData.RefParent)) << " ";
 	uint32 Num = ExportMaterialData.ParamTypes.Num();
 	Wf << Num;
 	for (uint32 i = 0; i < Num; i++)
@@ -282,22 +278,25 @@ bool UCustomExportBPLibrary::ExportMaterial(UMaterialInterface* Material, FStrin
 	}
 
 	 Num = ExportMaterialData.ParamFloatValues.Num();
+	 Wf << Num << " ";
 	 for (uint32 i = 0; i < Num; i++)
 	 {
-		 Wf << ExportMaterialData.ParamFloatValues[i];
+		 Wf << ExportMaterialData.ParamFloatValues[i] << " ";
 	 }
 
 	 Num = ExportMaterialData.ParamVectorValues.Num();
+	 Wf << Num << " ";;
 	 for (uint32 i = 0; i < Num; i++)
 	 {
-		 Wf << ExportMaterialData.ParamVectorValues[i].R << ExportMaterialData.ParamVectorValues[i].G <<
-			 ExportMaterialData.ParamVectorValues[i].B << ExportMaterialData.ParamVectorValues[i].A;
+		 Wf << ExportMaterialData.ParamVectorValues[i].R << " " << ExportMaterialData.ParamVectorValues[i].G << " " <<
+			 ExportMaterialData.ParamVectorValues[i].B << " " << ExportMaterialData.ParamVectorValues[i].A << " ";
 	 }
 
 	 Num = ExportMaterialData.ParamRefTextures.Num();
+	 Wf << Num << " ";
 	 for (uint32 i = 0; i < Num; i++)
 	 {
-		 Wf << string(TCHAR_TO_UTF8(*ExportMaterialData.ParamRefTextures[i]));
+		 Wf << string(TCHAR_TO_UTF8(*ExportMaterialData.ParamRefTextures[i])) << " ";
 	 }
 
 	 Wf.close();
@@ -336,34 +335,39 @@ bool UCustomExportBPLibrary::ExportsMap(TArray<FMapStaticMeshes> StaticMeshes, T
 	}
 
 	uint32 Num = Out.StaticMeshes.Num();
-	Wf << Num;
+	Wf << Num << " ";
 
 	for (uint32 i = 0; i < Num; i++)
 	{
-		Wf << string(TCHAR_TO_UTF8(*Out.StaticMeshes[i].RefGeometry)) << string(TCHAR_TO_UTF8(*Out.StaticMeshes[i].RefMaterial))
-			<< Out.StaticMeshes[i].WorldLocation.X << Out.StaticMeshes[i].WorldLocation.Y << Out.StaticMeshes[i].WorldLocation.Z 
-			<< Out.StaticMeshes[i].WorldRotation.Pitch << Out.StaticMeshes[i].WorldRotation.Yaw << Out.StaticMeshes[i].WorldRotation.Roll
-			<< Out.StaticMeshes[i].WorldScale.X << Out.StaticMeshes[i].WorldScale.Y << Out.StaticMeshes[i].WorldScale.Z;
+		Wf << string(TCHAR_TO_UTF8(*Out.StaticMeshes[i].ObjectName)) << " " << string(TCHAR_TO_UTF8(*Out.StaticMeshes[i].RefGeometry)) << " " << string(TCHAR_TO_UTF8(*Out.StaticMeshes[i].RefMaterial)) << " "
+			<< Out.StaticMeshes[i].WorldLocation.X << " " << Out.StaticMeshes[i].WorldLocation.Y << " " << Out.StaticMeshes[i].WorldLocation.Z << " "
+			<< Out.StaticMeshes[i].WorldRotation.Pitch << " " << Out.StaticMeshes[i].WorldRotation.Yaw << " " << Out.StaticMeshes[i].WorldRotation.Roll << " "
+			<< Out.StaticMeshes[i].WorldScale.X << " " << Out.StaticMeshes[i].WorldScale.Y << " " << Out.StaticMeshes[i].WorldScale.Z << " ";
 	}
 
 	Num = Out.SkeletalMeshes.Num();
+	Wf << Num << " ";
 	for (uint32 i = 0; i < Num; i++)
 	{
-		Wf << string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].RefGeometry)) << string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].RefMaterial))
-			<< string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].RefSkeleton));
+		Wf << string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].ObjectName)) << " " <<string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].RefGeometry)) << " " << string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].RefMaterial)) << " "
+			<< string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].RefSkeleton)) << " ";
 
 		uint32 AnimNum = Out.SkeletalMeshes[i].RefAnims.Num();
-		Wf << AnimNum;
+		Wf << AnimNum << " ";
 
 		for(uint32 j = 0; j < AnimNum; j++)
 		{
-			Wf << string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].RefAnims[j]));
+			Wf << string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].RefAnims[j])) << " ";
 		}
 
-		Wf  << Out.SkeletalMeshes[i].WorldLocation.X << Out.SkeletalMeshes[i].WorldLocation.Y << Out.SkeletalMeshes[i].WorldLocation.Z
-			<< Out.SkeletalMeshes[i].WorldRotation.Pitch << Out.SkeletalMeshes[i].WorldRotation.Yaw << Out.SkeletalMeshes[i].WorldRotation.Roll
-			<< Out.SkeletalMeshes[i].WorldScale.X << Out.SkeletalMeshes[i].WorldScale.Y << Out.SkeletalMeshes[i].WorldScale.Z;
+		Wf  << Out.SkeletalMeshes[i].WorldLocation.X << " " << Out.SkeletalMeshes[i].WorldLocation.Y << " " << Out.SkeletalMeshes[i].WorldLocation.Z << " "
+			<< Out.SkeletalMeshes[i].WorldRotation.Pitch<< " " << Out.SkeletalMeshes[i].WorldRotation.Yaw << " " << Out.SkeletalMeshes[i].WorldRotation.Roll<< " "
+			<< Out.SkeletalMeshes[i].WorldScale.X << " " << Out.SkeletalMeshes[i].WorldScale.Y<< " " << Out.SkeletalMeshes[i].WorldScale.Z << " ";
 	}
+
+	Wf << string(TCHAR_TO_UTF8(*Out.SceneLightsFile)) << " ";
+	Wf << string(TCHAR_TO_UTF8(*Out.CameraFile));
+
 
 	Wf.close();
 	return Wf.good();
@@ -407,59 +411,58 @@ bool UCustomExportBPLibrary::ExportsAssets(TArray<FAssetsDef> Skeletons, TArray<
 
 	uint32 VarNum = Out.Skeletons.Num();
 	Wf << VarNum;
-	
 	for (uint32 i = 0; i < VarNum; i++)
 	{
-		Wf << string(TCHAR_TO_UTF8(*Out.Skeletons[i].RefName)) << string(TCHAR_TO_UTF8(*Out.Skeletons[i].FileName));
+		Wf << string(TCHAR_TO_UTF8(*Out.Skeletons[i].RefName)) << " " << string(TCHAR_TO_UTF8(*Out.Skeletons[i].FileName)) << " ";
 	}
 
 	VarNum = Out.ShaderFiles.Num();
 	Wf << VarNum;
 	for (uint32 i = 0; i < VarNum; i++)
 	{
-		Wf << string(TCHAR_TO_UTF8(*Out.ShaderFiles[i].RefName)) << string(TCHAR_TO_UTF8(*Out.ShaderFiles[i].FileName));
+		Wf << string(TCHAR_TO_UTF8(*Out.ShaderFiles[i].RefName)) << " " << string(TCHAR_TO_UTF8(*Out.ShaderFiles[i].FileName)) << " ";
 	}
 
 	VarNum = Out.Textures.Num();
 	Wf << VarNum;
 	for (uint32 i = 0; i < VarNum; i++)
 	{
-		Wf << string(TCHAR_TO_UTF8(*Out.Textures[i].RefName)) << string(TCHAR_TO_UTF8(*Out.Textures[i].FileName));
+		Wf << string(TCHAR_TO_UTF8(*Out.Textures[i].RefName)) << " " << string(TCHAR_TO_UTF8(*Out.Textures[i].FileName)) << " ";
 	}
 
 	VarNum = Out.Materials.Num();
 	Wf << VarNum;
 	for (uint32 i = 0; i < VarNum; i++)
 	{
-		Wf << string(TCHAR_TO_UTF8(*Out.Materials[i].RefName)) << string(TCHAR_TO_UTF8(*Out.Materials[i].FileName));
+		Wf << string(TCHAR_TO_UTF8(*Out.Materials[i].RefName))<< " " << string(TCHAR_TO_UTF8(*Out.Materials[i].FileName)) << " ";
 	}
 
 	VarNum = Out.MaterialInstances.Num();
 	Wf << VarNum;
 	for (uint32 i = 0; i < VarNum; i++)
 	{
-		Wf << string(TCHAR_TO_UTF8(*Out.MaterialInstances[i].RefName)) << string(TCHAR_TO_UTF8(*Out.MaterialInstances[i].FileName));
+		Wf << string(TCHAR_TO_UTF8(*Out.MaterialInstances[i].RefName))<< " " << string(TCHAR_TO_UTF8(*Out.MaterialInstances[i].FileName)) << " ";
 	}
 	
 	VarNum = Out.Animations.Num();
 	Wf << VarNum;
 	for (uint32 i = 0; i < VarNum; i++)
 	{
-		Wf << string(TCHAR_TO_UTF8(*Out.Animations[i].RefName)) << string(TCHAR_TO_UTF8(*Out.Animations[i].FileName));
+		Wf << string(TCHAR_TO_UTF8(*Out.Animations[i].RefName)) << " " << string(TCHAR_TO_UTF8(*Out.Animations[i].FileName)) << " ";
 	}
 
 	VarNum = Out.MeshGeometries.Num();
 	Wf << VarNum;
 	for (uint32 i = 0; i < VarNum; i++)
 	{
-		Wf << string(TCHAR_TO_UTF8(*Out.MeshGeometries[i].RefName)) << string(TCHAR_TO_UTF8(*Out.MeshGeometries[i].FileName));
+		Wf << string(TCHAR_TO_UTF8(*Out.MeshGeometries[i].RefName))<< " " << string(TCHAR_TO_UTF8(*Out.MeshGeometries[i].FileName)) << " ";
 	}
 
 	VarNum = Out.SkeletalMeshGeometries.Num();
 	Wf << VarNum;
 	for (uint32 i = 0; i < VarNum; i++)
 	{
-		Wf << string(TCHAR_TO_UTF8(*Out.SkeletalMeshGeometries[i].RefName)) << string(TCHAR_TO_UTF8(*Out.SkeletalMeshGeometries[i].FileName));
+		Wf << string(TCHAR_TO_UTF8(*Out.SkeletalMeshGeometries[i].RefName)) << " " << string(TCHAR_TO_UTF8(*Out.SkeletalMeshGeometries[i].FileName));
 	}
 
 	Wf.close();
@@ -467,27 +470,6 @@ bool UCustomExportBPLibrary::ExportsAssets(TArray<FAssetsDef> Skeletons, TArray<
 }
 
 #undef LOCTEXT_NAMESPACE
-
-void ExportMeshWorld(const AActor* MeshActor, FFullMeshDataJson& MeshDataJsonOut, FFullMeshDataBinary& MeshDataBinaryOut, bool bSke)
-{
-	FVector MeshLocation = MeshActor->GetActorLocation();
-	const FRotator& MeshRotation = MeshActor->GetActorRotation();
-	const FVector& MeshScale = MeshActor->GetActorScale();
-	MeshLocation = MeshLocation * POSITION_SCALE;
-	//Special Export, always set the ske z = 0
-	if(bSke)
-	{
-		MeshLocation.Z = 0.f;
-	}
-
-	MeshDataJsonOut.WorldLocation.Append({ MeshLocation.X , MeshLocation.Y , MeshLocation.Z });
-	MeshDataJsonOut.WorldRotation.Append({ MeshRotation.Pitch, MeshRotation.Yaw, MeshRotation.Roll });
-	MeshDataJsonOut.WorldScale.Append({ MeshScale.X, MeshScale.Y, MeshScale.Z });
-
-	MeshDataBinaryOut.WorldLocation = MeshLocation;
-	MeshDataBinaryOut.WorldRotation = MeshRotation;
-	MeshDataBinaryOut.WorldScale = MeshScale;
-}
 
 void ExportMeshVertexBuffer(const FStaticMeshVertexBuffers& VertexBuffers, FFullMeshDataJson& MeshDataJsonOut, FFullMeshDataBinary& MeshDataBinaryOut)
 {
@@ -539,7 +521,6 @@ void ExportStaticMeshIndices(const FRawStaticIndexBuffer& IndexBuffer, FFullMesh
 
 bool UCustomExportBPLibrary::ExportStaticMeshActor(const AStaticMeshActor* MeshActor, FFullMeshDataJson MeshDataJsonOut, FFullMeshDataBinary MeshDataBinaryOut, FString FileBaseName)
 {
-	ExportMeshWorld(MeshActor, MeshDataJsonOut, MeshDataBinaryOut, false);
 
 	UStaticMeshComponent* MeshComponent = MeshActor->GetStaticMeshComponent();
 	const auto& LODResources = MeshComponent->GetStaticMesh()->RenderData->LODResources;
@@ -867,10 +848,6 @@ bool SaveSkeletalMeshBinaryToFile(const FFullMeshDataBinary& MeshBinOut, const T
 		return false;
 	}
 
-	Wf.write((char*)&(MeshBinOut.WorldLocation), sizeof(FVector));
-	Wf.write((char*)&(MeshBinOut.WorldRotation), sizeof(FRotator));
-	Wf.write((char*)&(MeshBinOut.WorldScale), sizeof(FVector));
-
 	uint32  VertexsSize = MeshBinOut.MeshVertexDatas.Num();
 	Wf.write((char*)&VertexsSize, sizeof(uint32));
 	Wf.write((char*)MeshBinOut.MeshVertexDatas.GetData(), sizeof(FFullVertexDatas) * VertexsSize);
@@ -889,7 +866,6 @@ bool SaveSkeletalMeshBinaryToFile(const FFullMeshDataBinary& MeshBinOut, const T
 
 bool UCustomExportBPLibrary::ExportSkeletalMeshActor(const ACharacter* PlayerActor, const USkeletalMesh* Mesh, FFullMeshDataJson MeshDataJsonOut, FFullMeshDataBinary MeshDataBinaryOut, FString FileBaseName)
 {
-	ExportMeshWorld(PlayerActor, MeshDataJsonOut, MeshDataBinaryOut, true);
 
 	//IMPORTANT: export bone map before, it will use in export vertex weight
 	const FSkeletalMeshLODRenderData& MeshResource = Mesh->GetResourceForRendering()->LODRenderData[LOD_LEVEL];

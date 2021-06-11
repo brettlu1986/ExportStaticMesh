@@ -118,15 +118,6 @@ struct FFullMeshDataJson
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TArray<float> WorldLocation;
-
-	UPROPERTY()
-	TArray<float> WorldRotation;
-
-	UPROPERTY()
-	TArray<float> WorldScale;
-
-	UPROPERTY()
 	TArray<FString> VsFormat;
 
 	UPROPERTY()
@@ -164,24 +155,12 @@ struct FFullMeshDataBinary
 	GENERATED_BODY()
 
 	UPROPERTY()
-	FVector WorldLocation;
-
-	UPROPERTY()
-	FRotator WorldRotation;
-
-	UPROPERTY()
-	FVector WorldScale;
-
-	UPROPERTY()
 	TArray<FFullVertexDatas> MeshVertexDatas;
 
 	UPROPERTY()
 	TArray<uint16> BoneMap;
 
 	FFullMeshDataBinary()
-		:WorldLocation(FVector::ZeroVector)
-		, WorldRotation(FRotator::ZeroRotator)
-		, WorldScale(FVector::ZeroVector)
 	{
 	}
 };
@@ -190,15 +169,6 @@ USTRUCT(BlueprintType)
 struct FMeshDataJson
 {
 	GENERATED_BODY()
-
-	UPROPERTY()
-	TArray<float> WorldLocation;
-
-	UPROPERTY()
-	TArray<float> WorldRotation;
-
-	UPROPERTY()
-	TArray<float> WorldScale;
 
 	UPROPERTY()
 	TArray<FString> VsFormat;
@@ -227,9 +197,6 @@ struct FMeshDataJson
 	FMeshDataJson(){}
 	FMeshDataJson(const FFullMeshDataJson& FullData)
 	{
-		WorldLocation.Append(FullData.WorldLocation);
-		WorldRotation.Append(FullData.WorldRotation);
-		WorldScale.Append(FullData.WorldScale);
 		VsFormat.Append(FullData.VsFormat);
 		Positions.Append(FullData.Positions);
 		Normals.Append(FullData.Normals);
@@ -291,29 +258,14 @@ struct FMeshDataBinary
 	GENERATED_BODY()
 
 	UPROPERTY()
-	FVector WorldLocation;
-
-	UPROPERTY()
-	FRotator WorldRotation;
-
-	UPROPERTY()
-	FVector WorldScale;
-
-	UPROPERTY()
 	TArray<FVertexDatas> MeshVertexDatas;
 
 	FMeshDataBinary()
-		:WorldLocation(FVector::ZeroVector)
-		,WorldRotation(FRotator::ZeroRotator)
-		,WorldScale(FVector::ZeroVector)
 	{
 	}
 
 	FMeshDataBinary(const FFullMeshDataBinary& FullDataBin)
 	{
-		WorldLocation = FullDataBin.WorldLocation;
-		WorldRotation = FullDataBin.WorldRotation;
-		WorldScale = FullDataBin.WorldScale;
 
 		for(FFullVertexDatas FullVexData : FullDataBin.MeshVertexDatas)
 		{
@@ -477,6 +429,9 @@ struct FMapStaticMeshes
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString ObjectName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString RefGeometry;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -496,6 +451,9 @@ USTRUCT(BlueprintType)
 struct FMapSkeletalMeshes
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString ObjectName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString RefGeometry;

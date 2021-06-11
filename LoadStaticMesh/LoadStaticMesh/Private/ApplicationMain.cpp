@@ -6,10 +6,12 @@
 #include "FRenderThread.h"
 #include <chrono>
 #include <thread> 
-#include "SampleAssets.h"
+//#include "SampleAssets.h"
 #include "LCharacter.h"
 #include "LLog.h"
 #include "LSceneCamera.h"
+#include "LAssetManager.h"
+#include "LAssetDataLoader.h"
 
 ApplicationMain* ApplicationMain::Application = nullptr;
 
@@ -49,7 +51,21 @@ void ApplicationMain::OnTouchInit()
 
 void ApplicationMain::OnSceneInit()
 {
-	SampleAssets::LoadSampleSceneData(*DataScene);
+	LAssetManager::Get()->LoadAssets("AssetInfo/AssetsInfo.bin");
+
+	vector<LMapStaticObjInfo> StaticObjs;
+	vector<LMapSkeletalObjInfo> SkeletalObjs;
+	LCameraData CameraData;
+	vector<LDirectionLightData> LightsData;
+	LAssetDataLoader::LoadMap("Maps/DefaultMap.bin", StaticObjs, SkeletalObjs, CameraData, LightsData);
+
+	//load static meshes
+	for(auto& StaticObj : StaticObjs)
+	{
+		auto Mesh = make_shared<LMesh>();
+
+	}
+	//SampleAssets::LoadSampleSceneData(*DataScene);
 }
 
 void ApplicationMain::Update(float DeltaTime)

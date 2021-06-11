@@ -273,6 +273,12 @@
     <ClCompile Include="Private\Engine\Common\RenderData\LMaterial.cpp">
       <Filter>Source Files\Engine\Common\RenderData</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Engine\Common\RenderData\LMaterialInstance.cpp">
+      <Filter>Source Files\Engine\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\RenderData\LMaterialBase.cpp">
+      <Filter>Source Files\Engine\Common\RenderData</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\ApplicationMain.h">
@@ -477,6 +483,12 @@
       <Filter>Header Files\Engine\Common\RenderData</Filter>
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\RenderData\LMaterial.h">
+      <Filter>Header Files\Engine\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\RenderData\LMaterialInstance.h">
+      <Filter>Header Files\Engine\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\RenderData\LMaterialBase.h">
       <Filter>Header Files\Engine\Common\RenderData</Filter>
     </ClInclude>
   </ItemGroup>

@@ -227,15 +227,6 @@ typedef struct FSkeletalVertexData
 	UINT16  InfluenceBones[4];
 }FSkeletalVertexData;
 
-typedef struct FCameraData {
-	XMFLOAT3 Location;
-	XMFLOAT3 Target;
-	XMFLOAT3 Rotator; // {Pitch, Yaw , Roll}
-	float Fov;
-	float Aspect;
-}FCameraData;
-
-
 typedef enum class ERHI_DATA_FORMAT
 {
 	FORMAT_UNKNONWN = 0,

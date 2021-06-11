@@ -40,14 +40,61 @@ LAssetManager* LAssetManager::Get()
 	return Instance;
 }
 
-void LAssetManager::LoadSkeletal(std::string FileName, string ReferenceName)
+void LAssetManager::LoadAssets(std::string AssetsFile)
+{
+	vector<LAssetDef> Skeletons;
+	vector<LAssetDef> ShaderFiles;
+	vector<LAssetDef> Textures;
+	vector<LAssetDef> Materials;
+	vector<LAssetDef> MaterialInstances;
+	vector<LAssetDef> Animations;
+	vector<LAssetDef> MeshGeometries;
+	vector<LAssetDef> SkeletalMeshGeometries;
+
+	LAssetDataLoader::LoadAssetsFromFile(AssetsFile, Skeletons, ShaderFiles, Textures, Materials, MaterialInstances, Animations,
+		MeshGeometries, SkeletalMeshGeometries);
+
+	for(auto& Skeleton : Skeletons)
+	{
+		LoadSkeleton(Skeleton.FileName, Skeleton.RefName);
+	}
+
+	for(auto& Shader : ShaderFiles)
+	{
+		LoadShader(Shader.FileName, Shader.RefName);
+	}
+
+	for(auto& Texture : Textures)
+	{
+		LoadTexture(Texture.FileName, Texture.RefName);
+	}
+
+	for(auto& Material : Materials)
+	{
+		LoadMaterial(Material.FileName, Material.RefName);
+	}
+
+	for (auto& MaterialIns : MaterialInstances)
+	{
+		LoadMaterialInstance(MaterialIns.FileName, MaterialIns.RefName);
+	}
+
+}
+
+void LAssetManager::LoadSkeleton(std::string FileName, string ReferenceName)
 {
 	auto Skeleton = make_unique<LSkeleton>();
 	LAssetDataLoader::LoadSkeletonFromFile(FileName, Skeleton.get());
 	ResourceSkeletons.insert( { ReferenceName, move(Skeleton) } );
 }
 
-//current only dds texture suport
+void LAssetManager::LoadShader(string FileName, string ReferenceName)
+{
+	auto Shader = make_unique<LShader>();
+	LAssetDataLoader::LoadShaderFromeFile(FileName, Shader.get());
+	ResourceShaders.insert({ ReferenceName, move(Shader) });
+}
+
 void LAssetManager::LoadTexture(std::string FileName, string ReferenceName)
 {
 	auto Texture = make_unique<LTexture>();
@@ -55,14 +102,21 @@ void LAssetManager::LoadTexture(std::string FileName, string ReferenceName)
 	ResourceTexs.insert( { ReferenceName, move(Texture) } );
 }
 
-void LAssetManager::LoadShader(string FileName, string ReferenceName)
+void LAssetManager::LoadMaterial(std::string FileName, string ReferenceName)
 {
-	auto Shader = make_unique<LShader>();
-	LAssetDataLoader::LoadShaderFromeFile(FileName, Shader.get());
-	ResourceShaders.insert( { ReferenceName, move(Shader) } );
+	auto Material = make_unique<LMaterial>();
+	LAssetDataLoader::LoadMaterial(FileName, Material.get());
+	ResourceMaterials.insert( { ReferenceName, move(Material) } );
 }
 
-void LAssetManager::LoadMaterial(unique_ptr<LMaterial>&Mat, string RefereneceName)
+void LAssetManager::LoadMaterialInstance(std::string FileName, string ReferenceName)
 {
-	ResourceMaterials.insert( { RefereneceName, move(Mat) } );
+	auto MaterialIns = make_unique<LMaterialInstance>();
+	LAssetDataLoader::LoadMaterialInstance(FileName, MaterialIns.get());
+	ResourceMaterials.insert({ ReferenceName, move(MaterialIns) });
 }
+
+//void LAssetManager::LoadMaterial(unique_ptr<LMaterial>&Mat, string RefereneceName)
+//{
+//	ResourceMaterials.insert( { RefereneceName, move(Mat) } );
+//}

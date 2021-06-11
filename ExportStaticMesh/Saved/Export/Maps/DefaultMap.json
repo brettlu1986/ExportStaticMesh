@@ -1,6 +1,7 @@
 {
 	"staticMeshes": [
 		{
+			"objectName": "Floor",
 			"refGeometry": "TemplateFloor",
 			"refMaterial": "CubeMaterial",
 			"worldLocation":
@@ -23,6 +24,7 @@
 			}
 		},
 		{
+			"objectName": "Wall6",
 			"refGeometry": "1M_Cube",
 			"refMaterial": "CubeMaterial",
 			"worldLocation":
@@ -45,6 +47,7 @@
 			}
 		},
 		{
+			"objectName": "Wall7",
 			"refGeometry": "1M_Cube",
 			"refMaterial": "CubeMaterial",
 			"worldLocation":
@@ -67,6 +70,7 @@
 			}
 		},
 		{
+			"objectName": "Wall8",
 			"refGeometry": "1M_Cube",
 			"refMaterial": "CubeMaterial",
 			"worldLocation":
@@ -89,6 +93,7 @@
 			}
 		},
 		{
+			"objectName": "Wall9",
 			"refGeometry": "1M_Cube",
 			"refMaterial": "CubeMaterial",
 			"worldLocation":
@@ -111,6 +116,7 @@
 			}
 		},
 		{
+			"objectName": "LeftArm_StaticMesh",
 			"refGeometry": "LeftArm_StaticMesh",
 			"refMaterial": "RampMaterial",
 			"worldLocation":
@@ -133,6 +139,7 @@
 			}
 		},
 		{
+			"objectName": "Linear_Stair_StaticMesh",
 			"refGeometry": "Linear_Stair_StaticMesh",
 			"refMaterial": "RampMaterial",
 			"worldLocation":
@@ -155,6 +162,7 @@
 			}
 		},
 		{
+			"objectName": "Bump_StaticMesh",
 			"refGeometry": "Bump_StaticMesh",
 			"refMaterial": "RampMaterial",
 			"worldLocation":
@@ -177,6 +185,7 @@
 			}
 		},
 		{
+			"objectName": "Sphere",
 			"refGeometry": "Sphere",
 			"refMaterial": "RampMaterial",
 			"worldLocation":
@@ -199,6 +208,7 @@
 			}
 		},
 		{
+			"objectName": "Cube",
 			"refGeometry": "Cube",
 			"refMaterial": "BasicShapeMaterial",
 			"worldLocation":
@@ -221,6 +231,7 @@
 			}
 		},
 		{
+			"objectName": "BP_Chair",
 			"refGeometry": "SM_Chair",
 			"refMaterial": "M_ChairBase_Ins1",
 			"worldLocation":
@@ -243,6 +254,7 @@
 			}
 		},
 		{
+			"objectName": "BP_Chair2",
 			"refGeometry": "SM_Chair",
 			"refMaterial": "M_ChairBase_Inst2",
 			"worldLocation":
@@ -265,6 +277,7 @@
 			}
 		},
 		{
+			"objectName": "BP_Chair3",
 			"refGeometry": "SM_Chair",
 			"refMaterial": "M_ChairBase_Inst3",
 			"worldLocation":
@@ -287,6 +300,7 @@
 			}
 		},
 		{
+			"objectName": "BP_Chair4",
 			"refGeometry": "SM_Chair",
 			"refMaterial": "M_ChairBase",
 			"worldLocation":
@@ -309,6 +323,7 @@
 			}
 		},
 		{
+			"objectName": "BP_Lamp_Ceiling",
 			"refGeometry": "SM_Lamp_Ceiling",
 			"refMaterial": "M_MeshLamp",
 			"worldLocation":
@@ -331,6 +346,7 @@
 			}
 		},
 		{
+			"objectName": "BP_Rock",
 			"refGeometry": "SM_Rock",
 			"refMaterial": "M_MeshRock",
 			"worldLocation":
@@ -353,6 +369,30 @@
 			}
 		},
 		{
+			"objectName": "BP_Rock2",
+			"refGeometry": "SM_Rock",
+			"refMaterial": "M_MeshBase",
+			"worldLocation":
+			{
+				"x": 350,
+				"y": 230,
+				"z": 140
+			},
+			"worldRotation":
+			{
+				"pitch": 0,
+				"yaw": 0,
+				"roll": 0
+			},
+			"worldScale":
+			{
+				"x": 0.5,
+				"y": 0.5,
+				"z": 0.5
+			}
+		},
+		{
+			"objectName": "BP_TableRound",
 			"refGeometry": "SM_TableRound",
 			"refMaterial": "M_MeshTable",
 			"worldLocation":
@@ -377,6 +417,7 @@
 	],
 	"skeletalMeshes": [
 		{
+			"objectName": "ThirdPersonCharacter2",
 			"refGeometry": "SK_Mannequin",
 			"refMaterial": "M_MeshCharacter",
 			"refSkeleton": "UE4_Mannequin_Skeleton",
@@ -408,6 +449,7 @@
 			}
 		},
 		{
+			"objectName": "ThirdPersonCharacter3",
 			"refGeometry": "SK_Mannequin",
 			"refMaterial": "M_MeshCharacter",
 			"refSkeleton": "UE4_Mannequin_Skeleton",
@@ -439,6 +481,7 @@
 			}
 		},
 		{
+			"objectName": "ThirdPersonCharacter",
 			"refGeometry": "SK_Mannequin",
 			"refMaterial": "M_MeshCharacter",
 			"refSkeleton": "UE4_Mannequin_Skeleton",

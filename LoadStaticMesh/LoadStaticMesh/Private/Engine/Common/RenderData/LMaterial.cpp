@@ -3,8 +3,7 @@
 #include "LMaterial.h"
 
 LMaterial::LMaterial()
-:LResource(E_LRESOURCE_TYPE::L_TYPE_MATERIAL)
-,DiffuseTex(nullptr)
+:DiffuseTex(nullptr)
 ,NormalTex(nullptr)
 {
 	DiffuseAlbedo = { 0.662745118f, 0.662745118f, 0.662745118f, 1.000000000f };

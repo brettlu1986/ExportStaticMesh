@@ -18,7 +18,7 @@ LCamera::LCamera()
 	,UpDirection(0, 0, 1)
 	,Fov(XM_PI/2)
 	,AspectRatio(1.777f)
-	,CameraDatas(FCameraData())
+	,CameraDatas(LCameraData())
 	,bActive(false)
 {
 }

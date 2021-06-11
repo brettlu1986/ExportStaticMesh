@@ -169,6 +169,10 @@
 			"fileName": "StaticMeshes/SM_Rock.bin"
 		},
 		{
+			"refName": "SM_Rock",
+			"fileName": "StaticMeshes/SM_Rock.bin"
+		},
+		{
 			"refName": "SM_TableRound",
 			"fileName": "StaticMeshes/SM_TableRound.bin"
 		}

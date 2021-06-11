@@ -6,5 +6,7 @@ copy .\ExportStaticMesh\Saved\Export\Materials\*.bin .\LoadStaticMesh\LoadStatic
 copy .\ExportStaticMesh\Saved\Export\SkeletalMeshes\*.bin .\LoadStaticMesh\LoadStaticMesh\Resource\SkeletalMeshes\
 copy .\ExportStaticMesh\Saved\Export\StaticMeshes\*.bin .\LoadStaticMesh\LoadStaticMesh\Resource\StaticMeshes\
 copy .\ExportStaticMesh\Saved\Export\Textures\*.dds .\LoadStaticMesh\LoadStaticMesh\Resource\Textures\
+copy .\ExportStaticMesh\Saved\Export\AssetInfo\*.bin .\LoadStaticMesh\LoadStaticMesh\Resource\AssetInfo\
+
 
 pause

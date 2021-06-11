@@ -107,6 +107,49 @@ enum class E_INDEX_TYPE : UINT8
 	TYPE_UINT_32,
 };
 
+//asset def
+struct LAssetDef
+{
+	string RefName;
+	string FileName;
+};
+
+struct LMapStaticObjInfo
+{
+	string ObjectName;
+	string RefGeometry;
+	string RefMaterial;
+	XMFLOAT3 WorldLocation;
+	XMFLOAT3 WorldRotator;
+	XMFLOAT3 WorldScale;
+};
+
+struct LMapSkeletalObjInfo
+{
+	string ObjectName;
+	string RefGeometry;
+	string RefMaterial;
+	string RefSkeleton;
+	XMFLOAT3 WorldLocation;
+	XMFLOAT3 WorldRotator;
+	XMFLOAT3 WorldScale;
+	vector<string> RefAnims;
+};
+
+struct LCameraData {
+	XMFLOAT3 Location;
+	XMFLOAT3 Target;
+	XMFLOAT3 Rotator; // {Pitch, Yaw , Roll}
+	float Fov;
+	float Aspect;
+};
+
+struct LDirectionLightData
+{
+	XMFLOAT3 Strength;
+	XMFLOAT3 Direction;
+	XMFLOAT3 Position;
+};
 
 
 

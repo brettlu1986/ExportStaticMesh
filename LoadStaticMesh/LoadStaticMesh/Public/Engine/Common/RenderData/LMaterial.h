@@ -4,8 +4,9 @@
 
 #include "LResource.h"
 #include "LTexture.h"
+#include "LMaterialBase.h"
 
-class LMaterial : public LResource
+class LMaterial : public LMaterialBase
 {
 public:
 	LMaterial();
