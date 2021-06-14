@@ -8,7 +8,6 @@
 #include "LSceneCamera.h"
 #include "LThirdPersonCamera.h"
 #include "LLog.h"
-#include "LAssetManager.h"
 
 #include "FD3D12Helper.h"
 
@@ -85,6 +84,9 @@ void LAssetDataLoader::LoadMap(string MapFile, vector<LMapStaticObjInfo>& MapSta
 		Rf >> SkeletalInfo.WorldLocation.x >> SkeletalInfo.WorldLocation.y >> SkeletalInfo.WorldLocation.z 
 		>> SkeletalInfo.WorldRotator.x >> SkeletalInfo.WorldRotator.y >> SkeletalInfo.WorldRotator.z 
 		>> SkeletalInfo.WorldScale.x >> SkeletalInfo.WorldScale.y >> SkeletalInfo.WorldScale.z;
+		
+		SkeletalInfo.WorldRotator.y -= 90.f;
+
 		MapSkeletalObjInfos.push_back(SkeletalInfo);
 	}
 	string LightsFile;
@@ -194,30 +196,6 @@ void LAssetDataLoader::LoadCameraDataFromFile(string FileName, LCameraData& Came
 	}
 }
 
-//void LAssetDataLoader::LoadCameraDataFromFile(string FileName, LCamera& Camera)
-//{
-//	LCameraData CameraData;
-//	string FName = GetSaveDataDirectory() + FileName;
-//	ifstream Rf(FName, ios::out | ios::binary);
-//	if (!Rf) {
-//		return;
-//	}
-//
-//	char* CameraBuffer = new char[sizeof(LCameraData)];
-//	memset(CameraBuffer, '\0', sizeof(LCameraData));
-//	Rf.read(CameraBuffer, sizeof(LCameraData));
-//	CameraData = *(LCameraData*)(CameraBuffer);
-//
-//	Camera.SetCameraData(CameraData);
-//	Camera.Init();
-//	delete[] CameraBuffer;
-//
-//	Rf.close();
-//	if (!Rf.good()) {
-//		return;
-//	}
-//}
-
 void LAssetDataLoader::LoadDirectionLights(string FileName,  vector<LDirectionLightData>& LightsData)
 {
 	string FName = GetSaveDataDirectory() + FileName;
@@ -238,17 +216,13 @@ void LAssetDataLoader::LoadDirectionLights(string FileName,  vector<LDirectionLi
 	}
 }
 
-void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(string FileName, LSkeletalMesh& SkeletalMesh, XMFLOAT3& Location, XMFLOAT3& Rotation, XMFLOAT3& Scale)
+void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(string FileName, LSkeletalMeshBuffer* SkeletalMeshBuffer)
 {
 	string FName = GetSaveDataDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
 	if (!Rf) {
 		return;
 	}
-	Rf.read((char*)&Location, sizeof(XMFLOAT3));
-	Rf.read((char*)&Rotation, sizeof(XMFLOAT3));
-	Rotation.y -= 90.f;
-	Rf.read((char*)&Scale, sizeof(XMFLOAT3));
 
 	UINT VertexCount;
 	Rf.read((char*)&VertexCount, sizeof(UINT));
@@ -256,7 +230,8 @@ void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(string FileName, LSkel
 	vector<FSkeletalVertexData> VertexDatas;
 	VertexDatas.resize(VertexCount);
 	Rf.read((char*)VertexDatas.data(), VertexCount * sizeof(FSkeletalVertexData));
-	SkeletalMesh.SetVertexBufferInfo((char*)VertexDatas.data(), VertexCount * sizeof(FSkeletalVertexData), VertexCount);
+
+	SkeletalMeshBuffer->VertexBufferData = new LVertexBuffer((char*)VertexDatas.data(), VertexCount * sizeof(FSkeletalVertexData), VertexCount);
 
 	UINT IndicesCount;
 	Rf.read((char*)&IndicesCount, sizeof(UINT));
@@ -265,15 +240,13 @@ void LAssetDataLoader::LoadSkeletalMeshVertexDataFromFile(string FileName, LSkel
 	Indices.resize(IndicesCount);
 	Rf.read((char*)Indices.data(), IndicesCount * sizeof(UINT32));
 
-	SkeletalMesh.SetIndexBufferInfo(IndicesCount, IndicesCount * sizeof(UINT32),
+	SkeletalMeshBuffer->IndexBufferData = new LIndexBuffer(IndicesCount, IndicesCount * sizeof(UINT32),
 		E_INDEX_TYPE::TYPE_UINT_32, reinterpret_cast<void*>(Indices.data()));
 
-	vector<UINT16> BoneMap;
 	UINT BoneMapSize;
 	Rf.read((char*)&BoneMapSize, sizeof(UINT));
-	BoneMap.resize(BoneMapSize);
-	Rf.read((char*)BoneMap.data(), BoneMapSize * sizeof(UINT16));
-	SkeletalMesh.SetCurrentBoneMap(BoneMap);
+	SkeletalMeshBuffer->BoneMap.resize(BoneMapSize);
+	Rf.read((char*)SkeletalMeshBuffer->BoneMap.data(), BoneMapSize * sizeof(UINT16));
 
 	Rf.close();
 	if (!Rf.good()) {
@@ -463,7 +436,7 @@ void LAssetDataLoader::LoadMaterialInstance(string FileName, LMaterialInstance* 
 
 }
 
-void LAssetDataLoader::LoadAnimationSquence(string SequenceName, LAnimationSequence& Seq)
+void LAssetDataLoader::LoadAnimationSquence(string SequenceName, LAnimationSequence* Seq)
 {
 	string FName = GetSaveDataDirectory() + SequenceName;
 	ifstream Rf(FName, ios::out | ios::binary);
@@ -473,11 +446,11 @@ void LAssetDataLoader::LoadAnimationSquence(string SequenceName, LAnimationSeque
 
 	UINT FrameNum;
 	Rf.read((char*)&FrameNum, sizeof(UINT));
-	Seq.SetFrameCount(FrameNum);
+	Seq->SetFrameCount(FrameNum);
 
 	for(UINT i = 0; i< FrameNum; i++)
 	{
-		Seq.GetFrameTimes().push_back(i * AnimFrameRate);
+		Seq->GetFrameTimes().push_back(i * AnimFrameRate);
 	}
 
 	UINT TrackNum;
@@ -519,17 +492,17 @@ void LAssetDataLoader::LoadAnimationSquence(string SequenceName, LAnimationSeque
 
 		Rf.read((char*)&Num, sizeof(UINT));
 		Track.TrackToBoneIndex = Num;
-		Seq.AddAnimationTrack(Track);
+		Seq->AddAnimationTrack(Track);
 	}
 
-	Seq.GetCurrentAnimPoseToParentTrans().resize(Seq.GetSequenceTracks().size());
+	Seq->GetCurrentAnimPoseToParentTrans().resize(Seq->GetSequenceTracks().size());
 	Rf.close();
 	if (!Rf.good()) {
 		return;
 	}
 }
 
-void LAssetDataLoader::LoadMeshFromFile(string FileName, LMesh& Mesh, XMFLOAT3& Location, XMFLOAT3& Rotation, XMFLOAT3& Scale)
+void LAssetDataLoader::LoadMeshFromFile(string FileName, LStaticMeshBuffer* MeshBuffer)
 {
 	string FName = GetSaveDataDirectory() + FileName;
 	ifstream Rf(FName, ios::out | ios::binary);
@@ -537,16 +510,13 @@ void LAssetDataLoader::LoadMeshFromFile(string FileName, LMesh& Mesh, XMFLOAT3& 
 		return;
 	}
 
-	Rf.read((char*)&Location, sizeof(XMFLOAT3));
-	Rf.read((char*)&Rotation, sizeof(XMFLOAT3));
-	Rf.read((char*)&Scale, sizeof(XMFLOAT3));
-
 	UINT VertexCount;
 	Rf.read((char*)&VertexCount, sizeof(UINT));
 	vector<FVertexData> VertexDatas;
 	VertexDatas.resize(VertexCount);
 	Rf.read((char*)VertexDatas.data(), VertexCount * sizeof(FVertexData));
-	Mesh.SetVertexBufferInfo((char*)VertexDatas.data(), VertexCount * sizeof(FVertexData), VertexCount);
+
+	MeshBuffer->VertexBufferData = new LVertexBuffer((char*)VertexDatas.data(), VertexCount * sizeof(FVertexData), VertexCount);
 
 	bool bUseHalfInt32;
 	Rf.read((char*)&bUseHalfInt32, sizeof(UINT8));
@@ -567,7 +537,8 @@ void LAssetDataLoader::LoadMeshFromFile(string FileName, LMesh& Mesh, XMFLOAT3& 
 		Indices.resize(IndicesCount);
 		Rf.read((char*)Indices.data(), IndicesByteSize);
 	}
-	Mesh.SetIndexBufferInfo(IndicesCount, IndicesByteSize,
+
+	MeshBuffer->IndexBufferData = new LIndexBuffer(IndicesCount, IndicesByteSize,
 		bUseHalfInt32 ? E_INDEX_TYPE::TYPE_UINT_16 : E_INDEX_TYPE::TYPE_UINT_32,
 		bUseHalfInt32 ? reinterpret_cast<void*>(IndicesHalf.data()) : reinterpret_cast<void*>(Indices.data()));
 

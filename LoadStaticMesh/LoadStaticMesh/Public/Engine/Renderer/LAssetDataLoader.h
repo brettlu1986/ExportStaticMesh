@@ -10,8 +10,7 @@
 #include "LShader.h"
 #include "LMaterial.h"
 #include "LMaterialInstance.h"
-
-
+#include "LAssetManager.h"
 
 class LAssetDataLoader
 {
@@ -54,17 +53,15 @@ public:
 
 	static void LoadMaterialInstance(string FileName, LMaterialInstance* MaterialIns);
 
-	static void LoadAnimationSquence(string SequenceName, LAnimationSequence& Seq);
+	static void LoadAnimationSquence(string SequenceName, LAnimationSequence* Seq);
 
 	static void LoadDirectionLights(string FileName, vector<LDirectionLightData>&LightsData);
 
 	static wstring GetAssetFullPath(LPCWSTR AssetName);
 
-	static void LoadSkeletalMeshVertexDataFromFile(string FileName, LSkeletalMesh& SkeletalMesh, XMFLOAT3& Location, XMFLOAT3& Rotation, XMFLOAT3& Scale);
+	static void LoadSkeletalMeshVertexDataFromFile(string FileName, LSkeletalMeshBuffer* SkeletalMeshBuffer);
 
-	static void LoadMeshFromFile(string FileName, LMesh& Mesh, XMFLOAT3& Location, XMFLOAT3& Rotation, XMFLOAT3& Scale);
-
-	//static void LoadCameraDataFromFile(string FileName, LCamera& Camera);
+	static void LoadMeshFromFile(string FileName, LStaticMeshBuffer* MeshBuffer);
 
 	static void LoadCameraDataFromFile(string FileName, LCameraData& CameraData);
 

@@ -6,6 +6,7 @@
 #include "FRenderThread.h"
 #include "FMesh.h"
 
+
 LMesh::LMesh()
 :LResource(E_LRESOURCE_TYPE::L_TYPE_MESH)
 ,ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
@@ -20,23 +21,17 @@ LMesh::LMesh()
 
 LMesh::~LMesh()
 {
-	VertexBufferData = nullptr;
-	IndexBufferData = nullptr;
-
+	StaticMeshBuffer = nullptr;
+	MaterialData = nullptr;
 	DestroyRenderThreadResource();
 }
 
-void LMesh::SetVertexBufferInfo(const char* DataSource, UINT DataSize, UINT DataCount)
+void LMesh::SetMeshBufferInfo(LStaticMeshBuffer* MeshBuffer)
 {
-	VertexBufferData = make_shared<LVertexBuffer>(DataSource, DataSize, DataCount);
+	StaticMeshBuffer = MeshBuffer;
 }
 
-void LMesh::SetIndexBufferInfo(UINT InCount, UINT InByteSize, E_INDEX_TYPE InType, void* InData)
-{
-	IndexBufferData = make_shared<LIndexBuffer>(InCount, InByteSize, InType, InData);
-}
-
-void LMesh::SetMaterial(LMaterial* MatData)
+void LMesh::SetMaterial(LMaterialBase* MatData)
 {
 	MaterialData = MatData;
 }
@@ -47,14 +42,14 @@ void LMesh::InitRenderThreadResource()
 	RenderMesh = make_shared<FMesh>(this);
 
 	auto RenderMeshRes = RenderMesh;
-	auto VertexData = VertexBufferData;
-	auto IndexData = IndexBufferData;
-	auto RenderMaterialData = MaterialData;
+	auto VertexData = StaticMeshBuffer->VertexBufferData;
+	auto IndexData = StaticMeshBuffer->IndexBufferData;
+	auto RenderMaterialData = MaterialData == nullptr? new LMaterialBase() : MaterialData;
 	RENDER_THREAD_TASK("InitFMeshInRender",
 		[RenderMeshRes, VertexData, IndexData, RenderMaterialData]()
 		{
 			RenderMeshRes->InitRenderThreadResource(*VertexData, *IndexData, *RenderMaterialData);
-			RenderMeshRes->SetPsoKey(RenderMaterialData->HasTex() ? "PsoUseTexture" : "PsoNoTexture");
+			RenderMeshRes->SetPsoKey(RenderMaterialData->GetParamTextures().size() > 0 ? "PsoUseTexture" : "PsoNoTexture");
 			RenderMeshRes->AddMeshInRenderThread();
 		}
 	);

@@ -30,9 +30,9 @@ LSceneCamera::~LSceneCamera()
 
 }
 
-void LSceneCamera::Init()
+void LSceneCamera::Init(LCameraData Data)
 {
-	LCamera::Init();
+	LCamera::Init(Data);
 	OnResize();
 }
 

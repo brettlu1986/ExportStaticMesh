@@ -12,7 +12,7 @@ public:
 	LCamera();
 	virtual ~LCamera();
 
-	virtual void Init();
+	virtual void Init(LCameraData Data);
 	virtual void OnResize();
 	virtual void Update(float DeltaTime);
 	
@@ -47,11 +47,6 @@ public:
 		bActive = bActivate;
 	}
 	
-	void SetCameraData(LCameraData Data)
-	{
-		CameraDatas = Data;
-	}
-
 	void SetSocketOffset(XMFLOAT3 Offset);
 	virtual void SetViewTarget(LActor* Target) {};
 

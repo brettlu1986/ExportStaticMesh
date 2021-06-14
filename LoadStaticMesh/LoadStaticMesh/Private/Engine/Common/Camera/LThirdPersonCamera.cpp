@@ -21,9 +21,9 @@ LThirdPersonCamera::~LThirdPersonCamera()
 
 }
 
-void LThirdPersonCamera::Init()
+void LThirdPersonCamera::Init(LCameraData Data)
 {
-	LCamera::Init();
+	LCamera::Init( Data);
 	OnResize();
 }
 

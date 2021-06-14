@@ -231,9 +231,6 @@
     <ClCompile Include="Private\Engine\Common\Character\LPlayerController.cpp">
       <Filter>Source Files\Engine\Common\Character</Filter>
     </ClCompile>
-    <ClCompile Include="Private\SampleAssets.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Private\Engine\Renderer\FShadowMap.cpp">
       <Filter>Source Files\Engine\Renderer</Filter>
     </ClCompile>
@@ -373,9 +370,6 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\LRingBuffer.h">
       <Filter>Header Files\Engine\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Public\SampleAssets.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Public\Engine\Renderer\FMaterial.h">
       <Filter>Header Files\Engine\Renderer</Filter>

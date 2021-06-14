@@ -2,9 +2,8 @@
 
 #include "stdafx.h"
 #include "LResource.h"
-#include "LIndexBuffer.h"
-#include "LVertexBuffer.h"
-#include "LMaterial.h"
+#include "LMaterialBase.h"
+#include "LAssetManager.h"
 
 class LSkeleton;
 class FSkeletalMesh;
@@ -15,8 +14,7 @@ public:
 	LSkeletalMesh();
 	virtual ~LSkeletalMesh();
 
-	void SetVertexBufferInfo(const char* DataSource, UINT DataSize, UINT DataCount);
-	void SetIndexBufferInfo(UINT InCount, UINT InByteSize, E_INDEX_TYPE InType, void* InData);
+	void SetSkeletalMeshBuffer(LSkeletalMeshBuffer* MeshBuffer);
 
 	void InitRenderThreadResource();
 	void DestroyRenderThreadResource();
@@ -41,18 +39,12 @@ public:
 		return ModelLocation;
 	}
 
-	void SetCurrentBoneMap(vector<UINT16>& BoneMap)
-	{
-		CurrentBoneMap.resize(BoneMap.size());
-		copy(BoneMap.begin(), BoneMap.end(), CurrentBoneMap.begin());
-	}
-
 	void UpdateBoneMapFinalTransform(vector<XMFLOAT4X4>& BoneMapFinal);
 	void UpdateModelMatrix();
 
 	const vector<UINT16>& GetBoneMap()
 	{
-		return CurrentBoneMap;
+		return SkeletalMeshBuffer->BoneMap;
 	}
 
 	void SetSkeleton(LSkeleton* Ske)
@@ -65,14 +57,12 @@ public:
 		return Skeleton;
 	}
 
-	void SetMaterial(LMaterial* MatData);
+	void SetMaterial(LMaterialBase* MatData);
 	
 private:
 
-	shared_ptr<LIndexBuffer> IndexBufferData;
-	shared_ptr<LVertexBuffer> VertexBufferData;
-
-	LMaterial* MaterialData;
+	LSkeletalMeshBuffer* SkeletalMeshBuffer;
+	LMaterialBase* MaterialData;
 
 	XMFLOAT3 ModelLocation;
 	XMFLOAT3 ModelRotation;
@@ -82,6 +72,4 @@ private:
 
 	shared_ptr<FSkeletalMesh> RenderMesh;
 	bool bUpdateWorldTrans;
-
-	vector<UINT16> CurrentBoneMap;// real bone index used in this skeletal, it is associate with the vertex.InfluenceBones Index
 };

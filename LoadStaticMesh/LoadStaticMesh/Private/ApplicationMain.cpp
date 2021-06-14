@@ -6,12 +6,14 @@
 #include "FRenderThread.h"
 #include <chrono>
 #include <thread> 
-//#include "SampleAssets.h"
 #include "LCharacter.h"
 #include "LLog.h"
 #include "LSceneCamera.h"
 #include "LAssetManager.h"
 #include "LAssetDataLoader.h"
+#include "LLight.h"
+#include "LPlayerController.h"
+#include "LThirdPersonCamera.h"
 
 ApplicationMain* ApplicationMain::Application = nullptr;
 
@@ -39,6 +41,7 @@ bool ApplicationMain::Initialize(UINT Width, UINT Height, string WndName)
 	//create reader thread in engine init
 	LEngine::InitEngine(Desc);
 	OnTouchInit();
+	OnAssetsLoad();
 	OnSceneInit();
 	return true;
 }
@@ -49,10 +52,15 @@ void ApplicationMain::OnTouchInit()
 	EventDisp.RegisterEvent(new LEvent<FInputResult>(E_EVENT_KEY::EVENT_INPUT, &ApplicationMain::ProcessInput));
 }
 
+void ApplicationMain::OnAssetsLoad()
+{
+	//load assets
+	LAssetManager::Get()->LoadAssets("AssetInfo/AssetsInfo.bin");
+}
+
 void ApplicationMain::OnSceneInit()
 {
-	LAssetManager::Get()->LoadAssets("AssetInfo/AssetsInfo.bin");
-
+	LAssetManager* AssetMgr = LAssetManager::Get();
 	vector<LMapStaticObjInfo> StaticObjs;
 	vector<LMapSkeletalObjInfo> SkeletalObjs;
 	LCameraData CameraData;
@@ -63,9 +71,75 @@ void ApplicationMain::OnSceneInit()
 	for(auto& StaticObj : StaticObjs)
 	{
 		auto Mesh = make_shared<LMesh>();
+		Mesh->SetMaterial(AssetMgr->GetMaterial(StaticObj.RefMaterial));
+		Mesh->SetMeshBufferInfo(AssetMgr->GetMeshBuffer(StaticObj.RefGeometry));
+		Mesh->InitRenderThreadResource();
 
+		Mesh->SetModelLocation(StaticObj.WorldLocation);
+		Mesh->SetModelRotation(StaticObj.WorldRotator);
+		Mesh->SetModelScale(StaticObj.WorldScale);
+
+		DataScene->AddStaticMeshes(Mesh);
 	}
-	//SampleAssets::LoadSampleSceneData(*DataScene);
+
+	for(auto& SkeletalObj : SkeletalObjs)
+	{
+		auto Character = make_shared<LCharacter>();
+
+		LSkeletalMesh* SkeletalMesh = new LSkeletalMesh();
+		SkeletalMesh->SetMaterial(AssetMgr->GetMaterial(SkeletalObj.RefMaterial));
+		SkeletalMesh->SetSkeletalMeshBuffer(AssetMgr->GetSkeletalMeshBuffer(SkeletalObj.RefGeometry));
+
+		SkeletalMesh->InitRenderThreadResource();
+		SkeletalMesh->SetModelLocation(SkeletalObj.WorldLocation);
+		SkeletalMesh->SetModelRotation(SkeletalObj.WorldRotator);
+		SkeletalMesh->SetModelScale(SkeletalObj.WorldScale);
+
+		SkeletalMesh->SetSkeleton(AssetMgr->GetSkeletal(SkeletalObj.RefSkeleton));
+
+		LAnimator* Animator = new LAnimator();
+		for(size_t i = 0; i < SkeletalObj.RefAnims.size(); i++)
+		{
+			LAnimationSequence* Seq = AssetMgr->GetAnimationSeq(SkeletalObj.RefAnims[i]);
+			Animator->AddAnimSequence(static_cast<E_ANIM_STATE>(i), *Seq);
+		}
+
+		Character->SetSkeletalMesh(SkeletalMesh);
+		Character->SetAnimator(Animator);
+
+		DataScene->AddCharacterToScene(Character);
+	}
+
+	//load lights
+	for (size_t i = 0; i < LightsData.size(); i++)
+	{
+		auto Light = make_shared<LLight>();
+		Light->Direction = LightsData[i].Direction;
+		Light->Position = LightsData[i].Position;
+		Light->Strength = LightsData[i].Strength;
+		Light->LightIndex = (UINT)i;
+		//only change the first light param
+		Light->Init();
+		Light->InitRenderThreadResource();
+		DataScene->AddLightToScene(Light);
+	}
+	
+	//load scene camera
+	shared_ptr<LCamera> SceneCamera = make_shared<LSceneCamera>();
+	SceneCamera->Init(CameraData);
+	DataScene->AddCamera(SceneCamera);
+
+	shared_ptr<LCamera> ThirdPersonCamera = make_shared<LThirdPersonCamera>();
+	ThirdPersonCamera->Init(CameraData);
+	ThirdPersonCamera->SetSocketOffset(XMFLOAT3(-2.f, 0.3f, 2.2f));
+	ThirdPersonCamera->SetViewTarget(DataScene->GetCharacters()[2].get());
+	DataScene->AddCamera(ThirdPersonCamera);
+
+	//set the first character is the player
+	LPlayerController* PlayerController = new LPlayerController();
+	PlayerController->Possess(DataScene->GetCharacters()[2].get());
+
+	DataScene->ActiveCamera(0);
 }
 
 void ApplicationMain::Update(float DeltaTime)

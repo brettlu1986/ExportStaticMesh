@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
+
 #define WINDOWS 
 
 #if defined(WINDOWS) 

@@ -19,7 +19,7 @@ public:
 	virtual void Destroy() override;
 	virtual void Initialize() override;
 
-	void Init(LMaterial& MaterialData);
+	void Init(LMaterialBase& MaterialData);
 	void UpdateMaterialConstantInRenderThread(XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float InRoughness, XMFLOAT4X4 InMatTrans);
 
 	FResourceView* MaterialConstantBufferView;

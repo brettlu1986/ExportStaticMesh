@@ -29,7 +29,7 @@ public:
 
 	LCharacter* GetLocalControlPlayer()
 	{
-		return Players[0].get();
+		return Players[2].get();
 	}
 
 private:

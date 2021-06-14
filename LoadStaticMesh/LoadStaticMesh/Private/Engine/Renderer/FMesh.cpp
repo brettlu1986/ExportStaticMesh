@@ -71,7 +71,7 @@ XMMATRIX FMesh::GetModelMatrix()
 	return ModelMatrix;
 }
 
-void FMesh::InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData, LMaterial& MaterialData)
+void FMesh::InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData, LMaterialBase& MaterialData)
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
 

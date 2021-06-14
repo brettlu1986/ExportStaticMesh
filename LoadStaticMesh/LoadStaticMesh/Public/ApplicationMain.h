@@ -25,6 +25,7 @@ public:
 private:
 	static ApplicationMain* Application;
 	void OnTouchInit();
+	void OnAssetsLoad();
 	void OnSceneInit();
 
 private: 

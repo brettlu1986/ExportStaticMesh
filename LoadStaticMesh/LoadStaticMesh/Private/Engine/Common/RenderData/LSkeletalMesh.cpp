@@ -20,23 +20,17 @@ LSkeletalMesh::LSkeletalMesh()
 
 LSkeletalMesh::~LSkeletalMesh()
 {
-	VertexBufferData = nullptr;
-	IndexBufferData = nullptr;
-
+	SkeletalMeshBuffer = nullptr;
+	MaterialData = nullptr;
 	DestroyRenderThreadResource();
 }
 
-void LSkeletalMesh::SetVertexBufferInfo(const char* DataSource, UINT DataSize, UINT DataCount)
+void LSkeletalMesh::SetSkeletalMeshBuffer(LSkeletalMeshBuffer* MeshBuffer)
 {
-	VertexBufferData = make_shared<LVertexBuffer>(DataSource, DataSize, DataCount);
+	SkeletalMeshBuffer = MeshBuffer;
 }
 
-void LSkeletalMesh::SetIndexBufferInfo(UINT InCount, UINT InByteSize, E_INDEX_TYPE InType, void* InData)
-{
-	IndexBufferData = make_shared<LIndexBuffer>(InCount, InByteSize, InType, InData);
-}
-
-void LSkeletalMesh::SetMaterial(LMaterial* MatData)
+void LSkeletalMesh::SetMaterial(LMaterialBase* MatData)
 {
 	MaterialData = MatData;
 }
@@ -47,8 +41,8 @@ void LSkeletalMesh::InitRenderThreadResource()
 	RenderMesh = make_shared<FSkeletalMesh>(this);
 
 	auto RenderMeshRes = RenderMesh;
-	auto VertexData = VertexBufferData;
-	auto IndexData = IndexBufferData;
+	auto VertexData = SkeletalMeshBuffer->VertexBufferData;
+	auto IndexData = SkeletalMeshBuffer->IndexBufferData;
 	auto RenderMaterialData = MaterialData;
 	RENDER_THREAD_TASK("InitFSkeletalMeshInRender",
 		[RenderMeshRes, VertexData, IndexData, RenderMaterialData]()

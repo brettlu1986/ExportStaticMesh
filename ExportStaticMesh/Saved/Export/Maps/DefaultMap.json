@@ -6,7 +6,7 @@
 			"refMaterial": "CubeMaterial",
 			"worldLocation":
 			{
-				"x": -399.75146484375,
+				"x": -3.9975144863128662,
 				"y": 0,
 				"z": 0
 			},
@@ -29,8 +29,8 @@
 			"refMaterial": "CubeMaterial",
 			"worldLocation":
 			{
-				"x": -1874.739501953125,
-				"y": 0.06109619140625,
+				"x": -18.747394561767578,
+				"y": 0.00061096192803233862,
 				"z": 0
 			},
 			"worldRotation":
@@ -52,8 +52,8 @@
 			"refMaterial": "CubeMaterial",
 			"worldLocation":
 			{
-				"x": 1075.260498046875,
-				"y": 0.061096001416444778,
+				"x": 10.752604484558105,
+				"y": 0.00061096000717952847,
 				"z": 0
 			},
 			"worldRotation":
@@ -75,8 +75,8 @@
 			"refMaterial": "CubeMaterial",
 			"worldLocation":
 			{
-				"x": -399.7410888671875,
-				"y": -1474.943359375,
+				"x": -3.997410774230957,
+				"y": -14.749433517456055,
 				"z": 0
 			},
 			"worldRotation":
@@ -98,8 +98,8 @@
 			"refMaterial": "CubeMaterial",
 			"worldLocation":
 			{
-				"x": -399.7410888671875,
-				"y": 1475.056640625,
+				"x": -3.997410774230957,
+				"y": 14.750566482543945,
 				"z": 0
 			},
 			"worldRotation":
@@ -121,8 +121,8 @@
 			"refMaterial": "RampMaterial",
 			"worldLocation":
 			{
-				"x": -10,
-				"y": -410,
+				"x": -0.099999994039535522,
+				"y": -4.0999999046325684,
 				"z": 0
 			},
 			"worldRotation":
@@ -144,8 +144,8 @@
 			"refMaterial": "RampMaterial",
 			"worldLocation":
 			{
-				"x": -420,
-				"y": 990,
+				"x": -4.1999998092651367,
+				"y": 9.8999996185302734,
 				"z": 0
 			},
 			"worldRotation":
@@ -167,8 +167,8 @@
 			"refMaterial": "RampMaterial",
 			"worldLocation":
 			{
-				"x": 190,
-				"y": 530,
+				"x": 1.8999999761581421,
+				"y": 5.2999997138977051,
 				"z": 0
 			},
 			"worldRotation":
@@ -190,9 +190,9 @@
 			"refMaterial": "RampMaterial",
 			"worldLocation":
 			{
-				"x": -160,
-				"y": -150,
-				"z": 270
+				"x": -1.5999999046325684,
+				"y": -1.5,
+				"z": 2.7000000476837158
 			},
 			"worldRotation":
 			{
@@ -213,9 +213,9 @@
 			"refMaterial": "BasicShapeMaterial",
 			"worldLocation":
 			{
-				"x": -80,
-				"y": 820,
-				"z": 280
+				"x": -0.79999995231628418,
+				"y": 8.1999998092651367,
+				"z": 2.7999999523162842
 			},
 			"worldRotation":
 			{
@@ -236,8 +236,8 @@
 			"refMaterial": "M_ChairBase_Ins1",
 			"worldLocation":
 			{
-				"x": 50,
-				"y": -110,
+				"x": 0.5,
+				"y": -1.1000000238418579,
 				"z": 0
 			},
 			"worldRotation":
@@ -259,8 +259,8 @@
 			"refMaterial": "M_ChairBase_Inst2",
 			"worldLocation":
 			{
-				"x": 410,
-				"y": -190,
+				"x": 4.0999999046325684,
+				"y": -1.8999999761581421,
 				"z": 0
 			},
 			"worldRotation":
@@ -282,8 +282,8 @@
 			"refMaterial": "M_ChairBase_Inst3",
 			"worldLocation":
 			{
-				"x": 130,
-				"y": 230,
+				"x": 1.2999999523162842,
+				"y": 2.2999999523162842,
 				"z": 0
 			},
 			"worldRotation":
@@ -305,8 +305,8 @@
 			"refMaterial": "M_ChairBase",
 			"worldLocation":
 			{
-				"x": 560,
-				"y": -20,
+				"x": 5.5999999046325684,
+				"y": -0.19999998807907104,
 				"z": 0
 			},
 			"worldRotation":
@@ -328,9 +328,9 @@
 			"refMaterial": "M_MeshLamp",
 			"worldLocation":
 			{
-				"x": 520,
-				"y": 200,
-				"z": 160
+				"x": 5.1999998092651367,
+				"y": 2,
+				"z": 1.5999999046325684
 			},
 			"worldRotation":
 			{
@@ -351,9 +351,9 @@
 			"refMaterial": "M_MeshRock",
 			"worldLocation":
 			{
-				"x": 300,
-				"y": 20,
-				"z": 140
+				"x": 3,
+				"y": 0.19999998807907104,
+				"z": 1.3999999761581421
 			},
 			"worldRotation":
 			{
@@ -374,9 +374,9 @@
 			"refMaterial": "M_MeshBase",
 			"worldLocation":
 			{
-				"x": 350,
-				"y": 230,
-				"z": 140
+				"x": 3.5,
+				"y": 2.2999999523162842,
+				"z": 1.3999999761581421
 			},
 			"worldRotation":
 			{
@@ -397,8 +397,8 @@
 			"refMaterial": "M_MeshTable",
 			"worldLocation":
 			{
-				"x": 320,
-				"y": 30,
+				"x": 3.1999998092651367,
+				"y": 0.29999998211860657,
 				"z": 0
 			},
 			"worldRotation":
@@ -431,9 +431,9 @@
 			],
 			"worldLocation":
 			{
-				"x": -159.39697265625,
-				"y": 550,
-				"z": 98.156471252441406
+				"x": -1.5939956903457642,
+				"y": 5.5,
+				"z": 0
 			},
 			"worldRotation":
 			{
@@ -463,9 +463,9 @@
 			],
 			"worldLocation":
 			{
-				"x": -130.00276184082031,
-				"y": -160,
-				"z": 98.157264709472656
+				"x": -1.3000518083572388,
+				"y": -1.5999999046325684,
+				"z": 0
 			},
 			"worldRotation":
 			{
@@ -495,9 +495,9 @@
 			],
 			"worldLocation":
 			{
-				"x": -850.00018310546875,
-				"y": 20,
-				"z": 98.137863159179688
+				"x": -8.5,
+				"y": 0.19999998807907104,
+				"z": 0
 			},
 			"worldRotation":
 			{

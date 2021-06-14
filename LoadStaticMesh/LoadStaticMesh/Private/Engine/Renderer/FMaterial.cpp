@@ -64,30 +64,35 @@ void FMaterial::Initialize()
 
 }
 
-void FMaterial::Init(LMaterial& MaterialData)
+void FMaterial::Init(LMaterialBase& MaterialData)
 {
-	DiffuseAlbedo = MaterialData.DiffuseAlbedo;
+	/*DiffuseAlbedo = MaterialData.DiffuseAlbedo;
 	FresnelR0 = MaterialData.FresnelR0;
 	Roughness = MaterialData.Roughness;
-	MaterialTransform = MaterialData.MaterialTransform;
+	MaterialTransform = MaterialData.MaterialTransform;*/
 
-	if(MaterialData.GetDiffuseTexture() != nullptr)
+	DiffuseAlbedo = { 0.662745118f, 0.662745118f, 0.662745118f, 1.000000000f };
+	FresnelR0 = { 0.2f, 0.2f, 0.2f };
+	Roughness = 0.02f;
+	MaterialTransform = MathHelper::Identity4x4();
+
+	if(MaterialData.GetParamTexture(0) != nullptr)
 	{
-		DiffuseTex = GRHI->CreateTexture(MaterialData.GetDiffuseTexture());
+		DiffuseTex = GRHI->CreateTexture(MaterialData.GetParamTexture(0));
 		DiffuseResView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV, 1, &DiffuseTex,
 			0, E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
 	}
 
-	if (MaterialData.GetNormalTexture() != nullptr)
+	if (MaterialData.GetParamTexture(1) != nullptr)
 	{
-		NormalTex = GRHI->CreateTexture(MaterialData.GetNormalTexture());
+		NormalTex = GRHI->CreateTexture(MaterialData.GetParamTexture(1));
 		NormalResView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV, 1, &NormalTex,
 			0, E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
 	}
 
 	MaterialConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FMaterialConstants)), E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
 
-	UpdateMaterialConstantInRenderThread(MaterialData.DiffuseAlbedo, MaterialData.FresnelR0, MaterialData.Roughness, MaterialData.MaterialTransform);
+	UpdateMaterialConstantInRenderThread(DiffuseAlbedo, FresnelR0, Roughness, MaterialTransform);
 }
 
 void FMaterial::UpdateMaterialConstantInRenderThread(XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float InRoughness, XMFLOAT4X4 InMatTrans)

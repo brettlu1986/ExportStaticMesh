@@ -55,6 +55,8 @@ public:
 
 	LTexture* GetParamTexture(UINT Index)
 	{
+		if(ParamTextures.empty() || Index >= ParamTextures.size())
+			return nullptr;
 		return ParamTextures[Index];
 	}
 

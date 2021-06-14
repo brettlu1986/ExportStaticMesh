@@ -13,7 +13,7 @@ public:
 	LThirdPersonCamera();
 	~LThirdPersonCamera();
 
-	virtual void Init() override;
+	virtual void Init(LCameraData Data) override;
 	virtual void OnResize() override;
 	virtual void Update(float DeltaTime) override;
 	virtual void SetActive(bool bActivate) override;

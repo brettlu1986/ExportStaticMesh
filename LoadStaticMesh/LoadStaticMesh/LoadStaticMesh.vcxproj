@@ -220,7 +220,6 @@
     <ClCompile Include="Private\Engine\Thread\FThread.cpp" />
     <ClCompile Include="Private\Engine\Thread\FTaskThread.cpp" />
     <ClCompile Include="Private\Engine\Util\MathHelper.cpp" />
-    <ClCompile Include="Private\SampleAssets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\ApplicationMain.h" />
@@ -291,7 +290,6 @@
     <ClInclude Include="Public\Engine\Thread\FThread.h" />
     <ClInclude Include="Public\Engine\Thread\FTaskThread.h" />
     <ClInclude Include="Public\Engine\Util\MathHelper.h" />
-    <ClInclude Include="Public\SampleAssets.h" />
     <ClInclude Include="Public\stdafx.h" />
   </ItemGroup>
   <ItemGroup>

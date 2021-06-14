@@ -21,7 +21,7 @@ public:
 	virtual void Destroy();
 	virtual void Initialize();
 
-	void InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData, LMaterial& MaterialData);
+	void InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData, LMaterialBase& MaterialData);
 	void AddMeshInRenderThread();
 	void DeleteMeshInRenderThread();
 	void UpdateMeshMatrixInRenderThread(XMMATRIX Mat);

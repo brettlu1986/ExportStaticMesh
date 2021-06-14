@@ -55,7 +55,7 @@ void FSkeletalMesh::Destroy()
 void FSkeletalMesh::Initialize()
 {}
 
-void FSkeletalMesh::InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData, LMaterial& MaterialData)
+void FSkeletalMesh::InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData, LMaterialBase& MaterialData)
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
 

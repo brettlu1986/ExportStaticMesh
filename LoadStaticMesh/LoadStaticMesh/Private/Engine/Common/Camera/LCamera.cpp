@@ -28,8 +28,9 @@ LCamera::~LCamera()
 
 }
 
-void LCamera::Init()
+void LCamera::Init(LCameraData Data)
 {
+	CameraDatas = Data;
 	Position = CameraDatas.Location;
 
 	//{x, y, z} == {pitch , yaw, roll}
