@@ -339,7 +339,9 @@ bool UCustomExportBPLibrary::ExportsMap(TArray<FMapStaticMeshes> StaticMeshes, T
 
 	for (uint32 i = 0; i < Num; i++)
 	{
+		uint8 Transparency = Out.StaticMeshes[i].bTransparency ? 1 : 0;
 		Wf << string(TCHAR_TO_UTF8(*Out.StaticMeshes[i].ObjectName)) << " " << string(TCHAR_TO_UTF8(*Out.StaticMeshes[i].RefGeometry)) << " " << string(TCHAR_TO_UTF8(*Out.StaticMeshes[i].RefMaterial)) << " "
+			<< Transparency << " "
 			<< Out.StaticMeshes[i].WorldLocation.X << " " << Out.StaticMeshes[i].WorldLocation.Y << " " << Out.StaticMeshes[i].WorldLocation.Z << " "
 			<< Out.StaticMeshes[i].WorldRotation.Pitch << " " << Out.StaticMeshes[i].WorldRotation.Yaw << " " << Out.StaticMeshes[i].WorldRotation.Roll << " "
 			<< Out.StaticMeshes[i].WorldScale.X << " " << Out.StaticMeshes[i].WorldScale.Y << " " << Out.StaticMeshes[i].WorldScale.Z << " ";
@@ -349,8 +351,9 @@ bool UCustomExportBPLibrary::ExportsMap(TArray<FMapStaticMeshes> StaticMeshes, T
 	Wf << Num << " ";
 	for (uint32 i = 0; i < Num; i++)
 	{
+		uint8 Transparency = Out.SkeletalMeshes[i].bTransparency ? 1 : 0;
 		Wf << string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].ObjectName)) << " " <<string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].RefGeometry)) << " " << string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].RefMaterial)) << " "
-			<< string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].RefSkeleton)) << " ";
+			<< string(TCHAR_TO_UTF8(*Out.SkeletalMeshes[i].RefSkeleton)) << " " << Transparency << " ";
 
 		uint32 AnimNum = Out.SkeletalMeshes[i].RefAnims.Num();
 		Wf << AnimNum << " ";

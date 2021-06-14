@@ -24,6 +24,7 @@ cbuffer cbPass2 : register(b3)
 	Light gLight[MaxLights];
 }
 
+
 struct PSInput
 {
 	float4 position    : SV_POSITION;

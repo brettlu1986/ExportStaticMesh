@@ -120,6 +120,7 @@ struct LMapStaticObjInfo
 	string ObjectName;
 	string RefGeometry;
 	string RefMaterial;
+	bool bTransparency;
 	XMFLOAT3 WorldLocation;
 	XMFLOAT3 WorldRotator;
 	XMFLOAT3 WorldScale;
@@ -131,6 +132,7 @@ struct LMapSkeletalObjInfo
 	string RefGeometry;
 	string RefMaterial;
 	string RefSkeleton;
+	bool bTransparency;
 	XMFLOAT3 WorldLocation;
 	XMFLOAT3 WorldRotator;
 	XMFLOAT3 WorldScale;

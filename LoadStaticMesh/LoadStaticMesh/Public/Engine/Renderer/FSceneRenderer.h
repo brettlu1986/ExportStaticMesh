@@ -16,8 +16,8 @@ public:
 	void RenderScene(FScene* RenderScene);
 
 private:
-	void RenderSceneStaticMeshes(FScene* RenderScene, bool bShadowPass = false);
-	void RenderSceneSkeletalMeshes(FScene* RenderScene);
+	void RenderSceneStaticMeshes(FScene* RenderScene, bool bTranparency = false, bool bShadowPass = false);
+	void RenderSceneSkeletalMeshes(FScene* RenderScene, bool bShadowPass = false);
 
 	FResourceView* RenderTargets[RENDER_TARGET_COUNT];
 

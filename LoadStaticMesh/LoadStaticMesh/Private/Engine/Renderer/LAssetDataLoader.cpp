@@ -62,8 +62,10 @@ void LAssetDataLoader::LoadMap(string MapFile, vector<LMapStaticObjInfo>& MapSta
 	for(UINT i = 0; i < Num; i++)
 	{
 		LMapStaticObjInfo StaticInfo;
-		Rf >> StaticInfo.ObjectName >> StaticInfo.RefGeometry >> StaticInfo.RefMaterial >>
-		StaticInfo.WorldLocation.x >> StaticInfo.WorldLocation.y >> StaticInfo.WorldLocation.z >>
+		UINT8 Transparency;
+		Rf >> StaticInfo.ObjectName >> StaticInfo.RefGeometry >> StaticInfo.RefMaterial >> Transparency;
+		StaticInfo.bTransparency = Transparency == 1;
+		Rf >> StaticInfo.WorldLocation.x >> StaticInfo.WorldLocation.y >> StaticInfo.WorldLocation.z >>
 		StaticInfo.WorldRotator.x >> StaticInfo.WorldRotator.y >> StaticInfo.WorldRotator.z >>
 		StaticInfo.WorldScale.x >> StaticInfo.WorldScale.y >> StaticInfo.WorldScale.z;
 		MapStaticObjInfos.push_back(StaticInfo);
@@ -73,7 +75,9 @@ void LAssetDataLoader::LoadMap(string MapFile, vector<LMapStaticObjInfo>& MapSta
 	for (UINT i = 0; i < Num; i++)
 	{
 		LMapSkeletalObjInfo SkeletalInfo;
-		Rf >> SkeletalInfo.ObjectName >> SkeletalInfo.RefGeometry >> SkeletalInfo.RefMaterial >> SkeletalInfo.RefSkeleton;
+		UINT8 Transparency;
+		Rf >> SkeletalInfo.ObjectName >> SkeletalInfo.RefGeometry >> SkeletalInfo.RefMaterial >> SkeletalInfo.RefSkeleton >> Transparency;
+		SkeletalInfo.bTransparency = Transparency == 1;
 		UINT AnimNum;
 		Rf >> AnimNum;
 		SkeletalInfo.RefAnims.resize(AnimNum);

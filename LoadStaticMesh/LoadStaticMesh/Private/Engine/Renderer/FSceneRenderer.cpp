@@ -85,8 +85,12 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 	State.DepthBias = 25000;
 	State.DepthBiasClamp = 0.f;
 	State.SlopeScaledDepthBias = 0.1f;
-	GRHI->CreatePipelineStateObject({ "ShadowPass", StandardInputElementDescs, _countof(StandardInputElementDescs), L"SampleDepthShaderVs.cso",
+	GRHI->CreatePipelineStateObject({ "ShadowPass", SkeletalInputElementDescs, _countof(SkeletalInputElementDescs), L"SampleDepthShaderVs.cso",
 		L"SampleDepthShaderPs.cso", 0, FRtvFormat::FORMAT_UNKNOWN, State });
+
+	GRHI->CreatePipelineStateObject({ "SkinShadowPass", SkeletalInputElementDescs, _countof(SkeletalInputElementDescs), L"SampleDepthSkinVs.cso",
+		L"SampleDepthSkinPs.cso", 0, FRtvFormat::FORMAT_UNKNOWN, State });
+
 	GRHI->CreatePipelineStateObject({ "SKMPso", SkeletalInputElementDescs, _countof(SkeletalInputElementDescs), L"SkeletalVs.cso",
 		L"SkeletalPs.cso", 1, FRtvFormat::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState() });
 	
@@ -116,18 +120,20 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 		GRHI->SetPiplineStateObject(Pso);
 		GRHI->ResourceTransition(ShadowMap->ShadowResView, E_RESOURCE_STATE::RESOURCE_STATE_GENERIC_READ, E_RESOURCE_STATE::RESOURCE_STATE_DEPTH_WRITE);
 		GRHI->SetRenderTargets(nullptr, ShadowMap->DsvResView);
+		RenderSceneStaticMeshes(RenderScene, false, true);
+		RenderSceneStaticMeshes(RenderScene, true, true);
 
-		RenderSceneStaticMeshes(RenderScene, true);
-
+		GRHI->SetPiplineStateObject(GRHI->GetPsoObject("SkinShadowPass"));
+		RenderSceneSkeletalMeshes(RenderScene, true);
 		GRHI->ResourceTransition(ShadowMap->ShadowResView, E_RESOURCE_STATE::RESOURCE_STATE_DEPTH_WRITE, E_RESOURCE_STATE::RESOURCE_STATE_GENERIC_READ);
 	}
 	
-	// draw static mesh 
+	// draw opaque static mesh 
 	GRHI->SetViewPortInfo(GRHI->GetDefaultViewPort());
 	GRHI->SetRenderTargets(RenderTargets[GRHI->GetFrameIndex()], DsvView);
 	{
-		FUserMarker UserMarker("Draw Static Mesh");
-		RenderSceneStaticMeshes(RenderScene);
+		FUserMarker UserMarker("Draw Opaque Static Mesh");
+		RenderSceneStaticMeshes(RenderScene, false);
 	}
 
 	// draw skeletal mesh 
@@ -136,11 +142,17 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 		RenderSceneSkeletalMeshes(RenderScene);
 	}
 	
+	// draw transparency static mesh 
+	{
+		FUserMarker UserMarker("Draw Transparency Static Mesh");
+		RenderSceneStaticMeshes(RenderScene, true);
+	}
+	
 	GRHI->ResourceTransition(RenderTargets[GRHI->GetFrameIndex()], E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET, E_RESOURCE_STATE::RESOURCE_STATE_PRESENT);
 	
 }
 
-void FSceneRenderer::RenderSceneStaticMeshes(FScene* RenderScene, bool bShadowPass)
+void FSceneRenderer::RenderSceneStaticMeshes(FScene* RenderScene, bool bTranparency, bool bShadowPass)
 {
 	const vector<FMesh*> Meshes = RenderScene->GetDrawMeshes();
 	for (size_t i = 0; i < Meshes.size(); i++)
@@ -154,6 +166,9 @@ void FSceneRenderer::RenderSceneStaticMeshes(FScene* RenderScene, bool bShadowPa
 			GRHI->SetPiplineStateObject(Pso);
 		}
 		
+		if(Meshes[i]->IsTranparency() != bTranparency)
+			continue;
+
 		GRHI->SetVertexAndIndexBuffers(Meshes[i]->GetVertexBuffer(), Meshes[i]->GetIndexBuffer());
 		GRHI->SetResourceParams(0, Meshes[i]->MatrixConstantBufferView);
 		GRHI->SetResourceParams(1, Meshes[i]->GetMaterial()->MaterialConstantBufferView);
@@ -168,16 +183,21 @@ void FSceneRenderer::RenderSceneStaticMeshes(FScene* RenderScene, bool bShadowPa
 	}
 }
 
-void FSceneRenderer::RenderSceneSkeletalMeshes(FScene* RenderScene)
+void FSceneRenderer::RenderSceneSkeletalMeshes(FScene* RenderScene, bool bShadowPass)
 {
 	const vector<FSkeletalMesh*>& SkmMeshes = RenderScene->GetDrawSkeletalMeshes();
 	for (size_t i = 0; i < SkmMeshes.size(); i++)
 	{
 		if (SkmMeshes[i])
 		{
-			FD3DGraphicPipline* Pso = GRHI->GetPsoObject(SkmMeshes[i]->GetPsoKey());
+			
 			GRHI->SetVertexAndIndexBuffers(SkmMeshes[i]->GetVertexBuffer(), SkmMeshes[i]->GetIndexBuffer());
-			GRHI->SetPiplineStateObject(Pso);
+
+			if (!bShadowPass)
+			{
+				FD3DGraphicPipline* Pso = GRHI->GetPsoObject(SkmMeshes[i]->GetPsoKey());
+				GRHI->SetPiplineStateObject(Pso);
+			}
 			GRHI->SetResourceParams(0, SkmMeshes[i]->MatrixConstantBufferView);
 			GRHI->SetResourceParams(1, SkmMeshes[i]->SkeletalConstantBufferView);
 			GRHI->SetResourceParams(2, RenderScene->PassViewProj);
@@ -186,6 +206,7 @@ void FSceneRenderer::RenderSceneSkeletalMeshes(FScene* RenderScene)
 			{
 				GRHI->SetResourceParams(4, SkmMeshes[i]->GetMaterial()->DiffuseResView);
 			}
+			GRHI->SetResourceParams(5, ShadowMap->ShadowResView);
 			GRHI->DrawTriangleList(SkmMeshes[i]->GetIndexBuffer());
 		}
 	}

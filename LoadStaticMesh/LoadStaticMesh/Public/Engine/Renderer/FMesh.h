@@ -63,6 +63,11 @@ public:
 	
 	FResourceView* MatrixConstantBufferView;
 
+	bool IsTranparency()
+	{
+		return bTranparency;
+	}
+
 private:
 
 	string UsePsoKey;
@@ -73,4 +78,5 @@ private:
 
 	XMMATRIX ModelMatrix;
 	UINT MeshIndex;
+	bool bTranparency;
 };

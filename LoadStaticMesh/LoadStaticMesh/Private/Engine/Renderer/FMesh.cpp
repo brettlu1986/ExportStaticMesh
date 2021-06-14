@@ -24,6 +24,7 @@ FMesh::FMesh(LMesh* MeshData)
 	, Material(nullptr)
 {
 	ModelMatrix = MeshData->GetModelMatrix();
+	bTranparency = MeshData->IsTransparency();
 }
 
 FMesh::~FMesh()

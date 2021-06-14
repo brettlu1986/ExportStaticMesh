@@ -73,6 +73,7 @@ void ApplicationMain::OnSceneInit()
 		auto Mesh = make_shared<LMesh>();
 		Mesh->SetMaterial(AssetMgr->GetMaterial(StaticObj.RefMaterial));
 		Mesh->SetMeshBufferInfo(AssetMgr->GetMeshBuffer(StaticObj.RefGeometry));
+		Mesh->SetTranparency(StaticObj.bTransparency);
 		Mesh->InitRenderThreadResource();
 
 		Mesh->SetModelLocation(StaticObj.WorldLocation);

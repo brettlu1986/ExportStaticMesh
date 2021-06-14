@@ -438,6 +438,9 @@ struct FMapStaticMeshes
 	FString RefMaterial;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bTransparency;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector WorldLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -460,6 +463,9 @@ struct FMapSkeletalMeshes
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString RefMaterial;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool  bTransparency;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString RefSkeleton;

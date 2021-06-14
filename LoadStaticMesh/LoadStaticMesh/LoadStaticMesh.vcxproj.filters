@@ -514,6 +514,12 @@
     <FxCompile Include="Resource\Shaders\LightingUtil.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="Resource\Shaders\SampleDepthSkinVs.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Resource\Shaders\SampleDepthSkinPs.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resource\Shaders\ShaderDef.hlsli">

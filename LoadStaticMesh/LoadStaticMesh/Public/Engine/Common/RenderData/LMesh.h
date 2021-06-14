@@ -25,9 +25,19 @@ public:
 	void SetModelScale(XMFLOAT3 Scale);
 	XMMATRIX GetModelMatrix() const { return ModelMatrix; }
 
+	void SetTranparency(bool Value)
+	{
+		bTranparency = Value;
+	}
+
+	bool IsTransparency()
+	{
+		return bTranparency;
+	}
 private:
 	void UpdateModelMatrix();
 
+	bool bTranparency;
 	LStaticMeshBuffer* StaticMeshBuffer;
 	LMaterialBase* MaterialData;
 

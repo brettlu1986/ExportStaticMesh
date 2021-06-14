@@ -25,6 +25,7 @@ public:
 	{
 		return Meshes;
 	}
+	
 	const vector<FSkeletalMesh*>& GetDrawSkeletalMeshes() 
 	{
 		return SkmMeshes;
@@ -39,6 +40,7 @@ public:
 private: 
 	
 	vector<FSkeletalMesh*> SkmMeshes;
+
 	vector<FMesh*> Meshes;
 	vector<FLight*> SceneLights;
 
