@@ -77,7 +77,7 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 
 	//create used pipline state objects
 	GRHI->CreatePipelineStateObject({ "PsoUseTexture", StandardInputElementDescs, _countof(StandardInputElementDescs), L"ShaderTexVs.cso",
-		L"ShaderTexPs.cso", 1, FRtvFormat::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState() });
+		L"ShaderTexPs.cso", 1, FRtvFormat::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState(), true });
 	GRHI->CreatePipelineStateObject({ "PsoNoTexture", StandardInputElementDescs, _countof(StandardInputElementDescs), L"ShaderVs.cso",
 		L"ShaderPs.cso", 1, FRtvFormat::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState() });
 
@@ -122,6 +122,7 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 		GRHI->ResourceTransition(ShadowMap->ShadowResView, E_RESOURCE_STATE::RESOURCE_STATE_DEPTH_WRITE, E_RESOURCE_STATE::RESOURCE_STATE_GENERIC_READ);
 	}
 	
+	// draw static mesh 
 	GRHI->SetViewPortInfo(GRHI->GetDefaultViewPort());
 	GRHI->SetRenderTargets(RenderTargets[GRHI->GetFrameIndex()], DsvView);
 	{

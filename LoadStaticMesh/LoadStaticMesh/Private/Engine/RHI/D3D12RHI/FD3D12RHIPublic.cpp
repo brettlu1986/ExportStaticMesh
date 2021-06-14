@@ -249,43 +249,12 @@ void FD3D12DynamicRHI::CreatePipelineStateObject(FPiplineStateInitializer Initia
 	rasterizerStateDesc.DepthBias = Initializer.RasterizerStat.DepthBias;
 	rasterizerStateDesc.DepthBiasClamp = Initializer.RasterizerStat.DepthBiasClamp;
 	rasterizerStateDesc.SlopeScaledDepthBias = Initializer.RasterizerStat.SlopeScaledDepthBias;
-	auto ConvCullMode = [](FCullMode Mode) -> D3D12_CULL_MODE
-	{
-		switch (Mode)
-		{
-		case FCullMode::CULL_MODE_NONE: { return D3D12_CULL_MODE_NONE; }
-		case FCullMode::CULL_MODE_FRONT: { return D3D12_CULL_MODE_FRONT; }
-		case FCullMode::CULL_MODE_BACK: { return D3D12_CULL_MODE_BACK; }
-		default: {return D3D12_CULL_MODE_NONE; }
-		}
-	};
-	rasterizerStateDesc.CullMode = ConvCullMode(Initializer.RasterizerStat.CullMode);
+	rasterizerStateDesc.CullMode = static_cast<D3D12_CULL_MODE>(Initializer.RasterizerStat.CullMode);
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC PsoDesc = {};
 	ZeroMemory(&PsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
 
 	vector<D3D12_INPUT_ELEMENT_DESC> InputElementDescs;
-	auto ConvertRHIFormatToD3DFormat = [](ERHI_DATA_FORMAT InFormat) -> DXGI_FORMAT
-	{
-		switch (InFormat)
-		{
-		case ERHI_DATA_FORMAT::FORMAT_R32G32B32_FLOAT: { return DXGI_FORMAT_R32G32B32_FLOAT; }
-		case ERHI_DATA_FORMAT::FORMAT_R32G32_FLOAT: { return DXGI_FORMAT_R32G32_FLOAT; }
-		case ERHI_DATA_FORMAT::FORMAT_R32G32B32A32_FLOAT: { return DXGI_FORMAT_R32G32B32A32_FLOAT; }
-		case ERHI_DATA_FORMAT::FORMAT_R16G16B16A16_UINT: { return DXGI_FORMAT_R16G16B16A16_UINT; }
-		default: {return DXGI_FORMAT_UNKNOWN; }
-		}
-	};
-
-	auto ConvertRHIClassificationToD3D = [](ERHI_INPUT_CLASSIFICATION InClassify) ->D3D12_INPUT_CLASSIFICATION
-	{
-		switch (InClassify)
-		{
-		case ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_VERTEX_DATA: { return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA; }
-		case ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_INSTANCE_DATA: { return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA; }
-		default: { return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA; }
-		}
-	};
 
 	for (UINT i = 0; i < Initializer.NumElements; i++)
 	{
@@ -293,10 +262,10 @@ void FD3D12DynamicRHI::CreatePipelineStateObject(FPiplineStateInitializer Initia
 		D3D12_INPUT_ELEMENT_DESC D3DInputDesc;
 		D3DInputDesc.SemanticName = RHIDesc->SemanticName.c_str();
 		D3DInputDesc.SemanticIndex = RHIDesc->SemanticIndex;
-		D3DInputDesc.Format = ConvertRHIFormatToD3DFormat(RHIDesc->Format);
+		D3DInputDesc.Format = static_cast<DXGI_FORMAT>(RHIDesc->Format);
 		D3DInputDesc.InputSlot = RHIDesc->InputSlot;
 		D3DInputDesc.AlignedByteOffset = RHIDesc->AlignedByteOffset;
-		D3DInputDesc.InputSlotClass = ConvertRHIClassificationToD3D(RHIDesc->InputSlotClass);
+		D3DInputDesc.InputSlotClass = static_cast<D3D12_INPUT_CLASSIFICATION>(RHIDesc->InputSlotClass);
 		D3DInputDesc.InstanceDataStepRate = RHIDesc->InstanceDataStepRate;
 		InputElementDescs.push_back(D3DInputDesc);
 	}
@@ -308,7 +277,7 @@ void FD3D12DynamicRHI::CreatePipelineStateObject(FPiplineStateInitializer Initia
 	PsoDesc.pRootSignature = PsoObj->RootSignature.Get();
 	PsoDesc.VS = CD3DX12_SHADER_BYTECODE(Vs->GetShaderByteCode(), Vs->GetDataLength());
 	PsoDesc.PS = CD3DX12_SHADER_BYTECODE(Ps->GetShaderByteCode(), Ps->GetDataLength());
-	PsoDesc.RasterizerState = rasterizerStateDesc;
+	PsoDesc.RasterizerState = rasterizerStateDesc;	
 	PsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	PsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	PsoDesc.SampleMask = UINT_MAX;
@@ -318,6 +287,21 @@ void FD3D12DynamicRHI::CreatePipelineStateObject(FPiplineStateInitializer Initia
 	PsoDesc.SampleDesc.Count = 1;
 	PsoDesc.SampleDesc.Quality = 0;	////not use 4XMSAA
 	PsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;//DXGI_FORMAT_D32_FLOAT;// DXGI_FORMAT_D24_UNORM_S8_UINT;
+	if (Initializer.bTransparency)
+	{
+		D3D12_RENDER_TARGET_BLEND_DESC transparencyBlendDesc;
+		transparencyBlendDesc.BlendEnable = true;
+		transparencyBlendDesc.LogicOpEnable = false;
+		transparencyBlendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		transparencyBlendDesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+		transparencyBlendDesc.BlendOp = D3D12_BLEND_OP_ADD;
+		transparencyBlendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
+		transparencyBlendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+		transparencyBlendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		transparencyBlendDesc.LogicOp = D3D12_LOGIC_OP_NOOP;
+		transparencyBlendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		PsoDesc.BlendState.RenderTarget[0] = transparencyBlendDesc;
+	}
 
 	ComPtr<ID3D12PipelineState> PipelineState;
 	ThrowIfFailed(D3DDevice.Get()->CreateGraphicsPipelineState(&PsoDesc, IID_PPV_ARGS(&PsoObj->PipelineState)));

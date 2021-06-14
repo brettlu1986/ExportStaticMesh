@@ -58,20 +58,25 @@ float ShadowCalculation(float4 shadowPosH)
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-	float4 diffuseAlbedo = g_txDiffuse.Sample(g_sampler, input.uv0) * gDiffuseAlbedo;
+	//const float4 diffuseAlbedoValue = {0.662745118f, 0.662745118f, 0.662745118f, 1.000000000f};
+	//float4 diffuseAlbedo = g_txDiffuse.Sample(g_sampler, input.uv0) * diffuseAlbedoValue;
+	float4 diffuseAlbedo = g_txDiffuse.Sample(g_sampler, input.uv0);
+	diffuseAlbedo += gColorBlendAdd;
 	
 	input.normal = normalize(input.normal);
 
 	float3 toEyeW = normalize(gEyePosW - input.posW);
 
 	float4 ambient = float4(gLight[0].Strength, 1.0) * diffuseAlbedo;
-	const float shininess = 1.0f - gRoughness;
-	Material mat = { diffuseAlbedo, gFresnelR0, shininess };
+	const float roughness = 0.02f;
+	const float3 fresnelRo = { 0.2f, 0.2f, 0.2f };
+	const float shininess = 1.0f - roughness;
+	Material mat = { diffuseAlbedo, fresnelRo, shininess };
 	float3 shadowFactor =  ShadowCalculation(input.shadowPosH);
 	float4 directLight = ComputeLighting(gLight, mat, input.posW, input.normal, toEyeW, shadowFactor);
 
 	float4 litColor = ambient + directLight;
-	litColor.a = diffuseAlbedo.a;
+	litColor.a = gAlpha;
 
     return litColor;
 }

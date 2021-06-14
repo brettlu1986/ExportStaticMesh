@@ -91,8 +91,6 @@ void FSkeletalMesh::UpdateMeshMatrixInRenderThread(XMMATRIX Mat)
 
 	FObjectConstants ObjConstants;
 	XMStoreFloat4x4(&ObjConstants.World, XMMatrixTranspose(GetModelMatrix()));
-	XMFLOAT4X4 TexMat = MathHelper::Identity4x4();
-	XMStoreFloat4x4(&ObjConstants.TexTransform, XMMatrixTranspose(XMLoadFloat4x4(&TexMat)));
 	GRHI->UpdateConstantBufferView(MatrixConstantBufferView, &ObjConstants);
 }
 

@@ -386,6 +386,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Resource\Textures\DefaultTexture.dds" />
     <Image Include="Resource\Textures\T_Chair_M.dds" />
     <Image Include="Resource\Textures\T_Lamp_M.dds" />
     <Image Include="Resource\Textures\T_Male_Mask.dds" />

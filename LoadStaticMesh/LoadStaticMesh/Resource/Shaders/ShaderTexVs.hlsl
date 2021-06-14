@@ -28,9 +28,7 @@ PSInput VSMain(VSInput vin)
 	vout.position = mul(posW, gViewProj);
 
 	vout.shadowPosH = mul(posW, gShadowMatrix);
-
-	float4 uv0 = mul(float4(vin.uv0, 0.0f, 1.0f), gTexTransform);
-	vout.uv0 = mul(uv0, gMatTransform).xy;
+	vout.uv0 = vin.uv0; 
 
 	vout.tangent = vin.tangent;
 	vout.uv1 = vin.uv1;

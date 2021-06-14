@@ -22,13 +22,6 @@ public:
 		TextureData = TexData;
 	}
 
-	const XMFLOAT4X4& GetTextureTransform() const 
-	{
-		return TexTransform;
-	}
-
 protected:
-	XMFLOAT4X4 TexTransform;
-
 	LTexture* TextureData;
 };

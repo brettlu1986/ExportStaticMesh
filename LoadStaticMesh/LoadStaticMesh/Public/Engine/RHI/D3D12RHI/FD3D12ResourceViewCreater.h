@@ -18,7 +18,7 @@ public:
 	{};
 	virtual ~FD3D12ResourceView() 
 	{
-		if(ViewResource != nullptr)
+		if (ViewResource != nullptr)
 		{
 			ViewResource->Release();
 		}

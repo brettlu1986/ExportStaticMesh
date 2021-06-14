@@ -2,15 +2,13 @@
 cbuffer cbPerObject : register(b0)
 {
 	float4x4 gWorld;
-	float4x4 gTexTransform;
 };
 
 cbuffer cbMaterial : register(b1)
 {
-	float4 gDiffuseAlbedo;
-	float3 gFresnelR0;
-	float gRoughness;
-	float4x4 gMatTransform;
+	float gAlpha;
+	float3 Padding;
+	float4 gColorBlendAdd;
 }
 
 cbuffer cbPass1 : register(b2)

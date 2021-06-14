@@ -20,7 +20,7 @@ public:
 	virtual void Initialize() override;
 
 	void Init(LMaterialBase& MaterialData);
-	void UpdateMaterialConstantInRenderThread(XMFLOAT4 InDiffuseAlbedo, XMFLOAT3 InFresnelR0, float InRoughness, XMFLOAT4X4 InMatTrans);
+	void UpdateMaterialConstantInRenderThread(float Alpha, XMFLOAT4 ColorBlendAdd);
 
 	FResourceView* MaterialConstantBufferView;
 
@@ -29,11 +29,5 @@ public:
 
 	FResourceView* DiffuseResView;
 	FResourceView* NormalResView;
-
-protected:
-	XMFLOAT4 DiffuseAlbedo;
-	XMFLOAT3 FresnelR0;
-	float Roughness;
-	XMFLOAT4X4 MaterialTransform;
 
 };

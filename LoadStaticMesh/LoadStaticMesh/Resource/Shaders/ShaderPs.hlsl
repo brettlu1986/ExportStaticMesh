@@ -75,5 +75,5 @@ float4 PsMain(PSInput input) : SV_TARGET
 	float gamma = 2.2f;
 	color = pow(color, 1.0f / gamma);
 
-	return float4(color, 1.f);
+	return float4(color, gAlpha);
 }

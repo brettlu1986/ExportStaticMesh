@@ -45,11 +45,15 @@ public:
 
 	float GetParamFloat(UINT Index)
 	{
+		if (ParamFloats.empty() || Index >= ParamFloats.size())
+			return 1.f;
 		return ParamFloats[Index];
 	}
 	
-	XMFLOAT4& GetParamVectors(UINT Index)
+	XMFLOAT4 GetParamVector(UINT Index)
 	{
+		if (ParamVectors.empty() || Index >= ParamVectors.size())
+			return XMFLOAT4(0.f, 0.f, 0.f, 0.f);
 		return ParamVectors[Index];
 	}
 

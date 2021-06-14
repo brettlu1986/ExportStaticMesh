@@ -59,6 +59,10 @@
 		{
 			"refName": "T_TableRound_M",
 			"fileName": "Textures/T_TableRound_M.dds"
+		},
+		{
+			"refName": "DefaultTexture",
+			"fileName": "Textures/DefaultTexture.dds"
 		}
 	],
 	"materials": [

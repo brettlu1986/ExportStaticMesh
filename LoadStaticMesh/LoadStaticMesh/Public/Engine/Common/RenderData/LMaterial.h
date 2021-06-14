@@ -30,11 +30,6 @@ public:
 		return NormalTex;
 	}
 
-	XMFLOAT4 DiffuseAlbedo;
-	XMFLOAT3 FresnelR0;
-	float Roughness;
-	XMFLOAT4X4 MaterialTransform;
-
 private:
 
 	LTexture* DiffuseTex;

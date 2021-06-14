@@ -536,5 +536,8 @@
     <Image Include="Resource\Textures\T_TableRound_M.dds">
       <Filter>Resource Files\Textures</Filter>
     </Image>
+    <Image Include="Resource\Textures\DefaultTexture.dds">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>
