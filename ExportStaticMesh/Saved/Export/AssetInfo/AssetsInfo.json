@@ -103,6 +103,10 @@
 		{
 			"refName": "M_MeshTable",
 			"fileName": "Materials/M_MeshTable.bin"
+		},
+		{
+			"refName": "M_ChairBase_Ins4",
+			"fileName": "Materials/M_ChairBase_Ins4.bin"
 		}
 	],
 	"animations": [

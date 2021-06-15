@@ -394,7 +394,7 @@
 		{
 			"objectName": "BP_TableRound",
 			"refGeometry": "SM_TableRound",
-			"refMaterial": "M_MeshTable",
+			"refMaterial": "M_ChairBase_Ins4",
 			"worldLocation":
 			{
 				"x": 3.1999998092651367,

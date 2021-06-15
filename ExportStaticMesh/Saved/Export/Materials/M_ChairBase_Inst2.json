@@ -3,7 +3,7 @@
 	"blendMode": "Translucent",
 	"blendModeValue": 2,
 	"paramTypes": [ 0, 1, 2 ],
-	"paramFloatValues": [ 1 ],
+	"paramFloatValues": [ 0.20000000298023224 ],
 	"paramVectorValues": [
 		{
 			"r": -1,
