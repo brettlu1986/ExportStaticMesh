@@ -24,6 +24,8 @@ FMesh::FMesh(LMesh* MeshData)
 	, Material(nullptr)
 {
 	ModelMatrix = MeshData->GetModelMatrix();
+	ModelLocation = MeshData->GetModelLocation();
+	Name = MeshData->GetName();
 }
 
 FMesh::~FMesh()
@@ -98,10 +100,11 @@ void FMesh::DeleteInRenderThread()
 	FRenderThread::Get()->GetRenderScene()->DeleteMeshToScene(this);
 }
 
-void FMesh::UpdateMeshMatrixInRenderThread(XMMATRIX Mat)
+void FMesh::UpdateMeshMatrixInRenderThread(XMMATRIX Mat, XMFLOAT3 Loc)
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
 	ModelMatrix = Mat;
+	ModelLocation = Loc;
 
 	FObjectConstants ObjConstants;
 	XMStoreFloat4x4(&ObjConstants.World, XMMatrixTranspose(GetModelMatrix()));

@@ -71,6 +71,7 @@ void ApplicationMain::OnSceneInit()
 	for(auto& StaticObj : StaticObjs)
 	{
 		auto Mesh = make_shared<LMesh>();
+		Mesh->SetName(StaticObj.ObjectName);
 		Mesh->SetMaterial(AssetMgr->GetMaterial(StaticObj.RefMaterial));
 		Mesh->SetMeshBufferInfo(AssetMgr->GetMeshBuffer(StaticObj.RefGeometry));
 		Mesh->InitRenderThreadResource();
@@ -85,8 +86,9 @@ void ApplicationMain::OnSceneInit()
 	for(auto& SkeletalObj : SkeletalObjs)
 	{
 		auto Character = make_shared<LCharacter>();
-
+		Character->SetName(SkeletalObj.ObjectName);
 		LSkeletalMesh* SkeletalMesh = new LSkeletalMesh();
+		SkeletalMesh->SetName(SkeletalObj.ObjectName);
 		SkeletalMesh->SetMaterial(AssetMgr->GetMaterial(SkeletalObj.RefMaterial));
 		SkeletalMesh->SetSkeletalMeshBuffer(AssetMgr->GetSkeletalMeshBuffer(SkeletalObj.RefGeometry));
 

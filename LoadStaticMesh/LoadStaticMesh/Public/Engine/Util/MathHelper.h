@@ -95,6 +95,8 @@ public:
 	static DirectX::XMFLOAT4 EulerToQuaternion(DirectX::XMFLOAT3 CurrentRotation);
 	static DirectX::XMFLOAT3 QuaternionToEuler(DirectX::XMFLOAT4 Quat);
 
+	static float Distance(DirectX::XMFLOAT3 A, DirectX::XMFLOAT3 B);
+
 	static const float Infinity;
 	static const float Pi;
 

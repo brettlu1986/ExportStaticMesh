@@ -15,6 +15,7 @@ FSkeletalMesh::FSkeletalMesh(LSkeletalMesh* MeshData)
 	, IndexBuffer(nullptr)
 {
 	ModelMatrix = MeshData->GetModelMatrix();
+	Name = MeshData->GetName();
 }
 
 FSkeletalMesh::~FSkeletalMesh()
@@ -69,7 +70,6 @@ void FSkeletalMesh::InitRenderThreadResource(LVertexBuffer& VertexBufferData, LI
 
 	MatrixConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FObjectConstants)),E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
 	SkeletalConstantBufferView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FSkeletalConstants)),E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
-
 }
 
 void FSkeletalMesh::AddMeshInRenderThread()

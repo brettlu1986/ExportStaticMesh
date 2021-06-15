@@ -26,10 +26,8 @@ public:
 		return Meshes;
 	}
 
-	const vector<FMesh*>& GetDrawTransparencyMeshes()
-	{
-		return TranparencyMeshes;
-	}
+	const vector<FMesh*>& GetDrawTransparencyMeshes();
+
 	
 	const vector<FSkeletalMesh*>& GetDrawSkeletalMeshes() 
 	{

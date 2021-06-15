@@ -24,6 +24,21 @@ public:
 	void SetModelRotation(XMFLOAT3 Rotator);
 	void SetModelScale(XMFLOAT3 Scale);
 	XMMATRIX GetModelMatrix() const { return ModelMatrix; }
+
+	XMFLOAT3 GetModelLocation()
+	{
+		return ModelLocation;
+	}
+
+	void SetName(string& InName)
+	{
+		Name = InName;
+	}
+
+	const string& GetName()
+	{
+		return Name;
+	}
 	
 private:
 	void UpdateModelMatrix();
@@ -37,4 +52,5 @@ private:
 	XMMATRIX ModelMatrix;
 
 	shared_ptr<FMesh> RenderMesh;
+	string Name;
 };

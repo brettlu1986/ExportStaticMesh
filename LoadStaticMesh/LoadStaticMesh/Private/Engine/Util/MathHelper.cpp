@@ -123,3 +123,15 @@ DirectX::XMFLOAT3 MathHelper::QuaternionToEuler(DirectX::XMFLOAT4 Quat)
 
 	return XMFLOAT3(pitch / Pi * 180.f, yaw / Pi * 180.f, roll / Pi * 180.f);
 }
+
+ float MathHelper::Distance(DirectX::XMFLOAT3 A, DirectX::XMFLOAT3 B)
+ {
+	 XMVECTOR vector1 = XMLoadFloat3(&A);
+	 XMVECTOR vector2 = XMLoadFloat3(&B);
+	 XMVECTOR vectorSub = XMVectorSubtract(vector1, vector2);
+	 XMVECTOR length = XMVector3Length(vectorSub);
+
+	 float distance = 0.0f;
+	 XMStoreFloat(&distance, length);
+	 return distance;
+ }

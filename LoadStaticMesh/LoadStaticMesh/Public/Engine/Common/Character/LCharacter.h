@@ -74,6 +74,17 @@ public:
 	{
 		SkeletalMeshIns = Mesh;
 	}
+
+	void SetName(string& InName)
+	{
+		Name = InName;
+	}
+
+	const string& GetName()
+	{
+		return Name;
+	}
+
 private: 
 	bool IsKeyDown(char Key);
 	bool IsKeyUp(char Key);
@@ -93,4 +104,5 @@ private:
 	float BaseSpeed;
 	bool bUpdateMove;
 	bool bJump;
+	string Name;
 };

@@ -58,6 +58,16 @@ public:
 	}
 
 	void SetMaterial(LMaterialBase* MatData);
+
+	void SetName(string& InName)
+	{
+		Name = InName;
+	}
+
+	const string& GetName()
+	{
+		return Name;
+	}
 	
 private:
 
@@ -72,4 +82,5 @@ private:
 
 	shared_ptr<FSkeletalMesh> RenderMesh;
 	bool bUpdateWorldTrans;
+	string Name;
 };

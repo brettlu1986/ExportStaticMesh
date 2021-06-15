@@ -67,6 +67,11 @@ public:
 		return Material;
 	}
 
+	const string& GetName()
+	{
+		return Name;
+	}
+
 	FResourceView* MatrixConstantBufferView;
 	FResourceView* SkeletalConstantBufferView;
 
@@ -80,4 +85,5 @@ private:
 	XMMATRIX ModelMatrix;
 	FSkeletalConstants SkeletalConstants;
 	string UsePsoKey;
+	string Name;
 };

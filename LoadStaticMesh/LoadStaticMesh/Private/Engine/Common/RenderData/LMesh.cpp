@@ -95,12 +95,13 @@ void LMesh::UpdateModelMatrix()
 		XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
 
 	XMMATRIX ModelMat = GetModelMatrix();
+	XMFLOAT3 ModelLoc = GetModelLocation();
 	auto RenderMeshRes = RenderMesh;
 	assert(RenderMeshRes != nullptr);
 	RENDER_THREAD_TASK("UpdateMeshMatrix",
-		[RenderMeshRes, ModelMat]()
+		[RenderMeshRes, ModelMat, ModelLoc]()
 		{
-			RenderMeshRes->UpdateMeshMatrixInRenderThread(ModelMat);
+			RenderMeshRes->UpdateMeshMatrixInRenderThread(ModelMat, ModelLoc);
 		}
 	);
 

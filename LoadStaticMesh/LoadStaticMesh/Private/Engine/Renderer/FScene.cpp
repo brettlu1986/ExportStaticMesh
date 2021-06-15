@@ -4,6 +4,7 @@
 #include "FRHI.h"
 #include "FLight.h"
 #include "LEngine.h"
+#include "LLog.h"
 
 FScene::FScene()
 {
@@ -60,13 +61,29 @@ void FScene::DeleteMeshToScene(FMesh* Mesh)
 	UINT MeshIndex = Mesh->GetMeshIndex();
 	if (Mesh->GetMaterial()->IsBlendModeTransparency())
 	{
-		TranparencyMeshes[MeshIndex]->Destroy();
-		TranparencyMeshes[MeshIndex] = nullptr;
+		std::vector<FMesh*>::iterator it;
+		for (it = TranparencyMeshes.begin(); it != TranparencyMeshes.end(); ++it)
+		{
+			if(*it != nullptr && MeshIndex == (*it)->GetMeshIndex())
+			{
+				(*it)->Destroy();
+				TranparencyMeshes.erase(it);
+				break;
+			}
+		}
 	}
 	else 
 	{
-		Meshes[MeshIndex]->Destroy();
-		Meshes[MeshIndex] = nullptr;
+		std::vector<FMesh*>::iterator it;
+		for (it = Meshes.begin(); it != Meshes.end(); ++it)
+		{
+			if (*it != nullptr && MeshIndex == (*it)->GetMeshIndex())
+			{
+				(*it)->Destroy();
+				Meshes.erase(it);
+				break;
+			}
+		}
 	}
 }
 
@@ -94,8 +111,38 @@ void FScene::AddSkeletalMeshToScene(FSkeletalMesh* Mesh)
 void FScene::DeleteSkeletalMeshToScene(FSkeletalMesh* Mesh)
 {
 	UINT MeshIndex = Mesh->GetMeshIndex();
-	SkmMeshes[MeshIndex]->Destroy();
-	SkmMeshes[MeshIndex] = nullptr;
+	std::vector<FSkeletalMesh*>::iterator it;
+	for (it = SkmMeshes.begin(); it != SkmMeshes.end(); ++it)
+	{
+		if (*it != nullptr && MeshIndex == (*it)->GetMeshIndex())
+		{
+			(*it)->Destroy();
+			SkmMeshes.erase(it);
+			break;
+		}
+	}
+}
+
+const vector<FMesh*>& FScene::GetDrawTransparencyMeshes()
+{
+	XMFLOAT3 CameraLocation = ViewProjInfo.EyePosW;
+
+
+	sort(TranparencyMeshes.begin(), TranparencyMeshes.end(), [CameraLocation](FMesh* A, FMesh* B)
+	{
+		float DisA = MathHelper::Distance(A->GetModelLocation(), CameraLocation);
+		float DisB = MathHelper::Distance(B->GetModelLocation(), CameraLocation);
+		return DisA > DisB;
+	});
+
+	/*LLog::Log("===========\n");
+	for(size_t i = 0; i < TranparencyMeshes.size(); i++)
+	{
+		LLog::Log("Name:: %s \n", TranparencyMeshes[i]->GetName().c_str());
+	}
+	LLog::Log("===========\n");*/
+
+	return TranparencyMeshes;
 }
 
 void FScene::UpdateLightToScene(FLight* Light)
