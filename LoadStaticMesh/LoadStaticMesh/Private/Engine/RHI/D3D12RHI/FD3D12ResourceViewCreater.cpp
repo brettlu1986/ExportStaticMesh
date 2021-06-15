@@ -45,7 +45,7 @@ void FD3D12RtvResourceView::SetRtvViewInfo(ID3D12Device* Device, IDXGISwapChain*
 	ColorDesc.Texture2D.MipSlice = 0;
 	ColorDesc.Texture2D.PlaneSlice = 0;
 
-	Device->CreateRenderTargetView(ViewResource, &ColorDesc, GetCpu());
+	Device->CreateRenderTargetView(ViewResource.Get(), &ColorDesc, GetCpu());
 }
 
 void FD3D12RtvResourceView::SetRtvViewInfo(ID3D12Device* Device, FD3D12Texture* Tex, DXGI_FORMAT Format)
@@ -57,7 +57,7 @@ void FD3D12RtvResourceView::SetRtvViewInfo(ID3D12Device* Device, FD3D12Texture* 
 	ColorDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 	ColorDesc.Texture2D.MipSlice = 0;
 	ColorDesc.Texture2D.PlaneSlice = 0;
-	Device->CreateRenderTargetView(ViewResource, &ColorDesc, GetCpu());
+	Device->CreateRenderTargetView(ViewResource.Get(), &ColorDesc, GetCpu());
 }
 
 //Dsv View
@@ -69,7 +69,7 @@ void FD3D12DsvResourceView::SetDsvViewInfo(ID3D12Device* Device, FD3D12Texture* 
 	DsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 	DsvDesc.Format = Format;
 	DsvDesc.Texture2D.MipSlice = 0;
-	Device->CreateDepthStencilView(ViewResource, &DsvDesc, GetCpu());
+	Device->CreateDepthStencilView(ViewResource.Get(), &DsvDesc, GetCpu());
 }
 
 //Cbv View

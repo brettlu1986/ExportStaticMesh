@@ -20,7 +20,7 @@ public:
 	{
 		if (ViewResource != nullptr)
 		{
-			ViewResource->Release();
+			ViewResource.Reset();
 		}
 	};
 	UINT GetCount() { return Count;}
@@ -37,7 +37,7 @@ public:
 
 	ID3D12Resource* Resource()
 	{
-		return ViewResource;
+		return ViewResource.Get();
 	}
 
 	void SetViewResource(ID3D12Resource* Res)
@@ -46,7 +46,7 @@ public:
 	}
 protected: 
 	E_RESOURCE_VIEW_TYPE Type;
-	ID3D12Resource* ViewResource;
+	ComPtr<ID3D12Resource> ViewResource;
 	//resource count, may be more than one
 	UINT Count = 0;
 	UINT DescriptorSize = 0;

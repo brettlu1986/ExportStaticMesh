@@ -19,15 +19,15 @@ FShadowMap::~FShadowMap()
 
 void FShadowMap::Destroy()
 {
-	ShadowResource->Destroy();
-	delete ShadowResource;
-	ShadowResource = nullptr;
-
 	delete ShadowResView;
 	ShadowResView = nullptr;
 
 	delete DsvResView;
 	DsvResView = nullptr;
+
+	ShadowResource->Destroy();
+	delete ShadowResource;
+	ShadowResource = nullptr;
 }
 
 void FShadowMap::InitRenderResource()
