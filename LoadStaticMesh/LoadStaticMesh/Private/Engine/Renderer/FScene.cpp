@@ -24,10 +24,11 @@ void FScene::Destroy()
 	PassLightInfo = nullptr;
 }
 
-void FScene::UpdateViewProjInfo(FPassViewProjection UpdateViewProj)
+void FScene::UpdateViewProjInfo(XMMATRIX ViewProj, XMFLOAT3 EyeLoc)
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
-	ViewProjInfo = UpdateViewProj;
+	XMStoreFloat4x4(&ViewProjInfo.ViewProj, XMMatrixTranspose(ViewProj));
+	ViewProjInfo.EyePosW = EyeLoc;
 	GRHI->UpdateConstantBufferView(PassViewProj, &ViewProjInfo);
 }
 

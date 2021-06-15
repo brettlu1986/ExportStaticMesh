@@ -82,14 +82,15 @@ void LCamera::UpdateViewProjectionRenderThread()
 	XMFLOAT4X4 MtProj;
 	XMStoreFloat4x4(&MtProj, GetProjectionMatrix());
 	XMMATRIX ViewProj = GetViewMarix() * XMLoadFloat4x4(&MtProj);
+	XMFLOAT3 EyePos = GetCameraLocation();
 
-	FPassViewProjection ViewProjInfo;
-	XMStoreFloat4x4(&ViewProjInfo.ViewProj, XMMatrixTranspose(ViewProj));
-	ViewProjInfo.EyePosW = GetCameraLocation();
+	//FPassViewProjection ViewProjInfo;
+	//XMStoreFloat4x4(&ViewProjInfo.ViewProj, XMMatrixTranspose(ViewProj));
+	//ViewProjInfo.EyePosW = GetCameraLocation();
 	RENDER_THREAD_TASK("FillViewProj",
-		[ViewProjInfo]()
+		[ViewProj, EyePos]()
 	{
-		FRenderThread::Get()->GetRenderScene()->UpdateViewProjInfo(ViewProjInfo);
+		FRenderThread::Get()->GetRenderScene()->UpdateViewProjInfo(ViewProj, EyePos);
 	}
 	);
 

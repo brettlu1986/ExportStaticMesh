@@ -24,8 +24,6 @@ public:
 
 	void ProcessCameraMouseInput(FInputResult& MouseInput);
 	void ProcessCameraKeyInput(FInputResult& KeyInput);
-	void CalculateLocation();
-
 	
 private:
 	void ProcessInput();
@@ -39,8 +37,12 @@ private:
 
 	XMVECTOR RightDirection;
 	POINT LastMousePoint;
+	POINT CurrentMousePoint;
 	XMVECTOR MoveOffset;
 	bool bUpdateDirty;
+	bool bUpdateRotDirty;
 
+	float Dx;
+	float Dy;
 	XMVECTOR MoveDirection;
 };

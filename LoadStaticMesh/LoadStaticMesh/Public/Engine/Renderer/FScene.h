@@ -34,7 +34,7 @@ public:
 		return SkmMeshes;
 	}
 
-	void UpdateViewProjInfo(FPassViewProjection UpdateViewProj);
+	void UpdateViewProjInfo(XMMATRIX ViewProj, XMFLOAT3 EyeLoc);
 	void UpdateLightInfo(FPassLightInfo UpdateLight);
 	
 	FResourceView* PassViewProj;

@@ -17,6 +17,9 @@ LSceneCamera::LSceneCamera()
 	:LCamera()
 	,LastMousePoint({ 0, 0 })
 	,bUpdateDirty(false)
+	,bUpdateRotDirty(false)
+	,Dx(0.f)
+	,Dy(0.f)
 {
 	CameraType = E_CAMERA_TYPE::CAMERA_SCENE;
 	for (UINT i = 0; i < KEY_SIZE; i++)
@@ -89,7 +92,8 @@ void LSceneCamera::ProcessInput()
 
 void LSceneCamera::UpdateInput(float dt)
 {
-	if (bUpdateDirty)
+	bool bDirty = false;
+	if (bUpdateDirty )
 	{
 		float MoveSpeed = 2.f;
 		XMVECTOR UnitDir = XMVector3Normalize(MoveDirection);
@@ -97,7 +101,35 @@ void LSceneCamera::UpdateInput(float dt)
 		FocusPosition.x = XMVectorGetX(FocusVec);
 		FocusPosition.y = XMVectorGetY(FocusVec);
 		FocusPosition.z = XMVectorGetZ(FocusVec);
-		CalculateLocation();
+		bDirty = true;
+	}
+
+	if(bUpdateRotDirty)
+	{
+		float RotSpeed = 12.f;
+		Pitch -= RotSpeed * Dy * dt;
+		Yaw += RotSpeed * Dx * dt;
+		Pitch = MathHelper::Clamp(Pitch, MIN_PITCH, MAX_PITCH);
+
+		float R = cosf(Pitch);
+		LookDirection.y = R * sinf(Yaw);
+		LookDirection.z = sinf(Pitch);
+		LookDirection.x = R * cosf(Yaw);
+		bDirty = true;
+	}
+		
+	if(bDirty)
+	{
+		RightDirection = XMVector3Cross(XMLoadFloat3(&LookDirection), XMLoadFloat3(&UpDirection));
+
+		XMVECTOR Offset = -ArmLength * XMLoadFloat3(&LookDirection);
+		XMVECTOR V = XMVectorAdd(XMLoadFloat3(&FocusPosition), Offset);
+
+		Position.x = XMVectorGetX(V);
+		Position.y = XMVectorGetY(V);
+		Position.z = XMVectorGetZ(V);
+
+		UpdateViewProjectionRenderThread();
 	}
 }
 
@@ -123,21 +155,28 @@ void LSceneCamera::ProcessCameraMouseInput(FInputResult& MouseInput)
 {
 	if (MouseInput.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_MOVE)
 	{
-		float dx = XMConvertToRadians(0.25f * static_cast<float>(MouseInput.X - LastMousePoint.x)); //dx
-		float dy = XMConvertToRadians(0.25f * static_cast<float>(MouseInput.Y - LastMousePoint.y)); //dy
+		CurrentMousePoint.x = MouseInput.X;
+		CurrentMousePoint.y = MouseInput.Y;
 
-		Pitch -= dy;
-		Yaw += dx;
+		Dx = XMConvertToRadians(0.25f * static_cast<float>(CurrentMousePoint.x - LastMousePoint.x)); //dx
+		Dy = XMConvertToRadians(0.25f * static_cast<float>(CurrentMousePoint.y - LastMousePoint.y)); //dy
 
-		Pitch = MathHelper::Clamp(Pitch, MIN_PITCH, MAX_PITCH);
+		bUpdateRotDirty = true;
 
-		CalculateLocation();
-		LastMousePoint.x = MouseInput.X;
-		LastMousePoint.y = MouseInput.Y;
+		LastMousePoint.x = CurrentMousePoint.x;
+		LastMousePoint.y = CurrentMousePoint.y;
 	}
-
-	LastMousePoint.x = MouseInput.X;
-	LastMousePoint.y = MouseInput.Y;
+	else if(MouseInput.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_UP)
+	{
+		bUpdateRotDirty = false;
+		Dx = 0.f;
+		Dy = 0.f;
+	}
+	
+	CurrentMousePoint.x = MouseInput.X;
+	CurrentMousePoint.y = MouseInput.Y;
+	LastMousePoint.x = CurrentMousePoint.x;
+	LastMousePoint.y = CurrentMousePoint.y;
 }
 
 void LSceneCamera::ProcessCameraKeyInput(FInputResult& KeyInput)
@@ -163,25 +202,6 @@ bool LSceneCamera::IsKeyUp(char InKey)
 {
 	UINT8 Key = static_cast<UINT8>(InKey);
 	return Keys[Key] == false;
-}
-
-void LSceneCamera::CalculateLocation()
-{
-	float R = cosf(Pitch);
-	LookDirection.y = R * sinf(Yaw);
-	LookDirection.z = sinf(Pitch);
-	LookDirection.x = R * cosf(Yaw);
-
-	RightDirection = XMVector3Cross(XMLoadFloat3(&LookDirection), XMLoadFloat3(&UpDirection));
-
-	XMVECTOR Offset = -ArmLength * XMLoadFloat3(&LookDirection);
-	XMVECTOR V = XMVectorAdd(XMLoadFloat3(&FocusPosition), Offset);
-
-	Position.x = XMVectorGetX(V);
-	Position.y = XMVectorGetY(V);
-	Position.z = XMVectorGetZ(V);
-
-	UpdateViewProjectionRenderThread();
 }
 
 XMMATRIX LSceneCamera::GetViewMarix()
