@@ -18,7 +18,7 @@ public:
 	
 	virtual XMMATRIX GetViewMarix() = 0;
 	
-	XMMATRIX GetProjectionMatrix(float NearPlane = 1.0f, float FarPlane = 1000.0f);
+	XMMATRIX GetProjectionMatrix(float NearPlane = 0.1f, float FarPlane = 1000.0f);
 
 	const XMFLOAT3& GetCameraLocation()
 	{

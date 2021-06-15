@@ -89,7 +89,6 @@ void FD3D12DynamicRHI::EndRenderScene()
 	CommandList->Close();
 	CmdLists.push_back(CommandList.Get());
 	CommandQueue->ExecuteCommandLists(static_cast<UINT>(CmdLists.size()), CmdLists.data());
-	//TODO:Present first should use 1, for Vsync 
 	SwapChain->Present(1, 0);
 	WaitForPreviousFrame();
 	FrameIndex = (FrameIndex + 1) % FRAME_COUNT;
@@ -542,7 +541,8 @@ void FD3D12DynamicRHI::InitializeDevices()
 		NAME_D3D12_OBJECT(CommandList);
 		ThrowIfFailed(CommandList->Close());
 
-		ThrowIfFailed(D3DDevice.Get()->CreateFence(FenceValues, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&GpuFence)));
+		ThrowIfFailed(D3DDevice.Get()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&GpuFence)));
+		FenceValues = 1;
 		NAME_D3D12_OBJECT(GpuFence);
 		FenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
@@ -610,10 +610,10 @@ void FD3D12DynamicRHI::WaitForPreviousFrame()
 {
 	const UINT64 Value = FenceValues;
 	ThrowIfFailed(CommandQueue->Signal(GpuFence.Get(), Value));
+	FenceValues++;
 	if (GpuFence->GetCompletedValue() < Value)
 	{
 		ThrowIfFailed(GpuFence->SetEventOnCompletion(Value, FenceEvent));
 		WaitForSingleObject(FenceEvent, INFINITE);
 	}
-	FenceValues++;
 }

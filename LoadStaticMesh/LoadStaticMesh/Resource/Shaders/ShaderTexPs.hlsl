@@ -72,7 +72,7 @@ float4 PSMain(PSInput input) : SV_TARGET
 	const float3 fresnelRo = { 0.2f, 0.2f, 0.2f };
 	const float shininess = 1.0f - roughness;
 	Material mat = { diffuseAlbedo, fresnelRo, shininess };
-	float3 shadowFactor =  ShadowCalculation(input.shadowPosH);
+	float shadowFactor =  ShadowCalculation(input.shadowPosH);
 	float4 directLight = ComputeLighting(gLight, mat, input.posW, input.normal, toEyeW, shadowFactor);
 
 	float4 litColor = ambient + directLight;

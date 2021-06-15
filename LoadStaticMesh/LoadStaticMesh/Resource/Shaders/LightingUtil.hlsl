@@ -70,16 +70,15 @@ float3 ComputeDirectionalLight(Light L, Material mat, float3 normal, float3 toEy
 
 float4 ComputeLighting(Light gLights[MaxLights], Material mat,
     float3 pos, float3 normal, float3 toEye,
-    float3 shadowFactor)
+    float shadowFactor)
 {
     float3 result = 0.0f;
 
-    int i = 0;
-
-    for (i = 0; i < NUM_DIR_LIGHTS; ++i)
-    {
-        result += shadowFactor[i] * ComputeDirectionalLight(gLights[i], mat, normal, toEye);
-    }
+    //int i = 0;
+    //for (i = 0; i < NUM_DIR_LIGHTS; ++i)
+    //{
+        result += shadowFactor * ComputeDirectionalLight(gLights[0], mat, normal, toEye);
+    //}
     return float4(result, 0.0f);
 }
 

@@ -73,7 +73,7 @@ float4 PsMain(PSInput input) : SV_TARGET
 	float3 color = ( AmbientColor + (Shadow + 0.1) * (DiffuseColor + SpecularColor) ) * input.color.xyz;
 	color = color * 0.8;
 	float gamma = 2.2f;
-	color = pow(color, 1.0f / gamma);
+	color = pow(abs(color), 1.0f / gamma);
 
 	return float4(color, gAlpha);
 }
