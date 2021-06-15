@@ -36,6 +36,13 @@ inline LDeviceWindows* GetWindowsDevice()
 	return static_cast<LDeviceWindows*>(LEngine::GetEngine()->GetPlatformDevice());
 }
 
+void LInputWindows::GetCurrentCursorLocation(POINT& p)
+{
+	LDeviceWindows* DeviceWindows = static_cast<LDeviceWindows*>(LEngine::GetEngine()->GetPlatformDevice());
+	GetCursorPos(&p);
+	ScreenToClient(DeviceWindows->GetHwnd(), &p);
+}
+
 bool LInputWindows::Update() 
 {
 	LInput::Update();

@@ -15,6 +15,8 @@ public:
 	static void CreateInput();
 	static void Destroy();
 
+	virtual void GetCurrentCursorLocation(POINT& p) = 0;
+
 	static inline bool IsKeyInput(FInputResult& Result)
 	{
 		return Result.InputType == E_INPUT_TYPE::PC_KEYBORAD;
