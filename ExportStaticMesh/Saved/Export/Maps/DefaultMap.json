@@ -4,7 +4,6 @@
 			"objectName": "Floor",
 			"refGeometry": "TemplateFloor",
 			"refMaterial": "CubeMaterial",
-			"bTransparency": false,
 			"worldLocation":
 			{
 				"x": -3.9975144863128662,
@@ -28,7 +27,6 @@
 			"objectName": "Wall6",
 			"refGeometry": "1M_Cube",
 			"refMaterial": "CubeMaterial",
-			"bTransparency": false,
 			"worldLocation":
 			{
 				"x": -18.747394561767578,
@@ -52,7 +50,6 @@
 			"objectName": "Wall7",
 			"refGeometry": "1M_Cube",
 			"refMaterial": "CubeMaterial",
-			"bTransparency": false,
 			"worldLocation":
 			{
 				"x": 10.752604484558105,
@@ -76,7 +73,6 @@
 			"objectName": "Wall8",
 			"refGeometry": "1M_Cube",
 			"refMaterial": "CubeMaterial",
-			"bTransparency": false,
 			"worldLocation":
 			{
 				"x": -3.997410774230957,
@@ -100,7 +96,6 @@
 			"objectName": "Wall9",
 			"refGeometry": "1M_Cube",
 			"refMaterial": "CubeMaterial",
-			"bTransparency": false,
 			"worldLocation":
 			{
 				"x": -3.997410774230957,
@@ -124,7 +119,6 @@
 			"objectName": "LeftArm_StaticMesh",
 			"refGeometry": "LeftArm_StaticMesh",
 			"refMaterial": "RampMaterial",
-			"bTransparency": false,
 			"worldLocation":
 			{
 				"x": -0.099999994039535522,
@@ -148,7 +142,6 @@
 			"objectName": "Linear_Stair_StaticMesh",
 			"refGeometry": "Linear_Stair_StaticMesh",
 			"refMaterial": "RampMaterial",
-			"bTransparency": false,
 			"worldLocation":
 			{
 				"x": -4.1999998092651367,
@@ -172,7 +165,6 @@
 			"objectName": "Bump_StaticMesh",
 			"refGeometry": "Bump_StaticMesh",
 			"refMaterial": "RampMaterial",
-			"bTransparency": false,
 			"worldLocation":
 			{
 				"x": 1.8999999761581421,
@@ -196,7 +188,6 @@
 			"objectName": "Sphere",
 			"refGeometry": "Sphere",
 			"refMaterial": "RampMaterial",
-			"bTransparency": false,
 			"worldLocation":
 			{
 				"x": -1.5999999046325684,
@@ -220,7 +211,6 @@
 			"objectName": "Cube",
 			"refGeometry": "Cube",
 			"refMaterial": "BasicShapeMaterial",
-			"bTransparency": false,
 			"worldLocation":
 			{
 				"x": -0.79999995231628418,
@@ -244,7 +234,6 @@
 			"objectName": "BP_Chair",
 			"refGeometry": "SM_Chair",
 			"refMaterial": "M_ChairBase_Ins1",
-			"bTransparency": true,
 			"worldLocation":
 			{
 				"x": 0.5,
@@ -268,7 +257,6 @@
 			"objectName": "BP_Chair2",
 			"refGeometry": "SM_Chair",
 			"refMaterial": "M_ChairBase_Inst2",
-			"bTransparency": true,
 			"worldLocation":
 			{
 				"x": 4.0999999046325684,
@@ -292,7 +280,6 @@
 			"objectName": "BP_Chair3",
 			"refGeometry": "SM_Chair",
 			"refMaterial": "M_ChairBase_Inst3",
-			"bTransparency": true,
 			"worldLocation":
 			{
 				"x": 1.2999999523162842,
@@ -316,7 +303,6 @@
 			"objectName": "BP_Chair4",
 			"refGeometry": "SM_Chair",
 			"refMaterial": "M_ChairBase",
-			"bTransparency": true,
 			"worldLocation":
 			{
 				"x": 5.5999999046325684,
@@ -340,7 +326,6 @@
 			"objectName": "BP_Lamp_Ceiling",
 			"refGeometry": "SM_Lamp_Ceiling",
 			"refMaterial": "M_MeshLamp",
-			"bTransparency": false,
 			"worldLocation":
 			{
 				"x": 5.1999998092651367,
@@ -364,7 +349,6 @@
 			"objectName": "BP_Rock",
 			"refGeometry": "SM_Rock",
 			"refMaterial": "M_MeshRock",
-			"bTransparency": false,
 			"worldLocation":
 			{
 				"x": 3,
@@ -388,7 +372,6 @@
 			"objectName": "BP_Rock2",
 			"refGeometry": "SM_Rock",
 			"refMaterial": "M_MeshBase",
-			"bTransparency": false,
 			"worldLocation":
 			{
 				"x": 3.5,
@@ -412,7 +395,6 @@
 			"objectName": "BP_TableRound",
 			"refGeometry": "SM_TableRound",
 			"refMaterial": "M_MeshTable",
-			"bTransparency": false,
 			"worldLocation":
 			{
 				"x": 3.1999998092651367,
@@ -438,7 +420,6 @@
 			"objectName": "ThirdPersonCharacter2",
 			"refGeometry": "SK_Mannequin",
 			"refMaterial": "M_MeshCharacter",
-			"bTransparency": false,
 			"refSkeleton": "UE4_Mannequin_Skeleton",
 			"refAnims": [
 				"ThirdPersonIdle",
@@ -471,7 +452,6 @@
 			"objectName": "ThirdPersonCharacter3",
 			"refGeometry": "SK_Mannequin",
 			"refMaterial": "M_MeshCharacter",
-			"bTransparency": false,
 			"refSkeleton": "UE4_Mannequin_Skeleton",
 			"refAnims": [
 				"ThirdPersonIdle",
@@ -504,7 +484,6 @@
 			"objectName": "ThirdPersonCharacter",
 			"refGeometry": "SK_Mannequin",
 			"refMaterial": "M_MeshCharacter",
-			"bTransparency": false,
 			"refSkeleton": "UE4_Mannequin_Skeleton",
 			"refAnims": [
 				"ThirdPersonIdle",

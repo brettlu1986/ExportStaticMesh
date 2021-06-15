@@ -1,5 +1,7 @@
 {
 	"refParent": "M_MeshBase",
+	"blendMode": "Opaque",
+	"blendModeValue": 0,
 	"paramTypes": [ 2 ],
 	"paramFloatValues": [],
 	"paramVectorValues": [],

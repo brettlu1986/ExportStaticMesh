@@ -79,9 +79,26 @@ public:
 		ParamTextures[Index] = NewTex;
 	}
 
+	void SetBlendMode(LBlendMode Mode)
+	{
+		BlendMode = Mode;
+	}
+
+	const LBlendMode& GetBlendMode()
+	{
+		return BlendMode;
+	}
+
+	bool IsBlendModeTransparency()
+	{
+		return BlendMode.BlendModeValue == E_BLEND_MODE::BLEND_Translucent;
+	}
+
 protected:
 	vector<E_MATERIAL_PARAM_TYPE> ParamTypes;
 	vector<float> ParamFloats;
 	vector<XMFLOAT4> ParamVectors;
 	vector<LTexture*> ParamTextures;
+
+	LBlendMode BlendMode;
 };

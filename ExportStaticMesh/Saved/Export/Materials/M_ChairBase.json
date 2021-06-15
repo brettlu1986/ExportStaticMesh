@@ -1,5 +1,7 @@
 {
 	"refParent": "NaN",
+	"blendMode": "Translucent",
+	"blendModeValue": 2,
 	"paramTypes": [ 0, 1, 2 ],
 	"paramFloatValues": [ 1 ],
 	"paramVectorValues": [

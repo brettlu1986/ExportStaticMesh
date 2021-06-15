@@ -1,5 +1,7 @@
 {
 	"refParent": "M_ChairBase",
+	"blendMode": "Translucent",
+	"blendModeValue": 2,
 	"paramTypes": [ 0, 1, 2 ],
 	"paramFloatValues": [ 0.5 ],
 	"paramVectorValues": [

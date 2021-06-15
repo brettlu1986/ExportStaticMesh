@@ -22,6 +22,11 @@ public:
 	void Init(LMaterialBase& MaterialData);
 	void UpdateMaterialConstantInRenderThread(float Alpha, XMFLOAT4 ColorBlendAdd);
 
+	bool IsBlendModeTransparency()
+	{
+		return BlendMode.BlendModeValue == E_BLEND_MODE::BLEND_Translucent;
+	}
+
 	FResourceView* MaterialConstantBufferView;
 
 	FTexture* DiffuseTex;
@@ -30,4 +35,5 @@ public:
 	FResourceView* DiffuseResView;
 	FResourceView* NormalResView;
 
+	LBlendMode BlendMode;
 };

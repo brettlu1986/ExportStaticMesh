@@ -438,9 +438,6 @@ struct FMapStaticMeshes
 	FString RefMaterial;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bTransparency;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector WorldLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -463,9 +460,6 @@ struct FMapSkeletalMeshes
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString RefMaterial;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool  bTransparency;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString RefSkeleton;
@@ -547,19 +541,25 @@ struct FMaterialExport
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY()
 	FString RefParent; 
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY()
+	FString BlendMode;
+
+	UPROPERTY()
+	uint32 BlendModeValue;
+
+	UPROPERTY()
 	TArray<uint8> ParamTypes;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY()
 	TArray<float> ParamFloatValues;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY()
 	TArray<FLinearColor> ParamVectorValues;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY()
 	TArray<FString> ParamRefTextures;
 };
 

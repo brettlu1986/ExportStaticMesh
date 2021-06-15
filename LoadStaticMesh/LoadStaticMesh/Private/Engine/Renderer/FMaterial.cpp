@@ -64,6 +64,9 @@ void FMaterial::Initialize()
 
 void FMaterial::Init(LMaterialBase& MaterialData)
 {
+	BlendMode.BlendModeName = MaterialData.GetBlendMode().BlendModeName;
+	BlendMode.BlendModeValue = MaterialData.GetBlendMode().BlendModeValue;
+
 	if(MaterialData.GetParamTexture(0) != nullptr)
 	{
 		DiffuseTex = GRHI->CreateTexture(MaterialData.GetParamTexture(0));

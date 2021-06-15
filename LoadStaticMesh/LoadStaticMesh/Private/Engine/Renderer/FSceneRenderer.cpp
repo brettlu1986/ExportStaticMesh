@@ -6,6 +6,7 @@
 #include "FShadowMap.h"
 #include "LDeviceWindows.h"
 #include "LEngine.h"
+#include "LLog.h"
 
 FSceneRenderer::FSceneRenderer()
 {
@@ -165,8 +166,8 @@ void FSceneRenderer::RenderSceneStaticMeshes(FScene* RenderScene, bool bTranpare
 			FD3DGraphicPipline* Pso = GRHI->GetPsoObject(Meshes[i]->GetPsoKey());
 			GRHI->SetPiplineStateObject(Pso);
 		}
-		
-		if(Meshes[i]->IsTranparency() != bTranparency)
+
+		if(Meshes[i]->GetMaterial()->IsBlendModeTransparency() != bTranparency)
 			continue;
 
 		GRHI->SetVertexAndIndexBuffers(Meshes[i]->GetVertexBuffer(), Meshes[i]->GetIndexBuffer());
