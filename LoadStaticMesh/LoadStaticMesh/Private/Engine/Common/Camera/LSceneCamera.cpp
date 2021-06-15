@@ -91,7 +91,7 @@ void LSceneCamera::UpdateInput(float dt)
 {
 	if (bUpdateDirty)
 	{
-		float MoveSpeed = 15.f;
+		float MoveSpeed = 2.f;
 		XMVECTOR UnitDir = XMVector3Normalize(MoveDirection);
 		XMVECTOR FocusVec = XMLoadFloat3(&FocusPosition) +  MoveSpeed * dt * UnitDir;
 		FocusPosition.x = XMVectorGetX(FocusVec);
