@@ -25,6 +25,11 @@ public:
 	{
 		return Meshes;
 	}
+
+	const vector<FMesh*>& GetDrawTransparencyMeshes()
+	{
+		return TranparencyMeshes;
+	}
 	
 	const vector<FSkeletalMesh*>& GetDrawSkeletalMeshes() 
 	{
@@ -42,6 +47,8 @@ private:
 	vector<FSkeletalMesh*> SkmMeshes;
 
 	vector<FMesh*> Meshes;
+	vector<FMesh*> TranparencyMeshes;
+
 	vector<FLight*> SceneLights;
 
 	FPassViewProjection ViewProjInfo;

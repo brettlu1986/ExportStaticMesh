@@ -40,16 +40,34 @@ void FScene::UpdateLightInfo(FPassLightInfo UpdateLight)
 void FScene::AddMeshToScene(FMesh* Mesh)
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
-	UINT Len = (UINT)Meshes.size();
-	Mesh->SetMeshIndex(Len);
-	Meshes.push_back(Mesh);
+
+	if(Mesh->GetMaterial()->IsBlendModeTransparency())
+	{
+		UINT Len = (UINT)TranparencyMeshes.size();
+		Mesh->SetMeshIndex(Len);
+		TranparencyMeshes.push_back(Mesh);
+	}
+	else 
+	{
+		UINT Len = (UINT)Meshes.size();
+		Mesh->SetMeshIndex(Len);
+		Meshes.push_back(Mesh);
+	}
 }
 
 void FScene::DeleteMeshToScene(FMesh* Mesh)
 {
 	UINT MeshIndex = Mesh->GetMeshIndex();
-	Meshes[MeshIndex]->Destroy();
-	Meshes[MeshIndex] = nullptr;
+	if (Mesh->GetMaterial()->IsBlendModeTransparency())
+	{
+		TranparencyMeshes[MeshIndex]->Destroy();
+		TranparencyMeshes[MeshIndex] = nullptr;
+	}
+	else 
+	{
+		Meshes[MeshIndex]->Destroy();
+		Meshes[MeshIndex] = nullptr;
+	}
 }
 
 void FScene::AddLightToScene(FLight* Light)

@@ -155,7 +155,8 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 
 void FSceneRenderer::RenderSceneStaticMeshes(FScene* RenderScene, bool bTranparency, bool bShadowPass)
 {
-	const vector<FMesh*> Meshes = RenderScene->GetDrawMeshes();
+	vector<FMesh*> Meshes = bTranparency ? RenderScene->GetDrawTransparencyMeshes() : RenderScene->GetDrawMeshes();
+
 	for (size_t i = 0; i < Meshes.size(); i++)
 	{
 		if (!Meshes[i])
@@ -166,9 +167,6 @@ void FSceneRenderer::RenderSceneStaticMeshes(FScene* RenderScene, bool bTranpare
 			FD3DGraphicPipline* Pso = GRHI->GetPsoObject(Meshes[i]->GetPsoKey());
 			GRHI->SetPiplineStateObject(Pso);
 		}
-
-		if(Meshes[i]->GetMaterial()->IsBlendModeTransparency() != bTranparency)
-			continue;
 
 		GRHI->SetVertexAndIndexBuffers(Meshes[i]->GetVertexBuffer(), Meshes[i]->GetIndexBuffer());
 		GRHI->SetResourceParams(0, Meshes[i]->MatrixConstantBufferView);
