@@ -33,17 +33,25 @@ void FSceneRenderer::Destroy()
 	}
 
 	DsvTex->Destroy();
-	delete DsvTex;
-	DsvTex = nullptr;
+	SAFE_DELETE(DsvTex);
 
-	delete DsvView;
-	DsvView = nullptr;
+	SAFE_DELETE(DsvView)
+
+	//
+	SceneColorTex->Destroy();
+	SAFE_DELETE(SceneColorTex);
+	SAFE_DELETE(RTVSceneColor);
+
+	SAFE_DELETE(FullScreenIBData);
+	SAFE_DELETE(FullScreenVBData);
+
+	SAFE_DELETE(FullScreenIB);
+	SAFE_DELETE(FullScreenVB);
 
 	if(ShadowMap)
 	{
 		ShadowMap->Destroy();
-		delete ShadowMap;
-		ShadowMap = nullptr;
+		SAFE_DELETE(ShadowMap);
 	}
 }
 
@@ -63,7 +71,7 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 	//create swap render targets
 	for(UINT i = 0; i < RENDER_TARGET_COUNT; ++i)
 	{
-		RenderTargets[i] = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_RTV, 1, nullptr, 0, E_GRAPHIC_FORMAT::FORMAT_UNKNOWN, i });
+		RenderTargets[i] = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_RTV, 1, nullptr, 0, E_GRAPHIC_FORMAT::FORMAT_R8G8B8A8_UNORM, i });
 	}
 
 	//create default dsv view
@@ -85,23 +93,66 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 
 	//create used pipline state objects
 	GRHI->CreatePipelineStateObject({ "PsoUseTexture", StandardInputElementDescs, _countof(StandardInputElementDescs), "ShaderTexVs",
-		"ShaderTexPs", 1, FRtvFormat::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState(), true });
+		"ShaderTexPs", 1, E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT, FRHIRasterizerState(), true });
 	GRHI->CreatePipelineStateObject({ "PsoNoTexture", StandardInputElementDescs, _countof(StandardInputElementDescs), "ShaderVs",
-		"ShaderPs", 1, FRtvFormat::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState() });
+		"ShaderPs", 1, E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT, FRHIRasterizerState() });
+
+	GRHI->CreatePipelineStateObject({ "HighLight", StandardInputElementDescs, _countof(StandardInputElementDescs), "ShaderVs",
+	"ShaderHighLightPs", 1, E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT, FRHIRasterizerState() });
 
 	FRHIRasterizerState State;
 	State.DepthBias = 25000;
 	State.DepthBiasClamp = 0.f;
 	State.SlopeScaledDepthBias = 0.1f;
 	GRHI->CreatePipelineStateObject({ "ShadowPass", SkeletalInputElementDescs, _countof(SkeletalInputElementDescs), "SampleDepthShaderVs",
-		"SampleDepthShaderPs", 0, FRtvFormat::FORMAT_UNKNOWN, State });
+		"SampleDepthShaderPs", 0, E_GRAPHIC_FORMAT::FORMAT_UNKNOWN, State });
 
 	GRHI->CreatePipelineStateObject({ "SkinShadowPass", SkeletalInputElementDescs, _countof(SkeletalInputElementDescs), "SampleDepthSkinVs",
-		"SampleDepthSkinPs", 0, FRtvFormat::FORMAT_UNKNOWN, State });
+		"SampleDepthSkinPs", 0, E_GRAPHIC_FORMAT::FORMAT_UNKNOWN, State });
 
 	GRHI->CreatePipelineStateObject({ "SKMPso", SkeletalInputElementDescs, _countof(SkeletalInputElementDescs), "SkeletalVs",
-		"SkeletalPs", 1, FRtvFormat::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState() });
-	
+		"SkeletalPs", 1, E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT, FRHIRasterizerState() });
+
+	//////////////////////////////////////
+	//scene color
+	FClearColor SceneClearColor = {0, 0, 0, 1.f};
+
+	FClearValue SceneClearValue;
+	SceneClearValue.Format = E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT;
+	SceneClearValue.ClearDepth = nullptr;
+	SceneClearValue.ClearColor = &SceneClearColor;
+
+	FTextureInitializer SceneColorInitializer =
+	{
+		(UINT)GRHI->GetDefaultViewPort().Width, (UINT)GRHI->GetDefaultViewPort().Height, 1, 1, E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT, E_RESOURCE_FLAGS::RESOURCE_FLAG_ALLOW_RENDER_TARGET, &SceneClearValue,
+		E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET
+	};
+	SceneColorTex = GRHI->CreateTexture(SceneColorInitializer);
+	RTVSceneColor = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_RTV, 1, &SceneColorTex, 0, E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT });
+
+	//bloom setup
+	const FRHIInputElement FullInputElementDescs[] =
+	{
+		{ "POSITION", 0, E_GRAPHIC_FORMAT::FORMAT_R32G32B32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, E_GRAPHIC_FORMAT::FORMAT_R32G32_FLOAT, 0, 12, ERHI_INPUT_CLASSIFICATION::INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+	};
+	static const float Vertices[] = {
+			1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+			1.0f, 3.0f, 0.0f, 1.0f, -1.0f,
+			-3.0f, -1.0f, 0.0f, -1.0f, 1.0f };
+	static UINT Indices[] = { 0, 1, 2 };
+
+	FullScreenVBData = new LVertexBuffer((char*)Vertices, sizeof(Vertices), 3);
+	FullScreenIBData = new LIndexBuffer(3, sizeof(UINT)*3, E_INDEX_TYPE::TYPE_UINT_32, reinterpret_cast<void*>(Indices));
+
+	FullScreenVB = GRHI->RHICreateVertexBuffer();
+	FullScreenIB = GRHI->RHICreateIndexBuffer();
+
+	GRHI->UpdateVertexBufferResource(FullScreenVB, *FullScreenVBData);
+	GRHI->UpdateIndexBufferResource(FullScreenIB, *FullScreenIBData);
+
+	////////////////////////
+
 	ShadowMap = new FShadowMap(SHADOW_WIDTH, SHADOW_HEIGHT);
 	ShadowMap->InitRenderResource();
 
@@ -113,49 +164,61 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 {
 	{
 		FUserMarker UserMarker("Render Begin");
+		GRHI->SetViewPortInfo(GRHI->GetDefaultViewPort());
+
 		vector<FResourceHeap*> Heaps;
 		FResourceViewCreater* ResViewCreater = GRHI->GetResourceViewCreater();
 		Heaps.push_back(ResViewCreater->GetCbvSrvUavHeap());
 		GRHI->SetResourceHeaps(Heaps);
 		GRHI->ResourceTransition(RenderTargets[GRHI->GetFrameIndex()], E_RESOURCE_STATE::RESOURCE_STATE_PRESENT, E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET);
+		GRHI->SetRenderTargets(RenderTargets[GRHI->GetFrameIndex()], DsvView);
 	}
 
 	{
 		FUserMarker UserMarker("Shadow Pass");
 		GRHI->SetViewPortInfo(ShadowMap->ViewPort);
 		GRHI->SetPiplineStateObject(GRHI->GetPsoObject("ShadowPass"));
-		GRHI->ResourceTransition(ShadowMap->ShadowResView, E_RESOURCE_STATE::RESOURCE_STATE_GENERIC_READ, E_RESOURCE_STATE::RESOURCE_STATE_DEPTH_WRITE);
+		GRHI->ResourceTransition(ShadowMap->ShadowResView, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE, E_RESOURCE_STATE::RESOURCE_STATE_DEPTH_WRITE);
 		GRHI->SetRenderTargets(nullptr, ShadowMap->DsvResView);
 		RenderSceneStaticMeshes(RenderScene, false, true);
 		RenderSceneStaticMeshes(RenderScene, true, true);
 
 		GRHI->SetPiplineStateObject(GRHI->GetPsoObject("SkinShadowPass"));
 		RenderSceneSkeletalMeshes(RenderScene, true);
-		GRHI->ResourceTransition(ShadowMap->ShadowResView, E_RESOURCE_STATE::RESOURCE_STATE_DEPTH_WRITE, E_RESOURCE_STATE::RESOURCE_STATE_GENERIC_READ);
+		GRHI->ResourceTransition(ShadowMap->ShadowResView, E_RESOURCE_STATE::RESOURCE_STATE_DEPTH_WRITE, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	}
 	
-	// draw opaque static mesh 
-	GRHI->SetViewPortInfo(GRHI->GetDefaultViewPort());
-	GRHI->SetRenderTargets(RenderTargets[GRHI->GetFrameIndex()], DsvView);
 	{
-		FUserMarker UserMarker("Draw Opaque Static Mesh");
-		RenderSceneStaticMeshes(RenderScene, false);
+		FUserMarker UserMarker("SceneBasePass");
+		GRHI->SetViewPortInfo(GRHI->GetDefaultViewPort());
+		GRHI->SetRenderTargets(RTVSceneColor, DsvView);
+		// draw opaque static mesh 
+		{
+			FUserMarker UserMarker("Draw Opaque Static Mesh");
+			RenderSceneStaticMeshes(RenderScene, false);
+		}
+		// draw skeletal mesh 
+		{
+			FUserMarker UserMarker("Draw Skeletal Mesh");
+			RenderSceneSkeletalMeshes(RenderScene);
+		}
+		// draw transparency static mesh 
+		{
+			FUserMarker UserMarker("Draw Transparency Static Mesh");
+			RenderSceneStaticMeshes(RenderScene, true);
+		}
 	}
 
-	// draw skeletal mesh 
 	{
-		FUserMarker UserMarker("Draw Skeletal Mesh");
-		RenderSceneSkeletalMeshes(RenderScene);
-	}
-	
-	// draw transparency static mesh 
-	{
-		FUserMarker UserMarker("Draw Transparency Static Mesh");
-		RenderSceneStaticMeshes(RenderScene, true);
+		FUserMarker UserMarker("PostProgress");
+		{
+			FUserMarker UserMarker("Bloom Setup");
+
+		}
+
 	}
 	
 	GRHI->ResourceTransition(RenderTargets[GRHI->GetFrameIndex()], E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET, E_RESOURCE_STATE::RESOURCE_STATE_PRESENT);
-	
 }
 
 void FSceneRenderer::RenderSceneStaticMeshes(FScene* RenderScene, bool bTranparency, bool bShadowPass)

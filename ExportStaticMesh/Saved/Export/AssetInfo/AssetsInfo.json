@@ -45,6 +45,10 @@
 		{
 			"refName": "SampleDepthSkinPs",
 			"fileName": "SampleDepthSkinPs.cso"
+		},
+		{
+			"refName": "ShaderHighLightPs",
+			"fileName": "ShaderHighLightPs.cso"
 		}
 	],
 	"textures": [

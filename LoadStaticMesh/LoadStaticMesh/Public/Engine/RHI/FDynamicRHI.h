@@ -119,6 +119,7 @@ public:
 	{
 		GRHI->BeginEvent(Name);
 	}
+
 	~FUserMarker()
 	{
 		GRHI->EndEvent();

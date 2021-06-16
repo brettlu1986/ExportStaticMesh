@@ -44,7 +44,7 @@ void FShadowMap::InitRenderResource()
 	FTextureInitializer Initializer = 
 	{
 		Width, Height, 1, 1, E_GRAPHIC_FORMAT::FORMAT_R24G8_TYPELESS, E_RESOURCE_FLAGS::RESOURCE_FLAG_ALLOW_DEPTH_STENCIL, &ClearValue,
-		E_RESOURCE_STATE::RESOURCE_STATE_GENERIC_READ
+		E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 	};
 	ShadowResource = GRHI->CreateTexture(Initializer);
 	ShadowResView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV, 1, &ShadowResource, 0, E_GRAPHIC_FORMAT::FORMAT_R24_UNORM_X8_TYPELESS });

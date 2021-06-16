@@ -77,6 +77,16 @@ void FMesh::InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuff
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
 
+	//TODO: move to export, here is temp
+	if(Name == "Cube")
+	{
+		SetPsoKey("HighLight");
+	}
+	else 
+	{
+		SetPsoKey(MaterialData.GetParamTextures().size() > 0 ? "PsoUseTexture" : "PsoNoTexture");
+	}
+
 	VertexBuffer = GRHI->RHICreateVertexBuffer();
 	IndexBuffer = GRHI->RHICreateIndexBuffer();
 	Material = new FMaterial();

@@ -244,12 +244,6 @@ struct FRHIInputElement
 	UINT InstanceDataStepRate;
 };
 
-typedef enum class FRtvFormat
-{
-	FORMAT_UNKNOWN = 0,
-	FORMAT_R8G8B8A8_UNORM,
-}FRtvFormat;
-
 typedef enum class FCullMode
 {
 	CULL_MODE_NONE = 1,
@@ -275,7 +269,7 @@ struct FPiplineStateInitializer
 	string RefVsShader;
 	string RefPsShader;
 	UINT NumRenderTargets;
-	FRtvFormat RtvFormat;
+	E_GRAPHIC_FORMAT RtvFormat;
 	FRHIRasterizerState RasterizerStat;
 	bool bTransparency = false;
 };

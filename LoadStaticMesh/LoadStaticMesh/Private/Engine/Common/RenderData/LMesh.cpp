@@ -49,7 +49,6 @@ void LMesh::InitRenderThreadResource()
 		[RenderMeshRes, VertexData, IndexData, RenderMaterialData]()
 		{
 			RenderMeshRes->InitRenderThreadResource(*VertexData, *IndexData, *RenderMaterialData);
-			RenderMeshRes->SetPsoKey(RenderMaterialData->GetParamTextures().size() > 0 ? "PsoUseTexture" : "PsoNoTexture");
 			RenderMeshRes->AddMeshInRenderThread();
 		}
 	);

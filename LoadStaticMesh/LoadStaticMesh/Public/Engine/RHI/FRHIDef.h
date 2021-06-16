@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
+#define SAFE_DELETE(x) if(x) { delete x; x = nullptr; }
 
 typedef enum class EDynamicModuleType : UINT8
 {

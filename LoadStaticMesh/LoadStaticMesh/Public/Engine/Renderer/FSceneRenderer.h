@@ -25,4 +25,13 @@ private:
 	FTexture* DsvTex;
 	FResourceView* DsvView;
 
+	//
+	FTexture* SceneColorTex;
+	FResourceView* RTVSceneColor;
+
+	LIndexBuffer* FullScreenIBData;
+	LVertexBuffer* FullScreenVBData;
+	FIndexBuffer* FullScreenIB;
+	FVertexBuffer* FullScreenVB;
+
 };
