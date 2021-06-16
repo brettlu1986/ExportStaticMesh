@@ -31,7 +31,7 @@ public:
 	virtual FVertexBuffer* RHICreateVertexBuffer() override;
 	virtual void UpdateVertexBufferResource(FVertexBuffer* VertexBuffer, LVertexBuffer& VertexBufferData) override;
 	virtual void UpdateIndexBufferResource(FIndexBuffer* IndexBuffer, LIndexBuffer& IndexBufferData) override;
-	virtual FShader* RHICreateShader(LPCWSTR ShaderFile) override;
+	virtual FShader* RHICreateShader(string RefShaderName) override;
 	virtual FTexture* CreateTexture(LTexture* TextureData) override;
 	virtual FTexture* CreateTexture(FTextureInitializer TexInitializer) override;
 	

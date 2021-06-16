@@ -37,6 +37,14 @@
 		{
 			"refName": "SkeletalPs",
 			"fileName": "SkeletalPs.cso"
+		},
+		{
+			"refName": "SampleDepthSkinVs",
+			"fileName": "SampleDepthSkinVs.cso"
+		},
+		{
+			"refName": "SampleDepthSkinPs",
+			"fileName": "SampleDepthSkinPs.cso"
 		}
 	],
 	"textures": [

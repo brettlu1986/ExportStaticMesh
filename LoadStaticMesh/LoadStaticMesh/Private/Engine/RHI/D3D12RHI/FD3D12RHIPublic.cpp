@@ -117,12 +117,10 @@ void FD3D12DynamicRHI::UpdateIndexBufferResource(FIndexBuffer* IndexBuffer, LInd
 	D3DIndexBuffer->InitGPUIndexBufferView(D3DDevice.Get(), CommandList.Get(), IndexBufferData);
 }
 
-FShader* FD3D12DynamicRHI::RHICreateShader(LPCWSTR  ShaderFile)
+FShader* FD3D12DynamicRHI::RHICreateShader(string RefShaderName)
 {
-	UINT8* ShaderData = nullptr;
-	UINT ShaderLen = 0;
-	ThrowIfFailed(ReadDataFromFile(LAssetDataLoader::GetAssetFullPath(ShaderFile).c_str(), &ShaderData, &ShaderLen));
-	return new FShader(ShaderData, ShaderLen);
+	LShader* ShaderData = LAssetManager::Get()->GetShader(RefShaderName);
+	return new FShader(ShaderData->GetShaderByteCode(), ShaderData->GetDataLength());
 }
 
 FTexture* FD3D12DynamicRHI::CreateTexture(LTexture* TextureData)
@@ -269,8 +267,8 @@ void FD3D12DynamicRHI::CreatePipelineStateObject(FPiplineStateInitializer Initia
 		InputElementDescs.push_back(D3DInputDesc);
 	}
 
-	FShader* Vs = RHICreateShader(Initializer.VsResource);
-	FShader* Ps = RHICreateShader(Initializer.PsResource);
+	FShader* Vs = RHICreateShader(Initializer.RefVsShader);
+	FShader* Ps = RHICreateShader(Initializer.RefPsShader);
 
 	PsoDesc.InputLayout = { InputElementDescs.data(), Initializer.NumElements };
 	PsoDesc.pRootSignature = PsoObj->RootSignature.Get();

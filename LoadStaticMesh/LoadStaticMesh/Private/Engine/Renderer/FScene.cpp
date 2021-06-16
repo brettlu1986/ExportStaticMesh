@@ -7,6 +7,8 @@
 #include "LLog.h"
 
 FScene::FScene()
+:PassLightInfo(nullptr)
+,PassViewProj(nullptr)
 {
 }
 
@@ -127,9 +129,7 @@ void FScene::DeleteSkeletalMeshToScene(FSkeletalMesh* Mesh)
 const vector<FMesh*>& FScene::GetDrawTransparencyMeshes()
 {
 	XMFLOAT3 CameraLocation = ViewProjInfo.EyePosW;
-
-
-	sort(TranparencyMeshes.begin(), TranparencyMeshes.end(), [CameraLocation](FMesh* A, FMesh* B)
+	sort(TranparencyMeshes.begin(), TranparencyMeshes.end(), [CameraLocation]( FMesh* A,  FMesh* B)
 	{
 		float DisA = MathHelper::Distance(A->GetModelLocation(), CameraLocation);
 		float DisB = MathHelper::Distance(B->GetModelLocation(), CameraLocation);

@@ -4,6 +4,7 @@
 #include "LDefine.h"
 #include "LGameTimer.h"
 #include "LScene.h"
+#include "LEngine.h"
 
 class ApplicationMain
 {
@@ -27,6 +28,7 @@ private:
 	void OnTouchInit();
 	void OnAssetsLoad();
 	void OnSceneInit();
+	void OnEngineInit(LEngineDesc Desc);
 
 private: 
 	LGameTimer* Timer;

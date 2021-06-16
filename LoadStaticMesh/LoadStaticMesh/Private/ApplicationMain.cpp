@@ -1,6 +1,6 @@
 
 #include "ApplicationMain.h"
-#include "LEngine.h"
+
 #include "LEvent.h"
 #include "LInput.h"
 #include "FRenderThread.h"
@@ -32,30 +32,37 @@ ApplicationMain::~ApplicationMain()
 bool ApplicationMain::Initialize(UINT Width, UINT Height, string WndName)
 {
 	Timer = LGameTimer::Get();
+
 	LEngineDesc Desc = 
 	{
 		Width, 
 		Height, 
 		WndName,
 	};
-	//create reader thread in engine init
-	LEngine::InitEngine(Desc);
-	OnTouchInit();
+
 	OnAssetsLoad();
+	OnEngineInit(Desc);
+	OnTouchInit();
 	OnSceneInit();
 	return true;
-}
-
-void ApplicationMain::OnTouchInit()
-{
-	EventDispatcher& EventDisp = LEngine::GetEngine()->GetEventDispacher();
-	EventDisp.RegisterEvent(new LEvent<FInputResult>(E_EVENT_KEY::EVENT_INPUT, &ApplicationMain::ProcessInput));
 }
 
 void ApplicationMain::OnAssetsLoad()
 {
 	//load assets
 	LAssetManager::Get()->LoadAssets("AssetInfo/AssetsInfo.bin");
+}
+
+void ApplicationMain::OnEngineInit(LEngineDesc Desc)
+{
+	//create reader thread in engine init
+	LEngine::InitEngine(Desc);
+}
+
+void ApplicationMain::OnTouchInit()
+{
+	EventDispatcher& EventDisp = LEngine::GetEngine()->GetEventDispacher();
+	EventDisp.RegisterEvent(new LEvent<FInputResult>(E_EVENT_KEY::EVENT_INPUT, &ApplicationMain::ProcessInput));
 }
 
 void ApplicationMain::OnSceneInit()

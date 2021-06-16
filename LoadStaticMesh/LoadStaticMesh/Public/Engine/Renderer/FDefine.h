@@ -272,8 +272,8 @@ struct FPiplineStateInitializer
 	string KeyName;
 	const FRHIInputElement* pInputElement;
 	UINT NumElements;
-	LPCWSTR VsResource;
-	LPCWSTR PsResource;
+	string RefVsShader;
+	string RefPsShader;
 	UINT NumRenderTargets;
 	FRtvFormat RtvFormat;
 	FRHIRasterizerState RasterizerStat;

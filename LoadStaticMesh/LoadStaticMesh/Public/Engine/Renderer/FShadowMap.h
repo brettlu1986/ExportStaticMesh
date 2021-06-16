@@ -14,16 +14,6 @@ public:
 	void Destroy();
 	void InitRenderResource();
 
-	void SetPsoKey(string Key)
-	{
-		PsoKey = Key;
-	}
-
-	string& GetPsoKey()
-	{
-		return PsoKey;
-	}
-
 	FRHIViewPort ViewPort;
 	FTexture* ShadowResource;
 	FResourceView* ShadowResView;
@@ -32,5 +22,4 @@ public:
 private: 
 	UINT Width;
 	UINT Height;
-	string PsoKey;
 };

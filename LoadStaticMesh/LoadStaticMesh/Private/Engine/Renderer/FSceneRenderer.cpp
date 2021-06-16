@@ -9,7 +9,14 @@
 #include "LLog.h"
 
 FSceneRenderer::FSceneRenderer()
+:DsvTex(nullptr)
+,DsvView(nullptr)
+,ShadowMap(nullptr)
 {
+	for (UINT i = 0; i < RENDER_TARGET_COUNT; ++i)
+	{
+		RenderTargets[i] = nullptr;
+	}
 }
 
 FSceneRenderer::~FSceneRenderer()
@@ -77,27 +84,26 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 	DsvView = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_DSV, 1, &DsvTex, 0, E_GRAPHIC_FORMAT::FORMAT_D24_UNORM_S8_UINT });
 
 	//create used pipline state objects
-	GRHI->CreatePipelineStateObject({ "PsoUseTexture", StandardInputElementDescs, _countof(StandardInputElementDescs), L"ShaderTexVs.cso",
-		L"ShaderTexPs.cso", 1, FRtvFormat::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState(), true });
-	GRHI->CreatePipelineStateObject({ "PsoNoTexture", StandardInputElementDescs, _countof(StandardInputElementDescs), L"ShaderVs.cso",
-		L"ShaderPs.cso", 1, FRtvFormat::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState() });
+	GRHI->CreatePipelineStateObject({ "PsoUseTexture", StandardInputElementDescs, _countof(StandardInputElementDescs), "ShaderTexVs",
+		"ShaderTexPs", 1, FRtvFormat::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState(), true });
+	GRHI->CreatePipelineStateObject({ "PsoNoTexture", StandardInputElementDescs, _countof(StandardInputElementDescs), "ShaderVs",
+		"ShaderPs", 1, FRtvFormat::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState() });
 
 	FRHIRasterizerState State;
 	State.DepthBias = 25000;
 	State.DepthBiasClamp = 0.f;
 	State.SlopeScaledDepthBias = 0.1f;
-	GRHI->CreatePipelineStateObject({ "ShadowPass", SkeletalInputElementDescs, _countof(SkeletalInputElementDescs), L"SampleDepthShaderVs.cso",
-		L"SampleDepthShaderPs.cso", 0, FRtvFormat::FORMAT_UNKNOWN, State });
+	GRHI->CreatePipelineStateObject({ "ShadowPass", SkeletalInputElementDescs, _countof(SkeletalInputElementDescs), "SampleDepthShaderVs",
+		"SampleDepthShaderPs", 0, FRtvFormat::FORMAT_UNKNOWN, State });
 
-	GRHI->CreatePipelineStateObject({ "SkinShadowPass", SkeletalInputElementDescs, _countof(SkeletalInputElementDescs), L"SampleDepthSkinVs.cso",
-		L"SampleDepthSkinPs.cso", 0, FRtvFormat::FORMAT_UNKNOWN, State });
+	GRHI->CreatePipelineStateObject({ "SkinShadowPass", SkeletalInputElementDescs, _countof(SkeletalInputElementDescs), "SampleDepthSkinVs",
+		"SampleDepthSkinPs", 0, FRtvFormat::FORMAT_UNKNOWN, State });
 
-	GRHI->CreatePipelineStateObject({ "SKMPso", SkeletalInputElementDescs, _countof(SkeletalInputElementDescs), L"SkeletalVs.cso",
-		L"SkeletalPs.cso", 1, FRtvFormat::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState() });
+	GRHI->CreatePipelineStateObject({ "SKMPso", SkeletalInputElementDescs, _countof(SkeletalInputElementDescs), "SkeletalVs",
+		"SkeletalPs", 1, FRtvFormat::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState() });
 	
 	ShadowMap = new FShadowMap(SHADOW_WIDTH, SHADOW_HEIGHT);
 	ShadowMap->InitRenderResource();
-	ShadowMap->SetPsoKey("ShadowPass");
 
 	RenderScene->PassViewProj = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FPassViewProjection)), E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
 	RenderScene->PassLightInfo = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FPassLightInfo)), E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
@@ -117,8 +123,7 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 	{
 		FUserMarker UserMarker("Shadow Pass");
 		GRHI->SetViewPortInfo(ShadowMap->ViewPort);
-		FD3DGraphicPipline* Pso = GRHI->GetPsoObject(ShadowMap->GetPsoKey());
-		GRHI->SetPiplineStateObject(Pso);
+		GRHI->SetPiplineStateObject(GRHI->GetPsoObject("ShadowPass"));
 		GRHI->ResourceTransition(ShadowMap->ShadowResView, E_RESOURCE_STATE::RESOURCE_STATE_GENERIC_READ, E_RESOURCE_STATE::RESOURCE_STATE_DEPTH_WRITE);
 		GRHI->SetRenderTargets(nullptr, ShadowMap->DsvResView);
 		RenderSceneStaticMeshes(RenderScene, false, true);
