@@ -24,6 +24,8 @@ LSceneCamera::LSceneCamera()
 	,bUpdateRotDirty(false)
 	,Dx(0.f)
 	,Dy(0.f)
+	,MoveSpeed(2.f)
+	,RotSpeed(10.f)
 {
 	CameraType = E_CAMERA_TYPE::CAMERA_SCENE;
 	for (UINT i = 0; i < KEY_SIZE; i++)
@@ -96,17 +98,38 @@ void LSceneCamera::ProcessInput()
 
 void LSceneCamera::UpdateInput(float dt)
 {
+	bool bDirty = false;
 	if (bUpdateDirty )
 	{
-		float MoveSpeed = 2.f;
 		XMVECTOR UnitDir = XMVector3Normalize(MoveDirection);
 		XMVECTOR FocusVec = XMLoadFloat3(&FocusPosition) +  MoveSpeed * dt * UnitDir;
 		FocusPosition.x = XMVectorGetX(FocusVec);
 		FocusPosition.y = XMVectorGetY(FocusVec);
 		FocusPosition.z = XMVectorGetZ(FocusVec);
+		bDirty = true;
+	}
+
+	if(bUpdateRotDirty)
+	{
+		LInput::GetInput()->GetCurrentCursorLocation(CurrentMousePoint);
+
+		Dx = XMConvertToRadians(0.25f * static_cast<float>(CurrentMousePoint.x - LastMousePoint.x));
+		Dy = XMConvertToRadians(0.25f * static_cast<float>(CurrentMousePoint.y - LastMousePoint.y));;
+
+		Pitch -= RotSpeed * Dy * dt;
+		Yaw += RotSpeed * Dx * dt;
+		Pitch = MathHelper::Clamp(Pitch, MIN_PITCH, MAX_PITCH);
+
+		float R = cosf(Pitch);
+		LookDirection.y = R * sinf(Yaw);
+		LookDirection.z = sinf(Pitch);
+		LookDirection.x = R * cosf(Yaw);
+
+		LastMousePoint = CurrentMousePoint;
+		bDirty = true;
 	}
 		
-	if(bUpdateDirty || bUpdateRotDirty)
+	if(bDirty)
 	{
 		RightDirection = XMVector3Cross(XMLoadFloat3(&LookDirection), XMLoadFloat3(&UpDirection));
 
@@ -145,39 +168,16 @@ void LSceneCamera::ProcessCameraMouseInput(FInputResult& MouseInput)
 	{
 		LastMousePoint.x = MouseInput.X;
 		LastMousePoint.y = MouseInput.Y;
+
+		bUpdateRotDirty = false;
 	}
 	else if (MouseInput.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_MOVE)
 	{
-		CurrentMousePoint.x = MouseInput.X;
-		CurrentMousePoint.y = MouseInput.Y;
-
-		Dx = XMConvertToRadians(0.25f * static_cast<float>(CurrentMousePoint.x - LastMousePoint.x)); //dx
-		Dy = XMConvertToRadians(0.25f * static_cast<float>(CurrentMousePoint.y - LastMousePoint.y)); //dy
-
 		bUpdateRotDirty = true;
-
-		if (bUpdateRotDirty)
-		{
-			float RotSpeed = 12.f;
-			Pitch -= RotSpeed * Dy * 1/60.f;
-			Yaw += RotSpeed * Dx * 1/60.f;
-			Pitch = MathHelper::Clamp(Pitch, MIN_PITCH, MAX_PITCH);
-
-			float R = cosf(Pitch);
-			LookDirection.y = R * sinf(Yaw);
-			LookDirection.z = sinf(Pitch);
-			LookDirection.x = R * cosf(Yaw);
-		}
-
-		LastMousePoint.x = CurrentMousePoint.x;
-		LastMousePoint.y = CurrentMousePoint.y;
 	}
 	else if(MouseInput.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_UP)
 	{
 		bUpdateRotDirty = false;
-		Dx = 0.f;
-		Dy = 0.f;
-
 		CurrentMousePoint.x = MouseInput.X;
 		CurrentMousePoint.y = MouseInput.Y;
 	}

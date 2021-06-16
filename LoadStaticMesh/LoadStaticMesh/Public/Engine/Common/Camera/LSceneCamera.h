@@ -38,11 +38,15 @@ private:
 	XMVECTOR RightDirection;
 	POINT LastMousePoint;
 	POINT CurrentMousePoint;
+
 	XMVECTOR MoveOffset;
 	bool bUpdateDirty;
 	bool bUpdateRotDirty;
 
 	float Dx;
 	float Dy;
+
+	float MoveSpeed;
+	float RotSpeed;
 	XMVECTOR MoveDirection;
 };
