@@ -27,6 +27,7 @@ private:
 
 	//
 	FTexture* SceneColorTex;
+	FResourceView* SRVSceneColor;
 	FResourceView* RTVSceneColor;
 
 	LIndexBuffer* FullScreenIBData;
@@ -44,13 +45,17 @@ private:
 	//bloom down
 	static const UINT DOWN_SAMPLE_COUNT = 4;
 
+	FRHIViewPort BloomDowmViewPort[DOWN_SAMPLE_COUNT];
 	FTexture* BloomDownTex[DOWN_SAMPLE_COUNT];
+	FResourceView* SRVBloomDown[DOWN_SAMPLE_COUNT];
 	FResourceView* RTVBloomDown[DOWN_SAMPLE_COUNT];
 	FResourceView* CBVBloomDown[DOWN_SAMPLE_COUNT];
 
 	//bloom up
 	static const UINT UP_SAMPLE_COUNT = 3;
+	FRHIViewPort BloomUpViewPort[UP_SAMPLE_COUNT];
 	FTexture* BloomUpTex[UP_SAMPLE_COUNT];
+	FResourceView* SRVBloomUp[UP_SAMPLE_COUNT];
 	FResourceView* RTVBloomUp[UP_SAMPLE_COUNT];
 	FResourceView* CBVBloomUp[UP_SAMPLE_COUNT];
 

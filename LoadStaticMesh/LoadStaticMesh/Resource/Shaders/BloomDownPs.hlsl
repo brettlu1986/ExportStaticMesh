@@ -2,7 +2,7 @@
 #include "BloomDownVs.hlsl"
 
 Texture2D BloomDownSourceTexture : register(t0);
-SamplerState BloomDownSourceSampler : register(s0);
+SamplerState BloomDownSourceSampler : register(s2);
 
 half4 PsMain(PSInput input) : SV_TARGET
 {

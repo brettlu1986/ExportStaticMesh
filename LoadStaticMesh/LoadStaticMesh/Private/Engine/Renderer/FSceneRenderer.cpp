@@ -12,6 +12,7 @@ FSceneRenderer::FSceneRenderer()
 :DsvTex(nullptr)
 ,DsvView(nullptr)
 , SceneColorTex(nullptr)
+, SRVSceneColor(nullptr)
 , RTVSceneColor(nullptr)
 , FullScreenIBData(nullptr)
 , FullScreenVBData(nullptr)
@@ -33,17 +34,20 @@ FSceneRenderer::FSceneRenderer()
 		RenderTargets[i] = nullptr;
 	}
 
+	//bloom down
 	for (UINT i = 0; i < DOWN_SAMPLE_COUNT; i++)
 	{
 		BloomDownTex[i] = nullptr;
 		RTVBloomDown[i] = nullptr;
 		CBVBloomDown[i] = nullptr;
+		SRVBloomDown[i] = nullptr;
 	}
 
 	//bloom up
 	for (UINT i = 0; i < UP_SAMPLE_COUNT; i++)
 	{
 		BloomUpTex[i] = nullptr;
+		SRVBloomUp[i] = nullptr;
 		RTVBloomUp[i] = nullptr;
 		CBVBloomUp[i] = nullptr;
 	}
@@ -68,6 +72,7 @@ void FSceneRenderer::Destroy()
 
 	//scene color
 	SAFE_DESTROY(SceneColorTex);
+	SAFE_DELETE(SRVSceneColor);
 	SAFE_DELETE(RTVSceneColor);
 
 	//bloom setup
@@ -88,6 +93,7 @@ void FSceneRenderer::Destroy()
 		SAFE_DESTROY(BloomDownTex[i]);
 		SAFE_DELETE(RTVBloomDown[i]);
 		SAFE_DELETE(CBVBloomDown[i]);
+		SAFE_DELETE(SRVBloomDown[i]);
 	}
 
 	//bloom up
@@ -96,6 +102,7 @@ void FSceneRenderer::Destroy()
 		SAFE_DESTROY(BloomUpTex[i]);
 		SAFE_DELETE(RTVBloomUp[i]);
 		SAFE_DELETE(CBVBloomUp[i]);
+		SAFE_DELETE(SRVBloomUp[i]);
 	}
 
 	//sunmerge 
@@ -190,6 +197,8 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 			E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET
 		};
 		SceneColorTex = GRHI->CreateTexture(SceneColorInitializer);
+		SRVSceneColor = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV, 1, &SceneColorTex,
+			0, E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT });
 		RTVSceneColor = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_RTV, 1, &SceneColorTex, 0, E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT });
 
 	}
@@ -278,12 +287,15 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 		{
 			UINT W = SetUpWidth >> (i + 1);
 			UINT H = SetUpHeight >> (i + 1);
+			BloomDowmViewPort[i] = FRHIViewPort(0.f, 0.f, (float)W, (float)H);
 			FTextureInitializer DownTexInitializer =
 			{
 				W, H, 1, 1, BloomRTFormat, E_RESOURCE_FLAGS::RESOURCE_FLAG_ALLOW_RENDER_TARGET, &BloomClearValue,
 				E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET
 			};
 			BloomDownTex[i] = GRHI->CreateTexture(DownTexInitializer);
+			SRVBloomDown[i] = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV, 1, &BloomDownTex[i],
+			0, BloomRTFormat });
 			RTVBloomDown[i] = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_RTV, 1, &BloomDownTex[i], 0, BloomRTFormat });
 			CBVBloomDown[i] = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FPassBloomDown)), E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
 			
@@ -303,6 +315,7 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 		{
 			UINT UpW = SetUpWidth >> ( DOWN_SAMPLE_COUNT - 1 - i);
 			UINT UpH = SetUpHeight >> (DOWN_SAMPLE_COUNT - 1 - i);
+			BloomUpViewPort[i] = FRHIViewPort(0.f, 0.f, (float)UpW, (float)UpH);
 
 			UINT UpCompW = SetUpWidth >> (DOWN_SAMPLE_COUNT - i);
 			UINT UpCompH = SetUpHeight >> (DOWN_SAMPLE_COUNT - i);
@@ -313,6 +326,8 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 				E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET
 			};
 			BloomUpTex[i] = GRHI->CreateTexture(UpTexInitializer);
+			SRVBloomUp[i] = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV, 1, &BloomUpTex[i],
+			0, BloomRTFormat });
 			RTVBloomUp[i] = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_RTV, 1, &BloomUpTex[i], 0, BloomRTFormat });
 			CBVBloomUp[i] = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FPassBloomUp)), E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
 			
@@ -427,6 +442,8 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 			FUserMarker UserMarker("Draw Transparency Static Mesh");
 			RenderSceneStaticMeshes(RenderScene, true);
 		}
+
+		GRHI->ResourceTransition(SRVSceneColor, E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	}
 
 	{
@@ -440,8 +457,44 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 				GRHI->SetViewPortInfo(SetUpViewPort);
 				GRHI->SetRenderTargets(RTVBloomSetup, nullptr);
 				GRHI->SetResourceParams(0, CBVBloomSetup);
-				GRHI->SetResourceParams(4, SRVBloomSetup);
+				GRHI->SetResourceParams(4, SRVSceneColor);
 				GRHI->DrawTriangleList(FullScreenIB);
+			}
+
+			{
+				FUserMarker UserMarker("Bloom Down");
+				GRHI->SetPiplineStateObject(GRHI->GetPsoObject("BloomDown"));
+				for(UINT i = 0; i < DOWN_SAMPLE_COUNT; i++)
+				{
+					GRHI->SetViewPortInfo(BloomDowmViewPort[i]);
+					GRHI->SetRenderTargets(RTVBloomDown[i], nullptr);
+					GRHI->SetResourceParams(0, CBVBloomDown[i]);
+					if(i == 0)
+					{
+						GRHI->ResourceTransition(SRVBloomSetup, E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+						GRHI->SetResourceParams(4, SRVBloomSetup);
+					}
+					else 
+					{
+						GRHI->ResourceTransition(SRVBloomDown[i - 1], E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+						GRHI->SetResourceParams(4, SRVBloomDown[i - 1]);
+					}
+					GRHI->DrawTriangleList(FullScreenIB);
+				}
+			}
+
+			{
+				FUserMarker UserMarker("Bloom Up");
+				GRHI->SetPiplineStateObject(GRHI->GetPsoObject("BloomUp"));
+				for(UINT i = 0; i < UP_SAMPLE_COUNT; i++)
+				{
+					GRHI->SetViewPortInfo(BloomUpViewPort[i]);
+					GRHI->SetRenderTargets(RTVBloomUp[i], nullptr);
+					GRHI->SetResourceParams(0, CBVBloomUp[i]);
+					GRHI->SetResourceParams(4, SRVBloomUp[i]);
+					GRHI->DrawTriangleList(FullScreenIB);
+					GRHI->ResourceTransition(SRVBloomUp[i], E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+				}
 			}
 
 		}
