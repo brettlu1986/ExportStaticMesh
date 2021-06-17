@@ -322,23 +322,35 @@ void FD3D12DynamicRHI::SetResourceHeaps(vector<FResourceHeap*>& Heaps)
 
 void FD3D12DynamicRHI::SetRenderTargets(FResourceView* RtvView, FResourceView* DsvView)
 {
-	FD3D12DsvResourceView* Dsv = dynamic_cast<FD3D12DsvResourceView*>(DsvView);
-	CommandList->ClearDepthStencilView(Dsv->GetCpu(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-	D3D12_CPU_DESCRIPTOR_HANDLE DsvHandle = Dsv->GetCpu();
+	D3D12_CPU_DESCRIPTOR_HANDLE* pRtvHandle = nullptr;
+	D3D12_CPU_DESCRIPTOR_HANDLE* pDsvHandle = nullptr;
 
-	if (RtvView != nullptr)
+	D3D12_CPU_DESCRIPTOR_HANDLE RtvHandle;
+	D3D12_CPU_DESCRIPTOR_HANDLE DsvHandle;
+
+	if(RtvView != nullptr)
 	{
 		FD3D12RtvResourceView* Rtv = dynamic_cast<FD3D12RtvResourceView*>(RtvView);
 		float Color[4] = { ClearColor.R, ClearColor.G, ClearColor.B, ClearColor.A };
-
-		D3D12_CPU_DESCRIPTOR_HANDLE RtvHandle = Rtv->GetCpu();
+		RtvHandle = Rtv->GetCpu();
 		CommandList->ClearRenderTargetView(RtvHandle, Color, 0, nullptr);
-		CommandList->OMSetRenderTargets(1, &RtvHandle, true, &DsvHandle);
+		pRtvHandle = &RtvHandle;
 	}
-	else
+
+	if(DsvView != nullptr)
 	{
-		CommandList->OMSetRenderTargets(0, nullptr, false, &DsvHandle);
+		FD3D12DsvResourceView* Dsv = dynamic_cast<FD3D12DsvResourceView*>(DsvView);
+		DsvHandle = Dsv->GetCpu();
+		CommandList->ClearDepthStencilView(DsvHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+		pDsvHandle = &DsvHandle;
 	}
+
+	UINT RtvCount = pRtvHandle == nullptr ? 0 : 1;
+
+	bool bNotValid = pDsvHandle == nullptr || pRtvHandle == nullptr;
+	bool bRtsSingleHandle = !bNotValid;
+	
+	CommandList->OMSetRenderTargets(RtvCount, pRtvHandle, bRtsSingleHandle, pDsvHandle);
 }
 
 void FD3D12DynamicRHI::SetVertexAndIndexBuffers(FVertexBuffer* VertexBuffer, FIndexBuffer* IndexBuffer)
@@ -571,8 +583,22 @@ void FD3D12DynamicRHI::CreateSampler()
 		8, 
 		D3D12_COMPARISON_FUNC_LESS_EQUAL, 
 	};
+
+	CD3DX12_STATIC_SAMPLER_DESC BloomSampler
+	{
+		2,
+		D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+		0.f,
+		1,
+		D3D12_COMPARISON_FUNC_ALWAYS,
+	};
 	StaticSamplers.push_back(ShadowSampler);
 	StaticSamplers.push_back(TexSampler);
+	StaticSamplers.push_back(BloomSampler);
+	
 }
 
 void FD3D12DynamicRHI::CreateSwapChain()

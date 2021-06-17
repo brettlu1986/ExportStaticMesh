@@ -388,7 +388,6 @@ public:
 	FPassLight Lights[MaxLights];
 };
 
-
 static const UINT MAX_BONE_TRANS = 80;
 struct FSkeletalConstants
 {
@@ -400,5 +399,29 @@ const int FRAME_COUNT = 3;
 const UINT SHADOW_WIDTH = 4096;
 const UINT SHADOW_HEIGHT = 4096;
 
+struct FPassBloomSetup
+{
+	XMFLOAT4 BufferSizeAndInvSize;
+	float BloomThrehold;
+};
 
+struct FPassBloomDown
+{
+	XMFLOAT4 BufferSizeAndInvSize;
+	float BloomDownScale;
+};
 
+struct FPassBloomUp
+{
+	XMFLOAT4 BufferASizeAndInvSize;
+	XMFLOAT4 BufferBSizeAndInvSize;
+	XMFLOAT4 BloomTintA;
+	XMFLOAT4 BloomTintB;
+	XMFLOAT2 BloomUpScales;
+};
+
+struct FPassSunMerge
+{
+	XMFLOAT4 BloomUpSizeAndInvSize;
+	XMFLOAT3 BloomColor;
+};

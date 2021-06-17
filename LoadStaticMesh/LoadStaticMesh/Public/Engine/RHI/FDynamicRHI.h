@@ -18,6 +18,13 @@
 struct FRHIViewPort
 {
 public:
+	FRHIViewPort()
+	{
+		Left = 0.f;
+		Top  = 0.f;
+		Width= 0.f;
+		Height= 0.f;
+	};
 	FRHIViewPort(float InLeft, float InTop, float SizeX, float SizeY)
 		:Left(InLeft)
 		,Top(InTop)

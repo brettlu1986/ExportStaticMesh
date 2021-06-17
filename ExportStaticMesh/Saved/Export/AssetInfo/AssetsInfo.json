@@ -49,6 +49,46 @@
 		{
 			"refName": "ShaderHighLightPs",
 			"fileName": "ShaderHighLightPs.cso"
+		},
+		{
+			"refName": "BloomSetupVs",
+			"fileName": "BloomSetupVs.cso"
+		},
+		{
+			"refName": "BloomSetupPs",
+			"fileName": "BloomSetupPs.cso"
+		},
+		{
+			"refName": "BloomDownVs",
+			"fileName": "BloomDownVs.cso"
+		},
+		{
+			"refName": "BloomDownPs",
+			"fileName": "BloomDownPs.cso"
+		},
+		{
+			"refName": "BloomUpVs",
+			"fileName": "BloomUpVs.cso"
+		},
+		{
+			"refName": "BloomUpPs",
+			"fileName": "BloomUpPs.cso"
+		},
+		{
+			"refName": "SunMergePs",
+			"fileName": "SunMergePs.cso"
+		},
+		{
+			"refName": "SunMergeVs",
+			"fileName": "SunMergeVs.cso"
+		},
+		{
+			"refName": "ToneMapVs",
+			"fileName": "ToneMapVs.cso"
+		},
+		{
+			"refName": "ToneMapPs",
+			"fileName": "ToneMapPs.cso"
 		}
 	],
 	"textures": [
