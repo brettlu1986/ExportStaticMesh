@@ -25,9 +25,11 @@ FSceneRenderer::FSceneRenderer()
 , SunMergeTex(nullptr)
 , RTVSunMerge(nullptr)
 , CBVSunMerge(nullptr)
+, SRVSunMerge(nullptr)
 , ShadowMap(nullptr)
 , ToneMapTex(nullptr)
 , RTVToneMap(nullptr)
+, SRVToneMap(nullptr)
 {
 	for (UINT i = 0; i < RENDER_TARGET_COUNT; ++i)
 	{
@@ -107,12 +109,14 @@ void FSceneRenderer::Destroy()
 
 	//sunmerge 
 	SAFE_DESTROY(SunMergeTex);
+	SAFE_DELETE(SRVSunMerge);
 	SAFE_DELETE(RTVSunMerge);
 	SAFE_DELETE(CBVSunMerge);
 
 	//tone map
 	SAFE_DESTROY(ToneMapTex);
 	SAFE_DELETE(RTVToneMap);
+	SAFE_DELETE(SRVToneMap);
 
 	//shadow map
 	SAFE_DESTROY(ShadowMap);
@@ -161,30 +165,30 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 	{
 		//create used pipline state objects
 		GRHI->CreatePipelineStateObject({ "PsoUseTexture", StandardInputElementDescs, _countof(StandardInputElementDescs), "ShaderTexVs",
-			"ShaderTexPs", 1, E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT, FRHIRasterizerState(), true });
+			"ShaderTexPs", 1, E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT, FRHIRasterizerState(), true, E_GRAPHIC_FORMAT::FORMAT_D24_UNORM_S8_UINT });
 		GRHI->CreatePipelineStateObject({ "PsoNoTexture", StandardInputElementDescs, _countof(StandardInputElementDescs), "ShaderVs",
-			"ShaderPs", 1, E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT, FRHIRasterizerState() });
+			"ShaderPs", 1, E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT, FRHIRasterizerState(),false,E_GRAPHIC_FORMAT::FORMAT_D24_UNORM_S8_UINT });
 
 		GRHI->CreatePipelineStateObject({ "HighLight", StandardInputElementDescs, _countof(StandardInputElementDescs), "ShaderVs",
-		"ShaderHighLightPs", 1, E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT, FRHIRasterizerState() });
+		"ShaderHighLightPs", 1, E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT, FRHIRasterizerState(),false, E_GRAPHIC_FORMAT::FORMAT_D24_UNORM_S8_UINT });
 
 		FRHIRasterizerState State;
 		State.DepthBias = 25000;
 		State.DepthBiasClamp = 0.f;
 		State.SlopeScaledDepthBias = 0.1f;
 		GRHI->CreatePipelineStateObject({ "ShadowPass", SkeletalInputElementDescs, _countof(SkeletalInputElementDescs), "SampleDepthShaderVs",
-			"SampleDepthShaderPs", 0, E_GRAPHIC_FORMAT::FORMAT_UNKNOWN, State });
+			"SampleDepthShaderPs", 0, E_GRAPHIC_FORMAT::FORMAT_UNKNOWN, State, false, E_GRAPHIC_FORMAT::FORMAT_D24_UNORM_S8_UINT });
 
 		GRHI->CreatePipelineStateObject({ "SkinShadowPass", SkeletalInputElementDescs, _countof(SkeletalInputElementDescs), "SampleDepthSkinVs",
-			"SampleDepthSkinPs", 0, E_GRAPHIC_FORMAT::FORMAT_UNKNOWN, State });
+			"SampleDepthSkinPs", 0, E_GRAPHIC_FORMAT::FORMAT_UNKNOWN, State, false, E_GRAPHIC_FORMAT::FORMAT_D24_UNORM_S8_UINT });
 
 		GRHI->CreatePipelineStateObject({ "SKMPso", SkeletalInputElementDescs, _countof(SkeletalInputElementDescs), "SkeletalVs",
-			"SkeletalPs", 1, E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT, FRHIRasterizerState() });
+			"SkeletalPs", 1, E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT, FRHIRasterizerState(), false, E_GRAPHIC_FORMAT::FORMAT_D24_UNORM_S8_UINT });
 	}
 	
 	{
 		//scene color render target, HDR
-		FClearColor SceneClearColor = { 0, 0, 0, 1.f };
+		FClearColor SceneClearColor = { 0.690196097f, 0.768627524f, 0.870588303f, 1.000000000f };
 
 		FClearValue SceneClearValue;
 		SceneClearValue.Format = E_GRAPHIC_FORMAT::FORMAT_R16G16B16A16_FLOAT;
@@ -232,7 +236,7 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 	};
 
 	//create setup render target
-	FClearColor BloomClearColor = { 0, 0, 0, 1.f };
+	FClearColor BloomClearColor = { 0.690196097f, 0.768627524f, 0.870588303f, 1.000000000f };
 	FClearValue BloomClearValue;
 	BloomClearValue.Format = BloomRTFormat;
 	BloomClearValue.ClearDepth = nullptr;
@@ -249,11 +253,11 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 		FullScreenVBData = new LVertexBuffer((char*)Vertices, sizeof(Vertices), 3);
 		FullScreenIBData = new LIndexBuffer(3, sizeof(UINT) * 3, E_INDEX_TYPE::TYPE_UINT_32, reinterpret_cast<void*>(Indices));
 
-		FullScreenVB = GRHI->RHICreateVertexBuffer();
-		FullScreenIB = GRHI->RHICreateIndexBuffer();
+		//FullScreenVB = GRHI->RHICreateVertexBuffer();
+		//FullScreenIB = GRHI->RHICreateIndexBuffer();
 
-		GRHI->UpdateVertexBufferResource(FullScreenVB, *FullScreenVBData);
-		GRHI->UpdateIndexBufferResource(FullScreenIB, *FullScreenIBData);
+		//GRHI->UpdateVertexBufferResource(FullScreenVB, *FullScreenVBData);
+		//GRHI->UpdateIndexBufferResource(FullScreenIB, *FullScreenIBData);
 
 		GRHI->CreatePipelineStateObject({ "BloomSetup", FullInputElementDescs, _countof(FullInputElementDescs), "BloomSetupVs",
 			"BloomSetupPs", 1, BloomRTFormat, FRHIRasterizerState() });
@@ -351,19 +355,22 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 
 		UINT W = SetUpWidth;
 		UINT H = SetUpHeight;
+		SunMergeViewPort = FRHIViewPort(0.f, 0.f, (float)W, (float)H);
 		FTextureInitializer SunMergeTexInitializer =
 		{
 			W, H, 1, 1, BloomRTFormat, E_RESOURCE_FLAGS::RESOURCE_FLAG_ALLOW_RENDER_TARGET, &BloomClearValue,
 			E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET
 		};
 		SunMergeTex = GRHI->CreateTexture(SunMergeTexInitializer);
+		SRVSunMerge = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV, 1, &SunMergeTex,
+			0, BloomRTFormat });
 		RTVSunMerge = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_RTV, 1, &SunMergeTex, 0, BloomRTFormat });
 		CBVSunMerge = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FPassSunMerge)), E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
 
 		FPassSunMerge PassSunMerge;
 		//last bloom up size
-		UINT UpW = SetUpWidth >> (DOWN_SAMPLE_COUNT - 1 - (UP_SAMPLE_COUNT - 1));
-		UINT UpH = SetUpHeight >> (DOWN_SAMPLE_COUNT - 1 - (UP_SAMPLE_COUNT - 1));
+		UINT UpW = (UINT)BloomUpViewPort[UP_SAMPLE_COUNT - 1].Width;
+		UINT UpH = (UINT)BloomUpViewPort[UP_SAMPLE_COUNT - 1].Height;
 		PassSunMerge.BloomUpSizeAndInvSize = XMFLOAT4(static_cast<float>(UpW), static_cast<float>(UpH), 1.f / UpW, 1.f / UpH);
 		float Factor = BloomIntensity * 0.5f;
 		PassSunMerge.BloomColor = XMFLOAT3(BloomTint1.x * Factor, BloomTint1.y * Factor, BloomTint1.z * Factor);
@@ -371,17 +378,25 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 	}
 	
 	{
+		FClearColor ToneMapClearColor = { 0.690196097f, 0.768627524f, 0.870588303f, 1.000000000f };
+		FClearValue ToneMapClearValue;
+		ToneMapClearValue.Format = E_GRAPHIC_FORMAT::FORMAT_R8G8B8A8_UNORM;
+		ToneMapClearValue.ClearDepth = nullptr;
+		ToneMapClearValue.ClearColor = &ToneMapClearColor;
+
 		//Tone map
 		GRHI->CreatePipelineStateObject({ "ToneMap", FullInputElementDescs, _countof(FullInputElementDescs), "ToneMapVs",
 			"ToneMapPs", 1, E_GRAPHIC_FORMAT::FORMAT_R8G8B8A8_UNORM, FRHIRasterizerState() });
 
 		FTextureInitializer ToneMapTexInitializer =
 		{
-			(UINT)GRHI->GetDefaultViewPort().Width, (UINT)GRHI->GetDefaultViewPort().Height, 1, 1, E_GRAPHIC_FORMAT::FORMAT_R8G8B8A8_UNORM, E_RESOURCE_FLAGS::RESOURCE_FLAG_ALLOW_RENDER_TARGET, &BloomClearValue,
+			(UINT)GRHI->GetDefaultViewPort().Width, (UINT)GRHI->GetDefaultViewPort().Height, 1, 1, E_GRAPHIC_FORMAT::FORMAT_R8G8B8A8_UNORM, E_RESOURCE_FLAGS::RESOURCE_FLAG_ALLOW_RENDER_TARGET, &ToneMapClearValue,
 			E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET
 		};
 
 		ToneMapTex = GRHI->CreateTexture(ToneMapTexInitializer);
+		SRVToneMap = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV, 1, &ToneMapTex,
+			0, E_GRAPHIC_FORMAT::FORMAT_R8G8B8A8_UNORM });
 		RTVToneMap = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_RTV, 1, &ToneMapTex, 0, E_GRAPHIC_FORMAT::FORMAT_R8G8B8A8_UNORM });
 	}
 
@@ -395,6 +410,15 @@ void FSceneRenderer::Initialize(FScene* RenderScene)
 	RenderScene->PassLightInfo = GRHI->CreateResourceView({ E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_CBV, 1, nullptr, CalcConstantBufferByteSize(sizeof(FPassLightInfo)), E_GRAPHIC_FORMAT::FORMAT_UNKNOWN });
 }
 
+void FSceneRenderer::InitFullScreenResource()
+{
+	FullScreenVB = GRHI->RHICreateVertexBuffer();
+	FullScreenIB = GRHI->RHICreateIndexBuffer();
+
+	GRHI->UpdateVertexBufferResource(FullScreenVB, *FullScreenVBData);
+	GRHI->UpdateIndexBufferResource(FullScreenIB, *FullScreenIBData);
+}
+
 void FSceneRenderer::RenderScene(FScene* RenderScene)
 {
 	{
@@ -405,7 +429,7 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 		FResourceViewCreater* ResViewCreater = GRHI->GetResourceViewCreater();
 		Heaps.push_back(ResViewCreater->GetCbvSrvUavHeap());
 		GRHI->SetResourceHeaps(Heaps);
-		GRHI->ResourceTransition(RenderTargets[GRHI->GetFrameIndex()], E_RESOURCE_STATE::RESOURCE_STATE_PRESENT, E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET);
+		GRHI->ResourceTransition(RenderTargets[GRHI->GetFrameIndex()],  E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET);
 		GRHI->SetRenderTargets(RenderTargets[GRHI->GetFrameIndex()], DsvView);
 	}
 
@@ -413,19 +437,21 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 		FUserMarker UserMarker("Shadow Pass");
 		GRHI->SetViewPortInfo(ShadowMap->ViewPort);
 		GRHI->SetPiplineStateObject(GRHI->GetPsoObject("ShadowPass"));
-		GRHI->ResourceTransition(ShadowMap->ShadowResView, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE, E_RESOURCE_STATE::RESOURCE_STATE_DEPTH_WRITE);
+		GRHI->ResourceTransition(ShadowMap->ShadowResView, E_RESOURCE_STATE::RESOURCE_STATE_DEPTH_WRITE);
 		GRHI->SetRenderTargets(nullptr, ShadowMap->DsvResView);
 		RenderSceneStaticMeshes(RenderScene, false, true);
 		RenderSceneStaticMeshes(RenderScene, true, true);
 
 		GRHI->SetPiplineStateObject(GRHI->GetPsoObject("SkinShadowPass"));
 		RenderSceneSkeletalMeshes(RenderScene, true);
-		GRHI->ResourceTransition(ShadowMap->ShadowResView, E_RESOURCE_STATE::RESOURCE_STATE_DEPTH_WRITE, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+		GRHI->ResourceTransition(ShadowMap->ShadowResView, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	}
 	
 	{
 		FUserMarker UserMarker("SceneBasePass");
 		GRHI->SetViewPortInfo(GRHI->GetDefaultViewPort());
+		//save texture
+		GRHI->ResourceTransition(SRVSceneColor, E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET);
 		GRHI->SetRenderTargets(RTVSceneColor, DsvView);
 		// draw opaque static mesh 
 		{
@@ -442,19 +468,23 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 			FUserMarker UserMarker("Draw Transparency Static Mesh");
 			RenderSceneStaticMeshes(RenderScene, true);
 		}
-
-		GRHI->ResourceTransition(SRVSceneColor, E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+		GRHI->ResourceTransition(SRVSceneColor, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	}
 
 	{
 		FUserMarker UserMarker("PostProgress");
 		{
 			FUserMarker UserMarker("Bloom");
+			if(FullScreenVB == nullptr || FullScreenIB == nullptr)
+			{
+				InitFullScreenResource();
+			}
 			GRHI->SetVertexAndIndexBuffers(FullScreenVB, FullScreenIB);
 			{
 				FUserMarker UserMarker("Bloom Setup");
 				GRHI->SetPiplineStateObject(GRHI->GetPsoObject("BloomSetup"));
 				GRHI->SetViewPortInfo(SetUpViewPort);
+				GRHI->ResourceTransition(SRVBloomSetup, E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET);
 				GRHI->SetRenderTargets(RTVBloomSetup, nullptr);
 				GRHI->SetResourceParams(0, CBVBloomSetup);
 				GRHI->SetResourceParams(4, SRVSceneColor);
@@ -467,18 +497,16 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 				for(UINT i = 0; i < DOWN_SAMPLE_COUNT; i++)
 				{
 					GRHI->SetViewPortInfo(BloomDowmViewPort[i]);
+					FResourceView* ResView = nullptr;
+					GRHI->ResourceTransition(SRVBloomDown[i], E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET);
 					GRHI->SetRenderTargets(RTVBloomDown[i], nullptr);
 					GRHI->SetResourceParams(0, CBVBloomDown[i]);
-					if(i == 0)
-					{
-						GRHI->ResourceTransition(SRVBloomSetup, E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-						GRHI->SetResourceParams(4, SRVBloomSetup);
-					}
-					else 
-					{
-						GRHI->ResourceTransition(SRVBloomDown[i - 1], E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-						GRHI->SetResourceParams(4, SRVBloomDown[i - 1]);
-					}
+					if (i == 0)
+						ResView = SRVBloomSetup;
+					else
+						ResView = SRVBloomDown[i - 1];
+					GRHI->ResourceTransition(ResView, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+					GRHI->SetResourceParams(4, ResView);
 					GRHI->DrawTriangleList(FullScreenIB);
 				}
 			}
@@ -489,19 +517,60 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 				for(UINT i = 0; i < UP_SAMPLE_COUNT; i++)
 				{
 					GRHI->SetViewPortInfo(BloomUpViewPort[i]);
+					GRHI->ResourceTransition(SRVBloomUp[i], E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET);
 					GRHI->SetRenderTargets(RTVBloomUp[i], nullptr);
 					GRHI->SetResourceParams(0, CBVBloomUp[i]);
-					GRHI->SetResourceParams(4, SRVBloomUp[i]);
+					if(i == 0)
+					{
+						GRHI->ResourceTransition(SRVBloomDown[UP_SAMPLE_COUNT - 1], E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+						GRHI->ResourceTransition(SRVBloomDown[UP_SAMPLE_COUNT], E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+						GRHI->SetResourceParams(4, SRVBloomDown[UP_SAMPLE_COUNT - 1]);
+						GRHI->SetResourceParams(5, SRVBloomDown[UP_SAMPLE_COUNT]);
+					}
+					else 
+					{
+						GRHI->ResourceTransition(SRVBloomDown[UP_SAMPLE_COUNT - i - 1],  E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+						GRHI->ResourceTransition(SRVBloomUp[i - 1], E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+						GRHI->SetResourceParams(4, SRVBloomDown[UP_SAMPLE_COUNT - i - 1]);
+						GRHI->SetResourceParams(5, SRVBloomUp[i - 1]);
+					}
 					GRHI->DrawTriangleList(FullScreenIB);
-					GRHI->ResourceTransition(SRVBloomUp[i], E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 				}
 			}
 
+			{
+				FUserMarker UserMarker("Sun Merge");
+				GRHI->SetViewPortInfo(SunMergeViewPort);
+				GRHI->SetPiplineStateObject(GRHI->GetPsoObject("SunMerge"));
+				GRHI->ResourceTransition(SRVSunMerge, E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET);
+				GRHI->SetRenderTargets(RTVSunMerge, nullptr);
+				GRHI->SetResourceParams(0, CBVSunMerge);
+
+				GRHI->ResourceTransition(SRVBloomSetup, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+				GRHI->ResourceTransition(SRVBloomUp[UP_SAMPLE_COUNT - 1], E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+				GRHI->SetResourceParams(4, SRVBloomSetup);
+				GRHI->SetResourceParams(5, SRVBloomUp[UP_SAMPLE_COUNT - 1]);
+				GRHI->DrawTriangleList(FullScreenIB);
+			}
+
+			{
+				FUserMarker UserMarker("Tone Map");
+				GRHI->SetViewPortInfo(GRHI->GetDefaultViewPort());
+				GRHI->SetPiplineStateObject(GRHI->GetPsoObject("ToneMap"));
+				GRHI->ResourceTransition(SRVToneMap, E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET);
+				GRHI->SetRenderTargets(RTVToneMap, nullptr);
+
+				GRHI->ResourceTransition(SRVSceneColor, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+				GRHI->ResourceTransition(SRVSunMerge, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+				GRHI->SetResourceParams(4, SRVSceneColor);
+				GRHI->SetResourceParams(5, SRVSunMerge);
+				GRHI->DrawTriangleList(FullScreenIB);
+			}
 		}
 
 	}
 	
-	GRHI->ResourceTransition(RenderTargets[GRHI->GetFrameIndex()], E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET, E_RESOURCE_STATE::RESOURCE_STATE_PRESENT);
+	GRHI->ResourceTransition(RenderTargets[GRHI->GetFrameIndex()], E_RESOURCE_STATE::RESOURCE_STATE_PRESENT);
 }
 
 void FSceneRenderer::RenderSceneStaticMeshes(FScene* RenderScene, bool bTranparency, bool bShadowPass)

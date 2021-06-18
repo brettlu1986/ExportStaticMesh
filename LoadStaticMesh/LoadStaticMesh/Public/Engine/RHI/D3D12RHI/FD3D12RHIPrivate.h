@@ -46,7 +46,7 @@ public:
 	virtual void SetPiplineStateObject(FD3DGraphicPipline* PsoObj) override;
 	virtual void SetResourceParams(UINT Index, FResourceView* ResView) override;
 	virtual void DrawTriangleList(FIndexBuffer* IndexBuffer) override;
-	virtual void ResourceTransition(FResourceView* ResourceView, E_RESOURCE_STATE StateFrom, E_RESOURCE_STATE StateTo) override;
+	virtual void ResourceTransition(FResourceView* ResourceView, E_RESOURCE_STATE StateTo) override;
 
 	virtual void BeginEvent(const char* Name) override;
 	virtual void EndEvent() override;

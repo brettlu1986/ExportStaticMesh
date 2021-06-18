@@ -146,7 +146,7 @@ void FD3D12DynamicRHI::CreateResourceViewCreater(UINT CbvCount, UINT SrvCount, U
 
 FResourceView* FD3D12DynamicRHI::CreateResourceView(FResourceViewInfo ViewInfo)
 {
-	FD3D12ResourceViewCreater* ViewCreater = dynamic_cast<FD3D12ResourceViewCreater*>(ResourceViewCreater);
+	FD3D12ResourceViewCreater* ViewCreater = dynamic_cast< FD3D12ResourceViewCreater*>(ResourceViewCreater);
 	if (ViewInfo.ViewType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_SRV)
 	{
 		FResourceView* ResView = new FD3D12ResourceView();
@@ -157,6 +157,7 @@ FResourceView* FD3D12DynamicRHI::CreateResourceView(FResourceViewInfo ViewInfo)
 			FD3D12ResourceView* View = dynamic_cast<FD3D12ResourceView*>(ResView);
 			D3DTex->InitGPUTextureView(D3DDevice.Get(), CommandList.Get(), View->GetCpu(i), static_cast<DXGI_FORMAT>(ViewInfo.Format));
 			View->SetViewResource(D3DTex->Resource());
+			View->SetResourceState(D3DTex->GetInitState());
 		}
 		return ResView;
 	}
@@ -177,6 +178,7 @@ FResourceView* FD3D12DynamicRHI::CreateResourceView(FResourceViewInfo ViewInfo)
 		FD3D12DsvResourceView* View = dynamic_cast<FD3D12DsvResourceView*>(DsvResView);
 		FD3D12Texture* D3DTex = dynamic_cast<FD3D12Texture*>(*ViewInfo.TexResource);
 		View->SetDsvViewInfo(D3DDevice.Get(), D3DTex, static_cast<DXGI_FORMAT>(ViewInfo.Format));
+		View->SetResourceState(D3DTex->GetInitState());
 		return DsvResView;
 	}
 	else if (ViewInfo.ViewType == E_RESOURCE_VIEW_TYPE::RESOURCE_VIEW_RTV)
@@ -187,11 +189,14 @@ FResourceView* FD3D12DynamicRHI::CreateResourceView(FResourceViewInfo ViewInfo)
 		if (ViewInfo.TexResource == nullptr)
 		{
 			View->SetRtvViewInfo(D3DDevice.Get(), SwapChain.Get(), static_cast<DXGI_FORMAT>(ViewInfo.Format), ViewInfo.Index);
+			//swapchain back buffer init state is present
+			View->SetResourceState(E_RESOURCE_STATE::RESOURCE_STATE_PRESENT);
 		}
 		else
 		{
 			FD3D12Texture* D3DTex = dynamic_cast<FD3D12Texture*>(*ViewInfo.TexResource);
 			View->SetRtvViewInfo(D3DDevice.Get(), D3DTex, static_cast<DXGI_FORMAT>(ViewInfo.Format));
+			View->SetResourceState(D3DTex->GetInitState());
 		}
 		return RtvResView;
 	}
@@ -283,7 +288,11 @@ void FD3D12DynamicRHI::CreatePipelineStateObject(FPiplineStateInitializer Initia
 	PsoDesc.RTVFormats[0] = static_cast<DXGI_FORMAT>(Initializer.RtvFormat);
 	PsoDesc.SampleDesc.Count = 1;
 	PsoDesc.SampleDesc.Quality = 0;	////not use 4XMSAA
-	PsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;//DXGI_FORMAT_D32_FLOAT;// DXGI_FORMAT_D24_UNORM_S8_UINT;
+	PsoDesc.DSVFormat = static_cast<DXGI_FORMAT>(Initializer.DsvFormat);
+	if(Initializer.DsvFormat == E_GRAPHIC_FORMAT::FORMAT_UNKNOWN)
+	{
+		PsoDesc.DepthStencilState.DepthEnable = false;
+	}
 	if (Initializer.bTransparency)
 	{
 		D3D12_RENDER_TARGET_BLEND_DESC transparencyBlendDesc;
@@ -380,14 +389,20 @@ void FD3D12DynamicRHI::DrawTriangleList(FIndexBuffer* IndexBuffer)
 	CommandList->DrawIndexedInstanced(D3DIndexBuffer->GetIndicesCount(), 1, 0, 0, 0);
 }
 
-void FD3D12DynamicRHI::ResourceTransition(FResourceView* ResourceView, E_RESOURCE_STATE StateFrom, E_RESOURCE_STATE StateTo)
+void FD3D12DynamicRHI::ResourceTransition(FResourceView* ResourceView, E_RESOURCE_STATE StateTo)
 {
 	FD3D12ResourceView* ResView = dynamic_cast<FD3D12ResourceView*>(ResourceView);
 	ID3D12Resource* Resource = ResView->Resource();
+	
 	if (Resource)
 	{
-		const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(Resource, static_cast<D3D12_RESOURCE_STATES>(StateFrom), static_cast<D3D12_RESOURCE_STATES>(StateTo));
-		CommandList->ResourceBarrier(1, &Rb1);
+		E_RESOURCE_STATE CurrentState = ResView->GetResourceState();
+		if(CurrentState != StateTo)
+		{
+			const D3D12_RESOURCE_BARRIER Rb1 = CD3DX12_RESOURCE_BARRIER::Transition(Resource, static_cast<D3D12_RESOURCE_STATES>(CurrentState), static_cast<D3D12_RESOURCE_STATES>(StateTo));
+			CommandList->ResourceBarrier(1, &Rb1);
+			ResView->SetResourceState(StateTo);
+		}
 	}
 	else
 	{
@@ -584,7 +599,7 @@ void FD3D12DynamicRHI::CreateSampler()
 		D3D12_COMPARISON_FUNC_LESS_EQUAL, 
 	};
 
-	CD3DX12_STATIC_SAMPLER_DESC BloomSampler
+	CD3DX12_STATIC_SAMPLER_DESC BloomSampler1
 	{
 		2,
 		D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT,
@@ -595,10 +610,35 @@ void FD3D12DynamicRHI::CreateSampler()
 		1,
 		D3D12_COMPARISON_FUNC_ALWAYS,
 	};
+
+	CD3DX12_STATIC_SAMPLER_DESC BloomSampler2
+	{
+		3,
+		D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		0.f,
+		1,
+		D3D12_COMPARISON_FUNC_NEVER,
+	};
+
+	CD3DX12_STATIC_SAMPLER_DESC BloomSampler3
+	{
+		4,
+		D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+		0.f,
+		1,
+		D3D12_COMPARISON_FUNC_NEVER,
+	};
 	StaticSamplers.push_back(ShadowSampler);
 	StaticSamplers.push_back(TexSampler);
-	StaticSamplers.push_back(BloomSampler);
-	
+	StaticSamplers.push_back(BloomSampler1);
+	StaticSamplers.push_back(BloomSampler2);
+	StaticSamplers.push_back(BloomSampler3);
 }
 
 void FD3D12DynamicRHI::CreateSwapChain()

@@ -1,10 +1,10 @@
 #include "BloomUpVs.hlsl"
 
 Texture2D BloomUpSourceATexture: register(t0);
-SamplerState BloomUpSourceASampler: register(s0);
+SamplerState BloomUpSourceASampler: register(s3);
 
 Texture2D BloomUpSourceBTexture: register(t1);
-SamplerState BloomUpSourceBSampler: register(s1);
+SamplerState BloomUpSourceBSampler: register(s4);
 
 half4 PsMain(PSInput input) : SV_TARGET
 {

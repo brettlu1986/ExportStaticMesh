@@ -44,6 +44,8 @@ public:
 	{
 		ViewResource = Res;
 	}
+
+	
 protected: 
 	E_RESOURCE_VIEW_TYPE Type;
 	ComPtr<ID3D12Resource> ViewResource;

@@ -22,6 +22,13 @@ public:
 		TextureData = TexData;
 	}
 
+	E_RESOURCE_STATE GetInitState()
+	{
+		return InitResourceState;
+	}
+
 protected:
 	LTexture* TextureData;
+
+	E_RESOURCE_STATE InitResourceState;
 };

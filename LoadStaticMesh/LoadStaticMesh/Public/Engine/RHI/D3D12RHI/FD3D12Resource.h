@@ -74,7 +74,6 @@ public:
 		return TextureResource.Get();
 	}
 private:
-
 	ComPtr<ID3D12Resource> TextureResource;
 	ComPtr<ID3D12Resource> TextureResourceUpload;
 	ID3D12Device* ParentDevice;

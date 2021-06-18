@@ -1,10 +1,10 @@
 #include "ToneMapVs.hlsl"
 
 Texture2D SceneColorTexture : register(t0);
-SamplerState SceneColorSampler : register(s0);
+SamplerState SceneColorSampler : register(s4);
 
 Texture2D BloomTexture : register(t1);
-SamplerState BloomSampler : register(s1);
+SamplerState BloomSampler : register(s2);
 
 float3 ACESToneMapping(float3 color, float adapted_lum)
 {

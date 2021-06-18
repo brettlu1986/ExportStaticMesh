@@ -1,10 +1,10 @@
 #include "SunMergeVs.hlsl"
 
 Texture2D BloomSetup_BloomTexture: register(t0);
-SamplerState BloomSetup_BloomSampler: register(s0);
+SamplerState BloomSetup_BloomSampler: register(s3);
 
 Texture2D BloomUpTexture: register(t1);
-SamplerState BloomUpSampler: register(s1);
+SamplerState BloomUpSampler: register(s4);
 
 half4 PsMain(PSInput input) : SV_TARGET
 {

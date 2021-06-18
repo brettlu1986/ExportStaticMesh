@@ -19,6 +19,8 @@ private:
 	void RenderSceneStaticMeshes(FScene* RenderScene, bool bTranparency = false, bool bShadowPass = false);
 	void RenderSceneSkeletalMeshes(FScene* RenderScene, bool bShadowPass = false);
 
+	void InitFullScreenResource();
+
 	FResourceView* RenderTargets[RENDER_TARGET_COUNT];
 
 	FShadowMap* ShadowMap;
@@ -60,12 +62,15 @@ private:
 	FResourceView* CBVBloomUp[UP_SAMPLE_COUNT];
 
 	//sunmerge
+	FRHIViewPort SunMergeViewPort;
 	FTexture* SunMergeTex;
+	FResourceView* SRVSunMerge;
 	FResourceView* RTVSunMerge;
 	FResourceView* CBVSunMerge;
 
 	//Tonemap 
 	FTexture* ToneMapTex;
+	FResourceView* SRVToneMap;
 	FResourceView* RTVToneMap;
 
 };

@@ -81,7 +81,7 @@ public:
 	virtual void SetPiplineStateObject(FD3DGraphicPipline* PsoObj) = 0;
 	virtual void SetResourceParams(UINT Index, FResourceView* ResView) = 0;
 	virtual void DrawTriangleList(FIndexBuffer* IndexBuffer) = 0;
-	virtual void ResourceTransition(FResourceView* ResourceView, E_RESOURCE_STATE StateFrom, E_RESOURCE_STATE StateTo) = 0;
+	virtual void ResourceTransition(FResourceView* ResourceView, E_RESOURCE_STATE StateTo) = 0;
 
 	virtual void BeginEvent(const char* Name) = 0;
 	virtual void EndEvent() = 0;

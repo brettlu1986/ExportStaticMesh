@@ -272,6 +272,7 @@ struct FPiplineStateInitializer
 	E_GRAPHIC_FORMAT RtvFormat;
 	FRHIRasterizerState RasterizerStat;
 	bool bTransparency = false;
+	E_GRAPHIC_FORMAT DsvFormat = E_GRAPHIC_FORMAT::FORMAT_UNKNOWN;
 };
 
 struct FClearColor

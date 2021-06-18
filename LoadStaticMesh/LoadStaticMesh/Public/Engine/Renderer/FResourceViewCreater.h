@@ -5,8 +5,24 @@
 class FResourceView
 {
 public:
-	FResourceView() {};
+	FResourceView()
+	:ResourceState(E_RESOURCE_STATE::RESOURCE_STATE_COMMON)
+	{};
 	virtual ~FResourceView() = default;
+
+	void SetResourceState(E_RESOURCE_STATE State) 
+	{
+		ResourceState = State;
+	}
+
+	E_RESOURCE_STATE GetResourceState() 
+	{
+		return ResourceState;
+	}
+
+protected:
+	
+	E_RESOURCE_STATE ResourceState;
 };
 
 class FResourceHeap

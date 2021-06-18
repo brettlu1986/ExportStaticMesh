@@ -165,6 +165,8 @@ void FD3D12Texture::InitializeTexture(FTextureInitializer Initializer)
 		}
 	}
 
+	InitResourceState = Initializer.ResourceState;
+
 	CD3DX12_HEAP_PROPERTIES DefaultPro = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 	ThrowIfFailed(ParentDevice->CreateCommittedResource(
 		&DefaultPro,
@@ -181,6 +183,7 @@ void FD3D12Texture::InitGPUTextureView(ID3D12Device* Device, ID3D12GraphicsComma
 	if(TextureData != 0)
 	{
 		DirectX::CreateTextureFromDDS12(Device, CommandList, TextureData->Header, TextureData->BitData, TextureData->BitSize, 0, false, TextureResource, TextureResourceUpload);
+		InitResourceState = E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 		NAME_D3D12_OBJECT(TextureResource);
 		NAME_D3D12_OBJECT(TextureResourceUpload);
 	}
