@@ -426,3 +426,4 @@ struct FPassSunMerge
 	XMFLOAT4 BloomUpSizeAndInvSize;
 	XMFLOAT3 BloomColor;
 };
+

@@ -4,6 +4,15 @@
 #define SAFE_DELETE(x) if(x) { delete x; x = nullptr; }
 #define SAFE_DESTROY(x) if(x) { x->Destroy(); delete x; x = nullptr;}
 
+template<typename ... Args>
+std::string FormatString(std::string FormatStr, Args ...args)
+{
+	size_t size = snprintf(nullptr, 0, FormatStr.c_str(), args ...) + 1;
+	std::unique_ptr<char> buf(new char[size]);
+	snprintf(buf.get(), size, FormatStr.c_str(), args ...);
+	return std::string(buf.get(), buf.get() + size - 1);
+}
+
 typedef enum class EDynamicModuleType : UINT8
 {
 	MODULE_D3D12 = 0,
@@ -49,8 +58,6 @@ struct FD3D12AdapterDesc
 	UINT NumDeviceNodes;
 };
 
-
-
 static UINT CalcConstantBufferByteSize(UINT byteSize)
 {
 	// Constant buffers must be a multiple of the minimum hardware
@@ -66,4 +73,6 @@ static UINT CalcConstantBufferByteSize(UINT byteSize)
 	// 512
 	return (byteSize + 255) & ~255;
 }
+
+
 

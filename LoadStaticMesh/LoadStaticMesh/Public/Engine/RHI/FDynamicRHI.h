@@ -1,5 +1,6 @@
 #pragma once
 
+#include "stdafx.h"
 #include "FRHIDef.h"
 #include "FDefine.h"
 
@@ -132,3 +133,6 @@ public:
 		GRHI->EndEvent();
 	}
 };
+
+#define USER_MARKER(MarkStr) FUserMarker Mark(MarkStr)
+#define USER_MARKER_FORMAT(FormatStr, ...) FUserMarker Mark(FormatString(FormatStr, __VA_ARGS__).c_str())
