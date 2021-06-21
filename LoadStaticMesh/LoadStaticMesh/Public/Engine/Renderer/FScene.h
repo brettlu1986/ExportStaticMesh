@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "FResourceViewCreater.h"
 #include "FSkeletalMesh.h"
+#include "FScreenMesh.h"
 
 class FMesh;
 class FLight;
@@ -40,8 +41,20 @@ public:
 	FResourceView* PassViewProj;
 	FResourceView* PassLightInfo;
 	
+	void SetScreenMesh(FScreenMesh* Mesh)
+	{
+		ScreenMesh = Mesh;
+	}
+	void DeleteScreenMesh();
+
+	FScreenMesh* GetScreenMesh()
+	{
+		return ScreenMesh;
+	}
 private: 
 	
+	FScreenMesh* ScreenMesh;
+
 	vector<FSkeletalMesh*> SkmMeshes;
 
 	vector<FMesh*> Meshes;

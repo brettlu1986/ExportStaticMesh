@@ -14,6 +14,7 @@
 #include "LLight.h"
 #include "LPlayerController.h"
 #include "LThirdPersonCamera.h"
+#include "LScreenMesh.h"
 
 ApplicationMain* ApplicationMain::Application = nullptr;
 
@@ -62,7 +63,7 @@ void ApplicationMain::OnEngineInit(LEngineDesc Desc)
 void ApplicationMain::OnTouchInit()
 {
 	EventDispatcher& EventDisp = LEngine::GetEngine()->GetEventDispacher();
-	EventDisp.RegisterEvent(new LEvent<FInputResult>(E_EVENT_KEY::EVENT_INPUT, &ApplicationMain::ProcessInput));
+	EventDisp.RegisterEvent(new LEvent<LInputResult>(E_EVENT_KEY::EVENT_INPUT, &ApplicationMain::ProcessInput));
 }
 
 void ApplicationMain::OnSceneInit()
@@ -74,6 +75,9 @@ void ApplicationMain::OnSceneInit()
 	vector<LDirectionLightData> LightsData;
 	LAssetDataLoader::LoadMap("Maps/DefaultMap.bin", StaticObjs, SkeletalObjs, CameraData, LightsData);
 
+	auto ScreenMesh = make_shared<LScreenMesh>();
+	ScreenMesh->InitRenderThreadResource();
+	DataScene->SetScreenMesh(ScreenMesh);
 	//load static meshes
 	for(auto& StaticObj : StaticObjs)
 	{
@@ -182,7 +186,7 @@ void ApplicationMain::Destroy()
 	LEngine::GetEngine()->Destroy();
 }
 
-void ApplicationMain::ProcessInput(FInputResult Input)
+void ApplicationMain::ProcessInput(LInputResult Input)
 {
 	if (LInput::IsMouseInput(Input))
 	{
@@ -194,7 +198,7 @@ void ApplicationMain::ProcessInput(FInputResult Input)
 	}
 }
 
-void ApplicationMain::ProcessKeyInput(FInputResult& Input)
+void ApplicationMain::ProcessKeyInput(LInputResult& Input)
 {	
 	if (Input.TouchType == E_TOUCH_TYPE::KEY_DOWN)
 	{
@@ -223,7 +227,7 @@ void ApplicationMain::ProcessKeyInput(FInputResult& Input)
 	}
 }
 
-void ApplicationMain::ProcessMouseInput(FInputResult& Input)
+void ApplicationMain::ProcessMouseInput(LInputResult& Input)
 {	
 	if (DataScene->GetActiveCamera()->GetCameraType() == E_CAMERA_TYPE::CAMERA_SCENE)
 	{

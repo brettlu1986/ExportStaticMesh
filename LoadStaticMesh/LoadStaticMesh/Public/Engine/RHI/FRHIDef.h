@@ -1,8 +1,6 @@
 #pragma once
 #include "stdafx.h"
 
-#define SAFE_DELETE(x) if(x) { delete x; x = nullptr; }
-#define SAFE_DESTROY(x) if(x) { x->Destroy(); delete x; x = nullptr;}
 
 template<typename ... Args>
 std::string FormatString(std::string FormatStr, Args ...args)

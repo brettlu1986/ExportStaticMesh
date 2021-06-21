@@ -63,7 +63,7 @@ void LCharacter::SetAnimator(LAnimator* Animator)
 	AnimatorIns->InitStateMachines();
 }
 
-void LCharacter::ProcessMouseInput(FInputResult& MouseInput)
+void LCharacter::ProcessMouseInput(LInputResult& MouseInput)
 {
 	if (MouseInput.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_MOVE)
 	{
@@ -92,7 +92,7 @@ void LCharacter::ProcessMouseInput(FInputResult& MouseInput)
 	}
 }
 
-void LCharacter::ProcessKeyInput(FInputResult& KeyInput)
+void LCharacter::ProcessKeyInput(LInputResult& KeyInput)
 {
 	if (KeyInput.TouchType == E_TOUCH_TYPE::KEY_DOWN)
 	{

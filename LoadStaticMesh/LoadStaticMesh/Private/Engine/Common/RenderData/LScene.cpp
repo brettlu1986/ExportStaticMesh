@@ -14,6 +14,7 @@ LScene::LScene()
 
 LScene::~LScene()
 {
+	ScreenMesh = nullptr;
 	for(auto Mesh : StaticMeshes)
 	{
 		Mesh = nullptr;
@@ -33,6 +34,12 @@ LScene::~LScene()
 	{
 		Camera = nullptr;
 	}
+}
+
+void LScene::SetScreenMesh(shared_ptr<LScreenMesh>& Mesh)
+{
+	assert(LEngine::GetEngine()->IsGameThread());
+	ScreenMesh = std::move(Mesh);
 }
 
 void LScene::AddStaticMeshes(shared_ptr<LMesh>& Mesh)

@@ -49,8 +49,8 @@ public:
 	virtual XMVECTOR GetMoveForwardVector() override;
 	virtual XMVECTOR GetMoveRightVector() override;
 
-	void ProcessMouseInput(FInputResult& MouseInput);
-	void ProcessKeyInput(FInputResult& KeyInput);
+	void ProcessMouseInput(LInputResult& MouseInput);
+	void ProcessKeyInput(LInputResult& KeyInput);
 
 	void Update(float dt);
 	void ProcessMoveInput();

@@ -19,9 +19,9 @@ public:
 	void Destroy();
 	
 	static ApplicationMain* Get() { return Application; }
-	static void ProcessInput(FInputResult Input);
-	void ProcessMouseInput(FInputResult& Input);
-	void ProcessKeyInput(FInputResult& Input);
+	static void ProcessInput(LInputResult Input);
+	void ProcessMouseInput(LInputResult& Input);
+	void ProcessKeyInput(LInputResult& Input);
 
 private:
 	static ApplicationMain* Application;

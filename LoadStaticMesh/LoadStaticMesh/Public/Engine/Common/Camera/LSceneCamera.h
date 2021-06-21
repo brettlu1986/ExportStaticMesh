@@ -22,8 +22,8 @@ public:
 
 	virtual XMMATRIX GetViewMarix() override;
 
-	void ProcessCameraMouseInput(FInputResult& MouseInput);
-	void ProcessCameraKeyInput(FInputResult& KeyInput);
+	void ProcessCameraMouseInput(LInputResult& MouseInput);
+	void ProcessCameraKeyInput(LInputResult& KeyInput);
 	
 private:
 	void ProcessInput();

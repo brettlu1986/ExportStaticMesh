@@ -44,7 +44,7 @@ typedef enum class E_CAMERA_TYPE : UINT8
 	CAMERA_THIRD_PERSON,
 }E_CAMERA_TYPE;
 
-typedef struct FInputResult
+typedef struct LInputResult
 {
 public:
 	E_INPUT_TYPE InputType;
@@ -53,7 +53,7 @@ public:
 	int X;
 	int Y;
 
-	FInputResult()
+	LInputResult()
 	:InputType(E_INPUT_TYPE::INPUT_UNKNOWN)
 	, TouchType(E_TOUCH_TYPE::INPUT_UNKNOWN)
 	, KeyMapType(0)
@@ -62,7 +62,7 @@ public:
 	{
 	}
 
-	FInputResult(E_INPUT_TYPE InInput, E_TOUCH_TYPE InTouch, UINT8 InKey, int InX, int InY)
+	LInputResult(E_INPUT_TYPE InInput, E_TOUCH_TYPE InTouch, UINT8 InKey, int InX, int InY)
 		:InputType(InInput)
 		, TouchType(InTouch)
 		, KeyMapType(InKey)
@@ -71,7 +71,7 @@ public:
 	{
 	}
 	
-}FInputResult;
+}LInputResult;
 
 typedef enum class E_ANIM_STATE : UINT8
 {

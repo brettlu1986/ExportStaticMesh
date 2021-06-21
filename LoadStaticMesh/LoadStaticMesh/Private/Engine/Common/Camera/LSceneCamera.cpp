@@ -162,7 +162,7 @@ void LSceneCamera::Update(float DeltaTime)
 	UpdateInput(DeltaTime);
 }
 
-void LSceneCamera::ProcessCameraMouseInput(FInputResult& MouseInput)
+void LSceneCamera::ProcessCameraMouseInput(LInputResult& MouseInput)
 {
 	if (MouseInput.TouchType == E_TOUCH_TYPE::MOUSE_LEFT_DOWN)
 	{
@@ -183,7 +183,7 @@ void LSceneCamera::ProcessCameraMouseInput(FInputResult& MouseInput)
 	}
 }
 
-void LSceneCamera::ProcessCameraKeyInput(FInputResult& KeyInput)
+void LSceneCamera::ProcessCameraKeyInput(LInputResult& KeyInput)
 {
 	if (KeyInput.TouchType == E_TOUCH_TYPE::KEY_DOWN)
 	{

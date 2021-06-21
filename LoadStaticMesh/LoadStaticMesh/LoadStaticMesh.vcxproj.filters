@@ -94,6 +94,12 @@
     <Filter Include="Resource Files\Textures">
       <UniqueIdentifier>{9d6ca129-96ab-4f38-a59f-5c04a81453e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Renderer\PostProgress">
+      <UniqueIdentifier>{f24be7b6-4286-4a64-95e2-a76b179022c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Renderer\PostProgress">
+      <UniqueIdentifier>{3dc10728-5b9f-40a5-9bfd-76d614d3d421}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -275,6 +281,27 @@
     </ClCompile>
     <ClCompile Include="Private\Engine\Common\RenderData\LMaterialBase.cpp">
       <Filter>Source Files\Engine\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\PostProgress\FScreenMesh.cpp">
+      <Filter>Source Files\Engine\Renderer\PostProgress</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Common\RenderData\LScreenMesh.cpp">
+      <Filter>Source Files\Engine\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\PostProgress\FBloomDown.cpp">
+      <Filter>Source Files\Engine\Renderer\PostProgress</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\PostProgress\FBloomUp.cpp">
+      <Filter>Source Files\Engine\Renderer\PostProgress</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\PostProgress\FSunMerge.cpp">
+      <Filter>Source Files\Engine\Renderer\PostProgress</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\PostProgress\FToneMapping.cpp">
+      <Filter>Source Files\Engine\Renderer\PostProgress</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Engine\Renderer\PostProgress\FBloomSetup.cpp">
+      <Filter>Source Files\Engine\Renderer\PostProgress</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -484,6 +511,36 @@
     </ClInclude>
     <ClInclude Include="Public\Engine\Common\RenderData\LMaterialBase.h">
       <Filter>Header Files\Engine\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\PostProgress\FScreenMesh.h">
+      <Filter>Header Files\Engine\Renderer\PostProgress</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\RenderData\LScreenMesh.h">
+      <Filter>Header Files\Engine\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Common\LMarcoDef.h">
+      <Filter>Header Files\Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\PostProgress\FBloomDef.h">
+      <Filter>Header Files\Engine\Renderer\PostProgress</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\PostProgress\FPostResources.h">
+      <Filter>Header Files\Engine\Renderer\PostProgress</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\PostProgress\FBloomDown.h">
+      <Filter>Header Files\Engine\Renderer\PostProgress</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\PostProgress\FBloomUp.h">
+      <Filter>Header Files\Engine\Renderer\PostProgress</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\PostProgress\FSunMerge.h">
+      <Filter>Header Files\Engine\Renderer\PostProgress</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\PostProgress\FToneMapping.h">
+      <Filter>Header Files\Engine\Renderer\PostProgress</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Engine\Renderer\PostProgress\FBloomSetup.h">
+      <Filter>Header Files\Engine\Renderer\PostProgress</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

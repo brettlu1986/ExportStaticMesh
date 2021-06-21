@@ -6,9 +6,12 @@
 #include "LEngine.h"
 #include "LLog.h"
 
+#include "LMarcoDef.h"
+
 FScene::FScene()
 :PassLightInfo(nullptr)
 ,PassViewProj(nullptr)
+, ScreenMesh(nullptr)
 {
 }
 
@@ -39,6 +42,11 @@ void FScene::UpdateLightInfo(FPassLightInfo UpdateLight)
 	assert(LEngine::GetEngine()->IsRenderThread());
 	LightInfo = UpdateLight;
 	GRHI->UpdateConstantBufferView(PassLightInfo, &LightInfo);
+}
+
+void FScene::DeleteScreenMesh()
+{
+	SAFE_DELETE(ScreenMesh);
 }
 
 void FScene::AddMeshToScene(FMesh* Mesh)
