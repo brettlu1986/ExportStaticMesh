@@ -557,14 +557,21 @@ void FSceneRenderer::RenderScene(FScene* RenderScene)
 				FUserMarker UserMarker("Tone Map");
 				GRHI->SetViewPortInfo(GRHI->GetDefaultViewPort());
 				GRHI->SetPiplineStateObject(GRHI->GetPsoObject("ToneMap"));
-				GRHI->ResourceTransition(SRVToneMap, E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET);
-				GRHI->SetRenderTargets(RTVToneMap, nullptr);
+
+				GRHI->ResourceTransition(RenderTargets[GRHI->GetFrameIndex()], E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET);
+				GRHI->SetRenderTargets(RenderTargets[GRHI->GetFrameIndex()], nullptr);
+			//if there has other post progress, then use RTVToneMap
+			//	GRHI->ResourceTransition(SRVToneMap, E_RESOURCE_STATE::RESOURCE_STATE_RENDER_TARGET);
+			//	GRHI->SetRenderTargets(RTVToneMap, nullptr);
 
 				GRHI->ResourceTransition(SRVSceneColor, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 				GRHI->ResourceTransition(SRVSunMerge, E_RESOURCE_STATE::RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 				GRHI->SetResourceParams(4, SRVSceneColor);
 				GRHI->SetResourceParams(5, SRVSunMerge);
 				GRHI->DrawTriangleList(FullScreenIB);
+
+				
+				
 			}
 		}
 

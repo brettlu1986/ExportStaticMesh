@@ -20,7 +20,7 @@ PSInput VSMain(VSInput vin)
 	float4 posW = mul(float4(vin.position, 1.0f), gWorld);
 	vout.posW = posW.xyz;
 
-	vout.normal = mul(vin.normal, (float3x3)gWorld);
+	vout.normal = normalize(mul(vin.normal, (float3x3)gWorld));
 	vout.position = mul(posW, gViewProj);
 
 	vout.shadowPosH = mul(posW, gShadowMatrix);

@@ -60,6 +60,8 @@ float4 PsMain(PSInput input) : SV_TARGET
 	float3 AmbientColor = AmbientStrength * DirectionalLightColor;
 
 	float3 LightDirection = -gLight[0].Direction;
+	LightDirection = normalize(LightDirection);
+
 	float DiffuseStrength = max(dot(input.normal, LightDirection), 0.0);
 	float3 DiffuseColor = DiffuseStrength * DirectionalLightColor;
 
