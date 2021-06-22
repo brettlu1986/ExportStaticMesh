@@ -46,7 +46,12 @@ void FScene::UpdateLightInfo(FPassLightInfo UpdateLight)
 
 void FScene::DeleteScreenMesh()
 {
-	SAFE_DELETE(ScreenMesh);
+	if(ScreenMesh)
+	{
+		ScreenMesh->Destroy();
+		ScreenMesh = nullptr;
+	}
+	
 }
 
 void FScene::AddMeshToScene(FMesh* Mesh)

@@ -12,6 +12,7 @@ public:
 	FScreenMesh(LScreenMesh* ScreenMeshData);
 	~FScreenMesh();
 
+	void Destroy();
 	void InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData);
 	void AddInRenderThread();
 	void DeleteInRenderThread();

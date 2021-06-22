@@ -10,11 +10,18 @@
 #include "FVertexBuffer.h"
 
 FScreenMesh::FScreenMesh(LScreenMesh* ScreenMeshData)
+:FullScreenVB(nullptr)
+, FullScreenIB(nullptr)
 {
 
 }
 
 FScreenMesh::~FScreenMesh()
+{
+	Destroy();
+}
+
+void FScreenMesh::Destroy()
 {
 	SAFE_DESTROY(FullScreenVB);
 	SAFE_DESTROY(FullScreenIB);
