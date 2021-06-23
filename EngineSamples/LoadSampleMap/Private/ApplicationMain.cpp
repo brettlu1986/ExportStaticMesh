@@ -1,22 +1,21 @@
 
+#include "stdafx.h"
 #include "ApplicationMain.h"
 
-#include "LEvent.h"
-#include "LInput.h"
-#include "FRenderThread.h"
+#include "Common/Event/LEvent.h"
+#include "Common/LInput.h"
+#include "Thread/FRenderThread.h"
 #include <chrono>
 #include <thread> 
-#include "LCharacter.h"
-#include "LLog.h"
-#include "LSceneCamera.h"
-#include "LAssetManager.h"
-#include "LAssetDataLoader.h"
-#include "LLight.h"
-#include "LPlayerController.h"
-#include "LThirdPersonCamera.h"
-#include "LScreenMesh.h"
-
-#include "LEngineHeader.h"
+#include "Common/Character/LCharacter.h"
+#include "Common/LLog.h"
+#include "Common/Camera/LSceneCamera.h"
+#include "Common/LAssetManager.h"
+#include "Common/LAssetDataLoader.h"
+#include "Common/RenderData/LLight.h"
+#include "Common/Character/LPlayerController.h"
+#include "Common/Camera/LThirdPersonCamera.h"
+#include "Common/RenderData/LScreenMesh.h"
 
 ApplicationMain* ApplicationMain::Application = nullptr;
 

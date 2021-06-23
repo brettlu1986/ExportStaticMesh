@@ -1,10 +1,11 @@
 #pragma once
 
 #include "stdafx.h"
-#include "LDefine.h"
-#include "LGameTimer.h"
-#include "LScene.h"
 #include "LEngine.h"
+#include "Common/LDefine.h"
+#include "Common/LGameTimer.h"
+#include "Common/RenderData/LScene.h"
+
 
 class ApplicationMain
 {

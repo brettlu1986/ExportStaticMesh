@@ -1,0 +1,56 @@
+#pragma once
+
+#include "pch.h"
+#include "LResource.h"
+#include "LIndexBuffer.h"
+#include "LVertexBuffer.h"
+#include "LMaterialBase.h"
+#include "LAssetManager.h"
+
+class FMesh;
+class LENGINE_API LMesh : public LResource
+{
+public:
+	LMesh();
+	virtual ~LMesh();
+
+	void SetMeshBufferInfo(LStaticMeshBuffer* MeshBuffer);
+	void SetMaterial(LMaterialBase* MatData);
+
+	void InitRenderThreadResource();
+	void DestroyRenderThreadResource();
+
+	void SetModelLocation(XMFLOAT3 Location);
+	void SetModelRotation(XMFLOAT3 Rotator);
+	void SetModelScale(XMFLOAT3 Scale);
+	XMMATRIX GetModelMatrix() const { return ModelMatrix; }
+
+	XMFLOAT3 GetModelLocation()
+	{
+		return ModelLocation;
+	}
+
+	void SetName(string& InName)
+	{
+		Name = InName;
+	}
+
+	const string& GetName()
+	{
+		return Name;
+	}
+	
+private:
+	void UpdateModelMatrix();
+
+	LStaticMeshBuffer* StaticMeshBuffer;
+	LMaterialBase* MaterialData;
+
+	XMFLOAT3 ModelLocation;
+	XMFLOAT3 ModelRotation;
+	XMFLOAT3 ModelScale;
+	XMMATRIX ModelMatrix;
+
+	shared_ptr<FMesh> RenderMesh;
+	string Name;
+};

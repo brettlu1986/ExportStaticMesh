@@ -83,7 +83,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation;$(ProjectDir)\Public\Engine\Common\Camera;$(ProjectDir)\Public\Engine\Common\Character;$(ProjectDir)\Public\Engine\Common\RenderData;$(ProjectDir)\Public\Engine\Renderer\PostProgress</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\</IntDir>
@@ -132,7 +132,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\LEngine\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\LEngine\Public;$(ProjectDir)Public;..\LEngine\Public\Common;..\LEngine\Public\Common\Animation;..\LEngine\Public\Common\Camera;..\LEngine\Public\Common\Character;..\LEngine\Public\Common\Event;..\LEngine\Public\Common\RenderData;..\LEngine\Public\Common\Windows;..\LEngine\Public\Renderer;..\LEngine\Public\Renderer\PostProgress;..\LEngine\Public\RHI;..\LEngine\Public\RHI\D3D12RHI;..\LEngine\Public\Thread;..\LEngine\Public\Util;..\LEngine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
     </ClCompile>
@@ -165,156 +165,12 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Private\ApplicationMain.cpp" />
-    <ClCompile Include="Private\Engine\Common\Animation\LAnimationSequence.cpp" />
-    <ClCompile Include="Private\Engine\Common\Animation\LAnimationState.cpp" />
-    <ClCompile Include="Private\Engine\Common\Animation\LAnimationStateMachine.cpp" />
-    <ClCompile Include="Private\Engine\Common\Animation\LAnimationStateTransition.cpp" />
-    <ClCompile Include="Private\Engine\Common\Animation\LAnimationTrack.cpp" />
-    <ClCompile Include="Private\Engine\Common\Animation\LAnimator.cpp" />
-    <ClCompile Include="Private\Engine\Common\Animation\LSkeleton.cpp" />
-    <ClCompile Include="Private\Engine\Common\Camera\LCamera.cpp" />
-    <ClCompile Include="Private\Engine\Common\Camera\LSceneCamera.cpp" />
-    <ClCompile Include="Private\Engine\Common\Camera\LThirdPersonCamera.cpp" />
-    <ClCompile Include="Private\Engine\Common\Character\LCharacter.cpp" />
-    <ClCompile Include="Private\Engine\Common\Character\LCharacterMovement.cpp" />
-    <ClCompile Include="Private\Engine\Common\Character\LPlayerController.cpp" />
-    <ClCompile Include="Private\Engine\Common\LAssetManager.cpp" />
-    <ClCompile Include="Private\Engine\Common\LDevice.cpp" />
-    <ClCompile Include="Private\Engine\Common\LGameTimer.cpp" />
-    <ClCompile Include="Private\Engine\Common\LInput.cpp" />
-    <ClCompile Include="Private\Engine\Common\RenderData\LIndexBuffer.cpp" />
-    <ClCompile Include="Private\Engine\Common\RenderData\LLight.cpp" />
-    <ClCompile Include="Private\Engine\Common\RenderData\LMaterial.cpp" />
-    <ClCompile Include="Private\Engine\Common\RenderData\LMaterialInstance.cpp" />
-    <ClCompile Include="Private\Engine\Common\RenderData\LMaterialBase.cpp" />
-    <ClCompile Include="Private\Engine\Common\RenderData\LMesh.cpp" />
-    <ClCompile Include="Private\Engine\Common\RenderData\LResource.cpp" />
-    <ClCompile Include="Private\Engine\Common\RenderData\LScene.cpp" />
-    <ClCompile Include="Private\Engine\Common\RenderData\LScreenMesh.cpp" />
-    <ClCompile Include="Private\Engine\Common\RenderData\LShader.cpp" />
-    <ClCompile Include="Private\Engine\Common\RenderData\LSkeletalMesh.cpp" />
-    <ClCompile Include="Private\Engine\Common\RenderData\LTexture.cpp" />
-    <ClCompile Include="Private\Engine\Common\RenderData\LVertexBuffer.cpp" />
-    <ClCompile Include="Private\Engine\Common\Windows\LDeviceWindows.cpp" />
-    <ClCompile Include="Private\Engine\Common\Windows\LInputWindows.cpp" />
-    <ClCompile Include="Private\Engine\LEngine.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\FIndexBuffer.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\FLight.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\FMaterial.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\FMesh.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\FRenderResource.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\FSceneRenderer.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\FRenderer.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\FScene.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\FShader.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\FShadowMap.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\FSkeletalMesh.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\FTexture.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\FVertexBuffer.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\LAssetDataLoader.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\PostProgress\FBloomDown.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\PostProgress\FBloomSetup.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\PostProgress\FBloomUp.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\PostProgress\FScreenMesh.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\PostProgress\FSunMerge.cpp" />
-    <ClCompile Include="Private\Engine\Renderer\PostProgress\FToneMapping.cpp" />
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12Resource.cpp" />
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12ResourceViewCreater.cpp" />
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FD3D12RHIPublic.cpp" />
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\FDDSTextureLoader.cpp" />
-    <ClCompile Include="Private\Engine\RHI\D3D12RHI\stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    <ClCompile Include="Private\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Private\Engine\RHI\FDynamicRHI.cpp" />
-    <ClCompile Include="Private\Engine\RHI\FRHI.cpp" />
-    <ClCompile Include="Private\Engine\RHI\FWindowsDynamicRHI.cpp" />
-    <ClCompile Include="Private\Engine\Thread\FRenderThread.cpp" />
-    <ClCompile Include="Private\Engine\Thread\FThread.cpp" />
-    <ClCompile Include="Private\Engine\Thread\FTaskThread.cpp" />
-    <ClCompile Include="Private\Engine\Util\MathHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\ApplicationMain.h" />
-    <ClInclude Include="Public\Engine\Common\Animation\LAnimationSequence.h" />
-    <ClInclude Include="Public\Engine\Common\Animation\LAnimationState.h" />
-    <ClInclude Include="Public\Engine\Common\Animation\LAnimationStateMachine.h" />
-    <ClInclude Include="Public\Engine\Common\Animation\LAnimationStateTransition.h" />
-    <ClInclude Include="Public\Engine\Common\Animation\LAnimationTrack.h" />
-    <ClInclude Include="Public\Engine\Common\Animation\LAnimator.h" />
-    <ClInclude Include="Public\Engine\Common\Animation\LSkeleton.h" />
-    <ClInclude Include="Public\Engine\Common\Camera\LCamera.h" />
-    <ClInclude Include="Public\Engine\Common\Camera\LSceneCamera.h" />
-    <ClInclude Include="Public\Engine\Common\Camera\LThirdPersonCamera.h" />
-    <ClInclude Include="Public\Engine\Common\Character\LCharacter.h" />
-    <ClInclude Include="Public\Engine\Common\Character\LCharacterMovement.h" />
-    <ClInclude Include="Public\Engine\Common\Character\LPlayerController.h" />
-    <ClInclude Include="Public\Engine\Common\Event\LEvent.h" />
-    <ClInclude Include="Public\Engine\Common\LActor.h" />
-    <ClInclude Include="Public\Engine\Common\LAssetManager.h" />
-    <ClInclude Include="Public\Engine\Common\LDefine.h" />
-    <ClInclude Include="Public\Engine\Common\LDevice.h" />
-    <ClInclude Include="Public\Engine\Common\LGameTimer.h" />
-    <ClInclude Include="Public\Engine\Common\LInput.h" />
-    <ClInclude Include="Public\Engine\Common\LLog.h" />
-    <ClInclude Include="Public\Engine\Common\LMarcoDef.h" />
-    <ClInclude Include="Public\Engine\Common\LRingBuffer.h" />
-    <ClInclude Include="Public\Engine\Common\RenderData\LIndexBuffer.h" />
-    <ClInclude Include="Public\Engine\Common\RenderData\LLight.h" />
-    <ClInclude Include="Public\Engine\Common\RenderData\LMaterial.h" />
-    <ClInclude Include="Public\Engine\Common\RenderData\LMaterialInstance.h" />
-    <ClInclude Include="Public\Engine\Common\RenderData\LMaterialBase.h" />
-    <ClInclude Include="Public\Engine\Common\RenderData\LMesh.h" />
-    <ClInclude Include="Public\Engine\Common\RenderData\LResource.h" />
-    <ClInclude Include="Public\Engine\Common\RenderData\LScene.h" />
-    <ClInclude Include="Public\Engine\Common\RenderData\LScreenMesh.h" />
-    <ClInclude Include="Public\Engine\Common\RenderData\LShader.h" />
-    <ClInclude Include="Public\Engine\Common\RenderData\LSkeletalMesh.h" />
-    <ClInclude Include="Public\Engine\Common\RenderData\LTexture.h" />
-    <ClInclude Include="Public\Engine\Common\RenderData\LVertexBuffer.h" />
-    <ClInclude Include="Public\Engine\Common\Windows\LDeviceWindows.h" />
-    <ClInclude Include="Public\Engine\Common\Windows\LInputWindows.h" />
-    <ClInclude Include="Public\Engine\LEngine.h" />
-    <ClInclude Include="Public\Engine\Renderer\FDefine.h" />
-    <ClInclude Include="Public\Engine\Renderer\FIndexBuffer.h" />
-    <ClInclude Include="Public\Engine\Renderer\FLight.h" />
-    <ClInclude Include="Public\Engine\Renderer\FMaterial.h" />
-    <ClInclude Include="Public\Engine\Renderer\FMesh.h" />
-    <ClInclude Include="Public\Engine\Renderer\FRenderer.h" />
-    <ClInclude Include="Public\Engine\Renderer\FRenderResource.h" />
-    <ClInclude Include="Public\Engine\Renderer\FResourceViewCreater.h" />
-    <ClInclude Include="Public\Engine\Renderer\FScene.h" />
-    <ClInclude Include="Public\Engine\Renderer\FShader.h" />
-    <ClInclude Include="Public\Engine\Renderer\FShadowMap.h" />
-    <ClInclude Include="Public\Engine\Renderer\FSkeletalMesh.h" />
-    <ClInclude Include="Public\Engine\Renderer\FTexture.h" />
-    <ClInclude Include="Public\Engine\Renderer\FVertexBuffer.h" />
-    <ClInclude Include="Public\Engine\Renderer\LAssetDataLoader.h" />
-    <ClInclude Include="Public\Engine\Renderer\FSceneRenderer.h" />
-    <ClInclude Include="Public\Engine\Renderer\PostProgress\FBloomDef.h" />
-    <ClInclude Include="Public\Engine\Renderer\PostProgress\FBloomDown.h" />
-    <ClInclude Include="Public\Engine\Renderer\PostProgress\FBloomSetup.h" />
-    <ClInclude Include="Public\Engine\Renderer\PostProgress\FPostResources.h" />
-    <ClInclude Include="Public\Engine\Renderer\PostProgress\FBloomUp.h" />
-    <ClInclude Include="Public\Engine\Renderer\PostProgress\FScreenMesh.h" />
-    <ClInclude Include="Public\Engine\Renderer\PostProgress\FSunMerge.h" />
-    <ClInclude Include="Public\Engine\Renderer\PostProgress\FToneMapping.h" />
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Helper.h" />
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12Resource.h" />
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12ResourceViewCreater.h" />
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FD3D12RHIPrivate.h" />
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\d3dx12.h" />
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\FDDSTextureLoader.h" />
-    <ClInclude Include="Public\Engine\RHI\D3D12RHI\stdafx.h" />
-    <ClInclude Include="Public\Engine\RHI\FDynamicRHI.h" />
-    <ClInclude Include="Public\Engine\RHI\FRHI.h" />
-    <ClInclude Include="Public\Engine\RHI\FRHIDef.h" />
-    <ClInclude Include="Public\Engine\Thread\FRenderThread.h" />
-    <ClInclude Include="Public\Engine\Thread\FThread.h" />
-    <ClInclude Include="Public\Engine\Thread\FTaskThread.h" />
-    <ClInclude Include="Public\Engine\Util\MathHelper.h" />
     <ClInclude Include="Public\stdafx.h" />
   </ItemGroup>
   <ItemGroup>

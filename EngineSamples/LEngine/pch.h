@@ -10,4 +10,12 @@
 // add headers that you want to pre-compile here
 #include "framework.h"
 
+#ifdef LENGINE_EXPORTS
+#define LENGINE_API __declspec(dllexport)
+#else
+#define LENGINE_API __declspec(dllimport)
+#endif
+
+#pragma warning(disable:4251)
+
 #endif //PCH_H

@@ -13,6 +13,81 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Common">
+      <UniqueIdentifier>{555c2471-cb53-4eaf-a54b-92cc66fd167e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Renderer">
+      <UniqueIdentifier>{0ff6a413-58d6-4c8a-9a0d-eae64a94dcab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RHI">
+      <UniqueIdentifier>{7645a6bb-aa93-4497-9688-0bb4742544e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Thread">
+      <UniqueIdentifier>{052c5544-c774-410e-9df8-c92cc249cc41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Util">
+      <UniqueIdentifier>{bf983bfa-e8b3-4c72-8cb2-7b72e7381aca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Common\Animation">
+      <UniqueIdentifier>{b9b73be8-f29f-446c-a1dc-597b590007e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Common\Camera">
+      <UniqueIdentifier>{83e958b1-4236-41fa-8cc1-afc5e91d5013}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Common\Character">
+      <UniqueIdentifier>{9db3d069-122c-47f2-ae3a-4124088ea891}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Common\Event">
+      <UniqueIdentifier>{805a5ecb-25c1-40c5-ae98-40af1d146451}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Common\RenderData">
+      <UniqueIdentifier>{258c6c4c-1b4a-4092-aa1b-965d3bacd302}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Common\Windows">
+      <UniqueIdentifier>{78ff18fd-ee64-4bb0-9460-53627b75641c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RHI\D3D12RHI">
+      <UniqueIdentifier>{f6bb3d58-e0d7-4b16-900e-65395b40eb63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Renderer\PostProgress">
+      <UniqueIdentifier>{b58d9c86-46cc-4814-aecc-9401f0a96c55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common">
+      <UniqueIdentifier>{e505d1f2-4dfe-45df-94c7-4018fd811189}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Renderer">
+      <UniqueIdentifier>{ccc4f4ed-aceb-49c1-bd0d-72bb730c5ed6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RHI">
+      <UniqueIdentifier>{fe9579ef-c498-438e-8463-b22abd2585de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Thread">
+      <UniqueIdentifier>{352113c6-9198-4446-bc39-f0c4fbdcf038}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Util">
+      <UniqueIdentifier>{d01b86c1-164d-427d-9708-71b63224dd17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common\Animation">
+      <UniqueIdentifier>{1b3546cd-5729-4763-8ddf-d0f9aabfb9f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common\Camera">
+      <UniqueIdentifier>{09069f80-56be-4b55-8e4a-e99036f8d13d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common\Character">
+      <UniqueIdentifier>{549daa8a-f2ab-43f7-82ce-46a1c99984e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common\RenderData">
+      <UniqueIdentifier>{86be3205-eaee-4d62-97ff-2807d62ec4c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common\Windows">
+      <UniqueIdentifier>{e0f02d04-198c-4bf6-b28d-9b604eac2c7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RHI\D3D12RHI">
+      <UniqueIdentifier>{236cfef2-35b4-4d36-b5c0-b9dec5d33662}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Renderer\PostProgress">
+      <UniqueIdentifier>{e0b7551e-38e6-429b-92fd-961075f1f398}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -21,8 +96,233 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\LEngineHeader.h">
+    <ClInclude Include="Public\LEngine.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\LActor.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\LAssetManager.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\LDefine.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\LDevice.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\LGameTimer.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\LInput.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\LLog.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\LMarcoDef.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\LRingBuffer.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\Animation\LAnimationSequence.h">
+      <Filter>Header Files\Common\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\Animation\LAnimationState.h">
+      <Filter>Header Files\Common\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\Animation\LAnimationStateMachine.h">
+      <Filter>Header Files\Common\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\Animation\LAnimationStateTransition.h">
+      <Filter>Header Files\Common\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\Animation\LAnimationTrack.h">
+      <Filter>Header Files\Common\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\Animation\LAnimator.h">
+      <Filter>Header Files\Common\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\Animation\LSkeleton.h">
+      <Filter>Header Files\Common\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\Camera\LCamera.h">
+      <Filter>Header Files\Common\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\Camera\LSceneCamera.h">
+      <Filter>Header Files\Common\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\Camera\LThirdPersonCamera.h">
+      <Filter>Header Files\Common\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\Character\LCharacter.h">
+      <Filter>Header Files\Common\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\Character\LCharacterMovement.h">
+      <Filter>Header Files\Common\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\Character\LPlayerController.h">
+      <Filter>Header Files\Common\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\Event\LEvent.h">
+      <Filter>Header Files\Common\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\Windows\LDeviceWindows.h">
+      <Filter>Header Files\Common\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\Windows\LInputWindows.h">
+      <Filter>Header Files\Common\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\RenderData\LIndexBuffer.h">
+      <Filter>Header Files\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\RenderData\LLight.h">
+      <Filter>Header Files\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\RenderData\LMaterial.h">
+      <Filter>Header Files\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\RenderData\LMaterialBase.h">
+      <Filter>Header Files\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\RenderData\LMaterialInstance.h">
+      <Filter>Header Files\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\RenderData\LMesh.h">
+      <Filter>Header Files\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\RenderData\LResource.h">
+      <Filter>Header Files\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\RenderData\LScene.h">
+      <Filter>Header Files\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\RenderData\LScreenMesh.h">
+      <Filter>Header Files\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\RenderData\LShader.h">
+      <Filter>Header Files\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\RenderData\LSkeletalMesh.h">
+      <Filter>Header Files\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\RenderData\LTexture.h">
+      <Filter>Header Files\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\RenderData\LVertexBuffer.h">
+      <Filter>Header Files\Common\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Util\MathHelper.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Thread\FRenderThread.h">
+      <Filter>Header Files\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Thread\FTaskThread.h">
+      <Filter>Header Files\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Thread\FThread.h">
+      <Filter>Header Files\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RHI\FDynamicRHI.h">
+      <Filter>Header Files\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RHI\FRHI.h">
+      <Filter>Header Files\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RHI\FRHIDef.h">
+      <Filter>Header Files\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RHI\D3D12RHI\d3dx12.h">
+      <Filter>Header Files\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RHI\D3D12RHI\FD3D12Helper.h">
+      <Filter>Header Files\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RHI\D3D12RHI\FD3D12Resource.h">
+      <Filter>Header Files\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RHI\D3D12RHI\FD3D12ResourceViewCreater.h">
+      <Filter>Header Files\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RHI\D3D12RHI\FD3D12RHIPrivate.h">
+      <Filter>Header Files\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\RHI\D3D12RHI\FDDSTextureLoader.h">
+      <Filter>Header Files\RHI\D3D12RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\FDefine.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\FIndexBuffer.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\FLight.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\FMaterial.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\FMesh.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\FRenderer.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\FRenderResource.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\FResourceViewCreater.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\FScene.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\FSceneRenderer.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\FShader.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\FShadowMap.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\FSkeletalMesh.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\FTexture.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\FVertexBuffer.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\PostProgress\FBloomDef.h">
+      <Filter>Header Files\Renderer\PostProgress</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\PostProgress\FBloomDown.h">
+      <Filter>Header Files\Renderer\PostProgress</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\PostProgress\FBloomSetup.h">
+      <Filter>Header Files\Renderer\PostProgress</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\PostProgress\FBloomUp.h">
+      <Filter>Header Files\Renderer\PostProgress</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\PostProgress\FPostResources.h">
+      <Filter>Header Files\Renderer\PostProgress</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\PostProgress\FScreenMesh.h">
+      <Filter>Header Files\Renderer\PostProgress</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\PostProgress\FSunMerge.h">
+      <Filter>Header Files\Renderer\PostProgress</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Renderer\PostProgress\FToneMapping.h">
+      <Filter>Header Files\Renderer\PostProgress</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Common\LAssetDataLoader.h">
+      <Filter>Header Files\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -32,8 +332,197 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\LEngineHeader.cpp">
+    <ClCompile Include="Private\LEngine.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\LAssetManager.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\LDevice.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\LGameTimer.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\LInput.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\Animation\LAnimationSequence.cpp">
+      <Filter>Source Files\Common\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\Animation\LAnimationState.cpp">
+      <Filter>Source Files\Common\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\Animation\LAnimationStateMachine.cpp">
+      <Filter>Source Files\Common\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\Animation\LAnimationStateTransition.cpp">
+      <Filter>Source Files\Common\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\Animation\LAnimationTrack.cpp">
+      <Filter>Source Files\Common\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\Animation\LAnimator.cpp">
+      <Filter>Source Files\Common\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\Animation\LSkeleton.cpp">
+      <Filter>Source Files\Common\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\Camera\LCamera.cpp">
+      <Filter>Source Files\Common\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\Camera\LSceneCamera.cpp">
+      <Filter>Source Files\Common\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\Camera\LThirdPersonCamera.cpp">
+      <Filter>Source Files\Common\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\Character\LCharacter.cpp">
+      <Filter>Source Files\Common\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\Character\LCharacterMovement.cpp">
+      <Filter>Source Files\Common\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\Character\LPlayerController.cpp">
+      <Filter>Source Files\Common\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\Windows\LDeviceWindows.cpp">
+      <Filter>Source Files\Common\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\Windows\LInputWindows.cpp">
+      <Filter>Source Files\Common\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\RenderData\LIndexBuffer.cpp">
+      <Filter>Source Files\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\RenderData\LLight.cpp">
+      <Filter>Source Files\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\RenderData\LMaterial.cpp">
+      <Filter>Source Files\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\RenderData\LMaterialBase.cpp">
+      <Filter>Source Files\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\RenderData\LMaterialInstance.cpp">
+      <Filter>Source Files\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\RenderData\LMesh.cpp">
+      <Filter>Source Files\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\RenderData\LResource.cpp">
+      <Filter>Source Files\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\RenderData\LScene.cpp">
+      <Filter>Source Files\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\RenderData\LScreenMesh.cpp">
+      <Filter>Source Files\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\RenderData\LShader.cpp">
+      <Filter>Source Files\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\RenderData\LSkeletalMesh.cpp">
+      <Filter>Source Files\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\RenderData\LTexture.cpp">
+      <Filter>Source Files\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\RenderData\LVertexBuffer.cpp">
+      <Filter>Source Files\Common\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Util\MathHelper.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Thread\FRenderThread.cpp">
+      <Filter>Source Files\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Thread\FTaskThread.cpp">
+      <Filter>Source Files\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Thread\FThread.cpp">
+      <Filter>Source Files\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\RHI\FDynamicRHI.cpp">
+      <Filter>Source Files\RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\RHI\FRHI.cpp">
+      <Filter>Source Files\RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\RHI\FWindowsDynamicRHI.cpp">
+      <Filter>Source Files\RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\RHI\D3D12RHI\FD3D12Resource.cpp">
+      <Filter>Source Files\RHI\D3D12RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\RHI\D3D12RHI\FD3D12ResourceViewCreater.cpp">
+      <Filter>Source Files\RHI\D3D12RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\RHI\D3D12RHI\FD3D12RHIPublic.cpp">
+      <Filter>Source Files\RHI\D3D12RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\RHI\D3D12RHI\FDDSTextureLoader.cpp">
+      <Filter>Source Files\RHI\D3D12RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\FIndexBuffer.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\FLight.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\FMaterial.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\FMesh.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\FRenderer.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\FRenderResource.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\FScene.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\FSceneRenderer.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\FShader.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\FShadowMap.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\FSkeletalMesh.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\FTexture.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\FVertexBuffer.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\PostProgress\FBloomDown.cpp">
+      <Filter>Source Files\Renderer\PostProgress</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\PostProgress\FBloomSetup.cpp">
+      <Filter>Source Files\Renderer\PostProgress</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\PostProgress\FBloomUp.cpp">
+      <Filter>Source Files\Renderer\PostProgress</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\PostProgress\FScreenMesh.cpp">
+      <Filter>Source Files\Renderer\PostProgress</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\PostProgress\FSunMerge.cpp">
+      <Filter>Source Files\Renderer\PostProgress</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Renderer\PostProgress\FToneMapping.cpp">
+      <Filter>Source Files\Renderer\PostProgress</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Common\LAssetDataLoader.cpp">
+      <Filter>Source Files\Common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
