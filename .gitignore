@@ -46,9 +46,10 @@ ExportStaticMesh/Saved/Crashes
 ExportStaticMesh/Saved/Logs
 ExportStaticMesh/Saved/AutoScreenshot.png
 
-
+EngineSamples/LEngine/x64
 EngineSamples/LoadSampleMap/x64
 EngineSamples/.vs
+EngineSamples/x64
 
 
 

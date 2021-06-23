@@ -83,13 +83,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation;$(ProjectDir)\Public\Engine\Common\Camera;$(ProjectDir)\Public\Engine\Common\Character;$(ProjectDir)\Public\Engine\Common\RenderData;$(ProjectDir)\Public\Engine\Renderer\PostProgress</IncludePath>
+    <IncludePath>$(IncludePath);$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation;$(ProjectDir)\Public\Engine\Common\Camera;$(ProjectDir)\Public\Engine\Common\Character;$(ProjectDir)\Public\Engine\Common\RenderData;$(ProjectDir)\Public\Engine\Renderer\PostProgress</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
-    <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation;$(ProjectDir)\Public\Engine\Common\Camera;$(ProjectDir)\Public\Engine\Common\Character;$(ProjectDir)\Public\Engine\Common\RenderData;$(ProjectDir)\Public\Engine\Renderer\PostProgress</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\Public;$(ProjectDir)\Public\Engine\Common;$(ProjectDir)\Public\Engine\Renderer;$(ProjectDir)\Public\Engine\RHI;$(ProjectDir)\Public\Engine\Util;$(ProjectDir)\Public\Engine\RHI\D3D12RHI;$(ProjectDir)\Public\Engine;$(ProjectDir)\Public\Engine\Common\Windows;$(ProjectDir)\Public\Engine\Common\Event;$(ProjectDir)\Public\Engine\Thread;$(ProjectDir)\Public\Engine\Common\Animation;$(ProjectDir)\Public\Engine\Common\Camera;$(ProjectDir)\Public\Engine\Common\Character;$(ProjectDir)\Public\Engine\Common\RenderData;$(ProjectDir)\Public\Engine\Renderer\PostProgress;.\LEngine\Source</IncludePath>
     <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -131,7 +132,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\LEngine\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
     </ClCompile>
@@ -139,6 +140,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <Profile>true</Profile>
+      <AdditionalDependencies>LEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

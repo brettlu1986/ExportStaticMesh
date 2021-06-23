@@ -16,6 +16,8 @@
 #include "LThirdPersonCamera.h"
 #include "LScreenMesh.h"
 
+#include "LEngineHeader.h"
+
 ApplicationMain* ApplicationMain::Application = nullptr;
 
 ApplicationMain::ApplicationMain()
@@ -23,6 +25,7 @@ ApplicationMain::ApplicationMain()
 {
 	Application = this;
 	DataScene = make_unique<LScene>();
+
 }
 
 ApplicationMain::~ApplicationMain()
