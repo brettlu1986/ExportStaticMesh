@@ -55,9 +55,9 @@ void LLight::UpdateLightInRenderThread()
 	assert(LEngine::GetEngine()->IsGameThread());
 
 	auto RenderLightRes = RenderLight;
-	XMFLOAT3 Dir = Direction;
-	XMFLOAT3 StrengthValue = Strength;
-	XMFLOAT3 Pos = Position;
+	Vec3 Dir = Direction;
+	Vec3 StrengthValue = Strength;
+	Vec3 Pos = Position;
 	RENDER_THREAD_TASK("UpdateLightDirPos",
 		[RenderLightRes, Dir, StrengthValue, Pos]()
 		{

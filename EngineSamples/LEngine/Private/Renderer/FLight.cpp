@@ -44,7 +44,7 @@ void FLight::DeleteLightInRenderThread()
 	FRenderThread::Get()->GetRenderScene()->DeleteLightToScene(this);
 }
 
-void FLight::UpdateLightInRenderThread(XMFLOAT3 Dir, XMFLOAT3 StrengthValues, XMFLOAT3 Pos)
+void FLight::UpdateLightInRenderThread(Vec3 Dir, Vec3 StrengthValues, Vec3 Pos)
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
 	Direction = Dir;

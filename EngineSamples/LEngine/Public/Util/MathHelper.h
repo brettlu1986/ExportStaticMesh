@@ -1,5 +1,6 @@
 #pragma once
 
+#include "LType.h"
 #include <Windows.h>
 #include <DirectXMath.h>
 #include <cstdint>
@@ -83,19 +84,19 @@ public:
 		return I;
 	}
 
-	static DirectX::XMFLOAT3 GetUe4ConvertLocation(DirectX::XMFLOAT3 InputLocation)
+	static Vec3 GetUe4ConvertLocation(Vec3 InputLocation)
 	{
-		return DirectX::XMFLOAT3(InputLocation.y, InputLocation.z, InputLocation.x);
+		return Vec3(InputLocation.y, InputLocation.z, InputLocation.x);
 	}
 
 	static DirectX::XMVECTOR RandUnitVec3();
 	static DirectX::XMVECTOR RandHemisphereUnitVec3(DirectX::XMVECTOR n);
 
 	//XMFLOAT4 Quat:x, y, z, w  XMFLOAT3 Rotate:Pitch, Yaw, Roll
-	static DirectX::XMFLOAT4 EulerToQuaternion(DirectX::XMFLOAT3 CurrentRotation);
-	static DirectX::XMFLOAT3 QuaternionToEuler(DirectX::XMFLOAT4 Quat);
+	static DirectX::XMFLOAT4 EulerToQuaternion(Vec3 CurrentRotation);
+	static Vec3 QuaternionToEuler(DirectX::XMFLOAT4 Quat);
 
-	static float Distance(DirectX::XMFLOAT3 A, DirectX::XMFLOAT3 B);
+	static float Distance(Vec3 A, Vec3 B);
 
 	static const float Infinity;
 	static const float Pi;

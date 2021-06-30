@@ -5,9 +5,9 @@
 
 struct LBonePose
 {
-	XMFLOAT3 Scale;
+	Vec3 Scale;
 	XMFLOAT4 Quat;
-	XMFLOAT3 Translate;
+	Vec3 Translate;
 };
 
 struct LAnimBonePose

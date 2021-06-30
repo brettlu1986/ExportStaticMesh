@@ -324,6 +324,9 @@
     <ClInclude Include="Public\Common\LAssetDataLoader.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
+    <ClInclude Include="Public\Common\LType.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

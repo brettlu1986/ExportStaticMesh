@@ -30,7 +30,7 @@ void FScene::Destroy()
 	PassLightInfo = nullptr;
 }
 
-void FScene::UpdateViewProjInfo(XMMATRIX ViewProj, XMFLOAT3 EyeLoc)
+void FScene::UpdateViewProjInfo(XMMATRIX ViewProj, Vec3 EyeLoc)
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
 	XMStoreFloat4x4(&ViewProjInfo.ViewProj, XMMatrixTranspose(ViewProj));
@@ -142,7 +142,7 @@ void FScene::DeleteSkeletalMeshToScene(FSkeletalMesh* Mesh)
 
 const vector<FMesh*>& FScene::GetDrawTransparencyMeshes()
 {
-	XMFLOAT3 CameraLocation = ViewProjInfo.EyePosW;
+	Vec3 CameraLocation = ViewProjInfo.EyePosW;
 	sort(TranparencyMeshes.begin(), TranparencyMeshes.end(), [CameraLocation]( FMesh* A,  FMesh* B)
 	{
 		float DisA = MathHelper::Distance(A->GetModelLocation(), CameraLocation);
@@ -167,13 +167,13 @@ void FScene::UpdateLightToScene(FLight* Light)
 	if(LightIndex == 0 )
 	{
 		FPassLightInfo LightInfo;
-		XMFLOAT3 Pos = Light->GetPosition();
-		XMFLOAT3 Dir = Light->GetDir();
+		Vec3 Pos = Light->GetPosition();
+		Vec3 Dir = Light->GetDir();
 		LightInfo.Lights[LightIndex].Direction = Dir;
 		LightInfo.Lights[LightIndex].Strength = Light->GetStrength();
 		LightInfo.Lights[LightIndex].Position = Pos;
 
-		XMFLOAT3 LightUp = { 0, 0, 1 };
+		Vec3 LightUp = { 0, 0, 1 };
 		
 		XMMATRIX LightView = XMMatrixLookToLH(XMLoadFloat3(&Pos), XMLoadFloat3(&Dir), XMLoadFloat3(&LightUp));
 		XMMATRIX LightProj = XMMatrixOrthographicLH((float)50, (float)50, 1.f, 100.f);

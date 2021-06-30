@@ -146,7 +146,7 @@ void ApplicationMain::OnSceneInit()
 
 	shared_ptr<LCamera> ThirdPersonCamera = make_shared<LThirdPersonCamera>();
 	ThirdPersonCamera->Init(CameraData);
-	ThirdPersonCamera->SetSocketOffset(XMFLOAT3(-2.f, 0.3f, 2.2f));
+	ThirdPersonCamera->SetSocketOffset(Vec3(-2.f, 0.3f, 2.2f));
 	ThirdPersonCamera->SetViewTarget(DataScene->GetCharacters()[2].get());
 	DataScene->AddCamera(ThirdPersonCamera);
 

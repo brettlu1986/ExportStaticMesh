@@ -3,9 +3,9 @@
 #include "LAnimationSequence.h"
 #include "LLog.h"
 
-static const XMFLOAT3 NO_S = XMFLOAT3(1.f, 1.f, 1.f);
+static const Vec3 NO_S = Vec3(1.f, 1.f, 1.f);
 static const XMFLOAT4 NO_Q = XMFLOAT4(0.f, 0.f, 0.f, 1.f);
-static const XMFLOAT3 NO_T = XMFLOAT3(0.f, 0.f, 0.f);
+static const Vec3 NO_T = Vec3(0.f, 0.f, 0.f);
 
 LAnimationSequence::LAnimationSequence()
 :TimeElapsed(0.f)

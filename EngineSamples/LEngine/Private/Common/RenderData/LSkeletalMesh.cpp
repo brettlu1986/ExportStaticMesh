@@ -9,9 +9,9 @@
 
 LSkeletalMesh::LSkeletalMesh()
 	:LResource(E_LRESOURCE_TYPE::L_TYPE_SKELETAL_MESH)
-	, ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
-	, ModelRotation(XMFLOAT3(0.f, 0.f, 0.f))
-	, ModelScale(XMFLOAT3(1.f, 1.f, 1.f))
+	, ModelLocation(Vec3(0.f, 0.f, 0.f))
+	, ModelRotation(Vec3(0.f, 0.f, 0.f))
+	, ModelScale(Vec3(1.f, 1.f, 1.f))
 	, RenderMesh(nullptr)
 	, bUpdateWorldTrans(false)
 {
@@ -111,19 +111,19 @@ void LSkeletalMesh::DestroyRenderThreadResource()
 	}
 }
 
-void LSkeletalMesh::SetModelLocation(XMFLOAT3 Location)
+void LSkeletalMesh::SetModelLocation(Vec3 Location)
 {
 	ModelLocation = Location;
 	bUpdateWorldTrans = true;
 }
 
-void LSkeletalMesh::SetModelRotation(XMFLOAT3 Rotator)
+void LSkeletalMesh::SetModelRotation(Vec3 Rotator)
 {
 	ModelRotation = Rotator;
 	bUpdateWorldTrans = true;
 }
 
-void LSkeletalMesh::SetModelScale(XMFLOAT3 Scale)
+void LSkeletalMesh::SetModelScale(Vec3 Scale)
 {
 	ModelScale = Scale;
 	bUpdateWorldTrans = true;

@@ -207,23 +207,23 @@ enum class E_RESOURCE_STATE : UINT32
 
 typedef struct FVertexData
 {
-	XMFLOAT3 Position;
-	XMFLOAT3 Normal;
-	XMFLOAT3 Tangent;
-	XMFLOAT2 Tex0;
-	XMFLOAT2 Tex1;
+	Vec3 Position;
+	Vec3 Normal;
+	Vec3 Tangent;
+	Vec2 Tex0;
+	Vec2 Tex1;
 	XMFLOAT4 Color = {0.66f, 0.66f, 0.66f, 1.0};
 }FVertexData;
 
 typedef struct FSkeletalVertexData
 {
-	XMFLOAT3 Position;
-	XMFLOAT3 Normal;
-	XMFLOAT3 Tangent;
-	XMFLOAT2 Tex0;
-	XMFLOAT2 Tex1;
+	Vec3 Position;
+	Vec3 Normal;
+	Vec3 Tangent;
+	Vec2 Tex0;
+	Vec2 Tex1;
 	XMFLOAT4 Color = { 0.66f, 0.66f, 0.66f, 1.0 };
-	XMFLOAT3 InfluenceWeights;
+	Vec3 InfluenceWeights;
 	UINT16  InfluenceBones[4];
 }FSkeletalVertexData;
 
@@ -347,7 +347,7 @@ public:
 	{};
 
 	float Alpha;
-	XMFLOAT3 Padding;
+	Vec3 Padding;
 	XMFLOAT4 ColorBlendAdd;
 };
 
@@ -355,11 +355,11 @@ public:
 
 struct FPassLight
 {
-	XMFLOAT3 Strength = { 0.5f, 0.5f, 0.5f };
+	Vec3 Strength = { 0.5f, 0.5f, 0.5f };
 	float FalloffStart = 1.0f;                          // point/spot light only
-	XMFLOAT3 Direction = { 0.0f, -1.0f, 0.0f };// directional/spot light only
+	Vec3 Direction = { 0.0f, -1.0f, 0.0f };// directional/spot light only
 	float FalloffEnd = 10.0f;                           // point/spot light only
-	XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };  // point/spot light only
+	Vec3 Position = { 0.0f, 0.0f, 0.0f };  // point/spot light only
 	float SpotPower = 64.0f;                            // spot light only
 	UINT LightIndex = 0;
 };
@@ -373,7 +373,7 @@ public:
 	, CbPerObjectPad1(0.f)
 	{};
 	XMFLOAT4X4 ViewProj;
-	XMFLOAT3 EyePosW ;
+	Vec3 EyePosW ;
 	float CbPerObjectPad1;
 };
 
@@ -418,12 +418,12 @@ struct FPassBloomUp
 	XMFLOAT4 BufferBSizeAndInvSize;
 	XMFLOAT4 BloomTintA;
 	XMFLOAT4 BloomTintB;
-	XMFLOAT2 BloomUpScales;
+	Vec2 BloomUpScales;
 };
 
 struct FPassSunMerge
 {
 	XMFLOAT4 BloomUpSizeAndInvSize;
-	XMFLOAT3 BloomColor;
+	Vec3 BloomColor;
 };
 

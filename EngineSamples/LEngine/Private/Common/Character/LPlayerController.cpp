@@ -41,7 +41,7 @@ void LPlayerController::AddPitchInput(float DeltaPitch)
 
 void LPlayerController::UpdateRotation(float dt)
 {
-	XMFLOAT3 Rotator = ControlledCharacter->GetSkeletalMesh()->GetRotation();
+	Vec3 Rotator = ControlledCharacter->GetSkeletalMesh()->GetRotation();
 	Rotator.x += RotationPitchInput;
 	Rotator.y += RotationYawInput;
 	ControlledCharacter->SetRotation(Rotator);

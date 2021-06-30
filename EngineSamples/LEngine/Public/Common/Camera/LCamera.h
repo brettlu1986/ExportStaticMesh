@@ -20,12 +20,12 @@ public:
 	
 	XMMATRIX GetProjectionMatrix(float NearPlane = 0.1f, float FarPlane = 1000.0f);
 
-	const XMFLOAT3& GetCameraLocation()
+	const Vec3& GetCameraLocation()
 	{
 		return Position;
 	}
 
-	void SetCameraLocation(const XMFLOAT3& InLoc)
+	void SetCameraLocation(const Vec3& InLoc)
 	{
 		Position.x = InLoc.x;
 		Position.y = InLoc.x;
@@ -47,7 +47,7 @@ public:
 		bActive = bActivate;
 	}
 	
-	void SetSocketOffset(XMFLOAT3 Offset);
+	void SetSocketOffset(Vec3 Offset);
 	virtual void SetViewTarget(LActor* Target) {};
 
 	void UpdateViewProjectionRenderThread();
@@ -55,19 +55,19 @@ public:
 protected:
 	bool bActive;
 	LCameraData CameraDatas;
-	XMFLOAT3 Position;
+	Vec3 Position;
 	float Yaw;
 	float Pitch;
 	//we can use either look direction or focus position to calculate view matrix
 	float ArmLength;
 
-	XMFLOAT3 LookDirection;
-	XMFLOAT3 FocusPosition;
-	XMFLOAT3 UpDirection;
+	Vec3 LookDirection;
+	Vec3 FocusPosition;
+	Vec3 UpDirection;
 	float Fov;
 	float AspectRatio;
 
-	XMFLOAT3 SocketOffset;
+	Vec3 SocketOffset;
 
 	E_CAMERA_TYPE CameraType;
 };

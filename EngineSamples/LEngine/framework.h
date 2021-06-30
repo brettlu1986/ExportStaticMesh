@@ -40,7 +40,7 @@
 #include <thread>
 #include <memory>
 
-
+#include "LType.h"
 
 using namespace DirectX;
 using namespace std;

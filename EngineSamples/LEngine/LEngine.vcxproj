@@ -182,6 +182,7 @@
     <ClInclude Include="Public\Common\LLog.h" />
     <ClInclude Include="Public\Common\LMarcoDef.h" />
     <ClInclude Include="Public\Common\LRingBuffer.h" />
+    <ClInclude Include="Public\Common\LType.h" />
     <ClInclude Include="Public\Common\RenderData\LIndexBuffer.h" />
     <ClInclude Include="Public\Common\RenderData\LLight.h" />
     <ClInclude Include="Public\Common\RenderData\LMaterial.h" />

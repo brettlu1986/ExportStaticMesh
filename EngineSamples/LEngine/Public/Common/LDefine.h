@@ -120,9 +120,9 @@ struct LMapStaticObjInfo
 	string ObjectName;
 	string RefGeometry;
 	string RefMaterial;
-	XMFLOAT3 WorldLocation;
-	XMFLOAT3 WorldRotator;
-	XMFLOAT3 WorldScale;
+	Vec3 WorldLocation;
+	Vec3 WorldRotator;
+	Vec3 WorldScale;
 };
 
 struct LMapSkeletalObjInfo
@@ -131,25 +131,25 @@ struct LMapSkeletalObjInfo
 	string RefGeometry;
 	string RefMaterial;
 	string RefSkeleton;
-	XMFLOAT3 WorldLocation;
-	XMFLOAT3 WorldRotator;
-	XMFLOAT3 WorldScale;
+	Vec3 WorldLocation;
+	Vec3 WorldRotator;
+	Vec3 WorldScale;
 	vector<string> RefAnims;
 };
 
 struct LCameraData {
-	XMFLOAT3 Location;
-	XMFLOAT3 Target;
-	XMFLOAT3 Rotator; // {Pitch, Yaw , Roll}
+	Vec3 Location;
+	Vec3 Target;
+	Vec3 Rotator; // {Pitch, Yaw , Roll}
 	float Fov;
 	float Aspect;
 };
 
 struct LDirectionLightData
 {
-	XMFLOAT3 Strength;
-	XMFLOAT3 Direction;
-	XMFLOAT3 Position;
+	Vec3 Strength;
+	Vec3 Direction;
+	Vec3 Position;
 };
 
 enum class E_BLEND_MODE : UINT8

@@ -78,8 +78,8 @@ XMVECTOR MathHelper::RandHemisphereUnitVec3(XMVECTOR n)
 	}
 }
 
-//XMFLOAT4 Quat:x, y, z, w  XMFLOAT3 Rotate:Pitch, Yaw, Roll
-DirectX::XMFLOAT4 MathHelper::EulerToQuaternion(DirectX::XMFLOAT3 CurrentRotation)
+//XMFLOAT4 Quat:x, y, z, w  Vec3 Rotate:Pitch, Yaw, Roll
+DirectX::XMFLOAT4 MathHelper::EulerToQuaternion(Vec3 CurrentRotation)
 {
 	DirectX::XMFLOAT4 q;
 	float yaw = CurrentRotation.y * Pi / 180;
@@ -101,7 +101,7 @@ DirectX::XMFLOAT4 MathHelper::EulerToQuaternion(DirectX::XMFLOAT3 CurrentRotatio
 	return q;
 }
 
-DirectX::XMFLOAT3 MathHelper::QuaternionToEuler(DirectX::XMFLOAT4 Quat)
+Vec3 MathHelper::QuaternionToEuler(DirectX::XMFLOAT4 Quat)
 {
 	float ysqr = Quat.y * Quat.y;
 
@@ -121,10 +121,10 @@ DirectX::XMFLOAT3 MathHelper::QuaternionToEuler(DirectX::XMFLOAT4 Quat)
 	float t4 = 1.0f - 2.0f * (ysqr + Quat.z * Quat.z);
 	float yaw = atanf(t3 / t4);
 
-	return XMFLOAT3(pitch / Pi * 180.f, yaw / Pi * 180.f, roll / Pi * 180.f);
+	return Vec3(pitch / Pi * 180.f, yaw / Pi * 180.f, roll / Pi * 180.f);
 }
 
- float MathHelper::Distance(DirectX::XMFLOAT3 A, DirectX::XMFLOAT3 B)
+ float MathHelper::Distance(Vec3 A, Vec3 B)
  {
 	 XMVECTOR vector1 = XMLoadFloat3(&A);
 	 XMVECTOR vector2 = XMLoadFloat3(&B);

@@ -22,7 +22,7 @@ public:
 	void InitRenderThreadResource(LVertexBuffer& VertexBufferData, LIndexBuffer& IndexBufferData, LMaterialBase& MaterialData);
 	void AddMeshInRenderThread();
 	void DeleteInRenderThread();
-	void UpdateMeshMatrixInRenderThread(XMMATRIX Mat, XMFLOAT3 Loc);
+	void UpdateMeshMatrixInRenderThread(XMMATRIX Mat, Vec3 Loc);
 
 	FVertexBuffer* GetVertexBuffer()
 	{
@@ -60,7 +60,7 @@ public:
 	}
 
 	XMMATRIX GetModelMatrix();
-	XMFLOAT3 GetModelLocation()
+	Vec3 GetModelLocation()
 	{
 		return ModelLocation;
 	}
@@ -81,7 +81,7 @@ private:
 	FMaterial* Material;
 
 	XMMATRIX ModelMatrix;
-	XMFLOAT3 ModelLocation;
+	Vec3 ModelLocation;
 	UINT MeshIndex;
 	string Name;
 };

@@ -10,9 +10,9 @@
 
 LMesh::LMesh()
 :LResource(E_LRESOURCE_TYPE::L_TYPE_MESH)
-,ModelLocation(XMFLOAT3(0.f, 0.f, 0.f))
-,ModelRotation(XMFLOAT3(0.f, 0.f, 0.f))
-,ModelScale(XMFLOAT3(1.f, 1.f, 1.f))
+,ModelLocation(Vec3(0.f, 0.f, 0.f))
+,ModelRotation(Vec3(0.f, 0.f, 0.f))
+,ModelScale(Vec3(1.f, 1.f, 1.f))
 ,ModelMatrix(XMMATRIX())
 ,RenderMesh(nullptr)
 ,MaterialData(nullptr)
@@ -70,19 +70,19 @@ void LMesh::DestroyRenderThreadResource()
 	}
 }
 
-void LMesh::SetModelLocation(XMFLOAT3 Location)
+void LMesh::SetModelLocation(Vec3 Location)
 {
 	ModelLocation = Location;
 	UpdateModelMatrix();
 }
 
-void LMesh::SetModelRotation(XMFLOAT3 Rotator) 
+void LMesh::SetModelRotation(Vec3 Rotator) 
 {
 	ModelRotation = Rotator;
 	UpdateModelMatrix();
 }
 
-void LMesh::SetModelScale(XMFLOAT3 Scale)
+void LMesh::SetModelScale(Vec3 Scale)
 {
 	ModelScale = Scale;
 	UpdateModelMatrix();
@@ -95,7 +95,7 @@ void LMesh::UpdateModelMatrix()
 		XMMatrixTranslation(ModelLocation.x, ModelLocation.y, ModelLocation.z);
 
 	XMMATRIX ModelMat = GetModelMatrix();
-	XMFLOAT3 ModelLoc = GetModelLocation();
+	Vec3 ModelLoc = GetModelLocation();
 	auto RenderMeshRes = RenderMesh;
 	assert(RenderMeshRes != nullptr);
 	RENDER_THREAD_TASK("UpdateMeshMatrix",

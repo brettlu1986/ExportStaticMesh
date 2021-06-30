@@ -24,9 +24,9 @@ private:
 
 	struct BonePose
 	{
-		XMFLOAT3 Scale;
-		XMFLOAT3 Rotate;
-		XMFLOAT3 Translate;
+		Vec3 Scale;
+		Vec3 Rotate;
+		Vec3 Translate;
 	};
 
 	struct BoneNameIndex

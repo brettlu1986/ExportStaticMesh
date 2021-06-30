@@ -38,13 +38,13 @@ public:
 		return IsLocalControlled;
 	}
 
-	virtual void SetLocation(XMFLOAT3 Location) override;
-	virtual void SetRotation(XMFLOAT3 Rotator) override;
-	virtual void SetScale3D(XMFLOAT3 Scale) override;
+	virtual void SetLocation(Vec3 Location) override;
+	virtual void SetRotation(Vec3 Rotator) override;
+	virtual void SetScale3D(Vec3 Scale) override;
 
-	virtual XMFLOAT3 GetLocation() override;
-	virtual XMFLOAT3 GetRotation() override;
-	virtual XMFLOAT3 GetScale3D() override;
+	virtual Vec3 GetLocation() override;
+	virtual Vec3 GetRotation() override;
+	virtual Vec3 GetScale3D() override;
 
 	virtual XMVECTOR GetMoveForwardVector() override;
 	virtual XMVECTOR GetMoveRightVector() override;

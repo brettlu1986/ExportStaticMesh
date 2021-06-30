@@ -110,7 +110,7 @@ void FMesh::DeleteInRenderThread()
 	FRenderThread::Get()->GetRenderScene()->DeleteMeshToScene(this);
 }
 
-void FMesh::UpdateMeshMatrixInRenderThread(XMMATRIX Mat, XMFLOAT3 Loc)
+void FMesh::UpdateMeshMatrixInRenderThread(XMMATRIX Mat, Vec3 Loc)
 {
 	assert(LEngine::GetEngine()->IsRenderThread());
 	ModelMatrix = Mat;

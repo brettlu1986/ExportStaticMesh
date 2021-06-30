@@ -19,22 +19,22 @@ public:
 	void InitRenderThreadResource();
 	void DestroyRenderThreadResource();
 
-	void SetModelLocation(XMFLOAT3 Location);
-	void SetModelRotation(XMFLOAT3 Rotator);
-	void SetModelScale(XMFLOAT3 Scale);
+	void SetModelLocation(Vec3 Location);
+	void SetModelRotation(Vec3 Rotator);
+	void SetModelScale(Vec3 Scale);
 	XMMATRIX GetModelMatrix() const { return ModelMatrix; }
 
-	XMFLOAT3 GetRotation()
+	Vec3 GetRotation()
 	{
 		return ModelRotation;
 	}
 
-	XMFLOAT3 GetLocation()
+	Vec3 GetLocation()
 	{
 		return ModelLocation;
 	}
 
-	XMFLOAT3 GetScale3D()
+	Vec3 GetScale3D()
 	{
 		return ModelLocation;
 	}
@@ -74,9 +74,9 @@ private:
 	LSkeletalMeshBuffer* SkeletalMeshBuffer;
 	LMaterialBase* MaterialData;
 
-	XMFLOAT3 ModelLocation;
-	XMFLOAT3 ModelRotation;
-	XMFLOAT3 ModelScale;
+	Vec3 ModelLocation;
+	Vec3 ModelRotation;
+	Vec3 ModelScale;
 	XMMATRIX ModelMatrix;
 	LSkeleton* Skeleton;
 

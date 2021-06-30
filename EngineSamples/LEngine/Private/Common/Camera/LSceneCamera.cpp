@@ -54,7 +54,7 @@ void LSceneCamera::ProcessInput()
 {
 	bUpdateDirty = false; 
 	
-	XMFLOAT3 Zero = XMFLOAT3(0.f, 0.f, 0.f);
+	Vec3 Zero = Vec3(0.f, 0.f, 0.f);
 	MoveDirection = XMLoadFloat3(&Zero);
 
 	if(IsKeyDown('W'))

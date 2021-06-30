@@ -20,10 +20,10 @@ void LCharacterMovement::Update(float dt)
 {
 	if(bActive)
 	{
-		XMFLOAT3 CurLocation = Owner->GetLocation();
+		Vec3 CurLocation = Owner->GetLocation();
 		XMVECTOR UnitDir = XMVector3Normalize(MoveDirection);
 		XMVECTOR FinalLocVec = XMLoadFloat3(&CurLocation) + MoveSpeed * dt * UnitDir;
-		Owner->SetLocation(XMFLOAT3(XMVectorGetX(FinalLocVec), XMVectorGetY(FinalLocVec), XMVectorGetZ(FinalLocVec)));
+		Owner->SetLocation(Vec3(XMVectorGetX(FinalLocVec), XMVectorGetY(FinalLocVec), XMVectorGetZ(FinalLocVec)));
 	}
 }
 

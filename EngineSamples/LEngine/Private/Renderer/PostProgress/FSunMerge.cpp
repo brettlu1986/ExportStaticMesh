@@ -56,7 +56,7 @@ void FSunMerge::Initialize(FPostResources* PostResIns)
 	UINT UpH = (UINT)UpViewPort.Height;
 	PassSunMerge.BloomUpSizeAndInvSize = XMFLOAT4(static_cast<float>(UpW), static_cast<float>(UpH), 1.f / UpW, 1.f / UpH);
 	float Factor = BloomIntensity * 0.5f;
-	PassSunMerge.BloomColor = XMFLOAT3(BloomTint1.x * Factor, BloomTint1.y * Factor, BloomTint1.z * Factor);
+	PassSunMerge.BloomColor = Vec3(BloomTint1.x * Factor, BloomTint1.y * Factor, BloomTint1.z * Factor);
 	GRHI->UpdateConstantBufferView(CBVSunMerge, &PassSunMerge);
 }
 

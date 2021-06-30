@@ -129,7 +129,7 @@ void LCharacter::ProcessMoveInput()
 {
 	bUpdateMove = false;
 
-	XMFLOAT3 Zero = XMFLOAT3(0.f, 0.f, 0.f);
+	Vec3 Zero = Vec3(0.f, 0.f, 0.f);
 	XMVECTOR MoveDirection = XMLoadFloat3(&Zero);
 	MoveSpeed = BaseSpeed;
 
@@ -198,12 +198,12 @@ void LCharacter::Update(float dt)
 
 XMVECTOR LCharacter::GetMoveForwardVector()
 {
-	XMFLOAT3 Rot = GetRotation();
+	Vec3 Rot = GetRotation();
 
 	float Pitch = XMConvertToRadians(Rot.x);
 	float Yaw = XMConvertToRadians(Rot.y);
 
-	XMFLOAT3 Direction;
+	Vec3 Direction;
 	float R = cosf(Pitch);
 	Direction.y = R * sinf(Yaw);
 	Direction.z = sinf(Pitch);
@@ -214,38 +214,38 @@ XMVECTOR LCharacter::GetMoveForwardVector()
 
 XMVECTOR LCharacter::GetMoveRightVector()
 {
-	XMFLOAT3 Up = XMFLOAT3(0,0,1);
+	Vec3 Up = Vec3(0,0,1);
 	XMVECTOR UpDir = XMLoadFloat3(&Up);
 	return XMVector3Cross(GetMoveForwardVector(), UpDir);
 }
 
-void LCharacter::SetLocation(XMFLOAT3 Location)
+void LCharacter::SetLocation(Vec3 Location)
 {
 	SkeletalMeshIns->SetModelLocation(Location);
 }	
 
-void LCharacter::SetRotation(XMFLOAT3 Rotator)
+void LCharacter::SetRotation(Vec3 Rotator)
 {
 	SkeletalMeshIns->SetModelRotation(Rotator);
 }
 
-void LCharacter::SetScale3D(XMFLOAT3 Scale)
+void LCharacter::SetScale3D(Vec3 Scale)
 {
 	SkeletalMeshIns->SetModelScale(Scale);
 }
 
-XMFLOAT3 LCharacter::GetLocation()
+Vec3 LCharacter::GetLocation()
 {
 	return SkeletalMeshIns->GetLocation();
 }
  
 //in ue4, the character MeshComponent is -90 yaw to parent
-XMFLOAT3 LCharacter::GetRotation()
+Vec3 LCharacter::GetRotation()
 {
-	return XMFLOAT3(SkeletalMeshIns->GetRotation().x, SkeletalMeshIns->GetRotation().y + 90, SkeletalMeshIns->GetRotation().z);
+	return Vec3(SkeletalMeshIns->GetRotation().x, SkeletalMeshIns->GetRotation().y + 90, SkeletalMeshIns->GetRotation().z);
 }
 
-XMFLOAT3 LCharacter::GetScale3D()
+Vec3 LCharacter::GetScale3D()
 {
 	return SkeletalMeshIns->GetScale3D();
 }

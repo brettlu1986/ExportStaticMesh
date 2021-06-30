@@ -70,7 +70,7 @@ XMMATRIX LCamera::GetProjectionMatrix(float NearPlane /*= 1.0f*/, float FarPlane
 }
 
 
-void LCamera::SetSocketOffset(XMFLOAT3 Offset)
+void LCamera::SetSocketOffset(Vec3 Offset)
 {
 	SocketOffset = Offset;
 }
@@ -83,7 +83,7 @@ void LCamera::UpdateViewProjectionRenderThread()
 	XMFLOAT4X4 MtProj;
 	XMStoreFloat4x4(&MtProj, GetProjectionMatrix());
 	XMMATRIX ViewProj = GetViewMarix() * XMLoadFloat4x4(&MtProj);
-	XMFLOAT3 EyePos = GetCameraLocation();
+	Vec3 EyePos = GetCameraLocation();
 
 	//FPassViewProjection ViewProjInfo;
 	//XMStoreFloat4x4(&ViewProjInfo.ViewProj, XMMatrixTranspose(ViewProj));

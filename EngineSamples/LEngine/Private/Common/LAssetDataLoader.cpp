@@ -288,7 +288,7 @@ void LAssetDataLoader::LoadSkeletonFromFile(string FileName, LSkeleton* Skeleton
 		LBonePose Pose;
 		Pose.Scale = BonePoses[i].Scale;
 						//Pitch                          Yaw                Roll
-		XMFLOAT3 Rot = { -BonePoses[i].Rotate.x, BonePoses[i].Rotate.y, -BonePoses[i].Rotate.z };
+		Vec3 Rot = { -BonePoses[i].Rotate.x, BonePoses[i].Rotate.y, -BonePoses[i].Rotate.z };
 		Pose.Quat = MathHelper::EulerToQuaternion(Rot);
 		Pose.Translate = BonePoses[i].Translate;
 		Skeleton->AddBonePose(Pose);
@@ -476,29 +476,29 @@ void LAssetDataLoader::LoadAnimationSquence(string SequenceName, LAnimationSeque
 
 		UINT Num;
 		Rf.read((char*)&Num, sizeof(UINT));
-		vector<XMFLOAT3> Poss;
+		vector<Vec3> Poss;
 		Poss.resize(Num);
-		Rf.read((char*)Poss.data(), Num * sizeof(XMFLOAT3));
+		Rf.read((char*)Poss.data(), Num * sizeof(Vec3));
 		for(size_t i = 0; i < Poss.size(); ++i)
 		{
 			Track.AddTranslateChannelFrame(Poss[i]);
 		}
 
 		Rf.read((char*)&Num, sizeof(UINT));
-		vector<XMFLOAT3> Rots;
+		vector<Vec3> Rots;
 		Rots.resize(Num);
-		Rf.read((char*)Rots.data(), Num * sizeof(XMFLOAT3));
+		Rf.read((char*)Rots.data(), Num * sizeof(Vec3));
 		for (size_t i = 0; i < Rots.size(); ++i)
 		{
-			XMFLOAT3 Rot = { -Rots[i].x, Rots[i].y, -Rots[i].z };
+			Vec3 Rot = { -Rots[i].x, Rots[i].y, -Rots[i].z };
 			XMFLOAT4 Quat = MathHelper::EulerToQuaternion(Rot);
 			Track.AddQuatChannelFrame(Quat);
 		}
 
 		Rf.read((char*)&Num, sizeof(UINT));
-		vector<XMFLOAT3> Scales;
+		vector<Vec3> Scales;
 		Scales.resize(Num);
-		Rf.read((char*)Scales.data(), Num * sizeof(XMFLOAT3));
+		Rf.read((char*)Scales.data(), Num * sizeof(Vec3));
 		for (size_t i = 0; i < Scales.size(); ++i)
 		{
 			Track.AddScaleChannelFrame(Scales[i]);
